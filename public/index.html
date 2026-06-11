@@ -1504,13 +1504,76 @@ input:focus, select:focus, textarea:focus {
   .ubp-tag.tag-game{background:rgba(232,158,60,.13);color:#e8b97a;border:1px solid rgba(232,158,60,.35)}
   .ubp-tag.tag-best{background:rgba(212,165,68,.15);color:var(--gold);border:1px solid rgba(212,165,68,.4)}
 
+
+  /* ════════ INLINE BRANCH BLOCK IN MOVE LIST ════════ */
+  .branch-block{
+    margin:6px 8px 8px 36px;
+    padding:8px 10px;
+    border-left:2px solid rgba(127,201,156,.55);
+    background:rgba(127,201,156,.05);
+    border-radius:0 6px 6px 0;
+  }
+  .branch-head{
+    display:flex;align-items:center;gap:6px;
+    margin-bottom:6px;font-size:10px;
+    color:#7fc99c;text-transform:uppercase;letter-spacing:.8px;
+    font-family:'DM Mono',monospace;font-weight:600;
+  }
+  .branch-icon{font-size:14px;line-height:1}
+  .branch-label{flex:1}
+  .branch-clear{
+    background:transparent;border:1px solid rgba(127,201,156,.35);
+    color:#7fc99c;font-size:10px;padding:1px 6px;border-radius:3px;
+    cursor:pointer;font-family:inherit;
+  }
+  .branch-clear:hover{background:rgba(127,201,156,.15)}
+  .branch-moves{
+    display:flex;flex-wrap:wrap;gap:4px 8px;
+    font-family:'DM Mono',monospace;font-size:12px;
+  }
+  .branch-move{
+    display:inline-flex;align-items:center;gap:3px;
+    padding:3px 7px;border-radius:4px;
+    background:rgba(255,255,255,.03);
+    cursor:pointer;color:var(--text2);
+    transition:background .15s;
+    font-style:italic;
+  }
+  .branch-move:hover{background:rgba(127,201,156,.12);color:var(--text)}
+  .branch-move.cur{background:rgba(127,201,156,.22);color:var(--text)}
+  .branch-ply{color:var(--text3);font-size:10px;margin-right:2px}
+
+
+  /* ════════ BRANCH PANEL — pill-based move list ════════ */
+  .ubp-branch-line, .ubp-compare{
+    display:flex;align-items:center;flex-wrap:wrap;gap:6px;
+    padding:8px 12px;background:rgba(127,201,156,.04);
+    border-left:3px solid rgba(127,201,156,.4);border-radius:0 6px 6px 0;
+    margin-bottom:6px;
+  }
+  .ubp-compare{background:rgba(232,158,60,.04);border-left-color:rgba(232,158,60,.4)}
+  .ubp-pill{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:4px 9px;background:var(--bg3,#1d1d1d);
+    border:1px solid var(--bd,#2c2c2c);border-radius:14px;
+    color:var(--text,#ddd);font-family:'DM Mono',monospace;font-size:12px;
+    cursor:pointer;transition:all 0.15s;
+  }
+  .ubp-pill:hover{background:var(--bg4,#2a2a2a);border-color:rgba(127,201,156,.5)}
+  .ubp-pill-cur{background:rgba(127,201,156,.18)!important;border-color:#7fc99c!important;color:#fff}
+  .ubp-pill-static{cursor:default;opacity:.78}
+  .ubp-pill-num{opacity:.55;font-size:10.5px}
+  .ubp-pill-san{font-weight:600}
+  .ubp-mini-eval{opacity:.7;font-size:11px;margin-left:2px}
+  .ubp-pill .ann{margin-left:1px;padding:1px 4px;font-size:9.5px;min-width:14px;height:14px}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.7 BRANCHES</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.8 SEPARATE</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -4964,7 +5027,14 @@ async function analyseGame(white, black, username){
 
 function renderMoveList(){
   const ml = document.getElementById('rv-movelist');
-  ml.innerHTML = `<div class="mlp-head"><span>Moves</span><span>${reviewHistory.length - 1} half-moves</span></div>`;
+
+  // ── Use the ORIGINAL game line as the source of truth for the move list,
+  //    so the user's branch never overwrites or mixes into the game's moves.
+  const gameLine = gameHistory_BAK || reviewHistory;
+  const gameAnns = gameAnnotations_BAK || moveAnnotations;
+  const halfMoves = gameLine.length - 1;
+
+  ml.innerHTML = `<div class="mlp-head"><span>Moves</span><span>${halfMoves} half-moves</span></div>`;
 
   // Chess.com-style icons + badge classes for every classification
   const annSym = {
@@ -4976,47 +5046,104 @@ function renderMoveList(){
     good:'ann-good', book:'ann-book', inaccuracy:'ann-inacc',
     mistake:'ann-mist', blunder:'ann-blun', miss:'ann-miss'
   };
-  const annLabel = {
-    brilliant:'Brilliant', great:'Great', best:'Best', excellent:'Excellent',
-    good:'Good', book:'Book', inaccuracy:'Inaccuracy',
-    mistake:'Mistake', blunder:'Blunder', miss:'Miss'
-  };
 
-  const pairs = Math.ceil((reviewHistory.length - 1) / 2);
+  // Helper: build a move-cell HTML fragment for a given (move, annotation, idx)
+  function cellHTML(mv, ann, idx, onClickHandler){
+    const sym = ann ? (annSym[ann.ann] || '') : '';
+    const cls = ann ? (annClass[ann.ann] || 'ann-g') : 'ann-g';
+    const evChip = ann ? `<span class="eval-chip">${parseFloat(ann.eval) > 0 ? '+' : ''}${ann.eval}</span>` : '';
+    return `<div class="move-cell" id="mc-${idx}" onclick="${onClickHandler}">
+        ${mv?.san || ''}<span class="ann ${cls}">${sym}</span>${evChip}
+      </div>`;
+  }
+
+  // ─────────────── Build the pair-by-pair main game move list ───────────────
+  const branchStartIdx = userBranch ? userBranch.startIdx : -1;
+  const pairs = Math.ceil((gameLine.length - 1) / 2);
   for(let i = 0; i < pairs; i++){
     const wIdx = i * 2 + 1;
     const bIdx = i * 2 + 2;
-    const wMv = reviewHistory[wIdx];
-    const bMv = reviewHistory[bIdx];
-    const wAnn = moveAnnotations[wIdx - 1];
-    const bAnn = bIdx < reviewHistory.length ? moveAnnotations[bIdx - 1] : null;
+    const wMv  = gameLine[wIdx];
+    const bMv  = gameLine[bIdx];
+    const wAnn = gameAnns[wIdx - 1];
+    const bAnn = bIdx < gameLine.length ? gameAnns[bIdx - 1] : null;
+
     const row = document.createElement('div');
     row.className = 'move-row';
     row.id = `mrow-${i}`;
-    const wSym = wAnn ? (annSym[wAnn.ann] || '') : '';
-    const bSym = bAnn ? (annSym[bAnn.ann] || '') : '';
-    const wCls = wAnn ? (annClass[wAnn.ann] || 'ann-g') : 'ann-g';
-    const bCls = bAnn ? (annClass[bAnn.ann] || 'ann-g') : 'ann-g';
     row.innerHTML = `
       <div class="move-n">${i+1}.</div>
-      <div class="move-cell" id="mc-${wIdx}" onclick="selectReviewMove(${wIdx})">
-        ${wMv?.san || ''}<span class="ann ${wCls}">${wSym}</span>
-        ${wAnn ? `<span class="eval-chip">${parseFloat(wAnn.eval) > 0 ? '+' : ''}${wAnn.eval}</span>` : ''}
-      </div>
-      <div class="move-cell" id="mc-${bIdx}" onclick="selectReviewMove(${bIdx})">
-        ${bMv?.san || ''}<span class="ann ${bCls}">${bSym}</span>
-        ${bAnn ? `<span class="eval-chip">${parseFloat(bAnn.eval) > 0 ? '+' : ''}${bAnn.eval}</span>` : ''}
-      </div>`;
+      ${cellHTML(wMv, wAnn, wIdx, `selectGameMove(${wIdx})`)}
+      ${bMv ? cellHTML(bMv, bAnn, bIdx, `selectGameMove(${bIdx})`) : '<div class="move-cell"></div>'}
+    `;
     ml.appendChild(row);
+
+    // ── If the user has branched off after this pair, inject their branch
+    //    as an indented sub-list directly underneath
+    if(userBranch && (wIdx === branchStartIdx || bIdx === branchStartIdx)){
+      const branchDiv = document.createElement('div');
+      branchDiv.className = 'branch-block';
+      const headerSide = (wIdx === branchStartIdx) ? `${i+1}...` : `${i+2}.`;
+      let branchHtml = `<div class="branch-head">
+        <span class="branch-icon">↳</span>
+        <span class="branch-label">Your branch from move ${branchStartIdx}</span>
+        <button class="branch-clear" onclick="returnToGameLine()" title="Return to game line">✕</button>
+      </div>`;
+      // Each user move gets an indented row with badge
+      branchHtml += `<div class="branch-moves">`;
+      // The user's branch moves live in reviewHistory after branchStartIdx,
+      // and their annotations live in moveAnnotations at the same indices.
+      for(let b = 0; b < userBranch.userMoves.length; b++){
+        const branchHistIdx = branchStartIdx + 1 + b;
+        const branchMv  = reviewHistory[branchHistIdx];
+        const branchAnn = moveAnnotations[branchHistIdx - 1];
+        if(!branchMv) continue;
+        const isWhite = branchHistIdx % 2 === 1;
+        const ply = Math.floor(branchHistIdx / 2) + (isWhite ? 1 : 0);
+        const prefix = isWhite ? `${ply}.` : `${ply}...`;
+        const sym = branchAnn ? (annSym[branchAnn.ann] || '') : '';
+        const cls = branchAnn ? (annClass[branchAnn.ann] || 'ann-g') : 'ann-g';
+        const evChip = branchAnn ? `<span class="eval-chip">${parseFloat(branchAnn.eval) > 0 ? '+' : ''}${branchAnn.eval}</span>` : '<span class="eval-chip" style="opacity:.4">…</span>';
+        branchHtml += `<span class="branch-move" id="bmc-${branchHistIdx}" onclick="selectReviewMove(${branchHistIdx})">
+          <span class="branch-ply">${prefix}</span>
+          ${branchMv.san}<span class="ann ${cls}">${sym}</span>${evChip}
+        </span>`;
+      }
+      branchHtml += `</div>`;
+      branchDiv.innerHTML = branchHtml;
+      ml.appendChild(branchDiv);
+    }
   }
 }
 
+// When user clicks a GAME move (not a branch move) — restore game line if needed, then jump
+window.selectGameMove = function(idx){
+  // If currently in a branch, we need to view game line moves — restore it temporarily
+  if(userBranch && gameHistory_BAK){
+    // Just switch the visible state to the game line at this index without
+    // discarding the branch (so the user can still see their branch in the list)
+    const targetState = gameHistory_BAK[idx];
+    if(targetState){
+      // Use the backed-up game arrays for navigation while preserving userBranch
+      reviewHistory = [...gameHistory_BAK];
+      moveAnnotations = [...gameAnnotations_BAK];
+      // Note: we DO NOT null out userBranch — the user can still see their branch
+      // in the move list. They can click branch moves to return to that line.
+    }
+  }
+  selectReviewMove(idx);
+};
+
 window.selectReviewMove = function(idx){
+  // Clicking a main-game move exits branch view (branch is preserved for return)
+  viewingBranch = false;
+  branchPly = 0;
   reviewIdx = idx;
   renderReviewBoard();
-  document.querySelectorAll('.move-cell').forEach(el => el.classList.remove('cur'));
+  document.querySelectorAll('.move-cell, .branch-move').forEach(el => el.classList.remove('cur'));
   document.getElementById(`mc-${idx}`)?.classList.add('cur');
-  document.getElementById(`mc-${idx}`)?.scrollIntoView({block:'nearest'});
+  document.getElementById(`bmc-${idx}`)?.classList.add('cur');
+  (document.getElementById(`mc-${idx}`) || document.getElementById(`bmc-${idx}`))?.scrollIntoView({block:'nearest'});
 
   // ALWAYS clear the detail panel first, so old data never lingers on stale-click errors
   const detail = document.getElementById('rv-detail');
@@ -5485,42 +5612,100 @@ window.playSuggestedMove = function(idx){
 };
 
 function renderReviewBoard(){
-  const h = reviewHistory[reviewIdx];
-  if(!h) return;
-  // Clear any leftover suggestion arrow
+  // Determine what to show — branch position or main game position
+  let displayState, displayedMove = null, displayedAnn = null, displayedBestUCI = null,
+      ev = 0, evIsMate = false, evMateIn = null, labelText;
+
+  if(viewingBranch && branchState){
+    // ─── Branch view ───
+    if(branchPly === 0){
+      // At the branch START position (same square layout as main game at startIdx)
+      displayState = reviewHistory[branchState.startIdx].state;
+      if(branchState.startIdx > 0){
+        displayedMove = reviewHistory[branchState.startIdx];
+        const ann = moveAnnotations[branchState.startIdx - 1];
+        if(ann){
+          displayedAnn = ann.ann;
+          displayedBestUCI = ann.bestMoveUCI;
+          ev = parseFloat(ann.eval); evIsMate = ann.isMate; evMateIn = ann.mateIn;
+        }
+      }
+      labelText = `Branch start (after ${branchState.startIdx > 0 ? 'move ' + branchState.startIdx : 'start position'})`;
+    } else {
+      const m = branchState.moves[branchPly - 1];
+      displayState = m.state;
+      displayedMove = m;
+      displayedAnn = m.ann;
+      displayedBestUCI = m.bestMoveUCI;
+      if(m.eval !== null && m.eval !== undefined){ ev = m.eval; evIsMate = m.isMate; evMateIn = m.mateIn; }
+      labelText = `Branch · move ${branchPly} of ${branchState.moves.length}`;
+    }
+  } else {
+    // ─── Main game view (UNTOUCHED reviewHistory/moveAnnotations) ───
+    const h = reviewHistory[reviewIdx];
+    if(!h) return;
+    displayState = h.state;
+    if(reviewIdx > 0){
+      displayedMove = h;
+      const ann = moveAnnotations[reviewIdx - 1];
+      if(ann){
+        displayedAnn = ann.ann;
+        displayedBestUCI = ann.bestMoveUCI;
+        ev = parseFloat(ann.eval); evIsMate = ann.isMate; evMateIn = ann.mateIn;
+      }
+    }
+    labelText = reviewIdx > 0 ? `Move ${reviewIdx}` : 'Start position';
+  }
+
+  // Clear arrows + badges
   const overlay = document.getElementById('arrow-overlay-r');
   if(overlay) overlay.innerHTML = '';
-  renderBoardEl('board-r', 'board-ranks-r', 'board-files-r', h.state, [], null);
-  if(reviewIdx > 0){
-    const mv = reviewHistory[reviewIdx];
+  document.querySelectorAll('#board-r .mc-badge').forEach(b => b.remove());
+
+  renderBoardEl('board-r', 'board-ranks-r', 'board-files-r', displayState, [], null);
+
+  if(displayedMove){
     document.querySelectorAll('#board-r .sq').forEach(sq => {
-      if(sq.dataset.sq === mv.from || sq.dataset.sq === mv.to) sq.classList.add('hl-last');
+      if(sq.dataset.sq === displayedMove.from || sq.dataset.sq === displayedMove.to){
+        sq.classList.add('hl-last');
+      }
     });
-    // ───── BADGE ON DESTINATION SQUARE (chess.com style) ─────
-    drawMoveClassificationBadge(reviewIdx);
+    // Badge on destination square
+    if(displayedAnn && displayedMove.to){
+      const sym = {brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
+                   book:'📖', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'}[displayedAnn];
+      const cls = {brilliant:'mcb-brill', great:'mcb-great', best:'mcb-best', excellent:'mcb-excel',
+                   good:'mcb-good', book:'mcb-book', inaccuracy:'mcb-inacc',
+                   mistake:'mcb-mist', blunder:'mcb-blun', miss:'mcb-miss'}[displayedAnn];
+      if(sym && cls){
+        const destSq = document.querySelector(`#board-r .sq[data-sq="${displayedMove.to}"]`);
+        if(destSq){
+          const badge = document.createElement('div');
+          badge.className = `mc-badge ${cls}`;
+          badge.textContent = sym;
+          badge.title = displayedAnn.charAt(0).toUpperCase() + displayedAnn.slice(1);
+          destSq.appendChild(badge);
+        }
+      }
+    }
+    // Green arrow for best move
+    if(displayedBestUCI && /^[a-h][1-8][a-h][1-8]/.test(displayedBestUCI)){
+      let svg = `<defs><marker id="rv-best-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(127,201,156,.98)"/></marker></defs>`;
+      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(127,201,156,.85)', 8, 'rv-best-arrow');
+      if(overlay) overlay.innerHTML = svg;
+    }
   }
-  document.getElementById('rv-move-idx').textContent = reviewIdx > 0 ? `Move ${reviewIdx}` : 'Start position';
 
-  // Update the vertical eval bar (uses pre-computed annotations OR live engine if available)
-  if(reviewIdx > 0 && moveAnnotations[reviewIdx - 1]){
-    const ann = moveAnnotations[reviewIdx - 1];
-    const ev = parseFloat(ann.eval);
-    updateEvalBar('eval-bar-black-r', 'eval-bar-score-r', ev, ann.isMate || false, ann.mateIn || null);
-  } else if(reviewIdx === 0){
-    // Start position — eval 0
-    updateEvalBar('eval-bar-black-r', 'eval-bar-score-r', 0, false, null);
-  }
+  document.getElementById('rv-move-idx').textContent = labelText;
+  updateEvalBar('eval-bar-black-r', 'eval-bar-score-r', ev, evIsMate, evMateIn);
 
-  // Make the review board interactive — user can branch off and try their own moves
-  makeBoardInteractive('board-r', h.state, onUserMoveR);
-  updateInteractiveState('board-r', h.state);
-  renderUserMovesR();
+  // Make board interactive (drag/click → onUserMoveR)
+  makeBoardInteractive('board-r', displayState, onUserMoveR);
+  updateInteractiveState('board-r', displayState);
+  renderUserVariationPanel();
 
-  // ───── GREEN ARROW: show the engine's best move when the user didn't play it ─────
-  drawBestMoveArrow(reviewIdx);
-
-  // Trigger live Stockfish analysis on the current position
-  triggerEngineAnalysisR(h.state);
+  // Live engine analysis (separate from cached annotations)
+  triggerEngineAnalysisR(displayState);
 }
 
 // Draw a green arrow on the review board showing the engine's recommended move.
@@ -5574,93 +5759,94 @@ function drawMoveClassificationBadge(idx){
   destSq.appendChild(badge);
 }
 
-// When the user plays a move during review, branch from this position
-// Stores the original game so we can return after exploring branches
-let gameHistory_BAK = null;
-let gameAnnotations_BAK = null;
-let userBranch = null;  // { startIdx, gameMove, userMoves[], userEvals[], gameMoveEval, bestMoveUCI }
+// ═════════════════════════════════════════════════════════════════
+// BRANCH SYSTEM — keeps the main game COMPLETELY untouched.
+// reviewHistory / moveAnnotations are immutable after game analysis.
+// All user-played alternatives live in `branchState`, a separate layer.
+// ═════════════════════════════════════════════════════════════════
+// branchState = {
+//   startIdx: <main-game index where deviation occurs>,
+//   moves: [{state, san, from, to, fenBefore, isWhiteMove,
+//            evalBefore, eval, ann, bestMoveUCI, isMate, mateIn, lossInPawns}]
+// }
+let branchState = null;
+let viewingBranch = false;   // true = board shows branch position
+let branchPly = 0;           // 0 = at branch start (== main pos), N = after Nth branch move
 
-function onUserMoveR(from, to, newState, san){
-  // Snapshot eval+best-move BEFORE the user's move (needed to classify it)
-  const fenBeforeUserMove = stateToFEN(reviewHistory[reviewIdx].state);
-  const evalBeforeUserMove = (reviewIdx > 0 && moveAnnotations[reviewIdx - 1])
-    ? parseFloat(moveAnnotations[reviewIdx - 1].eval)
-    : 0;
-  // Determine moving player from FEN side-to-move
-  const sideToMove = fenBeforeUserMove.split(' ')[1] || 'w';
-  const isWhiteMove = sideToMove === 'w';
-
-  // First user move from this position? Back up the game so we can return to it.
-  if(!userBranch){
-    gameHistory_BAK = [...reviewHistory];
-    gameAnnotations_BAK = [...moveAnnotations];
-    // What did the game actually play here (the move at reviewIdx+1)?
-    const gameMoveAtThisPoint = gameHistory_BAK[reviewIdx + 1] || null;
-    const gameMoveAnnAtThisPoint = gameAnnotations_BAK[reviewIdx] || null;
-    userBranch = {
-      startIdx: reviewIdx,                          // where we deviated
-      gameMove: gameMoveAtThisPoint,                // what the game played
-      gameMoveAnn: gameMoveAnnAtThisPoint,          // its annotation/eval
-      userMoves: [],                                // user's variation (SAN strings)
-      userMoveDetails: [],                          // {san, from, to, fen, eval, score}
-      bestMoveUCI: gameMoveAnnAtThisPoint?.bestMoveUCI || null,
-    };
-  }
-  // Truncate forward history, append the user's move
-  reviewHistory = reviewHistory.slice(0, reviewIdx + 1);
-  reviewHistory.push({ state: newState, san, from, to, userPlayed: true });
-  moveAnnotations = moveAnnotations.slice(0, reviewIdx);
-  reviewIdx = reviewHistory.length - 1;
-  // Track the user's variation
-  userBranch.userMoves.push(san);
-  userBranch.userMoveDetails.push({
-    san, from, to,
-    fen: stateToFEN(newState),
-    fenBefore: fenBeforeUserMove,
-    evalBefore: evalBeforeUserMove,
-    isWhiteMove,
-    bestMoveUCI: userBranch.bestMoveUCI || (reviewIdx > 0 && moveAnnotations[reviewIdx - 1]?.bestMoveUCI) || null,
-    eval: null  // populated async below
-  });
-  renderReviewBoard();
-  renderUserVariationPanel();
-  // Analyze the user's move with Stockfish (async, doesn't block UI)
-  analyzeUserBranchMove(userBranch.userMoveDetails.length - 1);
+// Reset when the user loads a new game / returns to game-pick
+function clearBranchState(){
+  branchState = null;
+  viewingBranch = false;
+  branchPly = 0;
 }
 
-// Async Stockfish analysis of a user-played alternative move.
-// After the eval comes back, we (a) classify the user\'s move and (b) push an
-// annotation into moveAnnotations so the on-board badge + green-arrow renderers
-// pick it up just like a regular game move.
-async function analyzeUserBranchMove(moveIdx){
-  if(!userBranch || !userBranch.userMoveDetails[moveIdx]) return;
-  const detail = userBranch.userMoveDetails[moveIdx];
+// User played a move on the review board → record in branch (no main-game changes)
+function onUserMoveR(from, to, newState, san){
+  let fenBefore, evalBefore;
+
+  if(viewingBranch && branchState){
+    // Continuing/branching from within an existing branch
+    if(branchPly === 0){
+      // At branch-start position → first branch move
+      branchState.moves = [];  // wipe any prior attempt from this point
+      fenBefore = stateToFEN(reviewHistory[branchState.startIdx].state);
+      const ann = branchState.startIdx > 0 ? moveAnnotations[branchState.startIdx - 1] : null;
+      evalBefore = ann ? parseFloat(ann.eval) : 0;
+    } else {
+      // Truncate branch from current ply (user navigated back & tried something new)
+      branchState.moves = branchState.moves.slice(0, branchPly);
+      const prev = branchState.moves[branchPly - 1];
+      fenBefore = stateToFEN(prev.state);
+      evalBefore = (prev.eval !== null && prev.eval !== undefined) ? prev.eval : 0;
+    }
+  } else {
+    // Not in branch view → start a new branch from current main-game position
+    branchState = { startIdx: reviewIdx, moves: [] };
+    fenBefore = stateToFEN(reviewHistory[reviewIdx].state);
+    const ann = reviewIdx > 0 ? moveAnnotations[reviewIdx - 1] : null;
+    evalBefore = ann ? parseFloat(ann.eval) : 0;
+  }
+
+  const sideToMove = fenBefore.split(' ')[1] || 'w';
+  const isWhiteMove = sideToMove === 'w';
+
+  branchState.moves.push({
+    state: newState, san, from, to,
+    fenBefore, isWhiteMove, evalBefore,
+    eval: null, ann: null, bestMoveUCI: null,
+    isMate: false, mateIn: null, lossInPawns: 0
+  });
+  branchPly = branchState.moves.length;
+  viewingBranch = true;
+
+  renderReviewBoard();
+  renderUserVariationPanel();
+  analyzeBranchMove(branchPly - 1);
+}
+
+// Async Stockfish analysis of a branch move + classification (same logic as game review)
+async function analyzeBranchMove(idx){
+  if(!branchState || !branchState.moves[idx]) return;
+  const m = branchState.moves[idx];
   if(!sfWorker || !sfReady) return;
   try {
-    // 1) Evaluate the position AFTER the user move (to know where we stand)
-    const afterResult = await evalPosition(detail.fen, 14, 1);
-    detail.eval = afterResult.score;
-    detail.isMate = afterResult.isMate;
-    detail.mateIn = afterResult.mateIn;
-    detail.pv = afterResult.pv ? uciSequenceToSAN(detail.fen, afterResult.pv, 6) : '';
+    const fenAfter = stateToFEN(m.state);
+    const afterResult = await evalPosition(fenAfter, 14, 1);
+    m.eval = afterResult.score;
+    m.isMate = afterResult.isMate;
+    m.mateIn = afterResult.mateIn;
 
-    // 2) Evaluate the position BEFORE the user move to learn the engine's best move
-    //    (if we don't already have it from the original game analysis)
-    let bestMoveUCI = detail.bestMoveUCI;
-    if(!bestMoveUCI && detail.fenBefore){
-      const beforeResult = await evalPosition(detail.fenBefore, 14, 1);
-      bestMoveUCI = beforeResult.bestMove || null;
-      detail.bestMoveUCI = bestMoveUCI;
-    }
+    const beforeResult = await evalPosition(m.fenBefore, 14, 1);
+    m.bestMoveUCI = beforeResult.bestMove || null;
 
-    // 3) Classify the user's move using the SAME logic as the game review
-    const before = detail.evalBefore || 0;
+    // Classify with chess.com-style thresholds (matches game-review logic)
+    const before = m.evalBefore || 0;
     const after  = afterResult.score;
-    const playerBefore = detail.isWhiteMove ? before : -before;
-    const playerAfter  = detail.isWhiteMove ? after  : -after;
+    const playerBefore = m.isWhiteMove ? before : -before;
+    const playerAfter  = m.isWhiteMove ? after  : -after;
     const loss = playerBefore - playerAfter;
-    const playedUCI = (detail.from || '') + (detail.to || '');
-    const wasBestMove = bestMoveUCI && playedUCI === bestMoveUCI;
+    const playedUCI = (m.from || '') + (m.to || '');
+    const wasBestMove = m.bestMoveUCI && playedUCI === m.bestMoveUCI;
 
     let ann;
     if(afterResult.isMate && playerAfter < 0){ ann = 'blunder'; }
@@ -5672,57 +5858,41 @@ async function analyzeUserBranchMove(moveIdx){
     else { ann = 'blunder'; }
     if(playerBefore > 1.5 && playerAfter < 0.3 && ann !== 'blunder'){ ann = 'miss'; }
 
-    detail.ann = ann;
+    m.ann = ann;
+    m.lossInPawns = Math.max(0, loss);
 
-    // 4) Build the annotation object and push it into moveAnnotations at the
-    //    correct index (so the badge + arrow render automatically).
-    //    moveAnnotations[i] describes the move that produced reviewHistory[i+1].
-    //    For the user's move at the END of reviewHistory, index = reviewHistory.length - 2.
-    const annIdx = reviewHistory.length - 2;  // index for this user move\'s annotation
-    const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
-    moveAnnotations[annIdx] = {
-      san: detail.san,
-      ann,
-      eval: evalStr,
-      note: '',
-      bestLine: afterResult.pv || '',
-      rawScore: after,
-      isMate: afterResult.isMate || false,
-      mateIn: afterResult.mateIn || null,
-      evalBefore: before,
-      evalAfter: after,
-      lossInPawns: Math.max(0, loss),
-      bestMoveUCI,
-      fenBefore: detail.fenBefore,
-      userBranch: true   // flag so the move list can style branch moves differently
-    };
-
-    // 5) Re-render board so the badge + arrow appear on the user's move
-    if(reviewIdx === reviewHistory.length - 1){
-      renderReviewBoard();
-    }
+    // If still viewing the just-analyzed move, re-render so badge appears
+    if(viewingBranch && branchPly === idx + 1) renderReviewBoard();
     renderUserVariationPanel();
   } catch(err){
     console.warn('Branch analysis failed:', err);
   }
 }
 
-// Render the variation comparison panel (replaces the old "Your variation:" stripe)
+// Render the branch panel — list of branch moves with badges, navigable
 function renderUserVariationPanel(){
   const list = document.getElementById('user-moves-r');
   if(!list) return;
-  if(!userBranch){
+  if(!branchState || branchState.moves.length === 0){
     list.classList.remove('visible');
     list.innerHTML = '';
     return;
   }
   list.classList.add('visible');
-  const gm = userBranch.gameMove;
-  const gmAnn = userBranch.gameMoveAnn;
-  const bestUCI = userBranch.bestMoveUCI || '';
-  // Did the game itself play the engine's best move?
-  const gameMoveUCI = gm ? (gm.from || '') + (gm.to || '') : '';
-  const gamePlayedBest = bestUCI && gameMoveUCI === bestUCI;
+
+  // Main game move at branch point + its annotation (for the comparison row)
+  const gameMv = reviewHistory[branchState.startIdx + 1] || null;
+  const gameAnn = moveAnnotations[branchState.startIdx] || null;
+  const bestUCI = gameAnn?.bestMoveUCI || null;
+  const gameUCI = gameMv ? (gameMv.from || '') + (gameMv.to || '') : '';
+  const gamePlayedBest = bestUCI && gameUCI === bestUCI;
+
+  // Engine best move SAN (if different from what game played)
+  let bestSAN = '';
+  if(bestUCI && !gamePlayedBest && gameAnn?.fenBefore){
+    try { bestSAN = uciSequenceToSAN(gameAnn.fenBefore, bestUCI, 1) || ''; }
+    catch(e){ bestSAN = ''; }
+  }
 
   const fmtEval = (e, isMate, mateIn) => {
     if(e === null || e === undefined) return '<span style="opacity:.5">analyzing…</span>';
@@ -5730,68 +5900,72 @@ function renderUserVariationPanel(){
     return (e >= 0 ? '+' : '') + (typeof e === 'number' ? e.toFixed(2) : e);
   };
 
-  // Reconstruct what the BEST move SAN is for display (if different from game move)
-  let bestSAN = '';
-  if(bestUCI && !gamePlayedBest && gmAnn?.fenBefore){
-    try {
-      bestSAN = uciSequenceToSAN(gmAnn.fenBefore, bestUCI, 1) || '';
-    } catch(e) { bestSAN = ''; }
-  }
+  const sym = {brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
+               book:'📖', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'};
+  const cls = {brilliant:'mcb-brill', great:'mcb-great', best:'mcb-best', excellent:'mcb-excel',
+               good:'mcb-good', book:'mcb-book', inaccuracy:'mcb-inacc',
+               mistake:'mcb-mist', blunder:'mcb-blun', miss:'mcb-miss'};
 
-  // User's last move details
-  const lastUser = userBranch.userMoveDetails[userBranch.userMoveDetails.length - 1];
-  const userSeq = userBranch.userMoves.join(' ');
+  // Build the move pills — each one navigates within the branch
+  const movePills = branchState.moves.map((m, i) => {
+    const isCur = viewingBranch && branchPly === i + 1;
+    const badge = m.ann ? `<span class="ann ${({brilliant:'ann-brill',great:'ann-great',best:'ann-best',excellent:'ann-excel',good:'ann-good',book:'ann-book',inaccuracy:'ann-inacc',mistake:'ann-mist',blunder:'ann-blun',miss:'ann-miss'})[m.ann]||''}">${sym[m.ann]||''}</span>` : '';
+    const evalStr = (m.eval !== null && m.eval !== undefined)
+      ? `<span class="ubp-mini-eval">${fmtEval(m.eval, m.isMate, m.mateIn)}</span>`
+      : '';
+    return `<button class="ubp-pill ${isCur ? 'ubp-pill-cur' : ''}" onclick="selectBranchPly(${i + 1})">
+      <span class="ubp-pill-num">${branchState.startIdx + i + 1}${m.isWhiteMove ? '.' : '...'}</span>
+      <span class="ubp-pill-san">${m.san}</span>${badge}${evalStr}
+    </button>`;
+  }).join('');
 
-  let html = `<div class="ubp-header">
-    <span class="ubp-title">Branch from move ${userBranch.startIdx + 1}</span>
+  let html_out = `<div class="ubp-header">
+    <span class="ubp-title">Branch from move ${branchState.startIdx + 1}</span>
     <button class="ubp-back" onclick="returnToGameLine()">↶ Back to game</button>
   </div>`;
 
-  html += `<div class="ubp-rows">`;
-
-  // Row 1: User's variation
-  html += `<div class="ubp-row ubp-row-user">
+  html_out += `<div class="ubp-branch-line">
     <span class="ubp-tag tag-user">Your line</span>
-    <span class="ubp-moves">${userSeq}</span>
-    <span class="ubp-eval">${fmtEval(lastUser?.eval, lastUser?.isMate, lastUser?.mateIn)}</span>
+    ${movePills}
   </div>`;
 
-  // Row 2: Game's actual move
-  if(gm){
-    html += `<div class="ubp-row ubp-row-game">
+  // Comparison strip — what the game played + engine's preferred move
+  if(gameMv){
+    html_out += `<div class="ubp-compare">
       <span class="ubp-tag tag-game">In game</span>
-      <span class="ubp-moves">${gm.san || '?'}</span>
-      <span class="ubp-eval">${gmAnn ? fmtEval(parseFloat(gmAnn.eval), gmAnn.isMate, gmAnn.mateIn) : ''}</span>
+      <span class="ubp-pill ubp-pill-static">
+        <span class="ubp-pill-num">${branchState.startIdx + 1}.</span>
+        <span class="ubp-pill-san">${gameMv.san || '?'}</span>
+        ${gameAnn ? `<span class="ubp-mini-eval">${fmtEval(parseFloat(gameAnn.eval), gameAnn.isMate, gameAnn.mateIn)}</span>` : ''}
+      </span>
+      ${bestSAN && !gamePlayedBest ? `<span class="ubp-tag tag-best" style="margin-left:8px">★ Best</span>
+        <span class="ubp-pill ubp-pill-static"><span class="ubp-pill-san">${bestSAN}</span></span>` : ''}
     </div>`;
   }
 
-  // Row 3: Engine's best move (only if different from game move)
-  if(bestSAN && !gamePlayedBest){
-    html += `<div class="ubp-row ubp-row-best">
-      <span class="ubp-tag tag-best">★ Best</span>
-      <span class="ubp-moves">${bestSAN}</span>
-      <span class="ubp-eval"></span>
-    </div>`;
-  }
-
-  html += `</div>`;
-  list.innerHTML = html;
+  list.innerHTML = html_out;
 }
 
-// Restore the original game line and clear the branch
-window.returnToGameLine = function(){
-  if(!gameHistory_BAK) return;
-  reviewHistory = [...gameHistory_BAK];
-  moveAnnotations = [...gameAnnotations_BAK];
-  reviewIdx = Math.min(userBranch?.startIdx ?? 0, reviewHistory.length - 1);
-  userBranch = null;
+// Navigate to a specific ply within the branch
+window.selectBranchPly = function(ply){
+  if(!branchState) return;
+  if(ply < 0) ply = 0;
+  if(ply > branchState.moves.length) ply = branchState.moves.length;
+  branchPly = ply;
+  viewingBranch = true;
   renderReviewBoard();
 };
 
-function renderUserMovesR(){
-  // Delegate to the new branch panel renderer
-  renderUserVariationPanel();
-}
+// Exit branch view — show the main game move at branchState.startIdx (preserves branch for return)
+window.returnToGameLine = function(){
+  if(!branchState) return;
+  reviewIdx = Math.min(branchState.startIdx, reviewHistory.length - 1);
+  viewingBranch = false;
+  renderReviewBoard();
+};
+
+// Backward-compatible alias
+function renderUserMovesR(){ renderUserVariationPanel(); }
 
 // Live Stockfish analysis for the review board (in addition to the pre-computed game review)
 let reviewAnalysisToken = 0;
@@ -5818,10 +5992,35 @@ function triggerEngineAnalysisR(state){
   });
 }
 
-window.rvNext = function(){ if(reviewIdx < reviewHistory.length - 1){ reviewIdx++; renderReviewBoard(); document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'}); } };
-window.rvPrev = function(){ if(reviewIdx > 0){ reviewIdx--; renderReviewBoard(); } };
-window.rvStart = function(){ reviewIdx = 0; renderReviewBoard(); };
-window.rvEnd = function(){ if(reviewHistory.length > 1){ reviewIdx = reviewHistory.length - 1; renderReviewBoard(); document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'}); } };
+window.rvNext = function(){
+  if(viewingBranch && branchState){
+    if(branchPly < branchState.moves.length){ branchPly++; renderReviewBoard(); }
+  } else if(reviewIdx < reviewHistory.length - 1){
+    reviewIdx++; renderReviewBoard();
+    document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
+  }
+};
+window.rvPrev = function(){
+  if(viewingBranch && branchState){
+    if(branchPly > 0){ branchPly--; renderReviewBoard(); }
+    else { /* at branch start — could exit branch here, but keep branch view to allow re-entry */ }
+  } else if(reviewIdx > 0){
+    reviewIdx--; renderReviewBoard();
+  }
+};
+window.rvStart = function(){
+  if(viewingBranch && branchState){ branchPly = 0; renderReviewBoard(); }
+  else { reviewIdx = 0; renderReviewBoard(); }
+};
+window.rvEnd = function(){
+  if(viewingBranch && branchState){
+    branchPly = branchState.moves.length;
+    renderReviewBoard();
+  } else if(reviewHistory.length > 1){
+    reviewIdx = reviewHistory.length - 1; renderReviewBoard();
+    document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
+  }
+};
 
 // ═══════════════════════════════════════════════════════════════
 // KEYBOARD NAVIGATION for Game Review (chess.com style)
@@ -5852,6 +6051,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 window.backToGamePick = function(){
+  clearBranchState();
   document.getElementById('rv-output').style.display = 'none';
   document.getElementById('rv-input').style.display = 'block';
 };
