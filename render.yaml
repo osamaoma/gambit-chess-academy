@@ -1,0 +1,18 @@
+# Render Blueprint — deploys Gambit Chess Academy automatically.
+# Once your repo is connected to Render, this file is auto-detected.
+# See: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: gambit-chess-academy
+    runtime: node
+    plan: free                       # change to "starter" ($7/mo) to avoid the spin-down delay
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/status     # Render polls this to confirm the service is alive
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 18
+    autoDeploy: true                 # redeploy on every git push to main
