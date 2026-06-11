@@ -1573,7 +1573,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.8 SEPARATE</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.8.1 CLEAN</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -5027,11 +5027,12 @@ async function analyseGame(white, black, username){
 
 function renderMoveList(){
   const ml = document.getElementById('rv-movelist');
+  if(!ml) return;
 
-  // ── Use the ORIGINAL game line as the source of truth for the move list,
-  //    so the user's branch never overwrites or mixes into the game's moves.
-  const gameLine = gameHistory_BAK || reviewHistory;
-  const gameAnns = gameAnnotations_BAK || moveAnnotations;
+  // The move list ALWAYS shows the main game from reviewHistory/moveAnnotations.
+  // Branches live separately in branchState — they never appear here.
+  const gameLine = reviewHistory;
+  const gameAnns = moveAnnotations;
   const halfMoves = gameLine.length - 1;
 
   ml.innerHTML = `<div class="mlp-head"><span>Moves</span><span>${halfMoves} half-moves</span></div>`;
@@ -5058,7 +5059,6 @@ function renderMoveList(){
   }
 
   // ─────────────── Build the pair-by-pair main game move list ───────────────
-  const branchStartIdx = userBranch ? userBranch.startIdx : -1;
   const pairs = Math.ceil((gameLine.length - 1) / 2);
   for(let i = 0; i < pairs; i++){
     const wIdx = i * 2 + 1;
@@ -5078,59 +5078,13 @@ function renderMoveList(){
     `;
     ml.appendChild(row);
 
-    // ── If the user has branched off after this pair, inject their branch
-    //    as an indented sub-list directly underneath
-    if(userBranch && (wIdx === branchStartIdx || bIdx === branchStartIdx)){
-      const branchDiv = document.createElement('div');
-      branchDiv.className = 'branch-block';
-      const headerSide = (wIdx === branchStartIdx) ? `${i+1}...` : `${i+2}.`;
-      let branchHtml = `<div class="branch-head">
-        <span class="branch-icon">↳</span>
-        <span class="branch-label">Your branch from move ${branchStartIdx}</span>
-        <button class="branch-clear" onclick="returnToGameLine()" title="Return to game line">✕</button>
-      </div>`;
-      // Each user move gets an indented row with badge
-      branchHtml += `<div class="branch-moves">`;
-      // The user's branch moves live in reviewHistory after branchStartIdx,
-      // and their annotations live in moveAnnotations at the same indices.
-      for(let b = 0; b < userBranch.userMoves.length; b++){
-        const branchHistIdx = branchStartIdx + 1 + b;
-        const branchMv  = reviewHistory[branchHistIdx];
-        const branchAnn = moveAnnotations[branchHistIdx - 1];
-        if(!branchMv) continue;
-        const isWhite = branchHistIdx % 2 === 1;
-        const ply = Math.floor(branchHistIdx / 2) + (isWhite ? 1 : 0);
-        const prefix = isWhite ? `${ply}.` : `${ply}...`;
-        const sym = branchAnn ? (annSym[branchAnn.ann] || '') : '';
-        const cls = branchAnn ? (annClass[branchAnn.ann] || 'ann-g') : 'ann-g';
-        const evChip = branchAnn ? `<span class="eval-chip">${parseFloat(branchAnn.eval) > 0 ? '+' : ''}${branchAnn.eval}</span>` : '<span class="eval-chip" style="opacity:.4">…</span>';
-        branchHtml += `<span class="branch-move" id="bmc-${branchHistIdx}" onclick="selectReviewMove(${branchHistIdx})">
-          <span class="branch-ply">${prefix}</span>
-          ${branchMv.san}<span class="ann ${cls}">${sym}</span>${evChip}
-        </span>`;
-      }
-      branchHtml += `</div>`;
-      branchDiv.innerHTML = branchHtml;
-      ml.appendChild(branchDiv);
-    }
   }
 }
 
 // When user clicks a GAME move (not a branch move) — restore game line if needed, then jump
 window.selectGameMove = function(idx){
-  // If currently in a branch, we need to view game line moves — restore it temporarily
-  if(userBranch && gameHistory_BAK){
-    // Just switch the visible state to the game line at this index without
-    // discarding the branch (so the user can still see their branch in the list)
-    const targetState = gameHistory_BAK[idx];
-    if(targetState){
-      // Use the backed-up game arrays for navigation while preserving userBranch
-      reviewHistory = [...gameHistory_BAK];
-      moveAnnotations = [...gameAnnotations_BAK];
-      // Note: we DO NOT null out userBranch — the user can still see their branch
-      // in the move list. They can click branch moves to return to that line.
-    }
-  }
+  // Branches live in branchState (separate layer) — clicking a game move
+  // just exits branch view and jumps to that main-game position.
   selectReviewMove(idx);
 };
 
