@@ -1477,13 +1477,40 @@ input:focus, select:focus, textarea:focus {
   .mcb-blun {background:#d6535b}
   .mcb-miss {background:#b85a8f}
 
+
+  /* ════════ USER BRANCH PANEL (alternative move analysis) ════════ */
+  #user-moves-r{padding:0;background:transparent}
+  #user-moves-r.visible{display:block}
+  .ubp-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:linear-gradient(180deg,rgba(212,165,68,.08),transparent);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0}
+  .ubp-title{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  .ubp-back{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:var(--r);font-family:inherit;font-size:11px;cursor:pointer;transition:all var(--t)}
+  .ubp-back:hover{background:var(--bg-elev-3);border-color:var(--gold);color:var(--gold)}
+  .ubp-rows{display:flex;flex-direction:column;gap:4px;padding:8px 10px;background:var(--bg-elev-1);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r)}
+  .ubp-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);background:var(--bg-elev-2);transition:bg var(--t)}
+  .ubp-row:hover{background:var(--bg-elev-3)}
+  .ubp-row-user{border-left:3px solid #5b89e5}
+  .ubp-row-game{border-left:3px solid #a78b6a}
+  .ubp-row-best{border-left:3px solid #7ec577}
+  .ubp-tag{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;padding:3px 7px;border-radius:3px;flex-shrink:0;min-width:60px;text-align:center}
+  .tag-user{background:rgba(91,137,229,.18);color:#7da8f0}
+  .tag-game{background:rgba(167,139,106,.18);color:#c2a880}
+  .tag-best{background:rgba(126,197,119,.18);color:#9bd394}
+  .ubp-moves{flex:1;font-family:'DM Mono',monospace;font-size:13px;color:var(--text);font-weight:500}
+  .ubp-eval{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--gold);min-width:55px;text-align:right}
+
+
+  /* ════════ USER-BRANCH STYLING (in variation panel) ════════ */
+  .ubp-tag.tag-user{background:rgba(127,201,156,.15);color:#7fc99c;border:1px solid rgba(127,201,156,.4)}
+  .ubp-tag.tag-game{background:rgba(232,158,60,.13);color:#e8b97a;border:1px solid rgba(232,158,60,.35)}
+  .ubp-tag.tag-best{background:rgba(212,165,68,.15);color:var(--gold);border:1px solid rgba(212,165,68,.4)}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.6.2 BOARD</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.7 BRANCHES</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -4813,12 +4840,44 @@ async function analyseGame(white, black, username){
       note = 'A serious error that gives away a large advantage or decisive material.';
     }
 
-    // Brilliant: a sacrificial move that's the engine's top choice and worth detecting
-    // Heuristic: best move that gives up material (capture flag would be ideal — using loss < -0.3 as proxy)
-    const isBrilliant = loss < -0.3 && i > 4 && bestMoveUCI && mv.san;
+    // Brilliant: STRICT — true piece sacrifice for big advantage.
+    // Requirements (ALL must hold):
+    //   1. The move was the engine's best (or essentially so)
+    //   2. The moved piece is now HANGING (capturable for less material)
+    //   3. The piece sacrificed is at least a Knight/Bishop value (>= 3)
+    //   4. The resulting position is clearly winning (>= +1.5 for mover)
+    //   5. The mover gave up material compared to before (no equal-value recapture available)
+    let isBrilliant = false;
+    try {
+      const goodEnough = wasBestMove || loss < 0.05;
+      const isWinning  = playerAfter >= 1.5;
+      let isSacrifice  = false;
+
+      if(goodEnough && isWinning && mv.from && mv.to && reviewHistory[i]?.state && typeof isPieceHanging === 'function'){
+        const stateAfter = reviewHistory[i].state;
+        const movedPiece = stateAfter.board[mv.to];
+        if(movedPiece && movedPiece[1] !== 'K' && movedPiece[1] !== 'P'){
+          const pieceValue = PIECE_VALUES[movedPiece[1]] || 0;
+          if(pieceValue >= 3){
+            // Use isPieceHanging — returns {kind:'undefended'|'losing-exchange', ...} or null
+            const hanging = isPieceHanging(stateAfter, mv.to);
+            // Sacrifice ONLY if the moved piece is truly hanging now
+            // (undefended OR can be captured by a lesser piece in a losing exchange)
+            if(hanging){
+              isSacrifice = true;
+            }
+          }
+        }
+      }
+      // Also require that this isn't the first 6 plies (opening moves can\'t be brilliant)
+      isBrilliant = isSacrifice && i > 6;
+    } catch(err) {
+      isBrilliant = false;
+    }
+
     if(isBrilliant){
       ann = 'brilliant';
-      note = 'A brilliant move! Hard to find — likely involves a tactical sacrifice or surprising idea.';
+      note = 'A brilliant sacrifice! Material is given up, but the resulting position is decisively winning.';
       bestLine = '';
     }
 
@@ -5516,29 +5575,222 @@ function drawMoveClassificationBadge(idx){
 }
 
 // When the user plays a move during review, branch from this position
+// Stores the original game so we can return after exploring branches
+let gameHistory_BAK = null;
+let gameAnnotations_BAK = null;
+let userBranch = null;  // { startIdx, gameMove, userMoves[], userEvals[], gameMoveEval, bestMoveUCI }
+
 function onUserMoveR(from, to, newState, san){
-  // Truncate forward history if not at the end, then append the user's move
+  // Snapshot eval+best-move BEFORE the user's move (needed to classify it)
+  const fenBeforeUserMove = stateToFEN(reviewHistory[reviewIdx].state);
+  const evalBeforeUserMove = (reviewIdx > 0 && moveAnnotations[reviewIdx - 1])
+    ? parseFloat(moveAnnotations[reviewIdx - 1].eval)
+    : 0;
+  // Determine moving player from FEN side-to-move
+  const sideToMove = fenBeforeUserMove.split(' ')[1] || 'w';
+  const isWhiteMove = sideToMove === 'w';
+
+  // First user move from this position? Back up the game so we can return to it.
+  if(!userBranch){
+    gameHistory_BAK = [...reviewHistory];
+    gameAnnotations_BAK = [...moveAnnotations];
+    // What did the game actually play here (the move at reviewIdx+1)?
+    const gameMoveAtThisPoint = gameHistory_BAK[reviewIdx + 1] || null;
+    const gameMoveAnnAtThisPoint = gameAnnotations_BAK[reviewIdx] || null;
+    userBranch = {
+      startIdx: reviewIdx,                          // where we deviated
+      gameMove: gameMoveAtThisPoint,                // what the game played
+      gameMoveAnn: gameMoveAnnAtThisPoint,          // its annotation/eval
+      userMoves: [],                                // user's variation (SAN strings)
+      userMoveDetails: [],                          // {san, from, to, fen, eval, score}
+      bestMoveUCI: gameMoveAnnAtThisPoint?.bestMoveUCI || null,
+    };
+  }
+  // Truncate forward history, append the user's move
   reviewHistory = reviewHistory.slice(0, reviewIdx + 1);
   reviewHistory.push({ state: newState, san, from, to, userPlayed: true });
-  // The move annotations are no longer aligned past this point — clear them
   moveAnnotations = moveAnnotations.slice(0, reviewIdx);
   reviewIdx = reviewHistory.length - 1;
+  // Track the user's variation
+  userBranch.userMoves.push(san);
+  userBranch.userMoveDetails.push({
+    san, from, to,
+    fen: stateToFEN(newState),
+    fenBefore: fenBeforeUserMove,
+    evalBefore: evalBeforeUserMove,
+    isWhiteMove,
+    bestMoveUCI: userBranch.bestMoveUCI || (reviewIdx > 0 && moveAnnotations[reviewIdx - 1]?.bestMoveUCI) || null,
+    eval: null  // populated async below
+  });
   renderReviewBoard();
+  renderUserVariationPanel();
+  // Analyze the user's move with Stockfish (async, doesn't block UI)
+  analyzeUserBranchMove(userBranch.userMoveDetails.length - 1);
 }
 
-function renderUserMovesR(){
+// Async Stockfish analysis of a user-played alternative move.
+// After the eval comes back, we (a) classify the user\'s move and (b) push an
+// annotation into moveAnnotations so the on-board badge + green-arrow renderers
+// pick it up just like a regular game move.
+async function analyzeUserBranchMove(moveIdx){
+  if(!userBranch || !userBranch.userMoveDetails[moveIdx]) return;
+  const detail = userBranch.userMoveDetails[moveIdx];
+  if(!sfWorker || !sfReady) return;
+  try {
+    // 1) Evaluate the position AFTER the user move (to know where we stand)
+    const afterResult = await evalPosition(detail.fen, 14, 1);
+    detail.eval = afterResult.score;
+    detail.isMate = afterResult.isMate;
+    detail.mateIn = afterResult.mateIn;
+    detail.pv = afterResult.pv ? uciSequenceToSAN(detail.fen, afterResult.pv, 6) : '';
+
+    // 2) Evaluate the position BEFORE the user move to learn the engine's best move
+    //    (if we don't already have it from the original game analysis)
+    let bestMoveUCI = detail.bestMoveUCI;
+    if(!bestMoveUCI && detail.fenBefore){
+      const beforeResult = await evalPosition(detail.fenBefore, 14, 1);
+      bestMoveUCI = beforeResult.bestMove || null;
+      detail.bestMoveUCI = bestMoveUCI;
+    }
+
+    // 3) Classify the user's move using the SAME logic as the game review
+    const before = detail.evalBefore || 0;
+    const after  = afterResult.score;
+    const playerBefore = detail.isWhiteMove ? before : -before;
+    const playerAfter  = detail.isWhiteMove ? after  : -after;
+    const loss = playerBefore - playerAfter;
+    const playedUCI = (detail.from || '') + (detail.to || '');
+    const wasBestMove = bestMoveUCI && playedUCI === bestMoveUCI;
+
+    let ann;
+    if(afterResult.isMate && playerAfter < 0){ ann = 'blunder'; }
+    else if(wasBestMove){ ann = 'best'; }
+    else if(loss < 0.05){ ann = 'excellent'; }
+    else if(loss < 0.15){ ann = 'good'; }
+    else if(loss < 0.40){ ann = 'inaccuracy'; }
+    else if(loss < 1.20){ ann = 'mistake'; }
+    else { ann = 'blunder'; }
+    if(playerBefore > 1.5 && playerAfter < 0.3 && ann !== 'blunder'){ ann = 'miss'; }
+
+    detail.ann = ann;
+
+    // 4) Build the annotation object and push it into moveAnnotations at the
+    //    correct index (so the badge + arrow render automatically).
+    //    moveAnnotations[i] describes the move that produced reviewHistory[i+1].
+    //    For the user's move at the END of reviewHistory, index = reviewHistory.length - 2.
+    const annIdx = reviewHistory.length - 2;  // index for this user move\'s annotation
+    const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
+    moveAnnotations[annIdx] = {
+      san: detail.san,
+      ann,
+      eval: evalStr,
+      note: '',
+      bestLine: afterResult.pv || '',
+      rawScore: after,
+      isMate: afterResult.isMate || false,
+      mateIn: afterResult.mateIn || null,
+      evalBefore: before,
+      evalAfter: after,
+      lossInPawns: Math.max(0, loss),
+      bestMoveUCI,
+      fenBefore: detail.fenBefore,
+      userBranch: true   // flag so the move list can style branch moves differently
+    };
+
+    // 5) Re-render board so the badge + arrow appear on the user's move
+    if(reviewIdx === reviewHistory.length - 1){
+      renderReviewBoard();
+    }
+    renderUserVariationPanel();
+  } catch(err){
+    console.warn('Branch analysis failed:', err);
+  }
+}
+
+// Render the variation comparison panel (replaces the old "Your variation:" stripe)
+function renderUserVariationPanel(){
   const list = document.getElementById('user-moves-r');
   if(!list) return;
-  const userMoves = reviewHistory.filter(h => h.userPlayed);
-  if(userMoves.length === 0){
+  if(!userBranch){
     list.classList.remove('visible');
     list.innerHTML = '';
     return;
   }
   list.classList.add('visible');
-  list.innerHTML = '<span class="um-label">Your variation:</span>' + userMoves.map(m => 
-    `<span class="um-move">${m.san}</span>`
-  ).join(' ');
+  const gm = userBranch.gameMove;
+  const gmAnn = userBranch.gameMoveAnn;
+  const bestUCI = userBranch.bestMoveUCI || '';
+  // Did the game itself play the engine's best move?
+  const gameMoveUCI = gm ? (gm.from || '') + (gm.to || '') : '';
+  const gamePlayedBest = bestUCI && gameMoveUCI === bestUCI;
+
+  const fmtEval = (e, isMate, mateIn) => {
+    if(e === null || e === undefined) return '<span style="opacity:.5">analyzing…</span>';
+    if(isMate) return mateIn > 0 ? `M${mateIn}` : `-M${Math.abs(mateIn)}`;
+    return (e >= 0 ? '+' : '') + (typeof e === 'number' ? e.toFixed(2) : e);
+  };
+
+  // Reconstruct what the BEST move SAN is for display (if different from game move)
+  let bestSAN = '';
+  if(bestUCI && !gamePlayedBest && gmAnn?.fenBefore){
+    try {
+      bestSAN = uciSequenceToSAN(gmAnn.fenBefore, bestUCI, 1) || '';
+    } catch(e) { bestSAN = ''; }
+  }
+
+  // User's last move details
+  const lastUser = userBranch.userMoveDetails[userBranch.userMoveDetails.length - 1];
+  const userSeq = userBranch.userMoves.join(' ');
+
+  let html = `<div class="ubp-header">
+    <span class="ubp-title">Branch from move ${userBranch.startIdx + 1}</span>
+    <button class="ubp-back" onclick="returnToGameLine()">↶ Back to game</button>
+  </div>`;
+
+  html += `<div class="ubp-rows">`;
+
+  // Row 1: User's variation
+  html += `<div class="ubp-row ubp-row-user">
+    <span class="ubp-tag tag-user">Your line</span>
+    <span class="ubp-moves">${userSeq}</span>
+    <span class="ubp-eval">${fmtEval(lastUser?.eval, lastUser?.isMate, lastUser?.mateIn)}</span>
+  </div>`;
+
+  // Row 2: Game's actual move
+  if(gm){
+    html += `<div class="ubp-row ubp-row-game">
+      <span class="ubp-tag tag-game">In game</span>
+      <span class="ubp-moves">${gm.san || '?'}</span>
+      <span class="ubp-eval">${gmAnn ? fmtEval(parseFloat(gmAnn.eval), gmAnn.isMate, gmAnn.mateIn) : ''}</span>
+    </div>`;
+  }
+
+  // Row 3: Engine's best move (only if different from game move)
+  if(bestSAN && !gamePlayedBest){
+    html += `<div class="ubp-row ubp-row-best">
+      <span class="ubp-tag tag-best">★ Best</span>
+      <span class="ubp-moves">${bestSAN}</span>
+      <span class="ubp-eval"></span>
+    </div>`;
+  }
+
+  html += `</div>`;
+  list.innerHTML = html;
+}
+
+// Restore the original game line and clear the branch
+window.returnToGameLine = function(){
+  if(!gameHistory_BAK) return;
+  reviewHistory = [...gameHistory_BAK];
+  moveAnnotations = [...gameAnnotations_BAK];
+  reviewIdx = Math.min(userBranch?.startIdx ?? 0, reviewHistory.length - 1);
+  userBranch = null;
+  renderReviewBoard();
+};
+
+function renderUserMovesR(){
+  // Delegate to the new branch panel renderer
+  renderUserVariationPanel();
 }
 
 // Live Stockfish analysis for the review board (in addition to the pre-computed game review)
@@ -10931,7 +11183,7 @@ if(typeof window !== 'undefined' && document.readyState !== 'loading'){
 
 
 // ════════════════════════════════════════════════════════
-// v3.6.2 BOARD EXPANSION
+// v3.7 BRANCH EXPANSION
 // Deep theory + commentary + 5+ quiz questions per variation
 // for 5 additional major openings.
 // ════════════════════════════════════════════════════════
