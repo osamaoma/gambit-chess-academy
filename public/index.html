@@ -1573,7 +1573,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.9 FLIP-NAV</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.9.1 ARROWS</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -3920,12 +3920,16 @@ function clearArrows(overlayId){
 
 // Convert a UCI square (e.g. "e4") to SVG pixel coordinates within the 8x8 viewBox.
 // Our SVG viewBox is 0 0 448 448 — 56 pixels per square (matches CSS .sq width 56px).
-function squareToSVG(sq){
+function squareToSVG(sq, flipped = false){
   const fi = 'abcdefgh'.indexOf(sq[0]);
   const ri = parseInt(sq[1]);
-  // Board is rendered with rank 8 at top, rank 1 at bottom
-  // X: fi * 56 + 28 (center)
-  // Y: (8 - ri) * 56 + 28 (center)
+  // When flipped (viewing from Black's side):
+  //   file h is on the LEFT (column 0), file a is on the RIGHT (column 7)
+  //   rank 1 is at the TOP, rank 8 at the BOTTOM
+  if(flipped){
+    return { x: (7 - fi) * 56 + 28, y: (ri - 1) * 56 + 28 };
+  }
+  // Normal (White at bottom)
   return { x: fi * 56 + 28, y: (8 - ri) * 56 + 28 };
 }
 
@@ -3933,6 +3937,8 @@ function drawAnalysisArrows(overlayId, alternatives){
   const overlay = document.getElementById(overlayId);
   if(!overlay) return;
   overlay.innerHTML = '';
+  // Derive the parent board ID from the overlay ID (arrow-overlay-r → board-r, etc.)
+  const boardIdForOverlay = overlayId.replace('arrow-overlay-', 'board-');
 
   // Define an arrowhead marker
   overlay.innerHTML += `<defs>
@@ -3963,8 +3969,9 @@ function drawAnalysisArrows(overlayId, alternatives){
     const to = firstMove.slice(2, 4);
     if(!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) continue;
 
-    const p1 = squareToSVG(from);
-    const p2 = squareToSVG(to);
+    const flipped = boardFlippedState.get(boardIdForOverlay) === true;
+    const p1 = squareToSVG(from, flipped);
+    const p2 = squareToSVG(to, flipped);
     const color = colors[drawn] || colors[2];
 
     // Shorten the arrow slightly so it terminates inside the destination square
@@ -5500,10 +5507,10 @@ function drawReviewArrows(ann, idx){
 }
 
 // Build SVG <line> markup for an arrow from→to using board square coordinates
-function arrowSVG(from, to, color, width, markerId){
+function arrowSVG(from, to, color, width, markerId, flipped = false){
   if(!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) return '';
-  const p1 = squareToSVG(from);
-  const p2 = squareToSVG(to);
+  const p1 = squareToSVG(from, flipped);
+  const p2 = squareToSVG(to, flipped);
   const dx = p2.x - p1.x, dy = p2.y - p1.y;
   const len = Math.sqrt(dx*dx + dy*dy);
   if(len < 0.1) return '';
@@ -5515,6 +5522,7 @@ function arrowSVG(from, to, color, width, markerId){
 
 // Draw arrows on the quiz board to visualize the theory move (green) + user's wrong move (red)
 function drawQuizArrows(theoryMoveUCI, userMoveUCI){
+  const _qzFlip = boardFlippedState.get('board-q') === true;
   const overlay = document.getElementById('arrow-overlay-q');
   if(!overlay){ return; }
   let svg = `<defs>
@@ -5700,7 +5708,7 @@ function renderReviewBoard(){
     // Green arrow for best move
     if(displayedBestUCI && /^[a-h][1-8][a-h][1-8]/.test(displayedBestUCI)){
       let svg = `<defs><marker id="rv-best-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(127,201,156,.98)"/></marker></defs>`;
-      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(127,201,156,.85)', 8, 'rv-best-arrow');
+      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(127,201,156,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
       if(overlay) overlay.innerHTML = svg;
     }
   }
@@ -5736,7 +5744,7 @@ function drawBestMoveArrow(idx){
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(127,201,156,.98)"/>
     </marker>
   </defs>`;
-  svg += arrowSVG(bestFrom, bestTo, 'rgba(127,201,156,.85)', 8, 'rv-best-arrow');
+  svg += arrowSVG(bestFrom, bestTo, 'rgba(127,201,156,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
   overlay.innerHTML = svg;
 }
 
