@@ -1573,7 +1573,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.9.1 ARROWS</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.10 DRILLS</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -13950,6 +13950,1244 @@ QUIZ_BANKS['sicilian-schev'] = (QUIZ_BANKS['sicilian-schev'] || []).concat([
   if(bad === 0) console.log('%c✓ All ' + Object.values(QUIZ_BANKS).reduce((s,b)=>s+b.length,0) + ' quiz positions valid', 'color:#7c9c5a;font-weight:600');
   else console.warn('[FEN] ' + bad + ' invalid quiz positions detected');
 })();
+
+
+
+// ════════════════════════════════════════════════════════════════
+// v3.10 DEEP DRILLS — Variation drills for every opening
+// ChessBase-style multi-move drills with strategic explanations
+// ════════════════════════════════════════════════════════════════
+
+// ─── EXPAND SICILIAN ─── (already has Najdorf + Dragon, add Sveshnikov + Classical)
+QUIZ_VARIATIONS['sicilian'] = (QUIZ_VARIATIONS['sicilian'] || []).concat([
+  {
+    name: 'Sicilian Sveshnikov',
+    side: 'w',
+    intro: 'You play White against the modern Sveshnikov — Black gives up a hole on d5 for active piece play.',
+    moves: [
+      { san: 'e4', explain: '1.e4 — Open Sicilian comes next.' },
+      { san: 'c5', explain: 'Sicilian.' },
+      { san: 'Nf3', explain: '2.Nf3 — Open Sicilian setup.' },
+      { san: 'Nc6', explain: '2...Nc6 — develops, eyes d4.' },
+      { san: 'd4', explain: '3.d4 — open the position.' },
+      { san: 'cxd4', explain: 'Capture toward the center.' },
+      { san: 'Nxd4', explain: '4.Nxd4 — strong central knight.' },
+      { san: 'Nf6', explain: '4...Nf6 — develops with tempo on e4.' },
+      { san: 'Nc3', explain: '5.Nc3 — defends e4.' },
+      { san: 'e5', explain: '5...e5 — the Sveshnikov! Black accepts a hole on d5 for active piece play.' },
+      { san: 'Ndb5', explain: '6.Ndb5 — the only critical move. Threatens Nd6+ and eyes d6 weakness.', wrongHints: {'Nf3':'6.Nf3 retreats passively — Black equalizes.', 'Nb3':'6.Nb3 is OK but loses the bind on d6.'} },
+      { san: 'd6', explain: '6...d6 — supports e5 and prepares ...a6 to kick the knight.' },
+      { san: 'Bg5', explain: '7.Bg5 — pins the f6 knight, intensifying pressure on d5.', wrongHints: {'Bf4':'Bf4 develops but Bg5 is sharper.'} },
+      { san: 'a6', explain: '7...a6 — kicks the knight back.' },
+      { san: 'Na3', explain: '8.Na3 — only square. Heads back to c4 or c2.' },
+      { san: 'b5', explain: '8...b5 — Black expands on the queenside.' },
+      { san: 'Nd5', explain: '9.Nd5 — White claims the central outpost.' },
+    ],
+  },
+  {
+    name: 'Sicilian Classical',
+    side: 'w',
+    intro: 'White against the Classical Sicilian: 4...Nf6 5.Nc3 d6, leading to Richter-Rauzer attack.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'c5', explain: 'Sicilian.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nc6', explain: 'Sober development.' },
+      { san: 'd4', explain: 'Open Sicilian.' },
+      { san: 'cxd4', explain: 'Capture.' },
+      { san: 'Nxd4', explain: 'Recapture.' },
+      { san: 'Nf6', explain: 'Develops with attack on e4.' },
+      { san: 'Nc3', explain: 'Defends e4.' },
+      { san: 'd6', explain: '5...d6 — Classical Sicilian setup.' },
+      { san: 'Bg5', explain: '6.Bg5 — Richter-Rauzer Attack. Pin + kingside attacking ideas.', wrongHints: {'Be2':'Classical 6.Be2 is solid but 6.Bg5 is sharper.', 'Bc4':'6.Bc4 is dubious here — Black plays ...e6 + ...Be7.'} },
+      { san: 'e6', explain: '6...e6 — solid prep before ...Be7 or ...a6.' },
+      { san: 'Qd2', explain: '7.Qd2 — connects rooks, prepares O-O-O.' },
+      { san: 'a6', explain: '7...a6 — modern preparation for ...Bd7 and ...b5.' },
+      { san: 'O-O-O', explain: '8.O-O-O — opposite-side castling sets up a race.' },
+    ],
+  },
+]);
+
+// ─── EXPAND RUY LOPEZ ─── (already has Closed, add Berlin + Open)
+QUIZ_VARIATIONS['ruy'] = (QUIZ_VARIATIONS['ruy'] || []).concat([
+  {
+    name: 'Ruy López — Berlin Defence',
+    side: 'w',
+    intro: 'The Berlin Defence — Kramnik\'s drawing weapon against Kasparov. You play White; head into the famous endgame.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nf3', explain: '2.Nf3 — attacks e5.' },
+      { san: 'Nc6', explain: '2...Nc6 — defends.' },
+      { san: 'Bb5', explain: '3.Bb5 — the Ruy López! Pins the knight indirectly.' },
+      { san: 'Nf6', explain: '3...Nf6 — Berlin Defence.' },
+      { san: 'O-O', explain: '4.O-O — accepts the loss of e4 for development.', wrongHints: {'d3':'4.d3 is the Anti-Berlin (Carlsen System).', 'Nc3':'Spanish Four Knights — playable but less critical.'} },
+      { san: 'Nxe4', explain: '4...Nxe4 — Black accepts the challenge.' },
+      { san: 'd4', explain: '5.d4 — the critical move. Threatens to win back material.', wrongHints: {'Re1':'5.Re1 is also playable but d4 is sharpest.'} },
+      { san: 'Nd6', explain: '5...Nd6 — knight retreats, attacks the bishop.' },
+      { san: 'Bxc6', explain: '6.Bxc6 — captures BEFORE Black plays ...Nxc4.' },
+      { san: 'dxc6', explain: '6...dxc6 — recapture toward center.' },
+      { san: 'dxe5', explain: '7.dxe5 — opens the d-file.' },
+      { san: 'Nf5', explain: '7...Nf5 — knight to active square.' },
+      { san: 'Qxd8+', explain: '8.Qxd8+ — forces the famous Berlin endgame.' },
+      { san: 'Kxd8', explain: '8...Kxd8 — Black\'s king cannot castle now.' },
+      { san: 'Nc3', explain: '9.Nc3 — completes White\'s setup. Small structural edge.' },
+    ],
+  },
+  {
+    name: 'Ruy López — Open Defence',
+    side: 'w',
+    intro: 'The Open Defence: 5...Nxe4. Black takes the pawn, both sides play sharply.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nc6', explain: 'Defends e5.' },
+      { san: 'Bb5', explain: 'Ruy López.' },
+      { san: 'a6', explain: '3...a6 — classic.' },
+      { san: 'Ba4', explain: '4.Ba4 — keeps the pin alive.' },
+      { san: 'Nf6', explain: '4...Nf6 — develops with attack on e4.' },
+      { san: 'O-O', explain: '5.O-O — castles, defends e4 indirectly via Re1.' },
+      { san: 'Nxe4', explain: '5...Nxe4 — Open Defence! Anand\'s favourite.' },
+      { san: 'd4', explain: '6.d4 — critical. Opens lines.' },
+      { san: 'b5', explain: '6...b5 — gains queenside space.' },
+      { san: 'Bb3', explain: '7.Bb3 — bishop retreats to safety.' },
+      { san: 'd5', explain: '7...d5 — Black grabs the centre.' },
+      { san: 'dxe5', explain: '8.dxe5 — keeps the centre fluid.' },
+      { san: 'Be6', explain: '8...Be6 — develops + supports d5.' },
+      { san: 'c3', explain: '9.c3 — supports d4 break later.' },
+    ],
+  },
+]);
+
+// ─── EXPAND ITALIAN ─── (add Two Knights + Evans Gambit)
+QUIZ_VARIATIONS['italian'] = (QUIZ_VARIATIONS['italian'] || []).concat([
+  {
+    name: 'Italian — Two Knights Defence',
+    side: 'w',
+    intro: 'You play White. Black answers 3.Bc4 with 3...Nf6 — the Two Knights, leading to sharp play.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nc6', explain: '2...Nc6.' },
+      { san: 'Bc4', explain: '3.Bc4 — Italian Game.' },
+      { san: 'Nf6', explain: '3...Nf6 — Two Knights Defence! Attacks e4.' },
+      { san: 'Ng5', explain: '4.Ng5! — the sharp attack on f7.', wrongHints: {'d3':'4.d3 is quiet — Italian Pianissimo.', 'O-O':'4.O-O allows ...Nxe4 with complications.'} },
+      { san: 'd5', explain: '4...d5! — ONLY move. Anything else loses to Fried Liver.' },
+      { san: 'exd5', explain: '5.exd5 — opens the position.' },
+      { san: 'Na5', explain: '5...Na5! — Black\'s strongest reply (Morphy line).', wrongHints: {} },
+      { san: 'Bb5+', explain: '6.Bb5+ — keeps the extra pawn.', wrongHints: {'Bb3':'Bb3 retreats but loses tempo to ...c6.'} },
+      { san: 'c6', explain: '6...c6 — blocks the check.' },
+      { san: 'dxc6', explain: '7.dxc6 — keeps the pawn.' },
+      { san: 'bxc6', explain: '7...bxc6 — recapture.' },
+      { san: 'Be2', explain: '8.Be2 — retreats to safety, Black has compensation.' },
+    ],
+  },
+  {
+    name: 'Italian — Evans Gambit',
+    side: 'w',
+    intro: 'The romantic Evans Gambit! White sacrifices a pawn for rapid development.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nc6', explain: '2...Nc6.' },
+      { san: 'Bc4', explain: '3.Bc4 — Italian.' },
+      { san: 'Bc5', explain: '3...Bc5 — Giuoco Piano.' },
+      { san: 'b4', explain: '4.b4! — Evans Gambit. Sacrifice for rapid development.', wrongHints: {'c3':'4.c3 is the slow Giuoco Pianissimo.', 'O-O':'4.O-O is fine but Evans is more ambitious.'} },
+      { san: 'Bxb4', explain: '4...Bxb4 — accepts the gambit.' },
+      { san: 'c3', explain: '5.c3 — drives the bishop and prepares d4.' },
+      { san: 'Ba5', explain: '5...Ba5 — most principled retreat.' },
+      { san: 'd4', explain: '6.d4 — opens the centre.' },
+      { san: 'exd4', explain: '6...exd4 — Black accepts the centre.' },
+      { san: 'O-O', explain: '7.O-O — Modern Evans Gambit mainline. Develops rapidly.', wrongHints: {'cxd4':'7.cxd4 is also playable but O-O is more flexible.'} },
+      { san: 'Nge7', explain: '7...Nge7 — Lasker\'s defence, prevents the e5 push.' },
+      { san: 'cxd4', explain: '8.cxd4 — recovers material with strong centre.' },
+    ],
+  },
+]);
+
+
+
+// ─── EXPAND QGD ─── (add Lasker, Tartakower, Cambridge Springs)
+QUIZ_VARIATIONS['qgd'] = (QUIZ_VARIATIONS['qgd'] || []).concat([
+  {
+    name: 'QGD — Lasker Defence',
+    side: 'b',
+    intro: 'You play Black: the Lasker Defence trades bishops to ease Black\'s game.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'd5', explain: '1...d5 — claim the centre.' },
+      { san: 'c4', explain: '2.c4 — Queen\'s Gambit.' },
+      { san: 'e6', explain: '2...e6 — Declined.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Nf6', explain: '3...Nf6 — develop.' },
+      { san: 'Bg5', explain: '4.Bg5 — pins the knight.' },
+      { san: 'Be7', explain: '4...Be7 — solid development.' },
+      { san: 'e3', explain: '5.e3 — supports d4.' },
+      { san: 'O-O', explain: '5...O-O — king safety first.' },
+      { san: 'Nf3', explain: '6.Nf3 — completes minor-piece development.' },
+      { san: 'h6', explain: '6...h6 — Lasker prelude.' },
+      { san: 'Bh4', explain: '7.Bh4 — keeps the pin.' },
+      { san: 'Ne4', explain: '7...Ne4! — the Lasker Defence! Trades knights to ease the cramp.', wrongHints: {'b6':'7...b6 enters Tartakower — a separate system.', 'Nbd7':'7...Nbd7 is Classical, less active.'} },
+      { san: 'Bxe7', explain: '8.Bxe7 — trades bishops.' },
+      { san: 'Qxe7', explain: '8...Qxe7 — recaptures with queen.' },
+    ],
+  },
+  {
+    name: 'QGD — Tartakower Defence',
+    side: 'b',
+    intro: 'The Tartakower: 7...b6 — develops the queenside bishop on the long diagonal.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'd5', explain: '1...d5.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e6', explain: '2...e6.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Nf6', explain: '3...Nf6.' },
+      { san: 'Bg5', explain: '4.Bg5.' },
+      { san: 'Be7', explain: '4...Be7.' },
+      { san: 'e3', explain: '5.e3.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'Nf3', explain: '6.Nf3.' },
+      { san: 'h6', explain: '6...h6.' },
+      { san: 'Bh4', explain: '7.Bh4.' },
+      { san: 'b6', explain: '7...b6 — Tartakower! Develops the bishop to b7 on the long diagonal.' },
+      { san: 'cxd5', explain: '8.cxd5 — exchange variation against Tartakower.' },
+      { san: 'Nxd5', explain: '8...Nxd5 — best, trading the pinned knight.' },
+    ],
+  },
+  {
+    name: 'QGD — Cambridge Springs',
+    side: 'b',
+    intro: 'Cambridge Springs: a tactical line where Black plays ...Qa5 pinning the c3 knight.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'd5', explain: '1...d5.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e6', explain: '2...e6.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Nf6', explain: '3...Nf6.' },
+      { san: 'Bg5', explain: '4.Bg5.' },
+      { san: 'Nbd7', explain: '4...Nbd7 — sets up the Cambridge Springs trap.' },
+      { san: 'e3', explain: '5.e3.' },
+      { san: 'c6', explain: '5...c6 — Cambridge Springs setup.' },
+      { san: 'Nf3', explain: '6.Nf3.' },
+      { san: 'Qa5', explain: '6...Qa5! — Cambridge Springs! Pins the c3 knight and threatens ...Ne4.' },
+      { san: 'cxd5', explain: '7.cxd5 — best response.', wrongHints: {} },
+      { san: 'Nxd5', explain: '7...Nxd5 — releases the pin.' },
+      { san: 'Qd2', explain: '8.Qd2 — unpins.' },
+      { san: 'Bb4', explain: '8...Bb4 — keeps pressure.' },
+    ],
+  },
+]);
+
+// ─── EXPAND KING'S INDIAN ─── (add Bayonet + Sämisch + Petrosian)
+QUIZ_VARIATIONS['kings-indian'] = (QUIZ_VARIATIONS['kings-indian'] || []).concat([
+  {
+    name: 'KID — Bayonet Attack',
+    side: 'w',
+    intro: 'You play White: the Bayonet b4 — sharp queenside expansion against the KID Mar del Plata.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'g6', explain: '2...g6 — KID setup.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Bg7', explain: '3...Bg7.' },
+      { san: 'e4', explain: '4.e4 — Classical KID main line.' },
+      { san: 'd6', explain: '4...d6.' },
+      { san: 'Nf3', explain: '5.Nf3.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'Be2', explain: '6.Be2 — Classical setup.' },
+      { san: 'e5', explain: '6...e5 — locks the centre.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'Nc6', explain: '7...Nc6 — pressures d4.' },
+      { san: 'd5', explain: '8.d5 — Mar del Plata main line.' },
+      { san: 'Ne7', explain: '8...Ne7.' },
+      { san: 'b4', explain: '9.b4! — Bayonet Attack! Direct queenside aggression.', wrongHints: {'Nd2':'9.Nd2 is the slower Classical plan.', 'Ne1':'9.Ne1 is another classical idea but b4 is sharper.'} },
+    ],
+  },
+  {
+    name: 'KID — Sämisch',
+    side: 'w',
+    intro: 'The Sämisch: 5.f3 — gives up rapid development for a rock-solid pawn structure.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'g6', explain: '2...g6.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Bg7', explain: '3...Bg7.' },
+      { san: 'e4', explain: '4.e4.' },
+      { san: 'd6', explain: '4...d6.' },
+      { san: 'f3', explain: '5.f3 — Sämisch Variation! Builds a giant pawn center.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'Be3', explain: '6.Be3 — completes the dark-square wall.' },
+      { san: 'e5', explain: '6...e5 — Black challenges the centre.' },
+      { san: 'd5', explain: '7.d5 — closes the centre.' },
+      { san: 'Nh5', explain: '7...Nh5 — reroutes via f4.' },
+      { san: 'Qd2', explain: '8.Qd2 — prepares O-O-O and kingside attack.' },
+    ],
+  },
+  {
+    name: 'KID — Petrosian System',
+    side: 'w',
+    intro: 'Petrosian System: 7.d5 — immediately closes the centre.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'g6', explain: '2...g6.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Bg7', explain: '3...Bg7.' },
+      { san: 'e4', explain: '4.e4.' },
+      { san: 'd6', explain: '4...d6.' },
+      { san: 'Nf3', explain: '5.Nf3.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'Be2', explain: '6.Be2.' },
+      { san: 'e5', explain: '6...e5.' },
+      { san: 'd5', explain: '7.d5! — Petrosian System! Forces a closed position favoring positional play.' },
+      { san: 'a5', explain: '7...a5 — Black expands queenside.' },
+      { san: 'Bg5', explain: '8.Bg5 — pins the knight, prepares Nd2.' },
+    ],
+  },
+]);
+
+
+
+// ─── EXPAND CARO-KANN ─── (add Classical, Advance, Panov)
+QUIZ_VARIATIONS['caro'] = (QUIZ_VARIATIONS['caro'] || []).concat([
+  {
+    name: 'Caro-Kann Classical',
+    side: 'b',
+    intro: 'You play Black: the Classical Caro — 4...Bf5 develops actively.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'c6', explain: '1...c6 — Caro-Kann.' },
+      { san: 'd4', explain: '2.d4 — Classical main line.' },
+      { san: 'd5', explain: '2...d5.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'dxe4', explain: '3...dxe4 — Black accepts the central tension.' },
+      { san: 'Nxe4', explain: '4.Nxe4.' },
+      { san: 'Bf5', explain: '4...Bf5! — Classical! Develops the bishop before ...e6 locks it in.' },
+      { san: 'Ng3', explain: '5.Ng3.' },
+      { san: 'Bg6', explain: '5...Bg6 — bishop tucks in safely.' },
+      { san: 'h4', explain: '6.h4 — kicks the bishop.' },
+      { san: 'h6', explain: '6...h6 — makes room for ...Bh7.' },
+      { san: 'Nf3', explain: '7.Nf3.' },
+      { san: 'Nd7', explain: '7...Nd7 — develops, prepares ...Ngf6.' },
+      { san: 'h5', explain: '8.h5 — gains space, kicks the bishop again.' },
+      { san: 'Bh7', explain: '8...Bh7 — bishop safe on h7.' },
+    ],
+  },
+  {
+    name: 'Caro-Kann Advance',
+    side: 'b',
+    intro: 'Advance Variation: 3.e5. Black plays the sharp ...c5 break.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'c6', explain: '1...c6.' },
+      { san: 'd4', explain: '2.d4.' },
+      { san: 'd5', explain: '2...d5.' },
+      { san: 'e5', explain: '3.e5 — Advance Variation.' },
+      { san: 'Bf5', explain: '3...Bf5! — develops the bishop outside the pawn chain (unlike French!).' },
+      { san: 'Nf3', explain: '4.Nf3.' },
+      { san: 'e6', explain: '4...e6 — solid setup.' },
+      { san: 'Be2', explain: '5.Be2 — flexible development.' },
+      { san: 'c5', explain: '5...c5! — Black\'s thematic break, attacks the d4 pawn.' },
+      { san: 'Be3', explain: '6.Be3 — supports d4.' },
+      { san: 'Nd7', explain: '6...Nd7 — develops.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'Ne7', explain: '7...Ne7 — heads to g6 via re-routing.' },
+    ],
+  },
+  {
+    name: 'Caro-Kann Panov Attack',
+    side: 'b',
+    intro: 'Panov-Botvinnik: 3.exd5 cxd5 4.c4 — White goes for IQP play.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'c6', explain: '1...c6.' },
+      { san: 'd4', explain: '2.d4.' },
+      { san: 'd5', explain: '2...d5.' },
+      { san: 'exd5', explain: '3.exd5 — Exchange.' },
+      { san: 'cxd5', explain: '3...cxd5.' },
+      { san: 'c4', explain: '4.c4 — Panov Attack! IQP structure incoming.' },
+      { san: 'Nf6', explain: '4...Nf6 — develops with attack on d5.' },
+      { san: 'Nc3', explain: '5.Nc3.' },
+      { san: 'e6', explain: '5...e6 — solid setup. ...Bb4 may follow.' },
+      { san: 'Nf3', explain: '6.Nf3.' },
+      { san: 'Bb4', explain: '6...Bb4! — pins the knight, prepares to liquidate the IQP.' },
+      { san: 'cxd5', explain: '7.cxd5 — opens lines.' },
+      { san: 'Nxd5', explain: '7...Nxd5 — recapture, attacks the c3 knight.' },
+    ],
+  },
+]);
+
+// ─── EXPAND FRENCH ─── (add Tarrasch, Advance, Winawer)
+QUIZ_VARIATIONS['french'] = (QUIZ_VARIATIONS['french'] || []).concat([
+  {
+    name: 'French Tarrasch',
+    side: 'b',
+    intro: 'You play Black against the Tarrasch (3.Nd2). Choose between ...c5 and ...Nf6.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e6', explain: '1...e6 — French.' },
+      { san: 'd4', explain: '2.d4.' },
+      { san: 'd5', explain: '2...d5.' },
+      { san: 'Nd2', explain: '3.Nd2 — Tarrasch! Avoids Winawer pin lines.' },
+      { san: 'c5', explain: '3...c5 — sharp break! Open lines for piece play.', wrongHints: {'Nf6':'3...Nf6 is the closed Tarrasch — also playable but ...c5 is more active.'} },
+      { san: 'exd5', explain: '4.exd5 — opens position.' },
+      { san: 'Qxd5', explain: '4...Qxd5 — queen recapture, modern approach.' },
+      { san: 'Ngf3', explain: '5.Ngf3.' },
+      { san: 'cxd4', explain: '5...cxd4 — Black opens lines.' },
+      { san: 'Bc4', explain: '6.Bc4 — bishop hits the queen.' },
+      { san: 'Qd6', explain: '6...Qd6 — retreats, eyes the d-file.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'Nf6', explain: '7...Nf6 — develops, eyes e4.' },
+    ],
+  },
+  {
+    name: 'French Advance',
+    side: 'b',
+    intro: 'Advance: 3.e5. Black attacks with ...c5 and ...Nc6 hitting d4.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e6', explain: '1...e6.' },
+      { san: 'd4', explain: '2.d4.' },
+      { san: 'd5', explain: '2...d5.' },
+      { san: 'e5', explain: '3.e5 — Advance.' },
+      { san: 'c5', explain: '3...c5! — thematic break.' },
+      { san: 'c3', explain: '4.c3 — supports d4.' },
+      { san: 'Nc6', explain: '4...Nc6 — pressures d4.' },
+      { san: 'Nf3', explain: '5.Nf3.' },
+      { san: 'Qb6', explain: '5...Qb6 — main line! Targets b2 + d4.' },
+      { san: 'a3', explain: '6.a3 — defends b2, prepares b4.' },
+      { san: 'c4', explain: '6...c4 — locks the queenside; positional plan.', wrongHints: {} },
+      { san: 'Nbd2', explain: '7.Nbd2.' },
+      { san: 'Na5', explain: '7...Na5 — heads to b3 with the c4 pawn.' },
+    ],
+  },
+  {
+    name: 'French Winawer',
+    side: 'b',
+    intro: 'The Winawer — 3...Bb4 — sharpest French. Black trades the dark bishop for the c3 knight.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e6', explain: '1...e6.' },
+      { san: 'd4', explain: '2.d4.' },
+      { san: 'd5', explain: '2...d5.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Bb4', explain: '3...Bb4! — Winawer! Pins the knight and prepares the trade.' },
+      { san: 'e5', explain: '4.e5 — main line. Closes the centre and gains space.' },
+      { san: 'c5', explain: '4...c5! — Black challenges the centre immediately.' },
+      { san: 'a3', explain: '5.a3 — forces the bishop\'s hand.' },
+      { san: 'Bxc3+', explain: '5...Bxc3+ — trades. Black accepts the doubled c-pawns plan.' },
+      { san: 'bxc3', explain: '6.bxc3 — White has doubled pawns but the bishop pair.' },
+      { san: 'Ne7', explain: '6...Ne7 — develops toward f5/g6.' },
+      { san: 'Qg4', explain: '7.Qg4 — Poisoned Pawn line — eyes g7.' },
+      { san: 'O-O', explain: '7...O-O — accepts the pawn but castles.' },
+      { san: 'Qxg7', explain: '8.Qxg7 — grabs the pawn.' },
+      { san: 'Rg8', explain: '8...Rg8! — Black gets long-term attack on the open g-file.' },
+    ],
+  },
+]);
+
+
+
+// ─── EXPAND NIMZO ─── (add Sämisch + Rubinstein + Classical)
+QUIZ_VARIATIONS['nimzo'] = (QUIZ_VARIATIONS['nimzo'] || []).concat([
+  {
+    name: 'Nimzo-Indian Sämisch',
+    side: 'b',
+    intro: 'You play Black: against 4.a3 you take on c3 and exploit the doubled pawns.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e6', explain: '2...e6.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Bb4', explain: '3...Bb4 — Nimzo-Indian.' },
+      { san: 'a3', explain: '4.a3 — Sämisch.' },
+      { san: 'Bxc3+', explain: '4...Bxc3+! — Black accepts the structural concession with a tempo.' },
+      { san: 'bxc3', explain: '5.bxc3 — White has doubled c-pawns + bishop pair.' },
+      { san: 'c5', explain: '5...c5! — attacks the centre.' },
+      { san: 'e3', explain: '6.e3 — supports d4.' },
+      { san: 'Nc6', explain: '6...Nc6 — pressures d4.' },
+      { san: 'Bd3', explain: '7.Bd3.' },
+      { san: 'O-O', explain: '7...O-O.' },
+      { san: 'Ne2', explain: '8.Ne2 — knight reroutes.' },
+      { san: 'b6', explain: '8...b6 — preparing ...Ba6 to trade light-squared bishops.' },
+    ],
+  },
+  {
+    name: 'Nimzo-Indian Rubinstein',
+    side: 'b',
+    intro: 'Rubinstein: 4.e3 — solid setup. Black plays ...O-O and ...d5 or ...c5.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e6', explain: '2...e6.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Bb4', explain: '3...Bb4.' },
+      { san: 'e3', explain: '4.e3 — Rubinstein.' },
+      { san: 'O-O', explain: '4...O-O — flexible.' },
+      { san: 'Bd3', explain: '5.Bd3.' },
+      { san: 'd5', explain: '5...d5 — classical centre.', wrongHints: {'c5':'5...c5 is also playable (Hübner) but ...d5 is more solid.'} },
+      { san: 'Nf3', explain: '6.Nf3.' },
+      { san: 'c5', explain: '6...c5 — attacks d4.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'Nc6', explain: '7...Nc6 — completes development.' },
+      { san: 'a3', explain: '8.a3.' },
+      { san: 'Bxc3', explain: '8...Bxc3 — trades.' },
+    ],
+  },
+  {
+    name: 'Nimzo-Indian Classical',
+    side: 'b',
+    intro: 'Classical: 4.Qc2 — Karpov\'s favourite, avoiding doubled pawns.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e6', explain: '2...e6.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'Bb4', explain: '3...Bb4.' },
+      { san: 'Qc2', explain: '4.Qc2 — Classical / Capablanca Variation.' },
+      { san: 'O-O', explain: '4...O-O.' },
+      { san: 'a3', explain: '5.a3 — kicks the bishop.' },
+      { san: 'Bxc3+', explain: '5...Bxc3+.' },
+      { san: 'Qxc3', explain: '6.Qxc3 — queen recaptures, NO doubled pawns!' },
+      { san: 'b6', explain: '6...b6 — develops bishop on long diagonal.' },
+      { san: 'Bg5', explain: '7.Bg5 — pin and pressure.' },
+      { san: 'Bb7', explain: '7...Bb7 — challenges the centre.' },
+    ],
+  },
+]);
+
+// ─── EXPAND ENGLISH ─── (add Symmetrical)
+QUIZ_VARIATIONS['english'] = (QUIZ_VARIATIONS['english'] || []).concat([
+  {
+    name: 'English Symmetrical',
+    side: 'b',
+    intro: 'You play Black: meet 1.c4 with 1...c5 — Symmetrical English.',
+    moves: [
+      { san: 'c4', explain: '1.c4 — English.' },
+      { san: 'c5', explain: '1...c5 — Symmetrical.' },
+      { san: 'Nc3', explain: '2.Nc3.' },
+      { san: 'Nc6', explain: '2...Nc6.' },
+      { san: 'g3', explain: '3.g3 — fianchetto setup.' },
+      { san: 'g6', explain: '3...g6 — mirror!' },
+      { san: 'Bg2', explain: '4.Bg2.' },
+      { san: 'Bg7', explain: '4...Bg7.' },
+      { san: 'Nf3', explain: '5.Nf3.' },
+      { san: 'e6', explain: '5...e6 — solid; prepares ...Nge7 if needed.', wrongHints: {'Nf6':'5...Nf6 is also playable but commits.', 'd6':'5...d6 is the Hedgehog setup but less flexible here.'} },
+      { san: 'O-O', explain: '6.O-O.' },
+      { san: 'Nge7', explain: '6...Nge7 — flexible knight development.' },
+      { san: 'd3', explain: '7.d3.' },
+      { san: 'O-O', explain: '7...O-O.' },
+    ],
+  },
+]);
+
+// ═════════════════════════════════════════════════════
+// NEW DRILLS — openings that had no QUIZ_VARIATIONS before
+// ═════════════════════════════════════════════════════
+
+QUIZ_VARIATIONS['grunfeld'] = [
+  {
+    name: 'Grünfeld Exchange Main Line',
+    side: 'b',
+    intro: 'You play Black: the Grünfeld is a hypermodern weapon. Let White build the big centre, then strike.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6 — controls e4.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'g6', explain: '2...g6 — Indian setup.' },
+      { san: 'Nc3', explain: '3.Nc3.' },
+      { san: 'd5', explain: '3...d5! — Grünfeld!', wrongHints: {'Bg7':'3...Bg7 is KID setup.', 'd6':'3...d6 transposes to KID.'} },
+      { san: 'cxd5', explain: '4.cxd5 — Exchange Variation, most popular.' },
+      { san: 'Nxd5', explain: '4...Nxd5.' },
+      { san: 'e4', explain: '5.e4 — kicks the knight.' },
+      { san: 'Nxc3', explain: '5...Nxc3 — Black trades.' },
+      { san: 'bxc3', explain: '6.bxc3 — White has the big centre.' },
+      { san: 'Bg7', explain: '6...Bg7 — fianchettos.' },
+      { san: 'Nf3', explain: '7.Nf3.' },
+      { san: 'c5', explain: '7...c5! — Grünfeld principle: attack the centre with pieces and pawns.' },
+      { san: 'Be3', explain: '8.Be3.' },
+      { san: 'Qa5', explain: '8...Qa5 — Smyslov\'s line; pins c3 and adds pressure.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['catalan'] = [
+  {
+    name: 'Catalan Open',
+    side: 'w',
+    intro: 'You play White: the Catalan g3 setup pressures the long diagonal.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e6', explain: '2...e6.' },
+      { san: 'g3', explain: '3.g3 — Catalan!', wrongHints: {'Nc3':'3.Nc3 would invite Nimzo-Indian.', 'Nf3':'3.Nf3 is fine but g3 commits to the Catalan.'} },
+      { san: 'd5', explain: '3...d5.' },
+      { san: 'Bg2', explain: '4.Bg2 — the Catalan bishop on the long diagonal.' },
+      { san: 'dxc4', explain: '4...dxc4 — Open Catalan!' },
+      { san: 'Nf3', explain: '5.Nf3.' },
+      { san: 'Be7', explain: '5...Be7.' },
+      { san: 'O-O', explain: '6.O-O.' },
+      { san: 'O-O', explain: '6...O-O.' },
+      { san: 'Qc2', explain: '7.Qc2 — eyes the c4 pawn.' },
+      { san: 'a6', explain: '7...a6 — holds the pawn temporarily.' },
+      { san: 'a4', explain: '8.a4 — prevents ...b5.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['benoni'] = [
+  {
+    name: 'Modern Benoni',
+    side: 'b',
+    intro: 'You play Black: the Modern Benoni is aggressive with ...c5 and ...e6 setting up dynamic counterplay.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'c5', explain: '2...c5! — Benoni declaration.' },
+      { san: 'd5', explain: '3.d5 — White accepts the challenge.' },
+      { san: 'e6', explain: '3...e6 — Modern Benoni!' },
+      { san: 'Nc3', explain: '4.Nc3.' },
+      { san: 'exd5', explain: '4...exd5.' },
+      { san: 'cxd5', explain: '5.cxd5.' },
+      { san: 'd6', explain: '5...d6 — sets up the Benoni structure.' },
+      { san: 'Nf3', explain: '6.Nf3.' },
+      { san: 'g6', explain: '6...g6 — Benoni-King\'s Indian fianchetto.' },
+      { san: 'e4', explain: '7.e4.' },
+      { san: 'Bg7', explain: '7...Bg7.' },
+      { san: 'Be2', explain: '8.Be2.' },
+      { san: 'O-O', explain: '8...O-O — ready for ...Re8 and ...a6/...b5.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['benko'] = [
+  {
+    name: 'Benko Gambit Accepted',
+    side: 'b',
+    intro: 'You play Black: the Benko Gambit sacrifices a pawn for long-term queenside pressure.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'c5', explain: '2...c5.' },
+      { san: 'd5', explain: '3.d5.' },
+      { san: 'b5', explain: '3...b5! — Benko Gambit!' },
+      { san: 'cxb5', explain: '4.cxb5 — accepted.' },
+      { san: 'a6', explain: '4...a6 — fully accepted Benko, demands the pawn back.' },
+      { san: 'bxa6', explain: '5.bxa6 — White takes everything.' },
+      { san: 'Bxa6', explain: '5...Bxa6 — develops the bishop with tempo.' },
+      { san: 'Nc3', explain: '6.Nc3.' },
+      { san: 'd6', explain: '6...d6 — supports e5 push.' },
+      { san: 'Nf3', explain: '7.Nf3.' },
+      { san: 'g6', explain: '7...g6 — fianchetto.' },
+      { san: 'g3', explain: '8.g3 — preparing Bg2 to neutralize Black\'s bishop.' },
+      { san: 'Bg7', explain: '8...Bg7.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['queens-indian'] = [
+  {
+    name: 'Queen\'s Indian Petrosian',
+    side: 'b',
+    intro: 'You play Black: against 4.a3, fianchetto with ...b6 to control the long diagonal.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e6', explain: '2...e6.' },
+      { san: 'Nf3', explain: '3.Nf3 — prevents Nimzo.' },
+      { san: 'b6', explain: '3...b6 — Queen\'s Indian Defence!' },
+      { san: 'a3', explain: '4.a3 — Petrosian System; prepares Nc3 without ...Bb4.' },
+      { san: 'Bb7', explain: '4...Bb7 — fianchetto.' },
+      { san: 'Nc3', explain: '5.Nc3.' },
+      { san: 'd5', explain: '5...d5 — challenges the centre.' },
+      { san: 'cxd5', explain: '6.cxd5.' },
+      { san: 'Nxd5', explain: '6...Nxd5.' },
+      { san: 'Qc2', explain: '7.Qc2.' },
+      { san: 'Be7', explain: '7...Be7.' },
+      { san: 'e4', explain: '8.e4 — kicks the knight.' },
+      { san: 'Nxc3', explain: '8...Nxc3.' },
+    ],
+  },
+];
+
+
+
+QUIZ_VARIATIONS['london'] = [
+  {
+    name: 'London System Main Line',
+    side: 'w',
+    intro: 'You play White: the London System — set up Bf4, c3, Nf3 against almost anything.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6 — common reply.' },
+      { san: 'Bf4', explain: '2.Bf4 — London! Bishop OUT before e3 locks it in.', wrongHints: {'Nf3':'Nf3 first is also OK but Bf4 commits early to London.', 'c4':'2.c4 enters QGD/Indian theory — different system.'} },
+      { san: 'd5', explain: '2...d5.' },
+      { san: 'e3', explain: '3.e3 — supports d4.' },
+      { san: 'e6', explain: '3...e6.' },
+      { san: 'Nf3', explain: '4.Nf3.' },
+      { san: 'c5', explain: '4...c5 — challenges d4.' },
+      { san: 'c3', explain: '5.c3 — supports d4, the London triangle.' },
+      { san: 'Nc6', explain: '5...Nc6.' },
+      { san: 'Nbd2', explain: '6.Nbd2 — flexible knight.' },
+      { san: 'Bd6', explain: '6...Bd6 — challenges f4 bishop.' },
+      { san: 'Bg3', explain: '7.Bg3 — avoids the trade.' },
+      { san: 'O-O', explain: '7...O-O.' },
+      { san: 'Bd3', explain: '8.Bd3 — completes the setup.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['slav'] = [
+  {
+    name: 'Slav Defence Main Line',
+    side: 'b',
+    intro: 'You play Black: the Slav keeps the e-pawn flexible and develops the c8 bishop.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'd5', explain: '1...d5.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'c6', explain: '2...c6 — Slav!', wrongHints: {'e6':'2...e6 enters QGD — locks in the bishop.', 'dxc4':'2...dxc4 is QGA — accepts the gambit.'} },
+      { san: 'Nf3', explain: '3.Nf3.' },
+      { san: 'Nf6', explain: '3...Nf6.' },
+      { san: 'Nc3', explain: '4.Nc3.' },
+      { san: 'dxc4', explain: '4...dxc4 — takes the pawn, will hold it with ...b5/...Bf5.' },
+      { san: 'a4', explain: '5.a4 — prevents ...b5.' },
+      { san: 'Bf5', explain: '5...Bf5! — develops the bishop OUTSIDE the pawn chain.' },
+      { san: 'e3', explain: '6.e3.' },
+      { san: 'e6', explain: '6...e6.' },
+      { san: 'Bxc4', explain: '7.Bxc4 — recovers the pawn.' },
+      { san: 'Bb4', explain: '7...Bb4 — pins.' },
+      { san: 'O-O', explain: '8.O-O.' },
+      { san: 'Nbd7', explain: '8...Nbd7.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['alekhine'] = [
+  {
+    name: 'Alekhine\'s Defence Modern',
+    side: 'b',
+    intro: 'You play Black: provoke White\'s centre, then dismantle it.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'Nf6', explain: '1...Nf6! — Alekhine\'s Defence. Provokes e5.' },
+      { san: 'e5', explain: '2.e5 — most principled.' },
+      { san: 'Nd5', explain: '2...Nd5 — knight to outpost.' },
+      { san: 'd4', explain: '3.d4.' },
+      { san: 'd6', explain: '3...d6 — challenges e5.' },
+      { san: 'Nf3', explain: '4.Nf3 — Modern Main Line.' },
+      { san: 'g6', explain: '4...g6 — fianchetto setup, flexible.', wrongHints: {'Bg4':'4...Bg4 is OK but more committal.'} },
+      { san: 'Be2', explain: '5.Be2.' },
+      { san: 'Bg7', explain: '5...Bg7.' },
+      { san: 'O-O', explain: '6.O-O.' },
+      { san: 'O-O', explain: '6...O-O.' },
+      { san: 'c4', explain: '7.c4 — kicks the knight.' },
+      { san: 'Nb6', explain: '7...Nb6.' },
+      { san: 'exd6', explain: '8.exd6 — opens lines.' },
+      { san: 'cxd6', explain: '8...cxd6 — recapture with c-pawn for centre control.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['scandinavian'] = [
+  {
+    name: 'Scandinavian Defence — 3...Qa5',
+    side: 'b',
+    intro: 'You play Black: take the pawn, then retreat with ...Qa5 for active play.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'd5', explain: '1...d5 — Scandinavian! Direct challenge.' },
+      { san: 'exd5', explain: '2.exd5.' },
+      { san: 'Qxd5', explain: '2...Qxd5 — recapture with queen.' },
+      { san: 'Nc3', explain: '3.Nc3 — attacks the queen.' },
+      { san: 'Qa5', explain: '3...Qa5 — Main Line! Active queen on a5.', wrongHints: {'Qd6':'3...Qd6 is also playable (Tiviakov\'s line).', 'Qd8':'3...Qd8 is passive but sound.'} },
+      { san: 'd4', explain: '4.d4.' },
+      { san: 'Nf6', explain: '4...Nf6 — develop.' },
+      { san: 'Nf3', explain: '5.Nf3.' },
+      { san: 'c6', explain: '5...c6 — supports the queen and prepares ...Bf5.' },
+      { san: 'Bc4', explain: '6.Bc4.' },
+      { san: 'Bf5', explain: '6...Bf5 — develops outside the pawn chain.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'e6', explain: '7...e6 — solid; ...Be7 to follow.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['petroff'] = [
+  {
+    name: 'Petroff Defence Main Line',
+    side: 'b',
+    intro: 'You play Black: the Petroff is a solid drawing weapon — copy White then claim the centre.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nf6', explain: '2...Nf6 — Petroff! Symmetrical.' },
+      { san: 'Nxe5', explain: '3.Nxe5 — main line.' },
+      { san: 'd6', explain: '3...d6 — kicks before recapturing.', wrongHints: {'Nxe4':'3...Nxe4?? loses to 4.Qe2 with a fork on the knight.'} },
+      { san: 'Nf3', explain: '4.Nf3 — retreats.' },
+      { san: 'Nxe4', explain: '4...Nxe4 — recaptures.' },
+      { san: 'd4', explain: '5.d4.' },
+      { san: 'd5', explain: '5...d5 — secures the knight.' },
+      { san: 'Bd3', explain: '6.Bd3.' },
+      { san: 'Bd6', explain: '6...Bd6.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'O-O', explain: '7...O-O.' },
+      { san: 'c4', explain: '8.c4 — pressures the d5 pawn.' },
+      { san: 'c6', explain: '8...c6 — supports.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['scotch'] = [
+  {
+    name: 'Scotch Game Main Line',
+    side: 'w',
+    intro: 'You play White: the Scotch breaks Black\'s symmetry with 3.d4 — fast development.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nc6', explain: '2...Nc6.' },
+      { san: 'd4', explain: '3.d4! — Scotch.' },
+      { san: 'exd4', explain: '3...exd4 — accepted.' },
+      { san: 'Nxd4', explain: '4.Nxd4 — open Scotch.' },
+      { san: 'Nf6', explain: '4...Nf6 — develops with attack on e4.' },
+      { san: 'Nxc6', explain: '5.Nxc6 — Modern Scotch.' },
+      { san: 'bxc6', explain: '5...bxc6.' },
+      { san: 'e5', explain: '6.e5 — gains space, kicks the knight.' },
+      { san: 'Qe7', explain: '6...Qe7 — pins, attacks e5.' },
+      { san: 'Qe2', explain: '7.Qe2.' },
+      { san: 'Nd5', explain: '7...Nd5.' },
+      { san: 'c4', explain: '8.c4 — challenges the knight.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['vienna'] = [
+  {
+    name: 'Vienna Game — Vienna Gambit',
+    side: 'w',
+    intro: 'You play White: the Vienna Gambit (f4) is an aggressive King\'s Gambit cousin.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nc3', explain: '2.Nc3 — Vienna Game.' },
+      { san: 'Nf6', explain: '2...Nf6 — most common.' },
+      { san: 'f4', explain: '3.f4! — Vienna Gambit! Sharp attacking attempt.' },
+      { san: 'd5', explain: '3...d5 — best reply.', wrongHints: {} },
+      { san: 'fxe5', explain: '4.fxe5 — opens lines.' },
+      { san: 'Nxe4', explain: '4...Nxe4 — central knight.' },
+      { san: 'Nf3', explain: '5.Nf3 — develops, defends.' },
+      { san: 'Be7', explain: '5...Be7 — solid.' },
+      { san: 'Qe2', explain: '6.Qe2.' },
+      { san: 'Nxc3', explain: '6...Nxc3.' },
+      { san: 'dxc3', explain: '7.dxc3 — recapture with d-pawn.' },
+      { san: 'O-O', explain: '7...O-O.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['kings-gambit'] = [
+  {
+    name: 'King\'s Gambit Accepted',
+    side: 'w',
+    intro: 'You play White: the romantic King\'s Gambit! Sacrifice a pawn for open lines and rapid attack.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'f4', explain: '2.f4 — King\'s Gambit!' },
+      { san: 'exf4', explain: '2...exf4 — accepted.' },
+      { san: 'Nf3', explain: '3.Nf3 — Modern KGA; prevents ...Qh4+.' },
+      { san: 'g5', explain: '3...g5 — Classical defence, holds the f4 pawn.' },
+      { san: 'h4', explain: '4.h4 — challenges the pawn chain.' },
+      { san: 'g4', explain: '4...g4 — most principled.' },
+      { san: 'Ne5', explain: '5.Ne5 — knight finds an active square (Kieseritzky).' },
+      { san: 'Nf6', explain: '5...Nf6 — develops.' },
+      { san: 'd4', explain: '6.d4 — supports the knight, opens lines.' },
+      { san: 'd6', explain: '6...d6 — kicks the knight.' },
+      { san: 'Nd3', explain: '7.Nd3 — retreats but eyes f4.' },
+      { san: 'Nxe4', explain: '7...Nxe4 — sharp tactical line!' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['dutch'] = [
+  {
+    name: 'Dutch Defence Leningrad',
+    side: 'b',
+    intro: 'You play Black: the Leningrad Dutch — fianchetto + ...f5 for kingside aggression.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'f5', explain: '1...f5! — Dutch Defence.' },
+      { san: 'g3', explain: '2.g3 — anti-Dutch fianchetto.' },
+      { san: 'Nf6', explain: '2...Nf6.' },
+      { san: 'Bg2', explain: '3.Bg2.' },
+      { san: 'g6', explain: '3...g6 — Leningrad setup!' },
+      { san: 'Nf3', explain: '4.Nf3.' },
+      { san: 'Bg7', explain: '4...Bg7.' },
+      { san: 'O-O', explain: '5.O-O.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'c4', explain: '6.c4.' },
+      { san: 'd6', explain: '6...d6 — flexible.' },
+      { san: 'Nc3', explain: '7.Nc3.' },
+      { san: 'Qe8', explain: '7...Qe8 — Leningrad signature! Prepares ...Qh5 + kingside attack.' },
+    ],
+  },
+];
+
+
+
+QUIZ_VARIATIONS['pirc'] = [
+  {
+    name: 'Pirc Defence Classical',
+    side: 'b',
+    intro: 'You play Black: the Pirc lets White build a centre, then strike with ...c5 or ...e5.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'd6', explain: '1...d6 — Pirc declaration.' },
+      { san: 'd4', explain: '2.d4.' },
+      { san: 'Nf6', explain: '2...Nf6 — attacks e4.' },
+      { san: 'Nc3', explain: '3.Nc3 — defends.' },
+      { san: 'g6', explain: '3...g6 — Pirc fianchetto.' },
+      { san: 'Nf3', explain: '4.Nf3 — Classical.' },
+      { san: 'Bg7', explain: '4...Bg7.' },
+      { san: 'Be2', explain: '5.Be2.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'O-O', explain: '6.O-O.' },
+      { san: 'c6', explain: '6...c6 — prepares ...b5 or ...Qa5 expansion.' },
+      { san: 'a4', explain: '7.a4 — prevents ...b5.' },
+      { san: 'a5', explain: '7...a5 — locks the queenside.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['four-knights'] = [
+  {
+    name: 'Four Knights Spanish',
+    side: 'w',
+    intro: 'You play White: classical development culminates in 4.Bb5 — Spanish-style.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'e5', explain: '1...e5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nc6', explain: '2...Nc6.' },
+      { san: 'Nc3', explain: '3.Nc3 — Four Knights.' },
+      { san: 'Nf6', explain: '3...Nf6 — completes Four Knights.' },
+      { san: 'Bb5', explain: '4.Bb5 — Spanish Four Knights!' },
+      { san: 'Bb4', explain: '4...Bb4 — symmetrical, sound.' },
+      { san: 'O-O', explain: '5.O-O.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'd3', explain: '6.d3.' },
+      { san: 'd6', explain: '6...d6.' },
+      { san: 'Bg5', explain: '7.Bg5 — pins.' },
+      { san: 'Bxc3', explain: '7...Bxc3 — breaks symmetry.' },
+      { san: 'bxc3', explain: '8.bxc3.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['trompowsky'] = [
+  {
+    name: 'Trompowsky Attack',
+    side: 'w',
+    intro: 'You play White: 2.Bg5! — surprise opening that avoids mainline theory.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'Bg5', explain: '2.Bg5! — Trompowsky! Pins the knight immediately.' },
+      { san: 'Ne4', explain: '2...Ne4 — common reply, attacks the bishop.', wrongHints: {'d5':'2...d5 is also playable.', 'e6':'2...e6 transposes into Torre territory.'} },
+      { san: 'Bf4', explain: '3.Bf4 — keeps the bishop active.', wrongHints: {'Bh4':'3.Bh4 is also fine but Bf4 is more common.'} },
+      { san: 'd5', explain: '3...d5.' },
+      { san: 'f3', explain: '4.f3 — kicks the knight.' },
+      { san: 'Nf6', explain: '4...Nf6 — retreats.' },
+      { san: 'e3', explain: '5.e3.' },
+      { san: 'c5', explain: '5...c5 — challenges centre.' },
+      { san: 'c3', explain: '6.c3 — supports d4.' },
+      { san: 'Nc6', explain: '6...Nc6.' },
+      { san: 'Nd2', explain: '7.Nd2 — flexible development.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['budapest'] = [
+  {
+    name: 'Budapest Gambit Main Line',
+    side: 'b',
+    intro: 'You play Black: sacrifice a pawn for early piece activity with the Budapest.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'Nf6', explain: '1...Nf6.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'e5', explain: '2...e5! — Budapest Gambit!' },
+      { san: 'dxe5', explain: '3.dxe5 — accepts the gambit.' },
+      { san: 'Ng4', explain: '3...Ng4! — Modern Budapest; pressures e5 and prepares to recapture.' },
+      { san: 'Nf3', explain: '4.Nf3 — defends.' },
+      { san: 'Nc6', explain: '4...Nc6 — pressures e5.' },
+      { san: 'Bf4', explain: '5.Bf4 — protects e5.' },
+      { san: 'Bb4+', explain: '5...Bb4+! — disrupts.' },
+      { san: 'Nbd2', explain: '6.Nbd2 — blocks the check.' },
+      { san: 'Qe7', explain: '6...Qe7 — pins, attacks e5 again.' },
+      { san: 'a3', explain: '7.a3.' },
+      { san: 'Ngxe5', explain: '7...Ngxe5 — finally regains the pawn!' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['qga'] = [
+  {
+    name: 'Queen\'s Gambit Accepted',
+    side: 'b',
+    intro: 'You play Black: take the pawn, but don\'t try to hold it.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'd5', explain: '1...d5.' },
+      { san: 'c4', explain: '2.c4.' },
+      { san: 'dxc4', explain: '2...dxc4 — QGA!' },
+      { san: 'Nf3', explain: '3.Nf3 — develop first.' },
+      { san: 'Nf6', explain: '3...Nf6.' },
+      { san: 'e3', explain: '4.e3 — supports d4 and prepares Bxc4.' },
+      { san: 'e6', explain: '4...e6 — solid setup.' },
+      { san: 'Bxc4', explain: '5.Bxc4 — recovers the pawn.' },
+      { san: 'c5', explain: '5...c5! — central counter.' },
+      { san: 'O-O', explain: '6.O-O.' },
+      { san: 'a6', explain: '6...a6 — prepares ...b5 expansion.' },
+      { san: 'Qe2', explain: '7.Qe2.' },
+      { san: 'b5', explain: '7...b5 — expands queenside.' },
+      { san: 'Bb3', explain: '8.Bb3 — bishop retreats.' },
+      { san: 'Bb7', explain: '8...Bb7 — fianchetto.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['reti'] = [
+  {
+    name: 'Reti Opening Main Line',
+    side: 'w',
+    intro: 'You play White: hypermodern opening — control the centre with pieces, not pawns.',
+    moves: [
+      { san: 'Nf3', explain: '1.Nf3 — Reti!' },
+      { san: 'd5', explain: '1...d5.' },
+      { san: 'c4', explain: '2.c4 — Reti proper.' },
+      { san: 'd4', explain: '2...d4 — Black grabs space.' },
+      { san: 'b4', explain: '3.b4 — undermines.' },
+      { san: 'g6', explain: '3...g6 — fianchetto, keep flexibility.' },
+      { san: 'Bb2', explain: '4.Bb2.' },
+      { san: 'Bg7', explain: '4...Bg7.' },
+      { san: 'g3', explain: '5.g3 — double fianchetto!' },
+      { san: 'e5', explain: '5...e5.' },
+      { san: 'd3', explain: '6.d3 — solid.' },
+      { san: 'Ne7', explain: '6...Ne7.' },
+      { san: 'Bg2', explain: '7.Bg2.' },
+      { san: 'O-O', explain: '7...O-O.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['birds'] = [
+  {
+    name: 'Bird Opening Main Line',
+    side: 'w',
+    intro: 'You play White: 1.f4 — controls e5, plans kingside expansion.',
+    moves: [
+      { san: 'f4', explain: '1.f4 — Bird Opening!' },
+      { san: 'd5', explain: '1...d5 — most popular reply.', wrongHints: {} },
+      { san: 'Nf3', explain: '2.Nf3 — supports the e5 square.' },
+      { san: 'Nf6', explain: '2...Nf6.' },
+      { san: 'g3', explain: '3.g3 — Leningrad-style fianchetto.' },
+      { san: 'g6', explain: '3...g6.' },
+      { san: 'Bg2', explain: '4.Bg2.' },
+      { san: 'Bg7', explain: '4...Bg7.' },
+      { san: 'O-O', explain: '5.O-O.' },
+      { san: 'O-O', explain: '5...O-O.' },
+      { san: 'd3', explain: '6.d3.' },
+      { san: 'c5', explain: '6...c5.' },
+      { san: 'c3', explain: '7.c3.' },
+      { san: 'Nc6', explain: '7...Nc6.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['colle'] = [
+  {
+    name: 'Colle System',
+    side: 'w',
+    intro: 'You play White: a system-based opening with Nf3, e3, c3, Bd3, Nbd2 — easy to learn.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'd5', explain: '1...d5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'Nf6', explain: '2...Nf6.' },
+      { san: 'e3', explain: '3.e3 — Colle setup.' },
+      { san: 'e6', explain: '3...e6.' },
+      { san: 'Bd3', explain: '4.Bd3 — Colle bishop on b1-h7 diagonal.' },
+      { san: 'c5', explain: '4...c5.' },
+      { san: 'c3', explain: '5.c3 — supports d4.' },
+      { san: 'Nc6', explain: '5...Nc6.' },
+      { san: 'Nbd2', explain: '6.Nbd2 — Colle-Zukertort move-order.' },
+      { san: 'Bd6', explain: '6...Bd6.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'O-O', explain: '7...O-O.' },
+      { san: 'dxc5', explain: '8.dxc5 — opens lines for the e4 break.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['stonewall'] = [
+  {
+    name: 'Stonewall Attack',
+    side: 'w',
+    intro: 'You play White: the Stonewall — pawns on d4, e3, f4 form a rock-solid wall.',
+    moves: [
+      { san: 'd4', explain: '1.d4.' },
+      { san: 'd5', explain: '1...d5.' },
+      { san: 'e3', explain: '2.e3 — Stonewall setup.' },
+      { san: 'Nf6', explain: '2...Nf6.' },
+      { san: 'Bd3', explain: '3.Bd3.' },
+      { san: 'e6', explain: '3...e6.' },
+      { san: 'f4', explain: '4.f4 — the Stonewall! Rock-solid centre.' },
+      { san: 'c5', explain: '4...c5 — challenges.' },
+      { san: 'c3', explain: '5.c3 — supports d4.' },
+      { san: 'Nc6', explain: '5...Nc6.' },
+      { san: 'Nd2', explain: '6.Nd2 — knight to defend.' },
+      { san: 'Bd6', explain: '6...Bd6.' },
+      { san: 'Ngf3', explain: '7.Ngf3.' },
+      { san: 'O-O', explain: '7...O-O.' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['queens'] = [
+  {
+    name: 'Queen\'s Pawn Game',
+    side: 'w',
+    intro: 'You play White: a generic 1.d4 setup leading to flexible systems.',
+    moves: [
+      { san: 'd4', explain: '1.d4 — Queen\'s Pawn.' },
+      { san: 'Nf6', explain: '1...Nf6 — Indian setup likely.' },
+      { san: 'Nf3', explain: '2.Nf3 — flexible, avoids early commitment.' },
+      { san: 'g6', explain: '2...g6.' },
+      { san: 'Bf4', explain: '3.Bf4 — London-style setup.' },
+      { san: 'Bg7', explain: '3...Bg7.' },
+      { san: 'e3', explain: '4.e3.' },
+      { san: 'O-O', explain: '4...O-O.' },
+      { san: 'h3', explain: '5.h3 — prophylaxis for the bishop.' },
+      { san: 'd6', explain: '5...d6.' },
+      { san: 'Be2', explain: '6.Be2.' },
+      { san: 'Nbd7', explain: '6...Nbd7.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'e5', explain: '7...e5 — Black challenges the centre.' },
+    ],
+  },
+];
+
+
+
+// Sicilian sub-IDs (separate from the main 'sicilian' entry which already exists)
+QUIZ_VARIATIONS['sicilian-najdorf'] = [
+  {
+    name: 'Najdorf English Attack',
+    side: 'w',
+    intro: 'You play White: the English Attack (Be3+f3+Qd2+O-O-O) is the modern weapon against the Najdorf.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'c5', explain: '1...c5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'd6', explain: '2...d6 — flexible.' },
+      { san: 'd4', explain: '3.d4.' },
+      { san: 'cxd4', explain: '3...cxd4.' },
+      { san: 'Nxd4', explain: '4.Nxd4.' },
+      { san: 'Nf6', explain: '4...Nf6.' },
+      { san: 'Nc3', explain: '5.Nc3.' },
+      { san: 'a6', explain: '5...a6 — Najdorf!' },
+      { san: 'Be3', explain: '6.Be3 — English Attack signature.' },
+      { san: 'e5', explain: '6...e5 — most popular reply.' },
+      { san: 'Nb3', explain: '7.Nb3.' },
+      { san: 'Be6', explain: '7...Be6.' },
+      { san: 'f3', explain: '8.f3 — prepares g4 pawnstorm.' },
+      { san: 'Nbd7', explain: '8...Nbd7.' },
+      { san: 'Qd2', explain: '9.Qd2 — connects rooks for O-O-O.' },
+      { san: 'b5', explain: '9...b5 — Black expands queenside.' },
+      { san: 'O-O-O', explain: '10.O-O-O — opposite-side castling, race begins!' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['sicilian-dragon'] = [
+  {
+    name: 'Dragon Yugoslav Attack 9.Bc4',
+    side: 'w',
+    intro: 'You play White: the sharpest line against the Dragon — opposite-side castling, mutual mating attacks.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'c5', explain: '1...c5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'd6', explain: '2...d6.' },
+      { san: 'd4', explain: '3.d4.' },
+      { san: 'cxd4', explain: '3...cxd4.' },
+      { san: 'Nxd4', explain: '4.Nxd4.' },
+      { san: 'Nf6', explain: '4...Nf6.' },
+      { san: 'Nc3', explain: '5.Nc3.' },
+      { san: 'g6', explain: '5...g6 — Dragon!' },
+      { san: 'Be3', explain: '6.Be3.' },
+      { san: 'Bg7', explain: '6...Bg7.' },
+      { san: 'f3', explain: '7.f3 — Yugoslav Attack!', wrongHints: {'Be2':'7.Be2 is Classical (positional) — Yugoslav is much sharper.', 'Nb3':'7.Nb3 retreats the knight — passive.'} },
+      { san: 'O-O', explain: '7...O-O.' },
+      { san: 'Qd2', explain: '8.Qd2.' },
+      { san: 'Nc6', explain: '8...Nc6.' },
+      { san: 'Bc4', explain: '9.Bc4! — supports the f7 weakness and prepares h4-h5 attack.' },
+      { san: 'Bd7', explain: '9...Bd7 — Dragon defence.' },
+      { san: 'O-O-O', explain: '10.O-O-O — mutual castling, the race is ON!' },
+    ],
+  },
+];
+
+QUIZ_VARIATIONS['sicilian-schev'] = [
+  {
+    name: 'Scheveningen Main Line',
+    side: 'b',
+    intro: 'You play Black: the Scheveningen flexible setup with ...d6 and ...e6 — small centre, big pieces.',
+    moves: [
+      { san: 'e4', explain: '1.e4.' },
+      { san: 'c5', explain: '1...c5.' },
+      { san: 'Nf3', explain: '2.Nf3.' },
+      { san: 'e6', explain: '2...e6 — Scheveningen door.' },
+      { san: 'd4', explain: '3.d4.' },
+      { san: 'cxd4', explain: '3...cxd4.' },
+      { san: 'Nxd4', explain: '4.Nxd4.' },
+      { san: 'Nf6', explain: '4...Nf6.' },
+      { san: 'Nc3', explain: '5.Nc3.' },
+      { san: 'd6', explain: '5...d6 — Scheveningen! Both centre pawns on the 3rd rank.' },
+      { san: 'Be2', explain: '6.Be2 — Classical.' },
+      { san: 'a6', explain: '6...a6 — modern setup.' },
+      { san: 'O-O', explain: '7.O-O.' },
+      { san: 'Qc7', explain: '7...Qc7 — typical Scheveningen square.' },
+      { san: 'f4', explain: '8.f4 — Classical attack plan.' },
+      { san: 'Nc6', explain: '8...Nc6.' },
+      { san: 'Be3', explain: '9.Be3.' },
+      { san: 'Be7', explain: '9...Be7 — solid development.' },
+      { san: 'Qe1', explain: '10.Qe1 — typical Scheveningen manoeuvre, headed to g3.' },
+      { san: 'O-O', explain: '10...O-O — completes setup; the famous Scheveningen formation.' },
+    ],
+  },
+];
+
 
 
 // ════════════════════════════════════════════════════════
