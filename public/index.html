@@ -1573,7 +1573,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.10 DRILLS</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.11 ARROWS+</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -3940,23 +3940,24 @@ function drawAnalysisArrows(overlayId, alternatives){
   // Derive the parent board ID from the overlay ID (arrow-overlay-r → board-r, etc.)
   const boardIdForOverlay = overlayId.replace('arrow-overlay-', 'board-');
 
-  // Define an arrowhead marker
+  // All arrows are GREEN — the BIGGER the better the move (user-requested style)
   overlay.innerHTML += `<defs>
     <marker id="ah-best" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(80,180,90,.85)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(80,200,100,.98)"/>
     </marker>
     <marker id="ah-alt1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(80,140,200,.75)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(100,200,120,.78)"/>
     </marker>
     <marker id="ah-alt2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(180,180,180,.65)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(140,200,150,.55)"/>
     </marker>
   </defs>`;
 
+  // Width scales dramatically with rank to make the best move POP visually
   const colors = [
-    {stroke: 'rgba(80,180,90,.85)', marker: 'ah-best', width: 8},
-    {stroke: 'rgba(80,140,200,.75)', marker: 'ah-alt1', width: 7},
-    {stroke: 'rgba(180,180,180,.65)', marker: 'ah-alt2', width: 6},
+    {stroke: 'rgba(80,200,100,.95)',  marker: 'ah-best', width: 12},
+    {stroke: 'rgba(100,200,120,.78)', marker: 'ah-alt1', width: 8},
+    {stroke: 'rgba(140,200,150,.55)', marker: 'ah-alt2', width: 5},
   ];
 
   let drawn = 0;
@@ -5723,6 +5724,8 @@ function renderReviewBoard(){
 
   // Live engine analysis (separate from cached annotations)
   triggerEngineAnalysisR(displayState);
+  // Multi-candidate green arrows (always-on, bigger = better engine move)
+  triggerEngineMultiArrowsR(displayState);
 }
 
 // Draw a green arrow on the review board showing the engine's recommended move.
@@ -5986,6 +5989,27 @@ function renderUserMovesR(){ renderUserVariationPanel(); }
 
 // Live Stockfish analysis for the review board (in addition to the pre-computed game review)
 let reviewAnalysisToken = 0;
+
+// ─── Live multi-candidate arrows on the REVIEW board ───
+// Always shows engine\'s top 3 candidate moves as green arrows
+// (bigger = better), even when the user played the best move.
+let reviewMultiArrowsToken = 0;
+async function triggerEngineMultiArrowsR(state){
+  if(!sfWorker || !sfReady) return;
+  const myToken = ++reviewMultiArrowsToken;
+  const fen = stateToFEN(state);
+  try {
+    const result = await evalPosition(fen, 12, 3);
+    if(myToken !== reviewMultiArrowsToken) return;
+    const alts = result.alternatives && result.alternatives.length > 0
+      ? result.alternatives
+      : [{ pv: result.pv, score: result.score }];
+    // Don\'t overwrite a brilliant/great/best annotation arrow — only add when no badge arrow is set
+    // Actually: this replaces the single arrow with multi-arrows (richer info)
+    drawAnalysisArrows('arrow-overlay-r', alts);
+  } catch(err){ /* ignore */ }
+}
+
 function triggerEngineAnalysisR(state){
   const myToken = ++reviewAnalysisToken;
   if(!sfWorker || !sfReady) return;
@@ -10636,6 +10660,28 @@ function loadCurrentVariation(){
   advanceVariation();
 }
 
+
+// ─── Live multi-candidate analysis on the QUIZ/DRILL board ───
+// User requested: arrows ALWAYS shown for the engine\'s top candidate moves,
+// regardless of whether the played move was right or wrong.
+let quizAnalysisToken = 0;
+async function triggerEngineAnalysisQ(state){
+  if(!sfWorker || !sfReady) return;
+  const myToken = ++quizAnalysisToken;
+  const fen = stateToFEN(state);
+  try {
+    // depth 12 + 3 alternative lines = fast enough to feel responsive in drills
+    const result = await evalPosition(fen, 12, 3);
+    if(myToken !== quizAnalysisToken) return;  // a newer position came in, drop this one
+    const alts = result.alternatives && result.alternatives.length > 0
+      ? result.alternatives
+      : [{ pv: result.pv, score: result.score }];
+    drawAnalysisArrows('arrow-overlay-q', alts);
+  } catch(err){
+    /* swallow — arrows just won\'t draw, no harm done */
+  }
+}
+
 function renderVariationBoard(){
   clearQuizArrows();
   renderBoardEl('board-q', 'board-ranks-q', 'board-files-q', varState, [], null);
@@ -10661,6 +10707,10 @@ function renderVariationBoard(){
       turnBanner.innerHTML = `<span style="color:var(--text3);font-style:italic">Opponent thinking…</span>`;
     }
   }
+
+  // Always show the engine\'s top candidate moves as green arrows
+  // (bigger = better) — user-requested feature.
+  triggerEngineAnalysisQ(varState);
 }
 
 // Advance: keep playing automatic opponent moves until it's the user's turn
