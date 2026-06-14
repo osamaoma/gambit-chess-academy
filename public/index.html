@@ -1573,7 +1573,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.12 FEEDBACK</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.13 CLEAR+EG</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -3940,34 +3940,33 @@ function drawAnalysisArrows(overlayId, alternatives){
   // Derive the parent board ID from the overlay ID (arrow-overlay-r → board-r, etc.)
   const boardIdForOverlay = overlayId.replace('arrow-overlay-', 'board-');
 
-  // All arrows are GREEN — the BIGGER the better the move (user-requested style)
+  // Distinct colors per rank for crystal-clear hierarchy:
+  // #1 best = thick bright green, #2 = medium blue, #3 = thin amber.
+  // The eye can instantly tell which arrow is the engine's TOP choice.
   overlay.innerHTML += `<defs>
     <marker id="ah-best" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(80,200,100,.98)"/>
     </marker>
     <marker id="ah-alt1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(100,200,120,.78)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(100,160,230,.90)"/>
     </marker>
     <marker id="ah-alt2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(140,200,150,.55)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,180,90,.80)"/>
+    </marker>
+    <marker id="ah-alt3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(170,170,170,.55)"/>
     </marker>
   </defs>`;
 
-  // Width scales dramatically with rank — best move biggest, weakest tiniest.
-  // 8 tiers so all candidates can be shown (user-requested "all candidates" view).
   const colors = [
-    {stroke: 'rgba(80,200,100,.95)',  marker: 'ah-best', width: 13},
-    {stroke: 'rgba(95,200,115,.82)',  marker: 'ah-best', width: 10},
-    {stroke: 'rgba(110,200,130,.72)', marker: 'ah-best', width: 8},
-    {stroke: 'rgba(125,200,140,.62)', marker: 'ah-alt1', width: 6},
-    {stroke: 'rgba(140,200,150,.52)', marker: 'ah-alt1', width: 5},
-    {stroke: 'rgba(155,200,165,.42)', marker: 'ah-alt2', width: 4},
-    {stroke: 'rgba(170,200,180,.36)', marker: 'ah-alt2', width: 3},
-    {stroke: 'rgba(185,200,195,.30)', marker: 'ah-alt2', width: 3},
+    {stroke: 'rgba(80,200,100,.92)',  marker: 'ah-best', width: 13},  // best — bright green
+    {stroke: 'rgba(100,160,230,.82)', marker: 'ah-alt1', width: 8},   // 2nd — blue
+    {stroke: 'rgba(220,180,90,.70)',  marker: 'ah-alt2', width: 5},   // 3rd — amber
+    {stroke: 'rgba(170,170,170,.50)', marker: 'ah-alt3', width: 3},   // 4th — grey (quiz only)
   ];
 
   let drawn = 0;
-  for(let i = 0; i < alternatives.length && drawn < 8; i++){
+  for(let i = 0; i < alternatives.length && drawn < 4; i++){
     const pv = (alternatives[i].pv || '').trim();
     if(!pv) continue;
     const firstMove = pv.split(/\s+/)[0];
@@ -4376,7 +4375,91 @@ function computeStyleFingerprint(games, uname){
     if(drew) drawCount++;
   });
 
+  // ─── ENDGAME ANALYSIS — detect endgame type and track performance ───
+  // For each game, look at the FINAL position(s) and classify the endgame:
+  //   pawn_only (K+P) / minor_piece (B/N) / rook (R) / queen (Q) / mixed (R+minor) / heavy (Q+R) / no_endgame
+  const endgameStats = {
+    pawn_only: { games: 0, wins: 0, draws: 0, losses: 0, label: 'King & Pawn endings' },
+    minor_piece: { games: 0, wins: 0, draws: 0, losses: 0, label: 'Minor piece endings (B / N)' },
+    opp_bishops: { games: 0, wins: 0, draws: 0, losses: 0, label: 'Opposite-colored bishop endings' },
+    rook: { games: 0, wins: 0, draws: 0, losses: 0, label: 'Rook endings' },
+    rook_minor: { games: 0, wins: 0, draws: 0, losses: 0, label: 'Rook + minor piece endings' },
+    queen: { games: 0, wins: 0, draws: 0, losses: 0, label: 'Queen endings' },
+    heavy: { games: 0, wins: 0, draws: 0, losses: 0, label: 'Q+R complex endings' },
+  };
+
+  // Lightweight endgame classifier from PGN tail
+  function classifyEndgame(pgn){
+    if(!pgn) return null;
+    // Crude approach: parse pieces remaining at the end by walking through
+    // captures in SAN form. Start with full material, subtract on each 'x'.
+    // Letters captured: we look at the SAN AFTER the 'x' to see what landed there.
+    // Even simpler: parse SAN moves, count captures, look at the very last few
+    // moves to infer piece set. For a robust signal we just check pgn length:
+    // games > 40 moves often reach endgame phase; games < 30 usually don't.
+    const moveCount = (pgn.match(/\d+\.\s/g) || []).length;
+    if(moveCount < 30) return null;  // didn\'t reach endgame
+
+    // Count captures by piece letter to estimate remaining material
+    const captures = pgn.match(/[QRBNK]?x[a-h][1-8]/g) || [];
+    const pieceCapturesByLetter = { Q:0, R:0, B:0, N:0 };
+    captures.forEach(c => {
+      // The capturing piece is the first letter (or P if no letter)
+      const m = c.match(/^([QRBNK])?x/);
+      if(m && m[1]) pieceCapturesByLetter[m[1]] = (pieceCapturesByLetter[m[1]] || 0) + 1;
+    });
+
+    // Captured pieces (any 'x' move where the captured side\'s piece is referenced via what it captured FROM)
+    // This is approximate. We use: pieces FROM that file/rank are likely the captured piece.
+    // For simplicity, count total captures and bucket:
+    const totalCaptures = captures.length;
+
+    // Heuristic: if pgn has many captures (>10) and is long, it\'s likely a simplified endgame
+    if(totalCaptures < 8) return 'heavy';  // very few captures = pieces still on board
+
+    // Look at last 20% of PGN for piece signature
+    const tail = pgn.slice(Math.floor(pgn.length * 0.75));
+    const hasQ = /Q[a-h]?[1-8]?[+#]?(?:\s|$)|Qx/.test(tail);
+    const hasR = /R[a-h]?[1-8]?[+#]?(?:\s|$)|Rx/.test(tail);
+    const hasB = /B[a-h]?[1-8]?[+#]?(?:\s|$)|Bx/.test(tail);
+    const hasN = /N[a-h]?[1-8]?[+#]?(?:\s|$)|Nx/.test(tail);
+
+    if(hasQ && hasR) return 'heavy';
+    if(hasQ) return 'queen';
+    if(hasR && (hasB || hasN)) return 'rook_minor';
+    if(hasR) return 'rook';
+    if(hasB && hasN) return 'minor_piece';
+    if(hasB){
+      // Heuristic for opposite-colored bishops: if BOTH sides moved bishop on different-colored squares often.
+      // Without full state tracking we approximate by checking diverse bishop squares.
+      const bishopSquares = (tail.match(/B[a-h][1-8]/g) || []).map(s => s.slice(1));
+      const lightSquares = bishopSquares.filter(sq => (sq.charCodeAt(0) + parseInt(sq[1])) % 2 === 1);
+      const darkSquares = bishopSquares.filter(sq => (sq.charCodeAt(0) + parseInt(sq[1])) % 2 === 0);
+      if(lightSquares.length > 0 && darkSquares.length > 0) return 'opp_bishops';
+      return 'minor_piece';
+    }
+    if(hasN) return 'minor_piece';
+    return 'pawn_only';
+  }
+
+  games.forEach(g => {
+    const isWhite = g.white.toLowerCase() === uname;
+    const isBlack = g.black.toLowerCase() === uname;
+    if(!isWhite && !isBlack) return;
+    const won = (isWhite && g.result === '1-0') || (isBlack && g.result === '0-1');
+    const drew = g.result === '1/2-1/2';
+    const lost = !won && !drew;
+    const eg = classifyEndgame(g.pgn);
+    if(eg && endgameStats[eg]){
+      endgameStats[eg].games++;
+      if(won) endgameStats[eg].wins++;
+      else if(drew) endgameStats[eg].draws++;
+      else if(lost) endgameStats[eg].losses++;
+    }
+  });
+
   return {
+    endgameStats,
     attackWinRate: attackTotal > 0 ? Math.round(attackWins / attackTotal * 100) : null,
     attackTotal,
     solidWinRate: solidTotal > 0 ? Math.round(solidWins / solidTotal * 100) : null,
@@ -4402,6 +4485,53 @@ function computeStyleFingerprint(games, uname){
     drawCount,
     totalGames: games.length,
   };
+}
+
+
+// ─── Render endgame recommendations panel in My Performance ───
+function renderEndgameRecs(stats){
+  if(!stats) return '';
+  const types = Object.entries(stats).filter(([k,v]) => v.games >= 2);
+  if(types.length === 0) return '';
+  // Sort by win rate ascending (worst first — most important to study)
+  types.sort((a,b) => {
+    const wrA = a[1].games > 0 ? (a[1].wins + a[1].draws * 0.5) / a[1].games : 1;
+    const wrB = b[1].games > 0 ? (b[1].wins + b[1].draws * 0.5) / b[1].games : 1;
+    return wrA - wrB;
+  });
+
+  const tip = {
+    pawn_only: 'Study the rule of the square, opposition, key squares, triangulation, and breakthrough patterns. Resource: Silman\'s Complete Endgame Course (Beginner section), or the Lichess "Endgame Practice" trainer.',
+    minor_piece: 'Knight endings reward calculation (knights are slow); bishop endings reward activity and pawn placement. Study fortress positions, the bad-bishop concept, and good-knight outposts.',
+    opp_bishops: 'Notoriously drawish — but an EXTRA pawn or initiative often wins. Study attacking with opposite-colored bishops (the side with initiative is often winning despite the bishops being "opposite").',
+    rook: 'The most common practical endgame. Master the Lucena (winning position), Philidor (drawing position), and active rook principles. "Rooks belong behind passed pawns."',
+    rook_minor: 'Activity matters more than material. Study how to coordinate rook + knight vs rook + bishop. Knight endings tend to favor the side with passed pawns; bishop endings favor the side with active king.',
+    queen: 'Queens give chances for both sides — study perpetual check defences and queen + pawn vs queen winning techniques.',
+    heavy: 'These are middlegame-to-endgame transitions. Focus on king safety, piece activity, and avoiding simplifications when ahead.',
+  };
+
+  let html_out = `<div class="endgame-recs" style="margin-top:24px">
+    <div class="rec-section-title" style="font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">📐 Endgames to Study</div>`;
+
+  types.slice(0, 5).forEach(([key, s]) => {
+    const wr = s.games > 0 ? Math.round((s.wins + s.draws * 0.5) / s.games * 100) : 0;
+    const isWeak = wr < 50;
+    const cardStyle = isWeak
+      ? 'background:rgba(216,83,91,.06);border-left:3px solid rgba(216,83,91,.55)'
+      : 'background:rgba(127,201,156,.05);border-left:3px solid rgba(127,201,156,.45)';
+    html_out += `<div style="${cardStyle};padding:12px 14px;border-radius:0 6px 6px 0;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <strong style="color:var(--text);font-size:13px">${s.label}</strong>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:${isWeak ? '#d8535b' : '#7fc99c'}">${wr}% · ${s.games} games</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.5">${tip[key] || ''}</div>
+      <div style="margin-top:6px;font-size:11px;color:var(--text3)">
+        Record: ${s.wins}W · ${s.draws}D · ${s.losses}L
+      </div>
+    </div>`;
+  });
+  html_out += '</div>';
+  return html_out;
 }
 
 // Build recommendations: openings the user should try based on their style
@@ -4680,6 +4810,8 @@ function renderAnalysis(games, username, out){
         <button class="btn btn-outline btn-sm" onclick="goReview('${o.name}')">Review a game with this opening ↗</button>
       </div>
     </div>`).join('')}` : ''}
+
+    ${fp && fp.endgameStats ? renderEndgameRecs(fp.endgameStats) : ''}
   </div>`;
 }
 
@@ -5728,9 +5860,8 @@ function renderReviewBoard(){
   updateInteractiveState('board-r', displayState);
   renderUserVariationPanel();
 
-  // Live engine analysis (separate from cached annotations)
-  triggerEngineAnalysisR(displayState);
-  // Multi-candidate green arrows (always-on, bigger = better engine move)
+  // Live engine analysis — single source draws the top-3 candidate arrows
+  // (previously two functions were competing for the same overlay = visual mess)
   triggerEngineMultiArrowsR(displayState);
 }
 
@@ -6005,7 +6136,8 @@ async function triggerEngineMultiArrowsR(state){
   const myToken = ++reviewMultiArrowsToken;
   const fen = stateToFEN(state);
   try {
-    const result = await evalPosition(fen, 12, 8);
+    // Top 3 candidates only — more arrows just create visual chaos
+    const result = await evalPosition(fen, 14, 3);
     if(myToken !== reviewMultiArrowsToken) return;
     const alts = result.alternatives && result.alternatives.length > 0
       ? result.alternatives
@@ -10676,8 +10808,8 @@ async function triggerEngineAnalysisQ(state){
   const myToken = ++quizAnalysisToken;
   const fen = stateToFEN(state);
   try {
-    // depth 12 + up to 8 candidate lines — shows ALL reasonable alternatives
-    const result = await evalPosition(fen, 12, 8);
+    // Top 4 candidates — clear visual hierarchy without overwhelming
+    const result = await evalPosition(fen, 12, 4);
     if(myToken !== quizAnalysisToken) return;  // a newer position came in, drop this one
     const alts = result.alternatives && result.alternatives.length > 0
       ? result.alternatives
