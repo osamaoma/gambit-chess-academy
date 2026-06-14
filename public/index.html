@@ -1573,7 +1573,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.13 CLEAR+EG</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.14 FIXES</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -4682,6 +4682,10 @@ function renderAnalysis(games, username, out){
     if(r) ratingDisplay = `Rating ~${r}`;
   }
 
+  // fp is at the OUTER scope of renderAnalysis so every nested template
+  // (including the endgame recs section after the IIFE) can read it.
+  const fp = computeStyleFingerprint(games, uname);
+
   out.innerHTML = `
   <div class="page-wrap">
     <div class="profile-bar">
@@ -4703,7 +4707,6 @@ function renderAnalysis(games, username, out){
     </div>
 
     ${(function(){
-      const fp = computeStyleFingerprint(games, uname);
       const { recs, topStyle } = buildRecommendations(fp, Object.keys(opStats));
       const styleRows = [
         ['Aggressive openings', fp.attackWinRate, fp.attackTotal, '⚔'],
@@ -5860,9 +5863,11 @@ function renderReviewBoard(){
   updateInteractiveState('board-r', displayState);
   renderUserVariationPanel();
 
-  // Live engine analysis — single source draws the top-3 candidate arrows
-  // (previously two functions were competing for the same overlay = visual mess)
-  triggerEngineMultiArrowsR(displayState);
+  // Game Review: show ONE clear green arrow for the best move at this position
+  // (no multi-candidate clutter — user wants pure simplicity here)
+  drawBestMoveArrow(reviewIdx);
+  // Live continuous engine analysis (separate from this arrow logic)
+  triggerEngineAnalysisR(displayState);
 }
 
 // Draw a green arrow on the review board showing the engine's recommended move.
@@ -6126,27 +6131,6 @@ function renderUserMovesR(){ renderUserVariationPanel(); }
 
 // Live Stockfish analysis for the review board (in addition to the pre-computed game review)
 let reviewAnalysisToken = 0;
-
-// ─── Live multi-candidate arrows on the REVIEW board ───
-// Always shows engine\'s top 3 candidate moves as green arrows
-// (bigger = better), even when the user played the best move.
-let reviewMultiArrowsToken = 0;
-async function triggerEngineMultiArrowsR(state){
-  if(!sfWorker || !sfReady) return;
-  const myToken = ++reviewMultiArrowsToken;
-  const fen = stateToFEN(state);
-  try {
-    // Top 3 candidates only — more arrows just create visual chaos
-    const result = await evalPosition(fen, 14, 3);
-    if(myToken !== reviewMultiArrowsToken) return;
-    const alts = result.alternatives && result.alternatives.length > 0
-      ? result.alternatives
-      : [{ pv: result.pv, score: result.score }];
-    // Don\'t overwrite a brilliant/great/best annotation arrow — only add when no badge arrow is set
-    // Actually: this replaces the single arrow with multi-arrows (richer info)
-    drawAnalysisArrows('arrow-overlay-r', alts);
-  } catch(err){ /* ignore */ }
-}
 
 function triggerEngineAnalysisR(state){
   const myToken = ++reviewAnalysisToken;
@@ -10807,17 +10791,27 @@ async function triggerEngineAnalysisQ(state){
   if(!sfWorker || !sfReady) return;
   const myToken = ++quizAnalysisToken;
   const fen = stateToFEN(state);
+  const sideToMove = fen.split(' ')[1] || 'w';
   try {
-    // Top 4 candidates — clear visual hierarchy without overwhelming
-    const result = await evalPosition(fen, 12, 4);
-    if(myToken !== quizAnalysisToken) return;  // a newer position came in, drop this one
-    const alts = result.alternatives && result.alternatives.length > 0
+    // Get top 5 candidates so we can filter to the "completely fine" ones
+    const result = await evalPosition(fen, 14, 5);
+    if(myToken !== quizAnalysisToken) return;
+    const allAlts = result.alternatives && result.alternatives.length > 0
       ? result.alternatives
       : [{ pv: result.pv, score: result.score }];
-    drawAnalysisArrows('arrow-overlay-q', alts);
-  } catch(err){
-    /* swallow — arrows just won\'t draw, no harm done */
-  }
+    if(allAlts.length === 0) return;
+    // Convert scores to side-to-move POV (positive = good for the mover)
+    const ranked = allAlts.map(a => ({
+      pv: a.pv,
+      // score is already from White\'s POV; convert to mover\'s POV
+      moverScore: sideToMove === 'w' ? (a.score || 0) : -(a.score || 0)
+    })).sort((a,b) => b.moverScore - a.moverScore);
+    // The best move\'s score (from mover\'s POV)
+    const bestScore = ranked[0].moverScore;
+    // "Completely fine" = within 0.30 pawns of the best move
+    const fine = ranked.filter(a => bestScore - a.moverScore <= 0.30);
+    drawAnalysisArrows('arrow-overlay-q', fine.map(a => ({ pv: a.pv, score: a.moverScore })));
+  } catch(err){ /* ignore */ }
 }
 
 function renderVariationBoard(){
