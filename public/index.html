@@ -1573,7 +1573,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.11 ARROWS+</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.12 FEEDBACK</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -3953,15 +3953,21 @@ function drawAnalysisArrows(overlayId, alternatives){
     </marker>
   </defs>`;
 
-  // Width scales dramatically with rank to make the best move POP visually
+  // Width scales dramatically with rank — best move biggest, weakest tiniest.
+  // 8 tiers so all candidates can be shown (user-requested "all candidates" view).
   const colors = [
-    {stroke: 'rgba(80,200,100,.95)',  marker: 'ah-best', width: 12},
-    {stroke: 'rgba(100,200,120,.78)', marker: 'ah-alt1', width: 8},
-    {stroke: 'rgba(140,200,150,.55)', marker: 'ah-alt2', width: 5},
+    {stroke: 'rgba(80,200,100,.95)',  marker: 'ah-best', width: 13},
+    {stroke: 'rgba(95,200,115,.82)',  marker: 'ah-best', width: 10},
+    {stroke: 'rgba(110,200,130,.72)', marker: 'ah-best', width: 8},
+    {stroke: 'rgba(125,200,140,.62)', marker: 'ah-alt1', width: 6},
+    {stroke: 'rgba(140,200,150,.52)', marker: 'ah-alt1', width: 5},
+    {stroke: 'rgba(155,200,165,.42)', marker: 'ah-alt2', width: 4},
+    {stroke: 'rgba(170,200,180,.36)', marker: 'ah-alt2', width: 3},
+    {stroke: 'rgba(185,200,195,.30)', marker: 'ah-alt2', width: 3},
   ];
 
   let drawn = 0;
-  for(let i = 0; i < alternatives.length && drawn < 3; i++){
+  for(let i = 0; i < alternatives.length && drawn < 8; i++){
     const pv = (alternatives[i].pv || '').trim();
     if(!pv) continue;
     const firstMove = pv.split(/\s+/)[0];
@@ -5999,7 +6005,7 @@ async function triggerEngineMultiArrowsR(state){
   const myToken = ++reviewMultiArrowsToken;
   const fen = stateToFEN(state);
   try {
-    const result = await evalPosition(fen, 12, 3);
+    const result = await evalPosition(fen, 12, 8);
     if(myToken !== reviewMultiArrowsToken) return;
     const alts = result.alternatives && result.alternatives.length > 0
       ? result.alternatives
@@ -10670,8 +10676,8 @@ async function triggerEngineAnalysisQ(state){
   const myToken = ++quizAnalysisToken;
   const fen = stateToFEN(state);
   try {
-    // depth 12 + 3 alternative lines = fast enough to feel responsive in drills
-    const result = await evalPosition(fen, 12, 3);
+    // depth 12 + up to 8 candidate lines — shows ALL reasonable alternatives
+    const result = await evalPosition(fen, 12, 8);
     if(myToken !== quizAnalysisToken) return;  // a newer position came in, drop this one
     const alts = result.alternatives && result.alternatives.length > 0
       ? result.alternatives
@@ -10707,10 +10713,9 @@ function renderVariationBoard(){
       turnBanner.innerHTML = `<span style="color:var(--text3);font-style:italic">Opponent thinking…</span>`;
     }
   }
-
-  // Always show the engine\'s top candidate moves as green arrows
-  // (bigger = better) — user-requested feature.
-  triggerEngineAnalysisQ(varState);
+  // No candidate arrows shown here — those appear only AFTER the user answers
+  // (in onUserVariationMove). The "find the best move" prompt should not be
+  // accompanied by hints.
 }
 
 // Advance: keep playing automatic opponent moves until it's the user's turn
@@ -10796,7 +10801,9 @@ function onUserVariationMove(from, to, newState, san){
         <div class="qze-body">${expected.explain || ''}</div>
       </div>`;
     document.getElementById('qq-question').textContent = 'Continuing the line…';
-    // Pause briefly, then auto-advance
+    // Show all candidate arrows briefly as feedback on the position they just answered
+    triggerEngineAnalysisQ(varState);
+    // Pause briefly, then auto-advance (the next render clears arrows)
     setTimeout(() => advanceVariation(), 1400);
   } else {
     // WRONG — show feedback and let user try again
@@ -10815,6 +10822,8 @@ function onUserVariationMove(from, to, newState, san){
     // Visualize on the board: green arrow for theory, red for user's move
     const userUCIFull = from + to;
     drawQuizArrows(expectedUCI, userUCIFull);
+    // Also show ALL engine candidate moves as feedback (educational)
+    triggerEngineAnalysisQ(varState);
     document.getElementById('qq-feedback').innerHTML = `
       <div class="qz-result-banner wrong">
         <div class="qzr-icon">✗</div>
@@ -10847,6 +10856,9 @@ function onUserVariationMove(from, to, newState, san){
 }
 
 window.retryVariationMove = function(){
+  // Clear all arrows — no hints during the retry attempt
+  const ov = document.getElementById('arrow-overlay-q');
+  if(ov) ov.innerHTML = '';
   // Re-render board waiting for user to try again
   renderVariationBoard();
   makeBoardInteractive('board-q', varState, onUserVariationMove);
