@@ -1708,7 +1708,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.17 LIBRARY</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.18 LIBRARY+</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -2901,6 +2901,25 @@ const OPENINGS = {
     {id:'sicilian-accelerated-dragon',eco:'B34',name:'Accelerated Dragon',tag:'Sharp'},
     {id:'french-classical',eco:'C11',name:'French Classical',tag:'Solid'},
     {id:'french-exchange',eco:'C01',name:'French Exchange',tag:'Solid'},
+    {id:'scotch-gambit',eco:'C44',name:'Scotch Gambit',tag:'Gambit'},
+    {id:'goring-gambit',eco:'C44',name:'Göring Gambit',tag:'Gambit'},
+    {id:'ponziani',eco:'C44',name:'Ponziani Opening',tag:'Positional'},
+    {id:'four-knights-scotch',eco:'C47',name:'Four Knights Scotch',tag:'Sharp'},
+    {id:'italian-hungarian',eco:'C50',name:'Hungarian Defence',tag:'Solid'},
+    {id:'evans-gambit',eco:'C51',name:'Evans Gambit',tag:'Gambit'},
+    {id:'kings-gambit-accepted',eco:'C33',name:"King's Gambit Accepted",tag:'Gambit'},
+    {id:'vienna-gambit',eco:'C29',name:'Vienna Gambit',tag:'Gambit'},
+    {id:'bishops-opening',eco:'C23',name:"Bishop's Opening",tag:'Solid'},
+    {id:'petrov-classical',eco:'C42',name:'Petrov Classical',tag:'Solid'},
+    {id:'caro-advance',eco:'B12',name:'Caro-Kann Advance',tag:'Sharp'},
+    {id:'caro-classical',eco:'B18',name:'Caro-Kann Classical',tag:'Solid'},
+    {id:'caro-panov',eco:'B14',name:'Caro-Kann Panov',tag:'Sharp'},
+    {id:'sicilian-grand-prix',eco:'B23',name:'Sicilian Grand Prix Attack',tag:'Sharp'},
+    {id:'sicilian-richter-rauzer',eco:'B60',name:'Sicilian Richter-Rauzer',tag:'Sharp'},
+    {id:'french-advance',eco:'C02',name:'French Advance',tag:'Sharp'},
+    {id:'french-winawer',eco:'C18',name:'French Winawer',tag:'Sharp'},
+    {id:'pirc-austrian',eco:'B09',name:'Pirc Austrian Attack',tag:'Sharp'},
+    {id:'scandinavian-icelandic',eco:'B01',name:'Icelandic Gambit',tag:'Gambit'},
   ]},
   'd4': {label:'1.d4 Openings', items:[
     {id:'queens',eco:'D06',name:"Queen's Gambit",tag:'Classic'},
@@ -2937,6 +2956,19 @@ const OPENINGS = {
     {id:'torre-attack',eco:'A46',name:'Torre Attack',tag:'Solid'},
     {id:'blackmar-diemer',eco:'D00',name:'Blackmar-Diemer Gambit',tag:'Gambit'},
     {id:'trompowsky-attack',eco:'A45',name:'Trompowsky Attack',tag:'Sharp'},
+    {id:'slav-main',eco:'D17',name:'Slav Main Line',tag:'Solid'},
+    {id:'slav-exchange',eco:'D10',name:'Slav Exchange',tag:'Solid'},
+    {id:'qgd-ragozin',eco:'D38',name:'QGD Ragozin',tag:'Sharp'},
+    {id:'nimzo-classical',eco:'E32',name:'Nimzo Classical',tag:'Positional'},
+    {id:'nimzo-rubinstein',eco:'E40',name:'Nimzo Rubinstein',tag:'Positional'},
+    {id:'benoni-czech',eco:'A56',name:'Czech Benoni',tag:'Solid'},
+    {id:'old-indian',eco:'A53',name:'Old Indian Defence',tag:'Solid'},
+    {id:'gruenfeld-fianchetto',eco:'D78',name:'Grünfeld Fianchetto',tag:'Positional'},
+    {id:'dutch-stonewall',eco:'A90',name:'Dutch Stonewall',tag:'Solid'},
+    {id:'dutch-classical',eco:'A96',name:'Dutch Classical',tag:'Solid'},
+    {id:'budapest-gambit',eco:'A52',name:'Budapest Gambit',tag:'Gambit'},
+    {id:'london-system',eco:'D02',name:'London System',tag:'Solid'},
+    {id:'colle-zukertort',eco:'D05',name:'Colle-Zukertort',tag:'Solid'},
   ]},
   'other': {label:'Flank & Systems', items:[
     {id:'english',eco:'A10',name:'English Opening',tag:'Solid'},
@@ -2956,6 +2988,18 @@ const OPENINGS = {
     {id:'english-botvinnik',eco:'A26',name:'English Botvinnik System',tag:'Positional'},
     {id:'anti-sicilian-rossolimo',eco:'B30',name:'Rossolimo Variation',tag:'Positional'},
     {id:'anti-sicilian-moscow',eco:'B51',name:'Moscow Variation',tag:'Positional'},
+    {id:'english-four-knights',eco:'A28',name:'English Four Knights',tag:'Positional'},
+    {id:'english-symmetrical-hedgehog',eco:'A30',name:'English Hedgehog',tag:'Positional'},
+    {id:'reti-kings-indian-attack',eco:'A07',name:'Réti / KIA Hybrid',tag:'Positional'},
+    {id:'english-anglo-indian',eco:'A15',name:'Anglo-Indian Defence',tag:'Positional'},
+    {id:'larsen-attack',eco:'A01',name:"Larsen's Opening",tag:'Hyper'},
+    {id:'english-mikenas',eco:'A18',name:'English Mikenas-Carls',tag:'Sharp'},
+    {id:'grob-gambit',eco:'A00',name:'Grob Gambit',tag:'Flank'},
+    {id:'saragossa',eco:'A00',name:'Saragossa Opening',tag:'Flank'},
+    {id:'van-geet',eco:'A00',name:'Van Geet Opening',tag:'Hyper'},
+    {id:'english-carls-bremen',eco:'A22',name:'Bremen System',tag:'Positional'},
+    {id:'zukertort-opening',eco:'A04',name:'Zukertort Opening',tag:'Positional'},
+    {id:'kings-indian-attack-french',eco:'A08',name:'KIA vs French',tag:'Positional'},
   ]}
 };
 
@@ -3666,7 +3710,538 @@ const OPENING_DETAILS = {
 OPENING_DETAILS["kings_indian"] = OPENING_DETAILS["kings-indian"];
 
 // ═══════════ EXPANDED OPENING LIBRARY (v3.17) ═══════════
-OPENING_DETAILS['kings-pawn'] = {
+
+
+// ═══════════ OPENING LIBRARY BATCH 2 (v3.18) ═══════════
+OPENING_DETAILS['scotch-gambit'] = {
+    title: 'Scotch Gambit', eco: "ECO C44",
+    desc: 'White sacrifices a pawn in the Scotch for fast development and attacking chances against f7.',
+    moves: '1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Bc4',
+    sanList: ["e4","e5","Nf3","Nc6","d4","exd4","Bc4"],
+    lines: [
+      {name:'Main Line', moves:'4...Bc5 5.c3 dxc3', badge:'sharp', bl:'Sharp'},
+      {name:'Double Gambit', moves:'4...Nf6 5.e5', badge:'sharp', bl:'Aggressive'},
+      {name:'Quiet', moves:'4...Be7 5.Nxd4', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Sacrifice for rapid development','Target the f7 weakness','Open lines for the bishops']
+  };
+OPENING_DETAILS['goring-gambit'] = {
+    title: 'Göring Gambit', eco: "ECO C44",
+    desc: 'A romantic gambit in the Scotch family — White gives up one or two pawns for a big initiative.',
+    moves: '1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. c3',
+    sanList: ["e4","e5","Nf3","Nc6","d4","exd4","c3"],
+    lines: [
+      {name:'Accepted', moves:'4...dxc3 5.Nxc3', badge:'sharp', bl:'Main'},
+      {name:'Declined', moves:'4...d5 5.exd5', badge:'positional', bl:'Solid'},
+      {name:'Double', moves:'5.Bc4 cxb2 6.Bxb2', badge:'sharp', bl:'Wild'}
+    ],
+    ideas: ['Open lines fast','Lead in development is the compensation','Best in faster time controls']
+  };
+OPENING_DETAILS['ponziani'] = {
+    title: 'Ponziani Opening', eco: "ECO C44",
+    desc: 'An old, offbeat opening with 3.c3 preparing d4 — surprising and strategically interesting.',
+    moves: '1. e4 e5 2. Nf3 Nc6 3. c3',
+    sanList: ["e4","e5","Nf3","Nc6","c3"],
+    lines: [
+      {name:'Main Line', moves:'3...Nf6 4.d4 Nxe4', badge:'sharp', bl:'Critical'},
+      {name:'3...d5', moves:'3...d5 4.Qa4', badge:'sharp', bl:'Pin'},
+      {name:'Steinitz', moves:'3...d5 4.Qa4 f6', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Prepare d4 with c3','Surprise value against unprepared opponents','Fight for the centre']
+  };
+OPENING_DETAILS['four-knights-scotch'] = {
+    title: 'Four Knights Scotch', eco: "ECO C47",
+    desc: 'White combines the Four Knights with an early d4, opening the centre for active play.',
+    moves: '1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4',
+    sanList: ["e4","e5","Nf3","Nc6","Nc3","Nf6","d4"],
+    lines: [
+      {name:'Main Line', moves:'4...exd4 5.Nxd4 Bb4', badge:'sharp', bl:'Standard'},
+      {name:'Belgrade Gambit', moves:'5.Nd5', badge:'sharp', bl:'Tricky'},
+      {name:'4...exd4 5.Nd5', moves:'5.Nd5 Nxd5', badge:'sharp', bl:'Sharp'}
+    ],
+    ideas: ['Open the centre early','Rapid piece play','Watch for the Belgrade Gambit tricks']
+  };
+OPENING_DETAILS['italian-hungarian'] = {
+    title: 'Hungarian Defence', eco: "ECO C50",
+    desc: 'A super-solid but passive reply to the Italian where Black plays the modest ...Be7.',
+    moves: '1. e4 e5 2. Nf3 Nc6 3. Bc4 Be7',
+    sanList: ["e4","e5","Nf3","Nc6","Bc4","Be7"],
+    lines: [
+      {name:'Main Line', moves:'4.d4 exd4 5.Nxd4', badge:'positional', bl:'Standard'},
+      {name:'4.d3', moves:'4.d3 Nf6 5.O-O', badge:'solid', bl:'Slow'},
+      {name:'4.c3', moves:'4.c3 Nf6', badge:'positional', bl:'Centre'}
+    ],
+    ideas: ['Solid but passive','Avoid early tactics','Aim for a sound, equal middlegame']
+  };
+OPENING_DETAILS['evans-gambit'] = {
+    title: 'Evans Gambit', eco: "ECO C51",
+    desc: 'The classic romantic gambit — White sacrifices the b-pawn for a roaring central initiative.',
+    moves: '1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. b4',
+    sanList: ["e4","e5","Nf3","Nc6","Bc4","Bc5","b4"],
+    lines: [
+      {name:'Accepted', moves:'4...Bxb4 5.c3 Ba5 6.d4', badge:'sharp', bl:'Main'},
+      {name:'Declined', moves:'4...Bb6 5.b5', badge:'positional', bl:'Quiet'},
+      {name:'Compromised', moves:'5...exd4 6.O-O', badge:'sharp', bl:'Wild'}
+    ],
+    ideas: ['Sacrifice b4 for the centre and tempo','Rapid development and attack','Favoured by Kasparov as a surprise']
+  };
+OPENING_DETAILS['kings-gambit-accepted'] = {
+    title: "King's Gambit Accepted", eco: "ECO C33",
+    desc: "Black grabs the f4 pawn, entering the wild and tactical main lines of the King's Gambit.",
+    moves: '1. e4 e5 2. f4 exf4',
+    sanList: ["e4","e5","f4","exf4"],
+    lines: [
+      {name:'Kieseritzky', moves:'3.Nf3 g5 4.h4 g4 5.Ne5', badge:'sharp', bl:'Main'},
+      {name:"Bishop's Gambit", moves:'3.Bc4', badge:'sharp', bl:'Sharp'},
+      {name:'Modern', moves:'3.Nf3 d5', badge:'positional', bl:'Solid'},
+      {name:'Fischer', moves:'3.Nf3 d6', badge:'sharp', bl:'Defence'}
+    ],
+    ideas: ['Open lines and rapid attack','Black tries to hold the extra pawn','Razor-sharp — know your theory']
+  };
+OPENING_DETAILS['vienna-gambit'] = {
+    title: 'Vienna Gambit', eco: "ECO C29",
+    desc: "White plays an aggressive f4 in the Vienna, a King's Gambit-style attack with extra support.",
+    moves: '1. e4 e5 2. Nc3 Nf6 3. f4',
+    sanList: ["e4","e5","Nc3","Nf6","f4"],
+    lines: [
+      {name:'Main Line', moves:'3...d5 4.fxe5 Nxe4', badge:'sharp', bl:'Critical'},
+      {name:'3...exf4', moves:'3...exf4 4.e5', badge:'sharp', bl:'Wild'},
+      {name:'Modern', moves:'4.fxe5 Nxe4 5.Nf3', badge:'sharp', bl:'Active'}
+    ],
+    ideas: ["King's Gambit ideas with Nc3 support",'Open the f-file for attack',"3...d5 is Black's best defence"]
+  };
+OPENING_DETAILS['bishops-opening'] = {
+    title: "Bishop's Opening", eco: "ECO C23",
+    desc: 'White develops the bishop to c4 immediately, often transposing to other openings.',
+    moves: '1. e4 e5 2. Bc4',
+    sanList: ["e4","e5","Bc4"],
+    lines: [
+      {name:'Berlin', moves:'2...Nf6 3.d3', badge:'solid', bl:'Slow'},
+      {name:'Classical', moves:'2...Bc5 3.c3', badge:'positional', bl:'Centre'},
+      {name:'Urusov Gambit', moves:'2...Nf6 3.d4 exd4 4.Nf3', badge:'sharp', bl:'Gambit'}
+    ],
+    ideas: ['Aim the bishop at f7','Flexible — transposes to many lines','Slow build-up or sharp gambit']
+  };
+OPENING_DETAILS['petrov-classical'] = {
+    title: 'Petrov Classical', eco: "ECO C42",
+    desc: 'The solid Petrov where Black mirrors White and aims for symmetrical equality.',
+    moves: '1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. d4',
+    sanList: ["e4","e5","Nf3","Nf6","Nxe5","d6","Nf3","Nxe4","d4"],
+    lines: [
+      {name:'Main Line', moves:'5...d5 6.Bd3 Bd6', badge:'solid', bl:'Classical'},
+      {name:'Jaenisch', moves:'6.Bd3 Nc6', badge:'sharp', bl:'Active'},
+      {name:'5...Be7', moves:'5...Be7 6.Bd3', badge:'solid', bl:'Solid'}
+    ],
+    ideas: ['Symmetrical and very solid','Trade pieces toward equality','A reliable drawing weapon']
+  };
+OPENING_DETAILS['caro-advance'] = {
+    title: 'Caro-Kann Advance', eco: "ECO B12",
+    desc: 'White grabs space with 3.e5; Black develops the bishop and strikes with ...c5.',
+    moves: '1. e4 c6 2. d4 d5 3. e5',
+    sanList: ["e4","c6","d4","d5","e5"],
+    lines: [
+      {name:'Main Line', moves:'3...Bf5 4.Nf3 e6', badge:'positional', bl:'Standard'},
+      {name:'Short System', moves:'4.Nf3 e6 5.Be2', badge:'positional', bl:'Modern'},
+      {name:'Tal', moves:'4.Nc3 e6 5.g4', badge:'sharp', bl:'Aggressive'}
+    ],
+    ideas: ['Develop the bishop before ...e6','Strike the centre with ...c5','White has space, Black has solidity']
+  };
+OPENING_DETAILS['caro-classical'] = {
+    title: 'Caro-Kann Classical', eco: "ECO B18",
+    desc: 'Black develops the light-squared bishop actively before ...e6, the classical Caro setup.',
+    moves: '1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5',
+    sanList: ["e4","c6","d4","d5","Nc3","dxe4","Nxe4","Bf5"],
+    lines: [
+      {name:'Main Line', moves:'5.Ng3 Bg6 6.h4 h6 7.Nf3 Nd7', badge:'positional', bl:'Classical'},
+      {name:'Modern', moves:'5.Ng3 Bg6 6.Nf3', badge:'positional', bl:'Solid'},
+      {name:'Flohr', moves:'6.h4 h6 7.Nf3', badge:'positional', bl:'Standard'}
+    ],
+    ideas: ['Develop the bishop outside the chain','Very solid structure','Aim for a safe, slightly passive game']
+  };
+OPENING_DETAILS['caro-panov'] = {
+    title: 'Caro-Kann Panov', eco: "ECO B14",
+    desc: "White creates an isolated queen's pawn position with c4, leading to dynamic play.",
+    moves: '1. e4 c6 2. d4 d5 3. exd5 cxd5 4. c4',
+    sanList: ["e4","c6","d4","d5","exd5","cxd5","c4"],
+    lines: [
+      {name:'Main Line', moves:'4...Nf6 5.Nc3 e6', badge:'sharp', bl:'IQP'},
+      {name:'5...g6', moves:'5.Nc3 g6', badge:'positional', bl:'Fianchetto'},
+      {name:'Endgame', moves:'4...Nf6 5.Nc3 Nc6 6.Bg5', badge:'positional', bl:'Pressure'}
+    ],
+    ideas: ['IQP gives activity for structure','Open lines for the pieces','Dynamic middlegame play']
+  };
+OPENING_DETAILS['sicilian-grand-prix'] = {
+    title: 'Sicilian Grand Prix Attack', eco: "ECO B23",
+    desc: 'White launches a direct kingside attack with f4 and Bc4/Bb5, avoiding open Sicilian theory.',
+    moves: '1. e4 c5 2. Nc3 Nc6 3. f4',
+    sanList: ["e4","c5","Nc3","Nc6","f4"],
+    lines: [
+      {name:'Main Line', moves:'3...g6 4.Nf3 Bg7 5.Bc4', badge:'sharp', bl:'Attack'},
+      {name:'Bb5', moves:'4.Bb5 Nd4', badge:'sharp', bl:'Modern'},
+      {name:'3...e6', moves:'3...e6 4.Nf3 d5', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Direct kingside attack with f4-f5','Avoid heavy Sicilian theory','Aggressive and fun to play']
+  };
+OPENING_DETAILS['sicilian-richter-rauzer'] = {
+    title: 'Sicilian Richter-Rauzer', eco: "ECO B60",
+    desc: 'White pins with Bg5 in the Classical Sicilian, preparing opposite-side castling and attack.',
+    moves: '1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 d6 6. Bg5',
+    sanList: ["e4","c5","Nf3","Nc6","d4","cxd4","Nxd4","Nf6","Nc3","d6","Bg5"],
+    lines: [
+      {name:'Main Line', moves:'6...e6 7.Qd2 a6 8.O-O-O', badge:'sharp', bl:'Critical'},
+      {name:'7...Be7', moves:'7...Be7 8.O-O-O O-O', badge:'sharp', bl:'Standard'},
+      {name:'6...Bd7', moves:'6...Bd7 7.Qd2', badge:'sharp', bl:'Flexible'}
+    ],
+    ideas: ['Pin with Bg5 and castle long','Opposite-side castling race','Aggressive attacking chess']
+  };
+OPENING_DETAILS['french-advance'] = {
+    title: 'French Advance', eco: "ECO C02",
+    desc: 'White grabs space with 3.e5; Black attacks the base of the chain with ...c5.',
+    moves: '1. e4 e6 2. d4 d5 3. e5 c5',
+    sanList: ["e4","e6","d4","d5","e5","c5"],
+    lines: [
+      {name:'Main Line', moves:'4.c3 Nc6 5.Nf3 Qb6', badge:'sharp', bl:'Standard'},
+      {name:'Milner-Barry', moves:'6.Bd3 cxd4 7.cxd4 Bd7 8.O-O', badge:'sharp', bl:'Gambit'},
+      {name:'Euwe', moves:'4.c3 Nc6 5.Nf3 Bd7', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Attack the d4 pawn with ...c5 and ...Qb6','White defends the chain','Maneuvering around the locked centre']
+  };
+OPENING_DETAILS['french-winawer'] = {
+    title: 'French Winawer', eco: "ECO C18",
+    desc: 'The sharpest French — Black pins and trades the c3 knight, accepting doubled pawns for dynamism.',
+    moves: '1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 c5 5. a3 Bxc3+ 6. bxc3',
+    sanList: ["e4","e6","d4","d5","Nc3","Bb4","e5","c5","a3","Bxc3+","bxc3"],
+    lines: [
+      {name:'Poisoned Pawn', moves:'6...Ne7 7.Qg4 Qc7', badge:'sharp', bl:'Critical'},
+      {name:'Positional', moves:'6...Ne7 7.Nf3', badge:'positional', bl:'Solid'},
+      {name:'7.a4', moves:'7.h4', badge:'sharp', bl:'Aggressive'}
+    ],
+    ideas: ['Trade the bishop for the knight',"White's doubled pawns vs Black's structure",'One of the sharpest French lines']
+  };
+OPENING_DETAILS['pirc-austrian'] = {
+    title: 'Pirc Austrian Attack', eco: "ECO B09",
+    desc: 'White grabs maximum space with f4 against the Pirc, going for a direct attack.',
+    moves: '1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4',
+    sanList: ["e4","d6","d4","Nf6","Nc3","g6","f4"],
+    lines: [
+      {name:'Main Line', moves:'4...Bg7 5.Nf3 O-O', badge:'sharp', bl:'Standard'},
+      {name:'6.Bd3', moves:'5.Nf3 O-O 6.Bd3 Nc6', badge:'sharp', bl:'Aggressive'},
+      {name:'4...c5', moves:'4...c5 5.dxc5', badge:'sharp', bl:'Counter'}
+    ],
+    ideas: ['Maximum central space with f4','Direct kingside attack','Black counters with ...c5 or ...e5']
+  };
+OPENING_DETAILS['scandinavian-icelandic'] = {
+    title: 'Icelandic Gambit', eco: "ECO B01",
+    desc: 'A sharp Scandinavian gambit where Black sacrifices a pawn for fast development.',
+    moves: '1. e4 d5 2. exd5 Nf6 3. c4 e6',
+    sanList: ["e4","d5","exd5","Nf6","c4","e6"],
+    lines: [
+      {name:'Main Line', moves:'4.dxe6 Bxe6', badge:'sharp', bl:'Accepted'},
+      {name:'Declined', moves:'4.Nf3 exd5', badge:'positional', bl:'Solid'},
+      {name:'5.cxd5', moves:'4.dxe6 Bxe6 5.Nf3', badge:'sharp', bl:'Active'}
+    ],
+    ideas: ['Sacrifice for rapid development','Open lines for the pieces','A trappy surprise weapon']
+  };
+OPENING_DETAILS['slav-main'] = {
+    title: 'Slav Main Line', eco: "ECO D17",
+    desc: 'Black develops the bishop to f5 and holds the c4 pawn, the classical Slav approach.',
+    moves: '1. d4 d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4 5. a4 Bf5',
+    sanList: ["d4","d5","c4","c6","Nf3","Nf6","Nc3","dxc4","a4","Bf5"],
+    lines: [
+      {name:'Main Line', moves:'6.e3 e6 7.Bxc4 Bb4', badge:'positional', bl:'Classical'},
+      {name:'Dutch', moves:'6.Ne5 Nbd7', badge:'sharp', bl:'Sharp'},
+      {name:'Czech', moves:'6.e3 e6 7.Bxc4 Bb4 8.O-O', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Develop the bishop before ...e6','Hold the c4 pawn with ...b5 ideas','Very solid and reliable']
+  };
+OPENING_DETAILS['slav-exchange'] = {
+    title: 'Slav Exchange', eco: "ECO D10",
+    desc: 'White trades on d5 for a symmetrical, solid but instructive position.',
+    moves: '1. d4 d5 2. c4 c6 3. cxd5 cxd5',
+    sanList: ["d4","d5","c4","c6","cxd5","cxd5"],
+    lines: [
+      {name:'Main Line', moves:'4.Nc3 Nf6 5.Nf3 Nc6', badge:'solid', bl:'Symmetrical'},
+      {name:'4.Bf4', moves:'4.Bf4 Nc6', badge:'positional', bl:'Standard'},
+      {name:'Exchange', moves:'4.Nf3 Nf6 5.Nc3', badge:'solid', bl:'Solid'}
+    ],
+    ideas: ['Symmetrical but playable for a win','Fight for the c-file','Small edges add up']
+  };
+OPENING_DETAILS['qgd-ragozin'] = {
+    title: 'QGD Ragozin', eco: "ECO D38",
+    desc: 'Black combines ...d5 with ...Bb4, mixing QGD solidity with Nimzo-style pin pressure.',
+    moves: '1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 Bb4',
+    sanList: ["d4","Nf6","c4","e6","Nf3","d5","Nc3","Bb4"],
+    lines: [
+      {name:'Main Line', moves:'5.cxd5 exd5 6.Bg5 h6', badge:'sharp', bl:'Standard'},
+      {name:'5.Qa4+', moves:'5.Qa4+ Nc6', badge:'positional', bl:'Pin'},
+      {name:'Vienna', moves:'5.Bg5 dxc4', badge:'sharp', bl:'Tactical'}
+    ],
+    ideas: ['Pin the knight while holding d5','Mix of QGD and Nimzo ideas','Active piece play']
+  };
+OPENING_DETAILS['nimzo-classical'] = {
+    title: 'Nimzo Classical', eco: "ECO E32",
+    desc: 'White plays Qc2 to avoid doubled pawns; rich strategic battles follow.',
+    moves: '1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. Qc2',
+    sanList: ["d4","Nf6","c4","e6","Nc3","Bb4","Qc2"],
+    lines: [
+      {name:'Main Line', moves:'4...O-O 5.a3 Bxc3+ 6.Qxc3', badge:'positional', bl:'Classical'},
+      {name:'4...d5', moves:'4...d5 5.cxd5', badge:'positional', bl:'Centre'},
+      {name:'4...c5', moves:'4...c5 5.dxc5', badge:'sharp', bl:'Active'}
+    ],
+    ideas: ['Avoid doubled pawns with Qc2','Keep the bishop pair','Strategic maneuvering']
+  };
+OPENING_DETAILS['nimzo-rubinstein'] = {
+    title: 'Nimzo Rubinstein', eco: "ECO E40",
+    desc: 'The flexible 4.e3 system, the most popular and solid way to meet the Nimzo-Indian.',
+    moves: '1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. e3',
+    sanList: ["d4","Nf6","c4","e6","Nc3","Bb4","e3"],
+    lines: [
+      {name:'Main Line', moves:'4...O-O 5.Bd3 d5', badge:'positional', bl:'Classical'},
+      {name:'Hübner', moves:'4...c5 5.Bd3 Nc6', badge:'sharp', bl:'Structure'},
+      {name:'4...b6', moves:'4...b6 5.Nge2', badge:'positional', bl:'Fianchetto'}
+    ],
+    ideas: ['Solid and flexible development','Aim for a comfortable centre','Most popular Nimzo system']
+  };
+OPENING_DETAILS['benoni-czech'] = {
+    title: 'Czech Benoni', eco: "ECO A56",
+    desc: 'A closed, solid Benoni where Black locks the centre with ...e5.',
+    moves: '1. d4 Nf6 2. c4 c5 3. d5 e5',
+    sanList: ["d4","Nf6","c4","c5","d5","e5"],
+    lines: [
+      {name:'Main Line', moves:'4.Nc3 d6 5.e4 Be7', badge:'positional', bl:'Closed'},
+      {name:'Fianchetto', moves:'4.Nc3 d6 5.e4 g6', badge:'positional', bl:'Setup'},
+      {name:'Maneuvering', moves:'5.e4 Be7 6.Nf3', badge:'positional', bl:'Slow'}
+    ],
+    ideas: ['Lock the centre with ...e5','Slow maneuvering battle','Plan ...Ne8-g7-f5 or queenside play']
+  };
+OPENING_DETAILS['old-indian'] = {
+    title: 'Old Indian Defence', eco: "ECO A53",
+    desc: "A solid, classical setup with ...d6 and ...e5, a precursor to the King's Indian.",
+    moves: '1. d4 Nf6 2. c4 d6 3. Nc3 e5',
+    sanList: ["d4","Nf6","c4","d6","Nc3","e5"],
+    lines: [
+      {name:'Main Line', moves:'4.Nf3 Nbd7 5.e4 Be7', badge:'positional', bl:'Classical'},
+      {name:'4.dxe5', moves:'4.dxe5 dxe5 5.Qxd8+', badge:'solid', bl:'Endgame'},
+      {name:'Janowski', moves:'3...Bf5', badge:'positional', bl:'Active'}
+    ],
+    ideas: ['Solid ...d6 + ...e5 setup',"Less sharp than the King's Indian",'Aim for a sound, flexible game']
+  };
+OPENING_DETAILS['gruenfeld-fianchetto'] = {
+    title: 'Grünfeld Fianchetto', eco: "ECO D78",
+    desc: 'White fianchettos against the Grünfeld for a calmer positional struggle.',
+    moves: '1. d4 Nf6 2. c4 g6 3. Nf3 Bg7 4. g3 d5 5. Bg2',
+    sanList: ["d4","Nf6","c4","g6","Nf3","Bg7","g3","d5","Bg2"],
+    lines: [
+      {name:'Main Line', moves:'5...dxc4 6.O-O', badge:'positional', bl:'Standard'},
+      {name:'Closed', moves:'5...O-O 6.O-O', badge:'positional', bl:'Solid'},
+      {name:'6...c6', moves:'6.O-O c6', badge:'positional', bl:'Slav-like'}
+    ],
+    ideas: ["Fianchetto reduces Black's pressure",'Calmer Grünfeld play','Long-term positional maneuvering']
+  };
+OPENING_DETAILS['dutch-stonewall'] = {
+    title: 'Dutch Stonewall', eco: "ECO A90",
+    desc: 'Black builds the Stonewall pawn formation (d5, e6, f5) for a kingside attack.',
+    moves: '1. d4 f5 2. g3 Nf6 3. Bg2 e6 4. Nf3 d5',
+    sanList: ["d4","f5","g3","Nf6","Bg2","e6","Nf3","d5"],
+    lines: [
+      {name:'Main Line', moves:'5.O-O Bd6 6.c4 c6', badge:'positional', bl:'Classical'},
+      {name:'Modern', moves:'5.O-O Be7 6.c4 O-O', badge:'solid', bl:'Flexible'},
+      {name:'7.b3', moves:'6.c4 c6 7.b3', badge:'positional', bl:'Standard'}
+    ],
+    ideas: ['Build the Stonewall wall','Aim for a kingside attack with ...Ne4','The e5 square is key']
+  };
+OPENING_DETAILS['dutch-classical'] = {
+    title: 'Dutch Classical', eco: "ECO A96",
+    desc: 'Black plays the classical Dutch with ...e6, ...d6 and a flexible kingside.',
+    moves: '1. d4 f5 2. g3 Nf6 3. Bg2 e6 4. Nf3 Be7 5. O-O O-O 6. c4 d6',
+    sanList: ["d4","f5","g3","Nf6","Bg2","e6","Nf3","Be7","O-O","O-O","c4","d6"],
+    lines: [
+      {name:'Main Line', moves:'7.Nc3 Qe8', badge:'positional', bl:'Ilyin-Genevsky'},
+      {name:'Anti-Stonewall', moves:'7.Nc3 Ne4', badge:'sharp', bl:'Active'},
+      {name:'Stonewall switch', moves:'7.Nc3 Qe8 8.Re1', badge:'positional', bl:'Standard'}
+    ],
+    ideas: ['Flexible classical Dutch setup','Aim for ...e5 break','Kingside play with ...Qe8-h5']
+  };
+OPENING_DETAILS['budapest-gambit'] = {
+    title: 'Budapest Gambit', eco: "ECO A52",
+    desc: 'Black sacrifices a pawn with ...e5 for fast, active piece play.',
+    moves: '1. d4 Nf6 2. c4 e5',
+    sanList: ["d4","Nf6","c4","e5"],
+    lines: [
+      {name:'Main Line', moves:'3.dxe5 Ng4 4.Nf3 Nc6', badge:'sharp', bl:'Standard'},
+      {name:'Fajarowicz', moves:'3.dxe5 Ne4', badge:'sharp', bl:'Tricky'},
+      {name:'Adler', moves:'3.dxe5 Ng4 4.Bf4', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Sacrifice e5 for activity','Quick development and pressure','A fun surprise weapon']
+  };
+OPENING_DETAILS['london-system'] = {
+    title: 'London System', eco: "ECO D02",
+    desc: 'The famous system opening — Bf4, e3, c3, Nf3, Bd3 against almost anything.',
+    moves: '1. d4 d5 2. Nf3 Nf6 3. Bf4',
+    sanList: ["d4","d5","Nf3","Nf6","Bf4"],
+    lines: [
+      {name:'Main Line', moves:'3...c5 4.e3 Nc6 5.c3', badge:'positional', bl:'Standard'},
+      {name:'vs KID', moves:'3...g6 4.e3 Bg7', badge:'positional', bl:'Universal'},
+      {name:'Modern', moves:'3...c5 4.e3 Qb6', badge:'sharp', bl:'Active'}
+    ],
+    ideas: ['A system you can play vs everything','Bf4 + e3 + c3 is the core setup','Aim for Ne5 and a kingside attack']
+  };
+OPENING_DETAILS['colle-zukertort'] = {
+    title: 'Colle-Zukertort', eco: "ECO D05",
+    desc: 'A system with b3 and Bb2, combining the Colle with a queenside fianchetto.',
+    moves: '1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3 c5 5. b3',
+    sanList: ["d4","d5","Nf3","Nf6","e3","e6","Bd3","c5","b3"],
+    lines: [
+      {name:'Main Line', moves:'5...Nc6 6.Bb2 Bd6', badge:'positional', bl:'Standard'},
+      {name:'6...Be7', moves:'6.O-O Be7', badge:'solid', bl:'Solid'},
+      {name:'Pawn storm', moves:'6.Bb2 Bd6 7.O-O O-O', badge:'positional', bl:'Attack'}
+    ],
+    ideas: ['The b2 bishop adds central pressure','Easy system to learn','Aim for the e4 break or kingside attack']
+  };
+OPENING_DETAILS['english-four-knights'] = {
+    title: 'English Four Knights', eco: "ECO A28",
+    desc: 'All four knights come out in the English, leading to flexible positional play.',
+    moves: '1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6 4. e3',
+    sanList: ["c4","e5","Nc3","Nf6","Nf3","Nc6","e3"],
+    lines: [
+      {name:'Main Line', moves:'4...Bb4 5.Qc2', badge:'positional', bl:'Standard'},
+      {name:'4...d5', moves:'4...d5 5.cxd5', badge:'sharp', bl:'Open'},
+      {name:'Nimzo-English', moves:'4...Bb4 5.Qc2 O-O', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Flexible piece development','Aim for d4 or queenside play','A solid English setup']
+  };
+OPENING_DETAILS['english-symmetrical-hedgehog'] = {
+    title: 'English Hedgehog', eco: "ECO A30",
+    desc: 'Black sets up the flexible hedgehog formation, coiled to spring with ...b5 or ...d5.',
+    moves: '1. c4 c5 2. Nf3 Nf6 3. g3 b6 4. Bg2 Bb7',
+    sanList: ["c4","c5","Nf3","Nf6","g3","b6","Bg2","Bb7"],
+    lines: [
+      {name:'Main Line', moves:'5.O-O e6 6.Nc3 Be7', badge:'positional', bl:'Standard'},
+      {name:'6...d6', moves:'6.Nc3 d6 7.d4', badge:'positional', bl:'Flexible'},
+      {name:'Maroczy', moves:'5.Nc3 e6 6.d4', badge:'positional', bl:'Bind'}
+    ],
+    ideas: ['Coil the hedgehog, then strike','...b5 and ...d5 are the freeing breaks','Patience and flexibility win']
+  };
+OPENING_DETAILS['reti-kings-indian-attack'] = {
+    title: 'Réti / KIA Hybrid', eco: "ECO A07",
+    desc: "A hypermodern setup combining Réti and King's Indian Attack ideas with g3 and Bg2.",
+    moves: '1. Nf3 d5 2. g3 Nf6 3. Bg2',
+    sanList: ["Nf3","d5","g3","Nf6","Bg2"],
+    lines: [
+      {name:'Main Line', moves:'3...e6 4.O-O Be7', badge:'positional', bl:'Standard'},
+      {name:'3...c6', moves:'3...c6 4.O-O Bg4', badge:'solid', bl:'Solid'},
+      {name:'3...g6', moves:'3...g6 4.O-O Bg7', badge:'positional', bl:'Double fianchetto'}
+    ],
+    ideas: ['Control the centre from the wings','Fianchetto and pressure d5','Flexible, low-theory system']
+  };
+OPENING_DETAILS['english-anglo-indian'] = {
+    title: 'Anglo-Indian Defence', eco: "ECO A15",
+    desc: 'Black answers 1.c4 with ...Nf6, keeping options open for many Indian setups.',
+    moves: '1. c4 Nf6 2. Nc3 e6 3. Nf3',
+    sanList: ["c4","Nf6","Nc3","e6","Nf3"],
+    lines: [
+      {name:'Main Line', moves:'3...d5 4.d4', badge:'positional', bl:'QGD transpose'},
+      {name:'3...Bb4', moves:'3...Bb4 4.Qc2', badge:'positional', bl:'Nimzo-like'},
+      {name:'3...c5', moves:'3...c5 4.g3', badge:'positional', bl:'Symmetrical'}
+    ],
+    ideas: ['Keep options open with ...Nf6','Often transposes to d4 openings','Flexible move-order weapon']
+  };
+OPENING_DETAILS['larsen-attack'] = {
+    title: "Larsen's Opening", eco: "ECO A01",
+    desc: "White's 1.b3 fianchettos the queen's bishop, a flexible hypermodern flank opening.",
+    moves: '1. b3 d5 2. Bb2 Nf6 3. Nf3',
+    sanList: ["b3","d5","Bb2","Nf6","Nf3"],
+    lines: [
+      {name:'Main Line', moves:'3...e6 4.e3 Be7', badge:'positional', bl:'Standard'},
+      {name:'3...g6', moves:'3...g6 4.g3', badge:'positional', bl:'Double fianchetto'},
+      {name:'3...c5', moves:'3...c5 4.e3', badge:'positional', bl:'Flexible'}
+    ],
+    ideas: ['The b2 bishop eyes the long diagonal','Flexible and offbeat',"Undermine Black's centre with c4/e3"]
+  };
+OPENING_DETAILS['english-mikenas'] = {
+    title: 'English Mikenas-Carls', eco: "ECO A18",
+    desc: 'A sharp English where White plays an early e4 against ...e6 setups.',
+    moves: '1. c4 Nf6 2. Nc3 e6 3. e4',
+    sanList: ["c4","Nf6","Nc3","e6","e4"],
+    lines: [
+      {name:'Main Line', moves:'3...d5 4.e5 d4', badge:'sharp', bl:'Critical'},
+      {name:'3...c5', moves:'3...c5 4.e5 Ng8', badge:'sharp', bl:'Wild'},
+      {name:'Flohr', moves:'3...d5 4.cxd5 exd5', badge:'positional', bl:'Open'}
+    ],
+    ideas: ['Grab the centre with an early e4','Sharp, aggressive English','Surprise value for ...e6 players']
+  };
+OPENING_DETAILS['grob-gambit'] = {
+    title: 'Grob Gambit', eco: "ECO A00",
+    desc: 'The wild 1.g4 followed by gambit play — chaotic and surprising.',
+    moves: '1. g4 d5 2. Bg2 Bxg4 3. c4',
+    sanList: ["g4","d5","Bg2","Bxg4","c4"],
+    lines: [
+      {name:'Main Line', moves:'3...c6 4.cxd5', badge:'sharp', bl:'Standard'},
+      {name:'3...d4', moves:'3...d4 4.Bxb7', badge:'sharp', bl:'Wild'},
+      {name:'Declined', moves:'3...e6 4.cxd5', badge:'sharp', bl:'Open'}
+    ],
+    ideas: ['Pure chaos and surprise','The g2 bishop hits b7','Best in bullet and blitz']
+  };
+OPENING_DETAILS['saragossa'] = {
+    title: 'Saragossa Opening', eco: "ECO A00",
+    desc: 'The quiet 1.c3, a flexible waiting move that can transpose to many openings.',
+    moves: '1. c3 d5 2. d4',
+    sanList: ["c3","d5","d4"],
+    lines: [
+      {name:'Main Line', moves:'2...Nf6 3.Bf4', badge:'positional', bl:'London-like'},
+      {name:'2...e6', moves:'2...e6 3.Bf4', badge:'solid', bl:'Solid'},
+      {name:'Transpose', moves:'2...c5 3.dxc5', badge:'positional', bl:'Flexible'}
+    ],
+    ideas: ['A flexible waiting move','Transposes to many systems','Low theory, sound positions']
+  };
+OPENING_DETAILS['van-geet'] = {
+    title: 'Van Geet Opening', eco: "ECO A00",
+    desc: 'The offbeat 1.Nc3, developing a knight first and keeping options flexible.',
+    moves: '1. Nc3 d5 2. e4',
+    sanList: ["Nc3","d5","e4"],
+    lines: [
+      {name:'Main Line', moves:'2...d4 3.Nce2', badge:'positional', bl:'Standard'},
+      {name:'2...dxe4', moves:'2...dxe4 3.Nxe4', badge:'sharp', bl:'Open'},
+      {name:'3.Nce2', moves:'2...d4 3.Nce2 e5', badge:'positional', bl:'Closed'}
+    ],
+    ideas: ['Develop the knight first','Flexible, surprising move orders','Can transpose to many e4 lines']
+  };
+OPENING_DETAILS['english-carls-bremen'] = {
+    title: 'Bremen System', eco: "ECO A22",
+    desc: 'White meets 1.c4 e5 with g3, a flexible reversed-Sicilian setup.',
+    moves: '1. c4 e5 2. Nc3 Nf6 3. g3',
+    sanList: ["c4","e5","Nc3","Nf6","g3"],
+    lines: [
+      {name:'Main Line', moves:'3...d5 4.cxd5 Nxd5', badge:'positional', bl:'Reversed Dragon'},
+      {name:'3...Bb4', moves:'3...Bb4 4.Bg2', badge:'positional', bl:'Pin'},
+      {name:'3...g6', moves:'3...g6 4.Bg2 Bg7', badge:'positional', bl:'Symmetrical'}
+    ],
+    ideas: ['Fianchetto in the English','Reversed Sicilian structures','Flexible and solid']
+  };
+OPENING_DETAILS['zukertort-opening'] = {
+    title: 'Zukertort Opening', eco: "ECO A04",
+    desc: 'The flexible 1.Nf3, controlling the centre and keeping all options open.',
+    moves: '1. Nf3 d5 2. d4',
+    sanList: ["Nf3","d5","d4"],
+    lines: [
+      {name:'Main Line', moves:'2...Nf6 3.c4', badge:'positional', bl:'QGD transpose'},
+      {name:'2...c5', moves:'2...c5 3.c4', badge:'positional', bl:'Symmetrical'},
+      {name:'Colle', moves:'2...Nf6 3.e3', badge:'solid', bl:'System'}
+    ],
+    ideas: ['Maximum flexibility','Transposes to d4 mainlines','Control the centre with pieces first']
+  };
+OPENING_DETAILS['kings-indian-attack-french'] = {
+    title: 'KIA vs French', eco: "ECO A08",
+    desc: "White uses the King's Indian Attack against French-style ...e6 setups.",
+    moves: '1. e4 e6 2. d3 d5 3. Nd2 c5 4. Ngf3 Nc6 5. g3',
+    sanList: ["e4","e6","d3","d5","Nd2","c5","Ngf3","Nc6","g3"],
+    lines: [
+      {name:'Main Line', moves:'5...Nf6 6.Bg2 Be7 7.O-O O-O 8.e5', badge:'positional', bl:'Standard'},
+      {name:'5...g6', moves:'5...g6 6.Bg2 Bg7', badge:'positional', bl:'Fianchetto'},
+      {name:'Attack', moves:'8.e5 Nd7 9.Re1', badge:'sharp', bl:'Kingside'}
+    ],
+    ideas: ['A system vs the French','Push e5 and attack the kingside','Nf1-h2-g4 is the typical plan']
+  };OPENING_DETAILS['kings-pawn'] = {
     title: "King's Pawn Game", eco: "ECO C20",
     desc: 'The starting point of countless openings after 1.e4 e5. Classical development and open, tactical play.',
     moves: '1. e4 e5',
