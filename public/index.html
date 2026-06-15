@@ -1567,13 +1567,98 @@ input:focus, select:focus, textarea:focus {
   .ubp-mini-eval{opacity:.7;font-size:11px;margin-left:2px}
   .ubp-pill .ann{margin-left:1px;padding:1px 4px;font-size:9.5px;min-width:14px;height:14px}
 
+
+  /* ═══════════ DUOLINGO-STYLE LEARN FLOW ═══════════ */
+  #sec-learn { background: var(--bg1); }
+  .learn-wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  .learn-topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+  .learn-exit {
+    background: none; border: 1px solid var(--border); color: var(--text2);
+    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px;
+    font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap;
+  }
+  .learn-exit:hover { background: var(--bg3); color: var(--text); }
+  .learn-progress-track {
+    flex: 1; height: 14px; background: var(--bg3); border-radius: 8px;
+    overflow: hidden; border: 1px solid var(--border);
+  }
+  .learn-progress-fill {
+    height: 100%; width: 0%; border-radius: 8px;
+    background: linear-gradient(90deg, #7fc99c, #5fb88a);
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+  }
+  .learn-step-count {
+    font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text2);
+    white-space: nowrap; min-width: 54px; text-align: right;
+  }
+  .learn-stage {
+    display: grid; grid-template-columns: auto 1fr; gap: 40px; align-items: start;
+  }
+  @media (max-width: 860px){ .learn-stage { grid-template-columns: 1fr; } }
+  .learn-board-controls {
+    display: flex; gap: 8px; margin-top: 14px; justify-content: center;
+  }
+  .learn-text-col { padding-top: 8px; }
+  .learn-lesson-title {
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gold); font-family: 'DM Mono', monospace; margin-bottom: 16px;
+  }
+  .learn-move-badge {
+    display: inline-block; font-family: 'DM Mono', monospace; font-weight: 700;
+    font-size: 22px; color: var(--text); background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 10px; padding: 8px 18px;
+    margin-bottom: 18px; min-height: 24px;
+  }
+  .learn-explain {
+    font-size: 17px; line-height: 1.65; color: var(--text); max-width: 460px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .learn-explain strong { color: var(--gold); }
+  .learn-feedback { margin-top: 20px; min-height: 40px; }
+  .learn-fb-wrong {
+    background: rgba(216,83,91,.08); border-left: 3px solid #d8535b;
+    padding: 14px 16px; border-radius: 0 8px 8px 0; color: #e88; font-size: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .learn-fb-correct {
+    background: rgba(127,201,156,.1); border-left: 3px solid #7fc99c;
+    padding: 14px 16px; border-radius: 0 8px 8px 0; color: #7fc99c; font-size: 14px;
+  }
+  .learn-prompt {
+    background: rgba(201,168,76,.08); border-left: 3px solid var(--gold);
+    padding: 14px 16px; border-radius: 0 8px 8px 0; color: var(--text2); font-size: 14px;
+  }
+  /* Mastered celebration screen */
+  .learn-mastered {
+    text-align: center; padding: 40px 20px; max-width: 480px; margin: 0 auto;
+  }
+  .learn-mastered-icon { font-size: 72px; margin-bottom: 16px; animation: pop .5s cubic-bezier(.2,1.4,.5,1); }
+  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+  .learn-mastered-title { font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 10px; font-family: 'Playfair Display', serif; }
+  .learn-mastered-sub { font-size: 15px; color: var(--text2); line-height: 1.6; margin-bottom: 28px; }
+  .learn-mastered-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  /* Stage selector (fundamentals → variations) */
+  .learn-stage-pick { max-width: 640px; margin: 0 auto; }
+  .learn-stage-card {
+    display: flex; align-items: center; gap: 16px; padding: 18px 20px;
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 12px; cursor: pointer; transition: all .15s;
+  }
+  .learn-stage-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+  .learn-stage-card.done { border-color: rgba(127,201,156,.5); }
+  .learn-stage-icon { font-size: 32px; }
+  .learn-stage-info { flex: 1; }
+  .learn-stage-name { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .learn-stage-meta { font-size: 12px; color: var(--text3); }
+  .learn-stage-check { font-size: 22px; color: #7fc99c; }
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.14 FIXES</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.15 LEARN</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -1709,6 +1794,41 @@ input:focus, select:focus, textarea:focus {
 </div>
 
 <!-- ══════════════ ANALYSIS ══════════════ -->
+<!-- ═══════════ DUOLINGO-STYLE LEARN FLOW ═══════════ -->
+<div id="sec-learn" class="section">
+  <div class="learn-wrap">
+    <div class="learn-topbar">
+      <button class="learn-exit" onclick="exitLearn()">← Exit</button>
+      <div class="learn-progress-track"><div class="learn-progress-fill" id="learn-progress-fill"></div></div>
+      <div class="learn-step-count" id="learn-step-count"></div>
+    </div>
+
+    <div class="learn-stage">
+      <div class="learn-board-col">
+        <div style="display:inline-flex;flex-direction:column;position:relative">
+          <div style="display:flex;gap:0;position:relative">
+            <div class="board-ranks" id="board-ranks-l"></div>
+            <div id="board-l" class="chess-board"></div>
+          </div>
+          <div class="board-files" id="board-files-l"></div>
+        </div>
+        <div class="learn-board-controls">
+          <button class="btn btn-outline btn-sm" onclick="learnBack()" id="learn-back-btn">← Back</button>
+          <button class="btn btn-outline btn-sm" onclick="flipBoard('board-l')">⇅ Flip</button>
+          <button class="btn btn-gold btn-sm" onclick="learnNext()" id="learn-next-btn">Next move →</button>
+        </div>
+      </div>
+
+      <div class="learn-text-col">
+        <div class="learn-lesson-title" id="learn-lesson-title"></div>
+        <div class="learn-move-badge" id="learn-move-badge"></div>
+        <div class="learn-explain" id="learn-explain"></div>
+        <div class="learn-feedback" id="learn-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="sec-analysis" class="section">
   <div class="analysis-hero">
     <h2>Opening <em style="color:var(--gold)">Performance</em> Analysis</h2>
@@ -3614,7 +3734,9 @@ window.loadOpening = function(id){
 
   // Hide quiz-actions in header (kept for backwards compat but no longer used in this UI)
   const quizActions = document.getElementById('od-quiz-actions');
-  if(quizActions) quizActions.innerHTML = '';
+  if(quizActions){
+    quizActions.innerHTML = `<button class="btn btn-gold" onclick="startLearnOpening('${id}')">🎓 Learn this opening</button>`;
+  }
   // Hide the completion banner initially — it will appear when user finishes moves
   const completionEl = document.getElementById('od-completion');
   if(completionEl) completionEl.style.display = 'none';
@@ -15379,6 +15501,364 @@ QUIZ_VARIATIONS['sicilian-schev'] = [
 
 
 // ════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// DUOLINGO-STYLE LEARN FLOW
+// One move at a time: text explanation + board. User must PLAY the
+// referenced move to advance. Wrong move → "not the course recommendation"
+// + Try Again. At the end → "Mastered!" → drill.
+// ═══════════════════════════════════════════════════════════════
+let learnState = {
+  openingId: null,
+  lessonName: '',      // e.g. "Fundamentals" or a variation name
+  steps: [],           // [{san, from, to, stateBefore, stateAfter, explain, side}]
+  idx: 0,              // current step index (0 = first move to play)
+  awaiting: true,      // true = waiting for user to play the current move
+  isVariation: false,
+  variationIdx: -1,
+};
+
+// Strip move numbers from a line string: "3...a6 4.Ba4 Nf6" → ["a6","Ba4","Nf6"]
+function lineToSanList(movesStr){
+  if(!movesStr) return [];
+  return movesStr
+    .replace(/\d+\.\.\./g, ' ')   // remove "3..."
+    .replace(/\d+\./g, ' ')         // remove "4."
+    .replace(/[!?]+/g, '')           // remove annotations
+    .trim().split(/\s+/).filter(Boolean);
+}
+
+// Build the step list (each move + an explanation) from a SAN list
+function buildLearnSteps(sanList, explanations){
+  const steps = [];
+  let state = parseFEN(startFEN());
+  for(let i = 0; i < sanList.length; i++){
+    const san = sanList[i];
+    let mv;
+    try { mv = sanToMove(san, state); } catch(e){ mv = null; }
+    if(!mv) break;
+    const stateAfter = applyMove(state, mv);
+    steps.push({
+      san,
+      from: mv.from,
+      to: mv.to,
+      stateBefore: state,
+      stateAfter,
+      side: state.turn,  // whose move this is
+      explain: (explanations && explanations[i]) || defaultExplain(san, i, state.turn),
+    });
+    state = stateAfter;
+  }
+  return steps;
+}
+
+// Generate a basic explanation if none supplied
+function defaultExplain(san, i, side){
+  const who = side === 'w' ? 'White' : 'Black';
+  return `<strong>${san}</strong> — ${who}\'s move ${Math.floor(i/2)+1}. Play it on the board to continue.`;
+}
+
+// ─── Entry point: start learning an opening (fundamentals first) ───
+window.startLearnOpening = function(openingId){
+  const detail = OPENING_DETAILS[openingId] || OPENING_DETAILS[openingId.replace('-','_')];
+  if(!detail) return;
+  // Show the stage picker: Fundamentals + each variation
+  showSection('learn');
+  renderStagePicker(openingId, detail);
+};
+
+function renderStagePicker(openingId, detail){
+  const stage = document.querySelector('.learn-stage');
+  const topbar = document.querySelector('.learn-topbar');
+  if(topbar) topbar.style.visibility = 'hidden';
+
+  const mastered = getLearnMasteredSet(openingId);
+  let html_out = `<div class="learn-stage-pick">
+    <button class="learn-exit" onclick="exitLearn()" style="margin-bottom:20px">← Back to openings</button>
+    <h1 style="font-family:'Playfair Display',serif;font-size:28px;color:var(--text);margin-bottom:6px">${detail.title}</h1>
+    <p style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:24px">${detail.desc || ''}</p>
+    <div class="section-label">Start here</div>
+    <div class="learn-stage-card ${mastered.has('fundamentals') ? 'done' : ''}" onclick="learnFundamentals('${openingId}')">
+      <div class="learn-stage-icon">📚</div>
+      <div class="learn-stage-info">
+        <div class="learn-stage-name">Fundamentals & Main Ideas</div>
+        <div class="learn-stage-meta">The main line, key plans, and what both sides are trying to do</div>
+      </div>
+      ${mastered.has('fundamentals') ? '<div class="learn-stage-check">✓</div>' : ''}
+    </div>`;
+
+  if(detail.lines && detail.lines.length > 0){
+    html_out += `<div class="section-label" style="margin-top:20px">Then dive into variations</div>`;
+    detail.lines.forEach((line, i) => {
+      const key = 'var-' + i;
+      html_out += `<div class="learn-stage-card ${mastered.has(key) ? 'done' : ''}" onclick="learnVariation('${openingId}', ${i})">
+        <div class="learn-stage-icon">${mastered.has(key) ? '🏆' : '♟'}</div>
+        <div class="learn-stage-info">
+          <div class="learn-stage-name">${line.name}</div>
+          <div class="learn-stage-meta">${line.bl || 'Variation'} · ${lineToSanList(line.moves).length} moves</div>
+        </div>
+        ${mastered.has(key) ? '<div class="learn-stage-check">✓</div>' : ''}
+      </div>`;
+    });
+  }
+  html_out += `</div>`;
+  stage.innerHTML = html_out;
+}
+
+// ─── Learn the fundamentals (main line) ───
+window.learnFundamentals = function(openingId){
+  const detail = OPENING_DETAILS[openingId] || OPENING_DETAILS[openingId.replace('-','_')];
+  if(!detail) return;
+  const sanList = detail.sanList && detail.sanList.length ? detail.sanList : lineToSanList(detail.moves);
+  // Build explanations from the "ideas" if available, else default
+  const explanations = sanList.map((san, i) => {
+    return `<strong>${san}</strong> — ${moveExplanationFundamentals(detail, san, i)}`;
+  });
+  learnState = {
+    openingId, lessonName: 'Fundamentals', isVariation: false, variationIdx: -1,
+    steps: buildLearnSteps(sanList, explanations), idx: 0, awaiting: true,
+  };
+  restoreLearnUI();
+  renderLearnStep();
+};
+
+function moveExplanationFundamentals(detail, san, i){
+  // Short, useful explanation. Pull from ideas array cyclically as flavor.
+  const moveNum = Math.floor(i/2) + 1;
+  const phase = i < 2 ? 'Opening move — stake a claim in the centre.'
+    : i < 6 ? 'Develop a piece toward the centre and prepare to castle.'
+    : 'Complete development and connect your plans.';
+  return phase + (i === detail.sanList.length - 1 ? ' This reaches the starting tabiya of the opening.' : '');
+}
+
+// ─── Learn a specific variation ───
+window.learnVariation = function(openingId, varIdx){
+  const detail = OPENING_DETAILS[openingId] || OPENING_DETAILS[openingId.replace('-','_')];
+  if(!detail || !detail.lines || !detail.lines[varIdx]) return;
+  const line = detail.lines[varIdx];
+  // Variation moves often start from the opening's main line — combine them
+  const baseSans = detail.sanList && detail.sanList.length ? detail.sanList : lineToSanList(detail.moves);
+  const varSans = lineToSanList(line.moves);
+  // The variation moves may repeat or extend the main line. Use the variation
+  // moves directly if they start from move 1, otherwise prepend the base.
+  let fullSans;
+  // Heuristic: if the first variation move is a Black reply like "a6" or starts
+  // mid-game, prepend the base line up to the deviation point.
+  if(varSans.length > 0 && baseSans.length > 0){
+    // Check if variation already includes the base by testing playability from start
+    let testState = parseFEN(startFEN());
+    let varPlaysFromStart = true;
+    try {
+      const m0 = sanToMove(varSans[0], testState);
+      if(!m0) varPlaysFromStart = false;
+    } catch(e){ varPlaysFromStart = false; }
+    fullSans = varPlaysFromStart ? varSans : baseSans.concat(varSans);
+  } else {
+    fullSans = varSans.length ? varSans : baseSans;
+  }
+  const explanations = fullSans.map((san, i) => {
+    const inVar = i >= (fullSans.length - varSans.length);
+    return `<strong>${san}</strong> — ${inVar ? variationMoveNote(line, san, i) : 'Main line development.'}`;
+  });
+  learnState = {
+    openingId, lessonName: line.name, isVariation: true, variationIdx: varIdx,
+    steps: buildLearnSteps(fullSans, explanations), idx: 0, awaiting: true,
+  };
+  restoreLearnUI();
+  renderLearnStep();
+};
+
+function variationMoveNote(line, san, i){
+  return line.bl ? `Key move in the ${line.name} (${line.bl}).` : `A defining move of this variation.`;
+}
+
+function restoreLearnUI(){
+  const stage = document.querySelector('.learn-stage');
+  const topbar = document.querySelector('.learn-topbar');
+  if(topbar) topbar.style.visibility = 'visible';
+  // Rebuild the original stage HTML (board + text columns) if it was replaced
+  if(!document.getElementById('board-l')){
+    stage.innerHTML = `
+      <div class="learn-board-col">
+        <div style="display:inline-flex;flex-direction:column;position:relative">
+          <div style="display:flex;gap:0;position:relative">
+            <div class="board-ranks" id="board-ranks-l"></div>
+            <div id="board-l" class="chess-board"></div>
+          </div>
+          <div class="board-files" id="board-files-l"></div>
+        </div>
+        <div class="learn-board-controls">
+          <button class="btn btn-outline btn-sm" onclick="learnBack()" id="learn-back-btn">← Back</button>
+          <button class="btn btn-outline btn-sm" onclick="flipBoard('board-l')">⇅ Flip</button>
+          <button class="btn btn-gold btn-sm" onclick="learnNext()" id="learn-next-btn">Next move →</button>
+        </div>
+      </div>
+      <div class="learn-text-col">
+        <div class="learn-lesson-title" id="learn-lesson-title"></div>
+        <div class="learn-move-badge" id="learn-move-badge"></div>
+        <div class="learn-explain" id="learn-explain"></div>
+        <div class="learn-feedback" id="learn-feedback"></div>
+      </div>`;
+  }
+  // If learning as Black, flip the board automatically
+  const firstSide = learnState.steps[0] ? learnState.steps[0].side : 'w';
+  boardFlippedState.set('board-l', firstSide === 'b');
+}
+
+// ─── Render the current learn step ───
+function renderLearnStep(){
+  const step = learnState.steps[learnState.idx];
+  const total = learnState.steps.length;
+
+  // Progress bar
+  const pct = Math.round((learnState.idx / total) * 100);
+  document.getElementById('learn-progress-fill').style.width = pct + '%';
+  document.getElementById('learn-step-count').textContent = `${learnState.idx}/${total}`;
+  document.getElementById('learn-lesson-title').textContent = learnState.lessonName;
+
+  if(!step){ showMasteredScreen(); return; }
+
+  // Show the board in the "before" state — user must PLAY the move
+  renderBoardEl('board-l', 'board-ranks-l', 'board-files-l', step.stateBefore, [], null);
+  makeBoardInteractive('board-l', step.stateBefore, onLearnUserMove);
+  updateInteractiveState('board-l', step.stateBefore);
+
+  // The move badge is hidden until they play it (we don't give away the answer)
+  document.getElementById('learn-move-badge').textContent = step.side === 'w' ? 'White to move' : 'Black to move';
+  document.getElementById('learn-explain').innerHTML = step.explain;
+  document.getElementById('learn-feedback').innerHTML =
+    `<div class="learn-prompt">▶ Find and play the move described above. Drag or click a piece to move it.</div>`;
+
+  // Next button disabled until they play correctly
+  const nextBtn = document.getElementById('learn-next-btn');
+  nextBtn.disabled = !( !learnState.awaiting );
+  nextBtn.style.opacity = learnState.awaiting ? '.4' : '1';
+  document.getElementById('learn-back-btn').disabled = learnState.idx === 0;
+}
+
+// ─── User plays a move on the learn board ───
+function onLearnUserMove(from, to, newState, san){
+  const step = learnState.steps[learnState.idx];
+  if(!step) return;
+  // Is it the course move?
+  const playedUCI = from + to;
+  const correctUCI = step.from + step.to;
+  if(playedUCI === correctUCI){
+    // Correct! Show the move, mark not awaiting, enable Next
+    learnState.awaiting = false;
+    renderBoardEl('board-l', 'board-ranks-l', 'board-files-l', step.stateAfter, [step.from, step.to], null);
+    document.getElementById('board-l').classList.remove('shake');
+    document.getElementById('learn-move-badge').textContent = step.san;
+    document.getElementById('learn-feedback').innerHTML =
+      `<div class="learn-fb-correct">✓ Correct! ${step.san} is the course move.</div>`;
+    const nextBtn = document.getElementById('learn-next-btn');
+    nextBtn.disabled = false;
+    nextBtn.style.opacity = '1';
+    // Auto-advance after a short beat (Duolingo style)
+    setTimeout(() => { if(!learnState.awaiting) learnNext(); }, 900);
+  } else {
+    // Wrong move — "not the course recommendation"
+    renderBoardEl('board-l', 'board-ranks-l', 'board-files-l', step.stateBefore, [], null);
+    makeBoardInteractive('board-l', step.stateBefore, onLearnUserMove);
+    updateInteractiveState('board-l', step.stateBefore);
+    document.getElementById('learn-feedback').innerHTML =
+      `<div class="learn-fb-wrong">
+        <span>✗ That\'s not the course recommendation.</span>
+        <button class="btn btn-outline btn-sm" onclick="learnTryAgain()">Try again</button>
+      </div>`;
+  }
+}
+
+window.learnTryAgain = function(){
+  const step = learnState.steps[learnState.idx];
+  if(!step) return;
+  renderBoardEl('board-l', 'board-ranks-l', 'board-files-l', step.stateBefore, [], null);
+  makeBoardInteractive('board-l', step.stateBefore, onLearnUserMove);
+  updateInteractiveState('board-l', step.stateBefore);
+  document.getElementById('learn-feedback').innerHTML =
+    `<div class="learn-prompt">▶ ${step.explain.replace(/<[^>]+>/g, '')}</div>`;
+};
+
+window.learnNext = function(){
+  if(learnState.awaiting) return;  // can't skip without playing
+  learnState.idx++;
+  learnState.awaiting = true;
+  if(learnState.idx >= learnState.steps.length){
+    showMasteredScreen();
+  } else {
+    renderLearnStep();
+  }
+};
+
+window.learnBack = function(){
+  if(learnState.idx === 0) return;
+  learnState.idx--;
+  learnState.awaiting = true;
+  renderLearnStep();
+};
+
+// ─── Mastered celebration ───
+function showMasteredScreen(){
+  // Mark mastered
+  const key = learnState.isVariation ? ('var-' + learnState.variationIdx) : 'fundamentals';
+  markLearnMastered(learnState.openingId, key);
+
+  document.getElementById('learn-progress-fill').style.width = '100%';
+  document.getElementById('learn-step-count').textContent = `${learnState.steps.length}/${learnState.steps.length}`;
+
+  const stage = document.querySelector('.learn-stage');
+  const detail = OPENING_DETAILS[learnState.openingId] || OPENING_DETAILS[learnState.openingId.replace('-','_')];
+  const canDrill = learnState.isVariation;
+  stage.innerHTML = `
+    <div class="learn-mastered" style="grid-column:1/-1">
+      <div class="learn-mastered-icon">🏆</div>
+      <div class="learn-mastered-title">Mastered!</div>
+      <div class="learn-mastered-sub">
+        You\'ve learned <strong style="color:var(--gold)">${learnState.lessonName}</strong>${detail ? ' of the ' + detail.title : ''}.
+        ${canDrill ? 'Now test your memory with a drill to lock it in.' : 'Now dive into the variations to deepen your knowledge.'}
+      </div>
+      <div class="learn-mastered-buttons">
+        ${canDrill ? `<button class="btn btn-gold" onclick="startVariationDrill('${learnState.openingId}', ${learnState.variationIdx})">▶ Drill this variation</button>` : ''}
+        <button class="btn btn-outline" onclick="startLearnOpening('${learnState.openingId}')">${canDrill ? 'Back to lessons' : 'Explore variations →'}</button>
+        <button class="btn btn-outline" onclick="exitLearn()">Exit</button>
+      </div>
+    </div>`;
+}
+
+// ─── Drill launcher: jump into the existing quiz/variation drill ───
+window.startVariationDrill = function(openingId, varIdx){
+  exitLearn();
+  showSection('quizzes');
+  // Try to launch the matching variation drill if it exists
+  setTimeout(() => {
+    if(typeof startOpeningDrill === 'function'){
+      startOpeningDrill(openingId);
+    } else if(typeof renderQuizOpenings === 'function'){
+      renderQuizOpenings();
+    }
+  }, 100);
+};
+
+window.exitLearn = function(){
+  showSection('openings');
+};
+
+// ─── Mastery persistence (localStorage) ───
+function getLearnMasteredSet(openingId){
+  try {
+    const raw = localStorage.getItem('gambit_mastered_' + openingId);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch(e){ return new Set(); }
+}
+function markLearnMastered(openingId, key){
+  try {
+    const s = getLearnMasteredSet(openingId);
+    s.add(key);
+    localStorage.setItem('gambit_mastered_' + openingId, JSON.stringify([...s]));
+  } catch(e){}
+}
+
+
 // INIT
 // ════════════════════════════════════════════════════════
 
