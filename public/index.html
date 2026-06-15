@@ -1708,7 +1708,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.16 CLEAN-OP</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.17 LIBRARY</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -2879,6 +2879,28 @@ const OPENINGS = {
     {id:'four-knights',eco:'C47',name:'Four Knights',tag:'Classic'},
     {id:'vienna',eco:'C26',name:'Vienna Game',tag:'Solid'},
     {id:'scotch',eco:'C44',name:'Scotch Game',tag:'Classic'},
+    {id:'kings-pawn',eco:'C20',name:"King's Pawn Game",tag:'Classic'},
+    {id:'philidor',eco:'C41',name:'Philidor Defence',tag:'Solid'},
+    {id:'kings-gambit-declined',eco:'C30',name:"King's Gambit Declined",tag:'Solid'},
+    {id:'latvian',eco:'C40',name:'Latvian Gambit',tag:'Gambit'},
+    {id:'elephant',eco:'C40',name:'Elephant Gambit',tag:'Gambit'},
+    {id:'kia',eco:'A07',name:"King's Indian Attack",tag:'Solid'},
+    {id:'owen',eco:'B00',name:"Owen's Defence",tag:'Hyper'},
+    {id:'nimzowitsch-def',eco:'B00',name:'Nimzowitsch Defence',tag:'Hyper'},
+    {id:'modern-def',eco:'B06',name:'Modern Defence',tag:'Hyper'},
+    {id:'scandinavian-modern',eco:'B01',name:'Scandinavian Modern',tag:'Solid'},
+    {id:'ruy-berlin',eco:'C65',name:'Ruy López Berlin',tag:'Solid'},
+    {id:'ruy-exchange',eco:'C68',name:'Ruy López Exchange',tag:'Positional'},
+    {id:'two-knights',eco:'C55',name:'Two Knights Defence',tag:'Sharp'},
+    {id:'giuoco-piano',eco:'C53',name:'Giuoco Piano',tag:'Classic'},
+    {id:'sicilian-alapin',eco:'B22',name:'Sicilian Alapin',tag:'Solid'},
+    {id:'sicilian-closed',eco:'B23',name:'Sicilian Closed',tag:'Positional'},
+    {id:'sicilian-sveshnikov',eco:'B33',name:'Sicilian Sveshnikov',tag:'Sharp'},
+    {id:'sicilian-taimanov',eco:'B44',name:'Sicilian Taimanov',tag:'Sharp'},
+    {id:'sicilian-kan',eco:'B41',name:'Sicilian Kan',tag:'Solid'},
+    {id:'sicilian-accelerated-dragon',eco:'B34',name:'Accelerated Dragon',tag:'Sharp'},
+    {id:'french-classical',eco:'C11',name:'French Classical',tag:'Solid'},
+    {id:'french-exchange',eco:'C01',name:'French Exchange',tag:'Solid'},
   ]},
   'd4': {label:'1.d4 Openings', items:[
     {id:'queens',eco:'D06',name:"Queen's Gambit",tag:'Classic'},
@@ -2895,6 +2917,26 @@ const OPENINGS = {
     {id:'benko',eco:'A57',name:'Benko Gambit',tag:'Gambit'},
     {id:'benoni',eco:'A60',name:'Benoni',tag:'Sharp'},
     {id:'budapest',eco:'A51',name:'Budapest Gambit',tag:'Gambit'},
+    {id:'qgd-orthodox',eco:'D60',name:'QGD Orthodox',tag:'Solid'},
+    {id:'semi-slav',eco:'D43',name:'Semi-Slav Defence',tag:'Sharp'},
+    {id:'qgd-exchange',eco:'D35',name:'QGD Exchange',tag:'Positional'},
+    {id:'catalan-open',eco:'E04',name:'Catalan Open',tag:'Positional'},
+    {id:'bogo-indian',eco:'E11',name:'Bogo-Indian Defence',tag:'Solid'},
+    {id:'tarrasch-defence',eco:'D32',name:'Tarrasch Defence',tag:'Sharp'},
+    {id:'qgd-vienna',eco:'D39',name:'Vienna Variation',tag:'Sharp'},
+    {id:'grunfeld-russian',eco:'D97',name:'Grünfeld Russian',tag:'Sharp'},
+    {id:'grunfeld-exchange',eco:'D85',name:'Grünfeld Exchange',tag:'Sharp'},
+    {id:'kid-classical',eco:'E92',name:"King's Indian Classical",tag:'Sharp'},
+    {id:'kid-fianchetto',eco:'E62',name:'KID Fianchetto',tag:'Positional'},
+    {id:'benoni-modern',eco:'A61',name:'Modern Benoni',tag:'Sharp'},
+    {id:'qid-classical',eco:'E15',name:"Queen's Indian Classical",tag:'Solid'},
+    {id:'chigorin-defence',eco:'D07',name:'Chigorin Defence',tag:'Sharp'},
+    {id:'albin-countergambit',eco:'D08',name:'Albin Countergambit',tag:'Gambit'},
+    {id:'qga-classical',eco:'D27',name:'QGA Classical',tag:'Sharp'},
+    {id:'veresov',eco:'D01',name:'Veresov Attack',tag:'Sharp'},
+    {id:'torre-attack',eco:'A46',name:'Torre Attack',tag:'Solid'},
+    {id:'blackmar-diemer',eco:'D00',name:'Blackmar-Diemer Gambit',tag:'Gambit'},
+    {id:'trompowsky-attack',eco:'A45',name:'Trompowsky Attack',tag:'Sharp'},
   ]},
   'other': {label:'Flank & Systems', items:[
     {id:'english',eco:'A10',name:'English Opening',tag:'Solid'},
@@ -2903,6 +2945,17 @@ const OPENINGS = {
     {id:'catalan',eco:'E00',name:'Catalan Opening',tag:'Positional'},
     {id:'colle',eco:'D04',name:'Colle System',tag:'Solid'},
     {id:'stonewall',eco:'D00',name:'Stonewall Attack',tag:'Solid'},
+    {id:'english-symmetrical',eco:'A30',name:'English Symmetrical',tag:'Positional'},
+    {id:'english-reversed-sicilian',eco:'A20',name:'English Reversed Sicilian',tag:'Sharp'},
+    {id:'kings-english',eco:'A21',name:"King's English",tag:'Positional'},
+    {id:'reti-kia',eco:'A09',name:'Réti Opening',tag:'Positional'},
+    {id:'english-agincourt',eco:'A13',name:'English Agincourt',tag:'Solid'},
+    {id:'nimzo-larsen',eco:'A01',name:'Nimzo-Larsen Attack',tag:'Hyper'},
+    {id:'polish-opening',eco:'A00',name:'Polish (Sokolsky)',tag:'Flank'},
+    {id:'grob-attack',eco:'A00',name:"Grob's Attack",tag:'Flank'},
+    {id:'english-botvinnik',eco:'A26',name:'English Botvinnik System',tag:'Positional'},
+    {id:'anti-sicilian-rossolimo',eco:'B30',name:'Rossolimo Variation',tag:'Positional'},
+    {id:'anti-sicilian-moscow',eco:'B51',name:'Moscow Variation',tag:'Positional'},
   ]}
 };
 
@@ -3611,6 +3664,651 @@ const OPENING_DETAILS = {
 
 // Add aliases so both ids resolve to the same data
 OPENING_DETAILS["kings_indian"] = OPENING_DETAILS["kings-indian"];
+
+// ═══════════ EXPANDED OPENING LIBRARY (v3.17) ═══════════
+OPENING_DETAILS['kings-pawn'] = {
+    title: "King's Pawn Game", eco: "ECO C20",
+    desc: 'The starting point of countless openings after 1.e4 e5. Classical development and open, tactical play.',
+    moves: '1. e4 e5',
+    sanList: ["e4","e5"],
+    lines: [
+      {name:'Center Game', moves:'2.d4 exd4 3.Qxd4 Nc6 4.Qe3', badge:'sharp', bl:'Early queen'},
+      {name:'Danish Gambit', moves:'2.d4 exd4 3.c3', badge:'gambit', bl:'Sacrifice'},
+      {name:"Bishop's Opening", moves:'2.Bc4 Nf6 3.d3', badge:'solid', bl:'Slow'},
+      {name:'Ponziani', moves:'2.Nf3 Nc6 3.c3', badge:'positional', bl:'Old line'}
+    ],
+    ideas: ['Fight for the centre with pawns and pieces','Develop knights before bishops','Castle early for king safety']
+  };
+OPENING_DETAILS['philidor'] = {
+    title: 'Philidor Defence', eco: "ECO C41",
+    desc: 'A solid but passive defence where Black supports e5 with ...d6. Cramped but hard to break down.',
+    moves: '1. e4 e5 2. Nf3 d6',
+    sanList: ["e4","e5","Nf3","d6"],
+    lines: [
+      {name:'Main Line', moves:'3.d4 exd4 4.Nxd4 Nf6 5.Nc3', badge:'positional', bl:'Classical'},
+      {name:'Hanham', moves:'3.d4 Nd7 4.Bc4 c6', badge:'solid', bl:'Solid setup'},
+      {name:'Exchange', moves:'3.d4 exd4 4.Qxd4', badge:'sharp', bl:'Queen out'},
+      {name:'Lion Variation', moves:'3.d4 Nf6 4.Nc3 Nbd7', badge:'solid', bl:'Modern'}
+    ],
+    ideas: ['Support e5 with ...d6','Aim for the ...d5 break later','Black is solid but passive — be patient']
+  };
+OPENING_DETAILS['kings-gambit-declined'] = {
+    title: "King's Gambit Declined", eco: "ECO C30",
+    desc: 'Instead of grabbing the f4 pawn, Black declines with ...Bc5 and develops solidly.',
+    moves: '1. e4 e5 2. f4 Bc5',
+    sanList: ["e4","e5","f4","Bc5"],
+    lines: [
+      {name:'Classical Declined', moves:'3.Nf3 d6 4.Nc3', badge:'solid', bl:'Standard'},
+      {name:'Falkbeer Counter', moves:'2...d5', badge:'sharp', bl:'Counter-gambit'},
+      {name:'Nimzowitsch', moves:'2...d5 3.exd5 e4', badge:'sharp', bl:'Modern'}
+    ],
+    ideas: ['Decline the pawn, develop fast',"Target White's weakened kingside",'...Bc5 pressures f2']
+  };
+OPENING_DETAILS['latvian'] = {
+    title: 'Latvian Gambit', eco: "ECO C40",
+    desc: "An aggressive but risky gambit where Black mirrors the King's Gambit a tempo down. Dangerous in blitz.",
+    moves: '1. e4 e5 2. Nf3 f5',
+    sanList: ["e4","e5","Nf3","f5"],
+    lines: [
+      {name:'Main Line', moves:'3.Nxe5 Qf6 4.d4 d6', badge:'sharp', bl:'Critical'},
+      {name:'Fraser Defence', moves:'3.Nxe5 Qf6 4.Nc4', badge:'sharp', bl:'Knight retreat'},
+      {name:'Exchange', moves:'3.exf5 e4', badge:'sharp', bl:'Wild'}
+    ],
+    ideas: ['Surprise weapon for sharp players','Objectively dubious but tricky','Know the critical lines or get crushed']
+  };
+OPENING_DETAILS['elephant'] = {
+    title: 'Elephant Gambit', eco: "ECO C40",
+    desc: 'A surprising gambit: Black strikes with ...d5 immediately. Unsound but full of traps.',
+    moves: '1. e4 e5 2. Nf3 d5',
+    sanList: ["e4","e5","Nf3","d5"],
+    lines: [
+      {name:'Main Line', moves:'3.exd5 e4', badge:'sharp', bl:'Critical'},
+      {name:'Paulsen', moves:'3.exd5 Bd6', badge:'sharp', bl:'Development'},
+      {name:'Maroczy', moves:'3.Nxe5 dxe4', badge:'sharp', bl:'Open'}
+    ],
+    ideas: ['A trappy surprise weapon','Black gambits a pawn for activity','Best used as a one-off surprise']
+  };
+OPENING_DETAILS['kia'] = {
+    title: "King's Indian Attack", eco: "ECO A07",
+    desc: "A flexible system where White plays a reversed King's Indian setup. Easy to learn, works against many defences.",
+    moves: '1. e4 e6 2. d3 d5 3. Nd2 Nf6 4. Ngf3',
+    sanList: ["e4","e6","d3","d5","Nd2","Nf6","Ngf3"],
+    lines: [
+      {name:'vs French setup', moves:'4...c5 5.g3 Nc6 6.Bg2', badge:'positional', bl:'Main'},
+      {name:'vs Caro setup', moves:'2...d5 3.Nd2', badge:'solid', bl:'Universal'},
+      {name:'Classical KIA', moves:'g3, Bg2, O-O, Re1, e5', badge:'positional', bl:'System'}
+    ],
+    ideas: ['A system you can play vs almost anything','Fianchetto the bishop, play e5 later','Kingside attack with Nf1-g3, h4']
+  };
+OPENING_DETAILS['owen'] = {
+    title: "Owen's Defence", eco: "ECO B00",
+    desc: 'A hypermodern defence with ...b6, fianchettoing the bishop to attack e4 from afar.',
+    moves: '1. e4 b6 2. d4 Bb7',
+    sanList: ["e4","b6","d4","Bb7"],
+    lines: [
+      {name:'Main Line', moves:'3.Bd3 e6 4.Nf3', badge:'positional', bl:'Standard'},
+      {name:'Aggressive', moves:'3.Nc3 e6 4.Nf3', badge:'sharp', bl:'Active'},
+      {name:'Hypermodern', moves:'3.Bd3 f5', badge:'sharp', bl:'Risky'}
+    ],
+    ideas: ['Fianchetto pressures e4','Flexible but slightly passive','Aim for ...f5 or ...c5 breaks']
+  };
+OPENING_DETAILS['nimzowitsch-def'] = {
+    title: 'Nimzowitsch Defence', eco: "ECO B00",
+    desc: 'An offbeat defence with 1...Nc6, inviting White to overextend, then counterattacking.',
+    moves: '1. e4 Nc6 2. d4 d5',
+    sanList: ["e4","Nc6","d4","d5"],
+    lines: [
+      {name:'Main Line', moves:'3.Nc3 dxe4 4.d5', badge:'sharp', bl:'Critical'},
+      {name:'Advance', moves:'3.e5 Bf5', badge:'positional', bl:'Closed'},
+      {name:'Exchange', moves:'3.exd5 Qxd5', badge:'solid', bl:'Open'}
+    ],
+    ideas: ['Provoke and counterattack','Unusual but playable','Black aims for piece activity']
+  };
+OPENING_DETAILS['modern-def'] = {
+    title: 'Modern Defence', eco: "ECO B06",
+    desc: 'Black fianchettos immediately with ...g6 and ...Bg7, staying flexible before committing the centre.',
+    moves: '1. e4 g6 2. d4 Bg7',
+    sanList: ["e4","g6","d4","Bg7"],
+    lines: [
+      {name:'Main Line', moves:'3.Nc3 d6 4.f4', badge:'sharp', bl:'Austrian'},
+      {name:'Classical', moves:'3.Nc3 d6 4.Nf3', badge:'positional', bl:'Solid'},
+      {name:'Pseudo-Austrian', moves:'3.f4 d6 4.Nf3', badge:'sharp', bl:'Aggressive'},
+      {name:'Robatsch', moves:'3.Nc3 c6', badge:'solid', bl:'Flexible'}
+    ],
+    ideas: ['Stay flexible, strike the centre later','The g7 bishop is your main weapon','Choose between ...c5, ...e5, or ...c6']
+  };
+OPENING_DETAILS['scandinavian-modern'] = {
+    title: 'Scandinavian Modern', eco: "ECO B01",
+    desc: 'The Scandinavian where Black recaptures with the knight (...Nxd5) instead of the queen.',
+    moves: '1. e4 d5 2. exd5 Nf6',
+    sanList: ["e4","d5","exd5","Nf6"],
+    lines: [
+      {name:'Main Line', moves:'3.d4 Nxd5 4.Nf3', badge:'positional', bl:'Modern'},
+      {name:'Icelandic', moves:'3.c4 e6', badge:'sharp', bl:'Gambit'},
+      {name:'Marshall', moves:'3.d4 Nxd5 4.c4 Nb6', badge:'solid', bl:'Solid'}
+    ],
+    ideas: ['Develop the knight to d5 actively','Avoid early queen exposure','Aim for quick, harmonious development']
+  };
+OPENING_DETAILS['ruy-berlin'] = {
+    title: 'Ruy López Berlin', eco: "ECO C65",
+    desc: "The rock-solid Berlin Defence to the Ruy López — famous for the drawish 'Berlin Wall' endgame.",
+    moves: '1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6',
+    sanList: ["e4","e5","Nf3","Nc6","Bb5","Nf6"],
+    lines: [
+      {name:'Berlin Wall', moves:'4.O-O Nxe4 5.d4 Nd6 6.Bxc6 dxc6 7.dxe5 Nf5 8.Qxd8+ Kxd8', badge:'positional', bl:'Endgame'},
+      {name:'Anti-Berlin d3', moves:'4.d3 Bc5 5.c3', badge:'positional', bl:'Modern'},
+      {name:'Rio de Janeiro', moves:'4.O-O Nxe4 5.d4 Be7', badge:'solid', bl:'Solid'}
+    ],
+    ideas: ['The Berlin endgame is a famous drawing weapon','Black accepts a slightly worse but very solid position','Know the queen-trade endgame patterns']
+  };
+OPENING_DETAILS['ruy-exchange'] = {
+    title: 'Ruy López Exchange', eco: "ECO C68",
+    desc: "White trades on c6, doubling Black's pawns for a long-term structural edge. Fischer's favourite.",
+    moves: '1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6',
+    sanList: ["e4","e5","Nf3","Nc6","Bb5","a6","Bxc6"],
+    lines: [
+      {name:'Main Line', moves:'4...dxc6 5.O-O f6 6.d4', badge:'positional', bl:'Fischer'},
+      {name:'Gligoric', moves:'4...dxc6 5.O-O Bg4', badge:'solid', bl:'Pin'},
+      {name:'Bronstein', moves:'4...dxc6 5.Nc3', badge:'positional', bl:'Classical'}
+    ],
+    ideas: ["Trade to ruin Black's pawn structure",'The doubled c-pawns are a long-term weakness','Aim for a favourable endgame']
+  };
+OPENING_DETAILS['two-knights'] = {
+    title: 'Two Knights Defence', eco: "ECO C55",
+    desc: 'Black answers the Italian with ...Nf6, inviting sharp play including the dangerous Fried Liver Attack.',
+    moves: '1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6',
+    sanList: ["e4","e5","Nf3","Nc6","Bc4","Nf6"],
+    lines: [
+      {name:'Fried Liver', moves:'4.Ng5 d5 5.exd5 Nxd5 6.Nxf7', badge:'sharp', bl:'Attack'},
+      {name:'Modern', moves:'4.Ng5 d5 5.exd5 Na5', badge:'sharp', bl:'Main'},
+      {name:'Quiet 4.d3', moves:'4.d3 Be7', badge:'solid', bl:'Slow'},
+      {name:'Traxler', moves:'4.Ng5 Bc5', badge:'sharp', bl:'Counterattack'}
+    ],
+    ideas: ['Sharp tactical battles after 4.Ng5','...d5 is the key defensive resource','Know the Fried Liver to avoid disaster']
+  };
+OPENING_DETAILS['giuoco-piano'] = {
+    title: 'Giuoco Piano', eco: "ECO C53",
+    desc: "The 'Quiet Game' — slow, classical Italian play with c3 and d4 building a big centre.",
+    moves: '1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3',
+    sanList: ["e4","e5","Nf3","Nc6","Bc4","Bc5","c3"],
+    lines: [
+      {name:'Main Line', moves:'4...Nf6 5.d4 exd4 6.cxd4 Bb4+', badge:'sharp', bl:'Centre'},
+      {name:'Giuoco Pianissimo', moves:'4...Nf6 5.d3', badge:'positional', bl:'Slow'},
+      {name:'Greco', moves:'4...Nf6 5.d4 exd4 6.e5', badge:'sharp', bl:'Attack'}
+    ],
+    ideas: ['Build the c3+d4 pawn centre','Slow maneuvering or sharp central breaks','A great opening to learn classical principles']
+  };
+OPENING_DETAILS['sicilian-alapin'] = {
+    title: 'Sicilian Alapin', eco: "ECO B22",
+    desc: 'White plays 2.c3 to build a big centre with d4, avoiding mainline Sicilian theory.',
+    moves: '1. e4 c5 2. c3',
+    sanList: ["e4","c5","c3"],
+    lines: [
+      {name:'2...d5', moves:'2...d5 3.exd5 Qxd5 4.d4', badge:'positional', bl:'Main'},
+      {name:'2...Nf6', moves:'2...Nf6 3.e5 Nd5 4.d4', badge:'sharp', bl:'Active'},
+      {name:'2...e6', moves:'2...e6 3.d4 d5', badge:'solid', bl:'French-like'}
+    ],
+    ideas: ['Build a big pawn centre with d4','Avoid heavy Sicilian theory','Solid and easy to play']
+  };
+OPENING_DETAILS['sicilian-closed'] = {
+    title: 'Sicilian Closed', eco: "ECO B23",
+    desc: 'White avoids d4 and plays a slow kingside-attacking setup with g3, Bg2, and f4.',
+    moves: '1. e4 c5 2. Nc3 Nc6 3. g3',
+    sanList: ["e4","c5","Nc3","Nc6","g3"],
+    lines: [
+      {name:'Main Line', moves:'3...g6 4.Bg2 Bg7 5.d3', badge:'positional', bl:'Standard'},
+      {name:'Grand Prix', moves:'2.Nc3 Nc6 3.f4', badge:'sharp', bl:'Attack'},
+      {name:'Traditional', moves:'3...g6 4.Bg2 Bg7 5.d3 d6 6.f4', badge:'sharp', bl:'Kingside'}
+    ],
+    ideas: ['Slow build-up, then kingside attack',"Avoid the open Sicilian's theory",'f4-f5 is the typical attacking plan']
+  };
+OPENING_DETAILS['sicilian-sveshnikov'] = {
+    title: 'Sicilian Sveshnikov', eco: "ECO B33",
+    desc: 'A hugely popular modern line where Black accepts a backward d-pawn for active piece play.',
+    moves: '1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 e5',
+    sanList: ["e4","c5","Nf3","Nc6","d4","cxd4","Nxd4","Nf6","Nc3","e5"],
+    lines: [
+      {name:'Main Line', moves:'6.Ndb5 d6 7.Bg5 a6 8.Na3 b5', badge:'sharp', bl:'Critical'},
+      {name:'Novosibirsk', moves:'6.Ndb5 d6 7.Nd5', badge:'sharp', bl:'Modern'},
+      {name:'Positional', moves:'6.Ndb5 d6 7.Bg5 a6 8.Bxf6', badge:'positional', bl:'Structural'}
+    ],
+    ideas: ['Accept the d5 hole for piece activity','The d5 square is the key battleground','Used by Carlsen, Kramnik, Radjabov']
+  };
+OPENING_DETAILS['sicilian-taimanov'] = {
+    title: 'Sicilian Taimanov', eco: "ECO B44",
+    desc: 'A flexible Sicilian with ...e6 and ...Nc6, keeping options open and avoiding early commitments.',
+    moves: '1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 Nc6',
+    sanList: ["e4","c5","Nf3","e6","d4","cxd4","Nxd4","Nc6"],
+    lines: [
+      {name:'Main Line', moves:'5.Nc3 Qc7 6.Be2 a6', badge:'positional', bl:'Flexible'},
+      {name:'English Attack', moves:'5.Nc3 Qc7 6.Be3 a6 7.Qd2', badge:'sharp', bl:'Attack'},
+      {name:'Szen', moves:'5.Nb5 d6', badge:'sharp', bl:'Pin'}
+    ],
+    ideas: ['Flexible, low-commitment setup','Delay ...d6 to keep options open','Transposes to many Sicilian structures']
+  };
+OPENING_DETAILS['sicilian-kan'] = {
+    title: 'Sicilian Kan', eco: "ECO B41",
+    desc: 'Black plays an early ...a6 and ...e6, a flexible and solid Sicilian system.',
+    moves: '1. e4 c5 2. Nf3 e6 3. d4 cxd4 4. Nxd4 a6',
+    sanList: ["e4","c5","Nf3","e6","d4","cxd4","Nxd4","a6"],
+    lines: [
+      {name:'Main Line', moves:'5.Bd3 Bc5 6.Nb3', badge:'positional', bl:'Standard'},
+      {name:'Maroczy', moves:'5.c4 Nf6', badge:'positional', bl:'Bind'},
+      {name:'Modern', moves:'5.Nc3 Qc7', badge:'solid', bl:'Flexible'}
+    ],
+    ideas: ['...a6 prevents Nb5 and prepares ...b5','Very flexible piece placement','Solid and hard to attack']
+  };
+OPENING_DETAILS['sicilian-accelerated-dragon'] = {
+    title: 'Accelerated Dragon', eco: "ECO B34",
+    desc: 'Black fianchettos quickly without ...d6, aiming for a fast ...d5 break and avoiding the Yugoslav Attack.',
+    moves: '1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 g6',
+    sanList: ["e4","c5","Nf3","Nc6","d4","cxd4","Nxd4","g6"],
+    lines: [
+      {name:'Maroczy Bind', moves:'5.c4 Bg7 6.Be3 Nf6', badge:'positional', bl:'Bind'},
+      {name:'Main Line', moves:'5.Nc3 Bg7 6.Be3 Nf6 7.Bc4', badge:'sharp', bl:'Classical'},
+      {name:'Exchange', moves:'5.Nxc6 bxc6', badge:'solid', bl:'Structure'}
+    ],
+    ideas: ['Fast fianchetto, aim for ...d5','Avoids the dangerous Yugoslav Attack','Watch out for the Maroczy Bind']
+  };
+OPENING_DETAILS['french-classical'] = {
+    title: 'French Classical', eco: "ECO C11",
+    desc: 'Black develops naturally with ...Nf6 against the French, leading to rich strategic battles.',
+    moves: '1. e4 e6 2. d4 d5 3. Nc3 Nf6',
+    sanList: ["e4","e6","d4","d5","Nc3","Nf6"],
+    lines: [
+      {name:'Steinitz', moves:'4.e5 Nfd7 5.f4', badge:'sharp', bl:'Space'},
+      {name:'Classical', moves:'4.Bg5 Be7 5.e5 Nfd7', badge:'positional', bl:'Main'},
+      {name:'Burn', moves:'4.Bg5 dxe4', badge:'solid', bl:'Simplifying'}
+    ],
+    ideas: ['Develop classically with ...Nf6',"Fight against White's space advantage",'The ...c5 break is essential']
+  };
+OPENING_DETAILS['french-exchange'] = {
+    title: 'French Exchange', eco: "ECO C01",
+    desc: 'White trades on d5, leading to a symmetrical, often drawish but instructive position.',
+    moves: '1. e4 e6 2. d4 d5 3. exd5 exd5',
+    sanList: ["e4","e6","d4","d5","exd5","exd5"],
+    lines: [
+      {name:'Main Line', moves:'4.Nf3 Nf6 5.Bd3', badge:'solid', bl:'Symmetrical'},
+      {name:'Aggressive', moves:'4.c4 Nf6', badge:'sharp', bl:'IQP'},
+      {name:'Classical', moves:'4.Bd3 Nc6', badge:'solid', bl:'Standard'}
+    ],
+    ideas: ['Symmetrical but not necessarily drawish','Fight for the open e-file','Piece activity matters most']
+  };
+OPENING_DETAILS['qgd-orthodox'] = {
+    title: 'QGD Orthodox', eco: "ECO D60",
+    desc: "The classical, rock-solid Queen's Gambit Declined with ...Nbd7 and ...c6 setups.",
+    moves: '1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7',
+    sanList: ["d4","d5","c4","e6","Nc3","Nf6","Bg5","Be7"],
+    lines: [
+      {name:'Main Line', moves:'5.e3 O-O 6.Nf3 Nbd7', badge:'solid', bl:'Classical'},
+      {name:'Lasker', moves:'5.e3 O-O 6.Nf3 h6 7.Bh4 Ne4', badge:'solid', bl:'Simplify'},
+      {name:'Tartakower', moves:'6...h6 7.Bh4 b6', badge:'positional', bl:'Modern'}
+    ],
+    ideas: ["The most solid answer to the Queen's Gambit",'Aim for the freeing ...c5 or ...e5 break','Trade pieces to ease the cramped position']
+  };
+OPENING_DETAILS['semi-slav'] = {
+    title: 'Semi-Slav Defence', eco: "ECO D43",
+    desc: 'Black combines ...e6 and ...c6, creating a flexible and theoretically rich battleground.',
+    moves: '1. d4 d5 2. c4 e6 3. Nc3 c6',
+    sanList: ["d4","d5","c4","e6","Nc3","c6"],
+    lines: [
+      {name:'Meran', moves:'4.Nf3 Nf6 5.e3 Nbd7 6.Bd3 dxc4', badge:'sharp', bl:'Main'},
+      {name:'Botvinnik', moves:'4.Nf3 Nf6 5.Bg5 dxc4', badge:'sharp', bl:'Wild'},
+      {name:'Anti-Meran', moves:'5.e3 Nbd7 6.Qc2', badge:'positional', bl:'Solid'},
+      {name:'Moscow', moves:'5.Bg5 h6 6.Bxf6', badge:'positional', bl:'Quiet'}
+    ],
+    ideas: ['Combines Slav solidity with French flexibility','The ...dxc4 + ...b5 plan grabs queenside space','Razor-sharp Botvinnik and Meran lines']
+  };
+OPENING_DETAILS['qgd-exchange'] = {
+    title: 'QGD Exchange', eco: "ECO D35",
+    desc: 'White trades on d5 early, going for the classic minority attack on the queenside.',
+    moves: '1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. cxd5 exd5',
+    sanList: ["d4","d5","c4","e6","Nc3","Nf6","cxd5","exd5"],
+    lines: [
+      {name:'Minority Attack', moves:'5.Bg5 Be7 6.e3 O-O 7.Bd3', badge:'positional', bl:'Plan'},
+      {name:'Modern', moves:'5.Bf4 c6 6.e3', badge:'positional', bl:'Solid'},
+      {name:'Classical', moves:'5.Bg5 c6 6.Qc2', badge:'positional', bl:'Pressure'}
+    ],
+    ideas: ['The minority attack (b4-b5) is the main plan','Create a weak c6 pawn to target','Pure positional chess']
+  };
+OPENING_DETAILS['catalan-open'] = {
+    title: 'Catalan Open', eco: "ECO E04",
+    desc: 'White fianchettos and pressures the long diagonal; Black grabs the c4 pawn.',
+    moves: '1. d4 Nf6 2. c4 e6 3. g3 d5 4. Bg2 dxc4',
+    sanList: ["d4","Nf6","c4","e6","g3","d5","Bg2","dxc4"],
+    lines: [
+      {name:'Main Line', moves:'5.Nf3 a6 6.O-O Nc6', badge:'positional', bl:'Classical'},
+      {name:'Closed Catalan', moves:'4...Be7 5.Nf3 O-O 6.O-O', badge:'positional', bl:'Solid'},
+      {name:'7.Qc2', moves:'5.Qa4+ Nbd7', badge:'positional', bl:'Pawn recovery'}
+    ],
+    ideas: ['The g2 bishop is a long-term asset','Pressure the long diagonal and c-file','Patiently regain the c4 pawn']
+  };
+OPENING_DETAILS['bogo-indian'] = {
+    title: 'Bogo-Indian Defence', eco: "ECO E11",
+    desc: 'Black pins with ...Bb4+, a solid and less theory-heavy alternative to the Nimzo-Indian.',
+    moves: '1. d4 Nf6 2. c4 e6 3. Nf3 Bb4+',
+    sanList: ["d4","Nf6","c4","e6","Nf3","Bb4+"],
+    lines: [
+      {name:'Main Line', moves:'4.Bd2 Qe7 5.g3', badge:'positional', bl:'Solid'},
+      {name:'Nbd2', moves:'4.Nbd2 O-O 5.a3 Be7', badge:'solid', bl:'Flexible'},
+      {name:'Bishop trade', moves:'4.Bd2 Bxd2+ 5.Qxd2', badge:'solid', bl:'Simplify'}
+    ],
+    ideas: ['A low-theory solid system',"The bishop check disrupts White's setup",'Aim for a comfortable, equal middlegame']
+  };
+OPENING_DETAILS['tarrasch-defence'] = {
+    title: 'Tarrasch Defence', eco: "ECO D32",
+    desc: "Black accepts an isolated queen's pawn for active piece play and open lines.",
+    moves: '1. d4 d5 2. c4 e6 3. Nc3 c5',
+    sanList: ["d4","d5","c4","e6","Nc3","c5"],
+    lines: [
+      {name:'Main Line', moves:'4.cxd5 exd5 5.Nf3 Nc6 6.g3', badge:'positional', bl:'IQP'},
+      {name:'Rubinstein', moves:'6.g3 Nf6 7.Bg2 Be7 8.O-O', badge:'positional', bl:'Classical'},
+      {name:'Swedish', moves:'4.cxd5 exd5 5.Nf3 Nc6 6.g3 c4', badge:'sharp', bl:'Space'}
+    ],
+    ideas: ['Accept the IQP for piece activity','Open lines favour the active side','The isolated d5 pawn is both strength and weakness']
+  };
+OPENING_DETAILS['qgd-vienna'] = {
+    title: 'Vienna Variation', eco: "ECO D39",
+    desc: 'A sharp QGD line where Black grabs the c4 pawn and plays for tactics with ...Bb4.',
+    moves: '1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 dxc4',
+    sanList: ["d4","Nf6","c4","e6","Nf3","d5","Nc3","dxc4"],
+    lines: [
+      {name:'Main Line', moves:'5.e4 Bb4 6.Bg5 c5', badge:'sharp', bl:'Critical'},
+      {name:'Quiet', moves:'5.e3 b5', badge:'sharp', bl:'Hold pawn'},
+      {name:'6...h6', moves:'6.Bg5 c5 7.Bxc4', badge:'sharp', bl:'Tactical'}
+    ],
+    ideas: ['Sharp tactical play in the QGD','Grab and try to hold the c4 pawn','Concrete calculation required']
+  };
+OPENING_DETAILS['grunfeld-russian'] = {
+    title: 'Grünfeld Russian', eco: "ECO D97",
+    desc: "White plays Qb3 (the Russian System) to pressure Black's centre in the Grünfeld.",
+    moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3',
+    sanList: ["d4","Nf6","c4","g6","Nc3","d5","Nf3","Bg7","Qb3"],
+    lines: [
+      {name:'Main Line', moves:'5...dxc4 6.Qxc4 O-O 7.e4', badge:'sharp', bl:'Critical'},
+      {name:'Hungarian', moves:'5...dxc4 6.Qxc4 O-O 7.e4 a6', badge:'sharp', bl:'Modern'},
+      {name:'Prins', moves:'6.Qxc4 O-O 7.e4 Na6', badge:'sharp', bl:'Active'}
+    ],
+    ideas: ['Qb3 hits the d5 pawn and b7',"Black aims at White's big centre",'Dynamic imbalanced play']
+  };
+OPENING_DETAILS['grunfeld-exchange'] = {
+    title: 'Grünfeld Exchange', eco: "ECO D85",
+    desc: 'White takes on d5 and builds a huge centre; Black attacks it with pieces and pawns.',
+    moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5 5. e4 Nxc3 6. bxc3',
+    sanList: ["d4","Nf6","c4","g6","Nc3","d5","cxd5","Nxd5","e4","Nxc3","bxc3"],
+    lines: [
+      {name:'Main Line', moves:'6...Bg7 7.Nf3 c5 8.Rb1', badge:'sharp', bl:'Modern'},
+      {name:'Classical', moves:'7.Bc4 c5 8.Ne2', badge:'sharp', bl:'Old main'},
+      {name:'Seville', moves:'8.Rb1 O-O 9.Be2 cxd4', badge:'sharp', bl:'Critical'}
+    ],
+    ideas: ["White's big centre vs Black's piece pressure",'The ...c5 break is essential','One of the sharpest opening battles']
+  };
+OPENING_DETAILS['kid-classical'] = {
+    title: "King's Indian Classical", eco: "ECO E92",
+    desc: "The main-line King's Indian where both sides castle and fight on opposite wings.",
+    moves: '1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5',
+    sanList: ["d4","Nf6","c4","g6","Nc3","Bg7","e4","d6","Nf3","O-O","Be2","e5"],
+    lines: [
+      {name:'Mar del Plata', moves:'7.O-O Nc6 8.d5 Ne7', badge:'sharp', bl:'Main'},
+      {name:'Petrosian', moves:'7.d5 a5', badge:'positional', bl:'Closed'},
+      {name:'Exchange', moves:'7.dxe5 dxe5 8.Qxd8', badge:'solid', bl:'Endgame'},
+      {name:'Gligoric', moves:'7.O-O Nc6 8.d5 Ne7 9.Ne1', badge:'sharp', bl:'Classical'}
+    ],
+    ideas: ['Black attacks the kingside, White the queenside',"The ...f5 break powers Black's attack",'A race of opposite-wing pawn storms']
+  };
+OPENING_DETAILS['kid-fianchetto'] = {
+    title: 'KID Fianchetto', eco: "ECO E62",
+    desc: "White fianchettos against the King's Indian for a calmer, positional struggle.",
+    moves: '1. d4 Nf6 2. c4 g6 3. Nc3 Bg7 4. Nf3 d6 5. g3 O-O 6. Bg2',
+    sanList: ["d4","Nf6","c4","g6","Nc3","Bg7","Nf3","d6","g3","O-O","Bg2"],
+    lines: [
+      {name:'Main Line', moves:'6...Nc6 7.O-O a6', badge:'positional', bl:'Panno'},
+      {name:'Classical', moves:'6...Nbd7 7.O-O e5', badge:'positional', bl:'Solid'},
+      {name:'Yugoslav', moves:'6...c5', badge:'sharp', bl:'Counter'}
+    ],
+    ideas: ["The fianchetto neutralises Black's attack","Calmer, positional King's Indian",'Black seeks ...e5 or ...c5 counterplay']
+  };
+OPENING_DETAILS['benoni-modern'] = {
+    title: 'Modern Benoni', eco: "ECO A61",
+    desc: 'Black creates a dynamic pawn structure with ...c5 and ...e6, accepting a space deficit for piece activity.',
+    moves: '1. d4 Nf6 2. c4 c5 3. d5 e6 4. Nc3 exd5 5. cxd5 d6',
+    sanList: ["d4","Nf6","c4","c5","d5","e6","Nc3","exd5","cxd5","d6"],
+    lines: [
+      {name:'Main Line', moves:'6.e4 g6 7.Nf3 Bg7', badge:'sharp', bl:'Classical'},
+      {name:'Taimanov', moves:'6.e4 g6 7.f4 Bg7 8.Bb5+', badge:'sharp', bl:'Aggressive'},
+      {name:'Fianchetto', moves:'6.Nf3 g6 7.g3', badge:'positional', bl:'Calm'}
+    ],
+    ideas: ['Dynamic imbalance — space vs activity','The ...b5 and ...f5 breaks fuel counterplay','Sharp tactical battles favour the prepared']
+  };
+OPENING_DETAILS['qid-classical'] = {
+    title: "Queen's Indian Classical", eco: "ECO E15",
+    desc: "Black fianchettos the queen's bishop to fight for the central light squares.",
+    moves: '1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. g3 Ba6',
+    sanList: ["d4","Nf6","c4","e6","Nf3","b6","g3","Ba6"],
+    lines: [
+      {name:'Main Line', moves:'5.b3 Bb4+ 6.Bd2', badge:'positional', bl:'Classical'},
+      {name:'4...Bb7', moves:'4...Bb7 5.Bg2 Be7', badge:'solid', bl:'Standard'},
+      {name:'Petrosian', moves:'4.a3', badge:'positional', bl:'Anti-QID'}
+    ],
+    ideas: ['Control the light squares with the b7 bishop','Pressure c4 with ...Ba6','A solid, flexible defence']
+  };
+OPENING_DETAILS['chigorin-defence'] = {
+    title: 'Chigorin Defence', eco: "ECO D07",
+    desc: 'An offbeat defence where Black develops the knight to c6, allowing active piece play.',
+    moves: '1. d4 d5 2. c4 Nc6',
+    sanList: ["d4","d5","c4","Nc6"],
+    lines: [
+      {name:'Main Line', moves:'3.Nf3 Bg4 4.cxd5 Bxf3', badge:'sharp', bl:'Active'},
+      {name:'3.Nc3', moves:'3.Nc3 dxc4 4.Nf3', badge:'sharp', bl:'Gambit-like'},
+      {name:'3.cxd5', moves:'3.cxd5 Qxd5 4.e3', badge:'solid', bl:'Open'}
+    ],
+    ideas: ['Unusual piece-based development','Trade the bishop for the f3 knight','Aim for active piece play over structure']
+  };
+OPENING_DETAILS['albin-countergambit'] = {
+    title: 'Albin Countergambit', eco: "ECO D08",
+    desc: "Black counterattacks the Queen's Gambit with ...e5, sacrificing a pawn for activity.",
+    moves: '1. d4 d5 2. c4 e5',
+    sanList: ["d4","d5","c4","e5"],
+    lines: [
+      {name:'Main Line', moves:'3.dxe5 d4 4.Nf3 Nc6', badge:'sharp', bl:'Critical'},
+      {name:'Lasker Trap', moves:'3.dxe5 d4 4.e3 Bb4+ 5.Bd2 dxe3', badge:'sharp', bl:'Trap'},
+      {name:'5.Nbd2', moves:'5.g3 Bg4', badge:'sharp', bl:'Pressure'}
+    ],
+    ideas: ['A surprise counter-gambit','The advanced d4 pawn cramps White','Watch for the famous Lasker Trap']
+  };
+OPENING_DETAILS['qga-classical'] = {
+    title: 'QGA Classical', eco: "ECO D27",
+    desc: 'Black takes the c4 pawn and develops actively, fighting for central control.',
+    moves: '1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 e6 5. Bxc4 c5',
+    sanList: ["d4","d5","c4","dxc4","Nf3","Nf6","e3","e6","Bxc4","c5"],
+    lines: [
+      {name:'Main Line', moves:'6.O-O a6 7.Qe2 b5', badge:'sharp', bl:'Classical'},
+      {name:'Furman', moves:'6.O-O a6 7.dxc5', badge:'positional', bl:'Simplify'},
+      {name:'7.Bb3', moves:'7.a4 Nc6', badge:'positional', bl:'Restrain'}
+    ],
+    ideas: ["Don't try to hold the c4 pawn",'Strike the centre with ...c5 and ...e5','Active, free piece development']
+  };
+OPENING_DETAILS['veresov'] = {
+    title: 'Veresov Attack', eco: "ECO D01",
+    desc: 'An aggressive 1.d4 system with early Nc3 and Bg5, aiming for quick kingside play.',
+    moves: '1. d4 d5 2. Nc3 Nf6 3. Bg5',
+    sanList: ["d4","d5","Nc3","Nf6","Bg5"],
+    lines: [
+      {name:'Main Line', moves:'3...Nbd7 4.f3', badge:'sharp', bl:'Attacking'},
+      {name:'3...Bf5', moves:'3...Bf5 4.Bxf6 exf6', badge:'positional', bl:'Structure'},
+      {name:'Richter', moves:'3...c5 4.Bxf6', badge:'sharp', bl:'Tactical'}
+    ],
+    ideas: ['An aggressive, less-theoretical d4 system','Bg5 pins and pressures','Aim for f3 and e4 with a big centre']
+  };
+OPENING_DETAILS['torre-attack'] = {
+    title: 'Torre Attack', eco: "ECO A46",
+    desc: "White develops Bg5 and e3 in a flexible system that's easy to learn and avoids heavy theory.",
+    moves: '1. d4 Nf6 2. Nf3 e6 3. Bg5',
+    sanList: ["d4","Nf6","Nf3","e6","Bg5"],
+    lines: [
+      {name:'Main Line', moves:'3...h6 4.Bxf6 Qxf6 5.e4', badge:'positional', bl:'Standard'},
+      {name:'Classical', moves:'3...c5 4.e3 cxd4', badge:'positional', bl:'Solid'},
+      {name:'3...d5', moves:'3...d5 4.e3 Be7', badge:'solid', bl:'QGD-like'}
+    ],
+    ideas: ['A simple, solid system vs many defences','Bg5 + e3 + c3 is the basic setup','Aim for e4 or a kingside attack']
+  };
+OPENING_DETAILS['blackmar-diemer'] = {
+    title: 'Blackmar-Diemer Gambit', eco: "ECO D00",
+    desc: 'An aggressive gambit where White sacrifices a pawn for rapid development and attack.',
+    moves: '1. d4 d5 2. e4 dxe4 3. Nc3 Nf6 4. f3',
+    sanList: ["d4","d5","e4","dxe4","Nc3","Nf6","f3"],
+    lines: [
+      {name:'Main Line', moves:'4...exf3 5.Nxf3 e6', badge:'sharp', bl:'Accepted'},
+      {name:'Teichmann', moves:'4...exf3 5.Nxf3 Bg4', badge:'sharp', bl:'Active'},
+      {name:'Bogoljubow', moves:'5...g6', badge:'sharp', bl:'Fianchetto'}
+    ],
+    ideas: ['Sacrifice a pawn for open lines','Rapid development and kingside attack','A dangerous club-level weapon']
+  };
+OPENING_DETAILS['trompowsky-attack'] = {
+    title: 'Trompowsky Attack', eco: "ECO A45",
+    desc: 'White plays 2.Bg5 immediately, sidestepping mainline theory with an aggressive setup.',
+    moves: '1. d4 Nf6 2. Bg5',
+    sanList: ["d4","Nf6","Bg5"],
+    lines: [
+      {name:'Main Line', moves:'2...Ne4 3.Bf4 d5 4.f3', badge:'sharp', bl:'Standard'},
+      {name:'2...e6', moves:'2...e6 3.e4 h6', badge:'sharp', bl:'Aggressive'},
+      {name:'2...c5', moves:'2...c5 3.Bxf6 gxf6', badge:'positional', bl:'Structure'}
+    ],
+    ideas: ['Sidestep heavy theory with 2.Bg5','Pin or trade the f6 knight','Aim for a comfortable, flexible game']
+  };
+OPENING_DETAILS['english-symmetrical'] = {
+    title: 'English Symmetrical', eco: "ECO A30",
+    desc: 'Both sides play c-pawn openings, leading to flexible, often hedgehog-style positions.',
+    moves: '1. c4 c5 2. Nf3 Nf6 3. Nc3 Nc6',
+    sanList: ["c4","c5","Nf3","Nf6","Nc3","Nc6"],
+    lines: [
+      {name:'Main Line', moves:'4.g3 g6 5.Bg2 Bg7', badge:'positional', bl:'Double fianchetto'},
+      {name:'Hedgehog', moves:'4.g3 e6 5.Bg2 d5', badge:'positional', bl:'Flexible'},
+      {name:'Four Knights', moves:'4.d4 cxd4 5.Nxd4', badge:'sharp', bl:'Open'}
+    ],
+    ideas: ['Flexible, maneuvering positions','The hedgehog setup is a key structure','Patience and good piece placement win']
+  };
+OPENING_DETAILS['english-reversed-sicilian'] = {
+    title: 'English Reversed Sicilian', eco: "ECO A20",
+    desc: 'After 1.c4 e5, White essentially plays a Sicilian a tempo up.',
+    moves: '1. c4 e5 2. Nc3 Nf6 3. Nf3 Nc6',
+    sanList: ["c4","e5","Nc3","Nf6","Nf3","Nc6"],
+    lines: [
+      {name:'Main Line', moves:'4.g3 d5 5.cxd5 Nxd5', badge:'sharp', bl:'Reversed Dragon'},
+      {name:'Four Knights', moves:'4.e3 Bb4', badge:'positional', bl:'Classical'},
+      {name:'Bremen', moves:'4.g3 Bb4', badge:'positional', bl:'Pin'}
+    ],
+    ideas: ['A Sicilian with colours reversed','The extra tempo gives White a small edge','Aim for the reversed Dragon setup']
+  };
+OPENING_DETAILS['kings-english'] = {
+    title: "King's English", eco: "ECO A21",
+    desc: 'The English where Black meets 1.c4 with 1...e5, fighting for the centre.',
+    moves: '1. c4 e5 2. Nc3',
+    sanList: ["c4","e5","Nc3"],
+    lines: [
+      {name:'Main Line', moves:'2...Nf6 3.Nf3 Nc6', badge:'positional', bl:'Standard'},
+      {name:'2...Bb4', moves:'2...Bb4 3.Nd5', badge:'sharp', bl:'Pin'},
+      {name:'2...Nc6', moves:'2...Nc6 3.g3 g6', badge:'positional', bl:'Symmetrical'}
+    ],
+    ideas: ['Black challenges the centre with ...e5','Flexible piece development','Often transposes to reversed Sicilian']
+  };
+OPENING_DETAILS['reti-kia'] = {
+    title: 'Réti Opening', eco: "ECO A09",
+    desc: 'White plays Nf3 and c4 in a hypermodern setup, attacking the centre from the wings.',
+    moves: '1. Nf3 d5 2. c4',
+    sanList: ["Nf3","d5","c4"],
+    lines: [
+      {name:'Main Line', moves:'2...d4 3.b4', badge:'positional', bl:'Gambit'},
+      {name:'2...e6', moves:'2...e6 3.g3 Nf6', badge:'positional', bl:'Classical'},
+      {name:'2...c6', moves:'2...c6 3.g3', badge:'solid', bl:'Slav-like'},
+      {name:'2...dxc4', moves:'2...dxc4 3.Na3', badge:'sharp', bl:'Pawn grab'}
+    ],
+    ideas: ['Control the centre with pieces, not pawns','Fianchetto and pressure d5','Flexible move orders to confuse opponents']
+  };
+OPENING_DETAILS['english-agincourt'] = {
+    title: 'English Agincourt', eco: "ECO A13",
+    desc: 'A flexible English line with ...e6, often transposing to Catalan or QGD structures.',
+    moves: '1. c4 e6 2. Nf3 d5 3. g3',
+    sanList: ["c4","e6","Nf3","d5","g3"],
+    lines: [
+      {name:'Main Line', moves:'3...Nf6 4.Bg2 Be7', badge:'positional', bl:'Catalan-like'},
+      {name:'3...c5', moves:'3...c5 4.Bg2 Nc6', badge:'positional', bl:'Symmetrical'},
+      {name:'Neo-Catalan', moves:'4.Bg2 dxc4', badge:'positional', bl:'Pawn grab'}
+    ],
+    ideas: ['Flexible — transposes to many systems','Fianchetto pressure on the long diagonal','Solid and strategically rich']
+  };
+OPENING_DETAILS['nimzo-larsen'] = {
+    title: 'Nimzo-Larsen Attack', eco: "ECO A01",
+    desc: "White fianchettos the queen's bishop with 1.b3, a hypermodern flank opening.",
+    moves: '1. b3 e5 2. Bb2 Nc6',
+    sanList: ["b3","e5","Bb2","Nc6"],
+    lines: [
+      {name:'Main Line', moves:'3.e3 Nf6 4.Bb5', badge:'positional', bl:'Standard'},
+      {name:'3.Nf3', moves:'3.Nf3 e4 4.Nd4', badge:'sharp', bl:'Active'},
+      {name:'Classical', moves:'3.e3 d5 4.Bb5', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['The b2 bishop eyes the long diagonal',"Provoke and undermine Black's centre",'A flexible, offbeat system']
+  };
+OPENING_DETAILS['polish-opening'] = {
+    title: 'Polish (Sokolsky)', eco: "ECO A00",
+    desc: 'The offbeat 1.b4, grabbing queenside space and fianchettoing the bishop.',
+    moves: '1. b4 e5 2. Bb2',
+    sanList: ["b4","e5","Bb2"],
+    lines: [
+      {name:'Main Line', moves:'2...Bxb4 3.Bxe5 Nf6', badge:'sharp', bl:'Standard'},
+      {name:'2...d6', moves:'2...d6 3.e3', badge:'positional', bl:'Solid'},
+      {name:'Exchange', moves:'2...Bxb4 3.Bxe5 Qg5', badge:'sharp', bl:'Tricky'}
+    ],
+    ideas: ['Grab queenside space with b4','The b2 bishop targets e5 and g7','A surprise weapon with independent value']
+  };
+OPENING_DETAILS['grob-attack'] = {
+    title: "Grob's Attack", eco: "ECO A00",
+    desc: 'The eccentric 1.g4, immediately fianchettoing and grabbing kingside space. Risky but tricky.',
+    moves: '1. g4 d5 2. Bg2',
+    sanList: ["g4","d5","Bg2"],
+    lines: [
+      {name:'Main Line', moves:'2...Bxg4 3.c4', badge:'sharp', bl:'Gambit'},
+      {name:'2...c6', moves:'2...c6 3.g5', badge:'sharp', bl:'Space'},
+      {name:'Classical', moves:'2...e5 3.c4', badge:'sharp', bl:'Wild'}
+    ],
+    ideas: ['A shock weapon — objectively dubious','The g2 bishop hits the long diagonal','Best as a surprise in fast time controls']
+  };
+OPENING_DETAILS['english-botvinnik'] = {
+    title: 'English Botvinnik System', eco: "ECO A26",
+    desc: 'White sets up the Botvinnik formation with pawns on c4 and e4, controlling d5.',
+    moves: '1. c4 e5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. e4',
+    sanList: ["c4","e5","Nc3","Nc6","g3","g6","Bg2","Bg7","e4"],
+    lines: [
+      {name:'Main Line', moves:'5...d6 6.Nge2 f5', badge:'positional', bl:'Standard'},
+      {name:'Closed', moves:'5...Nge7 6.Nge2 O-O', badge:'positional', bl:'Solid'},
+      {name:'6.d3', moves:'6.d3 Nge7 7.Be3', badge:'positional', bl:'Flexible'}
+    ],
+    ideas: ['The c4+e4 pawn duo controls d5','Slow maneuvering battle','Both sides fianchetto and plan pawn breaks']
+  };
+OPENING_DETAILS['anti-sicilian-rossolimo'] = {
+    title: 'Rossolimo Variation', eco: "ECO B30",
+    desc: 'White meets the Sicilian with 3.Bb5, a popular positional anti-Sicilian avoiding main theory.',
+    moves: '1. e4 c5 2. Nf3 Nc6 3. Bb5',
+    sanList: ["e4","c5","Nf3","Nc6","Bb5"],
+    lines: [
+      {name:'Main Line', moves:'3...g6 4.Bxc6 dxc6 5.d3', badge:'positional', bl:'Structural'},
+      {name:'3...e6', moves:'3...e6 4.O-O Nge7', badge:'positional', bl:'Solid'},
+      {name:'3...d6', moves:'3...d6 4.O-O Bd7', badge:'positional', bl:'Flexible'}
+    ],
+    ideas: ["Avoid the open Sicilian's theory","Trade on c6 to damage Black's structure",'Aim for a small but lasting edge']
+  };
+OPENING_DETAILS['anti-sicilian-moscow'] = {
+    title: 'Moscow Variation', eco: "ECO B51",
+    desc: 'Against 2...d6, White plays 3.Bb5+ to simplify and avoid heavy Sicilian theory.',
+    moves: '1. e4 c5 2. Nf3 d6 3. Bb5+',
+    sanList: ["e4","c5","Nf3","d6","Bb5+"],
+    lines: [
+      {name:'3...Bd7', moves:'3...Bd7 4.Bxd7+ Qxd7 5.O-O', badge:'positional', bl:'Main'},
+      {name:'3...Nd7', moves:'3...Nd7 4.d4 cxd4', badge:'positional', bl:'Active'},
+      {name:'3...Nc6', moves:'3...Nc6 4.O-O Bd7', badge:'positional', bl:'Solid'}
+    ],
+    ideas: ['Sidestep open Sicilian theory','Trade light-squared bishops','Aim for a comfortable positional game']
+  };
 
 // ════════════════════════════════════════════════════════
 // OPENING EXPLORER STATE
@@ -15809,7 +16507,7 @@ function showMasteredScreen(){
         ${canDrill ? 'Now test your memory with a drill to lock it in.' : 'Now dive into the variations to deepen your knowledge.'}
       </div>
       <div class="learn-mastered-buttons">
-        ${canDrill ? `<button class="btn btn-gold" onclick="startVariationDrill('${learnState.openingId}', ${learnState.variationIdx})">▶ Drill this variation</button>` : ''}
+        ${canDrill ? `<button class="btn btn-gold" onclick="startVariationDrillFromLearn('${learnState.openingId}', ${learnState.variationIdx})">▶ Drill this variation</button>` : ''}
         <button class="btn btn-outline" onclick="startLearnOpening('${learnState.openingId}')">${canDrill ? 'Back to lessons' : 'Explore variations →'}</button>
         <button class="btn btn-outline" onclick="exitLearn()">Exit</button>
       </div>
@@ -15817,17 +16515,23 @@ function showMasteredScreen(){
 }
 
 // ─── Drill launcher: jump into the existing quiz/variation drill ───
-window.startVariationDrill = function(openingId, varIdx){
+window.startVariationDrillFromLearn = function(openingId, varIdx){
   exitLearn();
   showSection('quizzes');
-  // Try to launch the matching variation drill if it exists
   setTimeout(() => {
-    if(typeof startOpeningDrill === 'function'){
-      startOpeningDrill(openingId);
-    } else if(typeof renderQuizOpenings === 'function'){
-      renderQuizOpenings();
+    // Launch the variation drill directly (no picker page)
+    if(QUIZ_VARIATIONS[openingId] && QUIZ_VARIATIONS[openingId].length > 0){
+      varCurrentOpening = openingId;
+      // Jump to the matching variation if its index is valid, else start at 0
+      varLineIdx = (typeof varIdx === 'number' && varIdx >= 0 && varIdx < QUIZ_VARIATIONS[openingId].length) ? varIdx : 0;
+      varStreak = 0;
+      varCompleted = 0;
+      loadCurrentVariation();
+    } else {
+      // No drill data for this opening — show the quiz home so the user isn't stuck
+      if(typeof renderQuizOpenings === 'function') renderQuizOpenings();
     }
-  }, 100);
+  }, 120);
 };
 
 window.exitLearn = function(){
