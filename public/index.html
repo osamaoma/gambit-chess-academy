@@ -1809,6 +1809,108 @@ input:focus, select:focus, textarea:focus {
   .learn-stage-check { font-size: 22px; color: #7fc99c; }
 
 
+  /* ═══════════════════════════════════════════════════════
+     NEW OPENINGS SYSTEM (Lichess-sourced) — v4 OPENINGS
+     ═══════════════════════════════════════════════════════ */
+  .nop-bucket-label { font-family:'DM Mono',monospace; font-size:12px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--text3); margin:26px 0 12px; }
+  .nop-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:16px; }
+  .nop-card {
+    background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:18px 20px;
+    cursor:pointer; transition:all .14s; display:flex; flex-direction:column; gap:10px;
+  }
+  .nop-card:hover { border-color:var(--gold); transform:translateY(-2px); }
+  .nop-card-top { display:flex; align-items:center; gap:10px; }
+  .nop-eco { font-family:'DM Mono',monospace; font-size:11px; color:var(--text3);
+    background:rgba(255,255,255,.05); padding:2px 7px; border-radius:6px; }
+  .nop-fam-name { font-family:'Playfair Display',serif; font-size:19px; color:var(--text); flex:1; }
+  .nop-varcount { font-size:12px; color:var(--gold); font-weight:600; }
+  .nop-firstmoves { font-family:'DM Mono',monospace; font-size:12px; color:var(--text2); }
+  .nop-card-foot { font-size:12px; color:var(--text3); }
+  .nop-mastered-pill { color:#7fc99c; font-size:12px; }
+
+  .nop-vlist-wrap { max-width:920px; margin:0 auto; }
+  .nop-back { background:none;border:none;color:var(--gold);cursor:pointer;font-size:14px;
+    margin-bottom:16px;font-family:'DM Sans',sans-serif; padding:6px 0; }
+  .nop-back:hover { text-decoration:underline; }
+  .nop-vhead { font-family:'Playfair Display',serif; font-size:30px; margin-bottom:4px; }
+  .nop-vhead em { color:var(--gold); font-style:italic; }
+  .nop-vsub { color:var(--text2); font-size:14px; margin-bottom:20px; }
+  .nop-vsearch { width:100%; max-width:480px; padding:11px 16px; border-radius:10px;
+    background:var(--bg2); border:1px solid var(--border); color:var(--text); font-size:14px; margin-bottom:18px; }
+  .nop-var-row {
+    display:flex; align-items:center; gap:14px; padding:14px 18px; margin-bottom:9px;
+    background:var(--bg2); border:1px solid rgba(255,255,255,.06); border-radius:11px;
+  }
+  .nop-var-row:hover { border-color:rgba(212,175,55,.4); }
+  .nop-var-eco { font-family:'DM Mono',monospace; font-size:11px; color:var(--text3); min-width:34px; }
+  .nop-var-info { flex:1; min-width:0; }
+  .nop-var-name { font-size:15px; color:var(--text); font-weight:600; }
+  .nop-var-moves { font-family:'DM Mono',monospace; font-size:12px; color:var(--text2);
+    margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .nop-var-depth { font-size:11px; color:var(--text3); margin-top:2px; }
+  .nop-var-actions { display:flex; gap:8px; flex-shrink:0; }
+  .nop-mini-btn { padding:7px 13px; border-radius:8px; font-size:13px; cursor:pointer;
+    font-family:'DM Sans',sans-serif; border:1px solid var(--border); background:var(--bg3); color:var(--text); }
+  .nop-mini-btn.gold { background:linear-gradient(135deg,var(--gold),#b8860b); color:#1a1a1a; font-weight:700; border:none; }
+  .nop-mini-btn:hover { filter:brightness(1.08); }
+  .nop-var-mastered { color:#7fc99c; font-size:16px; }
+
+  .nlearn-wrap { max-width:1120px; margin:0 auto; }
+  .nlearn-top { display:flex; align-items:center; gap:14px; margin-bottom:10px; flex-wrap:wrap; }
+  .nlearn-title { font-family:'Playfair Display',serif; font-size:22px; color:var(--text); flex:1; min-width:200px; }
+  .nlearn-title small { color:var(--gold); font-size:13px; font-family:'DM Mono',monospace; display:block; }
+  .nlearn-mode-pill { font-size:11px; padding:3px 10px; border-radius:20px; font-family:'DM Mono',monospace; }
+  .nlearn-mode-learn { background:rgba(212,175,55,.15); color:var(--gold); border:1px solid rgba(212,175,55,.4); }
+  .nlearn-mode-drill { background:rgba(127,201,156,.15); color:#7fc99c; border:1px solid rgba(127,201,156,.4); }
+  .nlearn-stage { display:grid; grid-template-columns:auto 1fr; gap:30px; align-items:start; }
+  @media (max-width:920px){ .nlearn-stage { grid-template-columns:1fr; } }
+  .nlearn-progress-track { height:6px; background:var(--bg3); border-radius:3px; overflow:hidden; margin-bottom:14px; }
+  .nlearn-progress-fill { height:100%; background:linear-gradient(90deg,var(--gold),#b8860b); width:0%; transition:width .25s; }
+  .nlearn-board-controls { display:flex; gap:8px; margin-top:12px; justify-content:center; flex-wrap:wrap; }
+  .nlearn-side { min-width:0; }
+  .nlearn-movebadge { display:inline-block; font-family:'DM Mono',monospace; font-weight:700; font-size:20px;
+    color:var(--gold); background:rgba(212,175,55,.1); padding:4px 14px; border-radius:8px; margin-bottom:12px; }
+  .nlearn-explain { font-size:15px; line-height:1.62; color:var(--text); margin-bottom:14px;
+    background:rgba(255,255,255,.03); padding:13px 15px; border-radius:9px; border-left:3px solid var(--gold); }
+  .nlearn-explain strong{ color:var(--gold); }
+  .nlearn-eval { font-family:'DM Mono',monospace; font-size:13px; color:var(--text2); margin-bottom:14px;
+    display:flex; align-items:center; gap:10px; min-height:20px; }
+  .nlearn-eval-num { font-weight:700; }
+  .nlearn-eval-pos{ color:#7fc99c; } .nlearn-eval-neg{ color:#e88; } .nlearn-eval-eq{ color:var(--text2); }
+  .nlearn-feedback { min-height:30px; margin-bottom:8px; }
+  .nlearn-fb-ok { color:#7fc99c; font-size:14px; }
+  .nlearn-fb-wrong { color:#e88; font-size:14px; }
+  .nlearn-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+
+  .ndrill-pick { text-align:center; padding:40px 20px; }
+  .ndrill-pick h3 { font-family:'Playfair Display',serif; font-size:24px; margin-bottom:8px; }
+  .ndrill-pick p { color:var(--text2); margin-bottom:24px; }
+  .ndrill-side-row { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
+  .ndrill-side-card { width:170px; padding:24px; border-radius:14px; cursor:pointer;
+    background:var(--bg2); border:2px solid var(--border); transition:all .14s; }
+  .ndrill-side-card:hover { border-color:var(--gold); transform:translateY(-2px); }
+  .ndrill-side-icon { font-size:46px; margin-bottom:10px; }
+  .ndrill-side-label { font-size:16px; font-weight:600; }
+
+  .nexp-panel { margin-top:18px; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .nexp-head { display:flex; align-items:center; gap:10px; padding:11px 15px; background:var(--bg2); cursor:pointer; }
+  .nexp-head h4 { font-size:14px; margin:0; flex:1; color:var(--text); }
+  .nexp-db-toggle { display:flex; border:1px solid var(--border); border-radius:7px; overflow:hidden; }
+  .nexp-db-toggle button { background:var(--bg3); border:none; color:var(--text2); padding:4px 10px; font-size:11px; cursor:pointer; }
+  .nexp-db-toggle button.active { background:var(--gold); color:#1a1a1a; font-weight:700; }
+  .nexp-body { padding:6px 0; max-height:340px; overflow:auto; }
+  .nexp-row { display:grid; grid-template-columns:54px 1fr 88px; align-items:center; gap:10px;
+    padding:8px 15px; cursor:pointer; }
+  .nexp-row:hover { background:rgba(212,175,55,.06); }
+  .nexp-move { font-family:'DM Mono',monospace; font-weight:700; color:var(--gold); font-size:14px; }
+  .nexp-bar { height:16px; border-radius:3px; display:flex; overflow:hidden; font-size:9px; }
+  .nexp-bar .w{ background:#e9e9e9; color:#222; } .nexp-bar .d{ background:#7a7a7a; color:#fff; } .nexp-bar .b{ background:#3a3a3a; color:#fff; }
+  .nexp-bar span{ display:flex; align-items:center; justify-content:center; }
+  .nexp-games { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); text-align:right; }
+  .nexp-empty { padding:20px; text-align:center; color:var(--text3); font-size:13px; }
+  .nexp-loading { padding:20px; text-align:center; color:var(--text2); font-size:13px; }
+
   /* ═══════════ CLEAN OPENINGS GRID ═══════════ */
   .op-clean-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 60px; }
   .op-clean-hero { text-align: center; margin-bottom: 36px; }
@@ -1864,7 +1966,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.29 MAP</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.0 OPENINGS</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -1876,14 +1978,41 @@ input:focus, select:focus, textarea:focus {
 <!-- ══════════════ OPENINGS ══════════════ -->
 <div id="sec-openings" class="section active">
   <div class="op-clean-wrap">
-    <div class="op-clean-hero">
-      <h1>Learn Chess <em>Openings</em></h1>
-      <p>Pick an opening and learn it move by move — the plans, the ideas, and the main lines, explained in plain English. Then drill it until it sticks.</p>
-      <div class="op-clean-search">
-        <input id="op-search" placeholder="🔍  Search openings (e.g. Sicilian, London, Caro-Kann)…" oninput="filterOpCards(this.value)">
+    <!-- VIEW 1: family grid -->
+    <div id="nop-home">
+      <div class="op-clean-hero">
+        <h1>Learn Chess <em>Openings</em></h1>
+        <p>Every opening from the Lichess database — pick a family, choose a variation, learn its full mainline, then drill it from memory. Open the live Explorer any time to see what real players play next.</p>
+        <div class="op-clean-search">
+          <input id="nop-search" placeholder="🔍  Search openings (e.g. Sicilian, London, Caro-Kann)…" oninput="nopFilterFamilies(this.value)" autocomplete="off">
+        </div>
+      </div>
+      <div id="nop-grid-container"></div>
+    </div>
+
+    <!-- VIEW 2: variation list for a family -->
+    <div id="nop-varlist" style="display:none">
+      <div class="nop-vlist-wrap">
+        <button class="nop-back" onclick="nopBackToHome()">← All openings</button>
+        <div class="nop-vhead" id="nop-vhead"></div>
+        <div class="nop-vsub" id="nop-vsub"></div>
+        <input class="nop-vsearch" id="nop-varsearch" placeholder="🔍  Filter variations…" oninput="nopFilterVariations(this.value)" autocomplete="off">
+        <div id="nop-var-rows"></div>
       </div>
     </div>
-    <div id="op-cards-container"></div>
+  </div>
+</div>
+
+<!-- ═══════════ NEW LEARN / DRILL VIEW ═══════════ -->
+<div id="sec-nlearn" class="section">
+  <div class="nlearn-wrap">
+    <div class="nlearn-top">
+      <button class="nop-back" id="nlearn-back" onclick="nlearnExit()" style="margin:0">← Back</button>
+      <div class="nlearn-title" id="nlearn-title"></div>
+      <span class="nlearn-mode-pill" id="nlearn-mode-pill"></span>
+    </div>
+    <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="nlearn-progress-fill"></div></div>
+    <div id="nlearn-stage-host"></div>
   </div>
 </div>
 
@@ -10114,7 +10243,7 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {openings:0, analysis:1, review:2, quizzes:3};
+  const tabs = {openings:0, nlearn:0, analysis:1, review:2, quizzes:3};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
@@ -20308,8 +20437,8 @@ window.filterOpCards = function(q){
 // Defer init so the static HTML/CSS renders first - the page should NEVER appear blank
 function safeInit(){
   try {
-    renderOpeningCards();
-  } catch(e){ console.error('buildSidebar failed:', e); }
+    nopInit();
+  } catch(e){ console.error('openings init failed:', e); }
   try {
     initStockfish().catch(err => console.warn('Engine init failed (analysis will be unavailable):', err));
   } catch(e){ console.warn('initStockfish threw:', e); }
@@ -20326,6 +20455,677 @@ if(document.readyState === 'loading'){
 } else {
   requestAnimationFrame(safeInit);
 }
+
+// ==== NEW OPENINGS MODULE (inserted) ====
+// ═══════════════════════════════════════════════════════════════
+// NEW OPENINGS SYSTEM (Lichess-sourced) — v4 OPENINGS
+// Data: /openings_data.json  { families:[ {f,eco,bk,v:[{n,b,eco,s,tp}]} ] }
+//   f=family name, bk=bucket(e4/d4/c4/Nf3/other), v=variations,
+//   n=variation name, b=isBase, s=SAN move array, tp=theory ply (named depth)
+// ═══════════════════════════════════════════════════════════════
+
+let NOP_DATA = null;          // loaded families
+let nopCurrentFamily = null;  // family object currently shown in variation list
+const NOP_BUCKET_LABELS = { e4:'1.e4 Openings', d4:'1.d4 Openings', c4:'1.c4 — English', Nf3:'1.Nf3 — Réti', other:'Other First Moves' };
+const NOP_BUCKET_ORDER = ['e4','d4','c4','Nf3','other'];
+
+// ---- mastery persistence (per variation) ----
+function nopMasteryKey(){ return 'gambit_nop_mastery'; }
+function nopLoadMastery(){ try { return JSON.parse(localStorage.getItem(nopMasteryKey())) || {}; } catch(e){ return {}; } }
+function nopSaveMastery(m){ try { localStorage.setItem(nopMasteryKey(), JSON.stringify(m)); } catch(e){} }
+function nopVarId(famName, varName, eco){ return `${famName}|${varName}|${eco}`; }
+function nopIsMastered(id){ return !!nopLoadMastery()[id]; }
+function nopMarkMastered(id){ const m = nopLoadMastery(); m[id] = Date.now(); nopSaveMastery(m); }
+function nopFamilyMasteredCount(fam){
+  const m = nopLoadMastery();
+  return fam.v.filter(v => m[nopVarId(fam.f, v.n, v.eco)]).length;
+}
+
+// ---- init: load data, render grid ----
+async function nopInit(){
+  const container = document.getElementById('nop-grid-container');
+  if(container) container.innerHTML = '<div class="nexp-loading">Loading openings…</div>';
+  try {
+    const res = await fetch('/openings_data.json', { cache: 'force-cache' });
+    const data = await res.json();
+    NOP_DATA = data.families || [];
+  } catch(e){
+    if(container) container.innerHTML = '<div class="nexp-empty">Could not load openings data. Make sure openings_data.json is present.</div>';
+    console.error('openings_data load failed', e);
+    return;
+  }
+  nopRenderGrid('');
+}
+
+// ---- de-duplicate / clean variation display names within a family ----
+function nopVariationLabel(v, idx){
+  if(v.b) return 'Main Line';
+  return v.n || `Variation ${idx+1}`;
+}
+
+// ---- family grid ----
+function nopRenderGrid(filter){
+  const container = document.getElementById('nop-grid-container');
+  if(!container || !NOP_DATA) return;
+  const q = (filter||'').trim().toLowerCase();
+  const mastery = nopLoadMastery();
+
+  let html = '';
+  for(const bucket of NOP_BUCKET_ORDER){
+    let fams = NOP_DATA.filter(f => f.bk === bucket);
+    if(q){
+      fams = fams.filter(f =>
+        f.f.toLowerCase().includes(q) ||
+        f.eco.toLowerCase().includes(q) ||
+        f.v.some(v => (v.n||'').toLowerCase().includes(q))
+      );
+    }
+    if(!fams.length) continue;
+    html += `<div class="nop-bucket-label">${NOP_BUCKET_LABELS[bucket]}</div><div class="nop-grid">`;
+    for(const fam of fams){
+      const base = fam.v.reduce((a,b)=> b.tp < a.tp ? b : a, fam.v[0]);
+      const firstMoves = nopFormatMoves(base.s.slice(0, 6));
+      const masteredCount = fam.v.filter(v => mastery[nopVarId(fam.f, v.n, v.eco)]).length;
+      const famIdx = NOP_DATA.indexOf(fam);
+      html += `<div class="nop-card" onclick="nopOpenFamily(${famIdx})">
+        <div class="nop-card-top">
+          <span class="nop-eco">${fam.eco}</span>
+          <span class="nop-fam-name">${nopEsc(fam.f)}</span>
+        </div>
+        <div class="nop-firstmoves">${firstMoves}</div>
+        <div class="nop-card-foot">
+          <span class="nop-varcount">${fam.v.length} variation${fam.v.length>1?'s':''}</span>
+          ${masteredCount ? `<span class="nop-mastered-pill"> · ✓ ${masteredCount} mastered</span>` : ''}
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+  if(!html) html = '<div class="nexp-empty">No openings match your search.</div>';
+  container.innerHTML = html;
+}
+
+window.nopFilterFamilies = function(v){ nopRenderGrid(v); };
+
+// ---- variation list for a family ----
+window.nopOpenFamily = function(famIdx){
+  const fam = NOP_DATA[famIdx];
+  if(!fam) return;
+  nopCurrentFamily = fam;
+  document.getElementById('nop-home').style.display = 'none';
+  document.getElementById('nop-varlist').style.display = 'block';
+  document.getElementById('nop-vhead').innerHTML = `<em>${nopEsc(fam.f)}</em>`;
+  const mastered = nopFamilyMasteredCount(fam);
+  document.getElementById('nop-vsub').textContent =
+    `${fam.v.length} variation${fam.v.length>1?'s':''} · ECO ${fam.eco}${mastered? ' · '+mastered+' mastered' : ''} · sourced from the Lichess opening database`;
+  const search = document.getElementById('nop-varsearch');
+  if(search) search.value = '';
+  nopRenderVariationRows('');
+  window.scrollTo(0,0);
+};
+
+window.nopBackToHome = function(){
+  document.getElementById('nop-varlist').style.display = 'none';
+  document.getElementById('nop-home').style.display = 'block';
+  nopRenderGrid(document.getElementById('nop-search')?.value || '');
+};
+
+function nopRenderVariationRows(filter){
+  const fam = nopCurrentFamily;
+  const host = document.getElementById('nop-var-rows');
+  if(!fam || !host) return;
+  const q = (filter||'').trim().toLowerCase();
+  const mastery = nopLoadMastery();
+  let html = '';
+  fam.v.forEach((v, idx) => {
+    const label = nopVariationLabel(v, idx);
+    if(q && !label.toLowerCase().includes(q) && !v.eco.toLowerCase().includes(q)) return;
+    const id = nopVarId(fam.f, v.n, v.eco);
+    const isM = !!mastery[id];
+    const movesPreview = nopFormatMoves(v.s.slice(0, 10)) + (v.s.length > 10 ? ' …' : '');
+    const famIdx = NOP_DATA.indexOf(fam);
+    html += `<div class="nop-var-row">
+      <span class="nop-var-eco">${v.eco}</span>
+      <div class="nop-var-info">
+        <div class="nop-var-name">${nopEsc(label)} ${isM?'<span class="nop-var-mastered">✓</span>':''}</div>
+        <div class="nop-var-moves">${movesPreview}</div>
+        <div class="nop-var-depth">${v.s.length} ply${v.tp < v.s.length ? ` · ${v.tp} book + continuation` : ''}</div>
+      </div>
+      <div class="nop-var-actions">
+        <button class="nop-mini-btn gold" onclick="nlearnStart(${famIdx}, ${idx}, 'learn')">📖 Learn</button>
+        <button class="nop-mini-btn" onclick="nlearnStart(${famIdx}, ${idx}, 'drill')">🎯 Drill</button>
+      </div>
+    </div>`;
+  });
+  if(!html) html = '<div class="nexp-empty">No variations match.</div>';
+  host.innerHTML = html;
+}
+
+window.nopFilterVariations = function(v){ nopRenderVariationRows(v); };
+
+// ---- format SAN list with move numbers ----
+function nopFormatMoves(sans){
+  let out = '';
+  for(let i=0;i<sans.length;i++){
+    if(i%2===0) out += `${Math.floor(i/2)+1}.`;
+    out += sans[i] + ' ';
+  }
+  return out.trim();
+}
+function nopEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════════════════════════════
+// LEARN / DRILL ENGINE
+// ═══════════════════════════════════════════════════════════════
+let nlearn = {
+  fam: null, variation: null, mode: 'learn',  // 'learn' | 'drill'
+  sans: [],            // full move list
+  states: [],          // board state after each ply (states[0]=start, states[k]=after k moves)
+  idx: 0,              // how many moves currently shown
+  side: 'w',           // for drill: which side the user plays
+  awaiting: false,     // drill: waiting for user's move
+  flip: false,
+  explorerOpen: false,
+  explorerDb: 'masters',
+  evalToken: 0,
+};
+
+window.nlearnStart = function(famIdx, varIdx, mode){
+  const fam = NOP_DATA[famIdx];
+  if(!fam) return;
+  const v = fam.v[varIdx];
+  if(!v) return;
+
+  // Precompute every board state along the line
+  const states = [parseFEN(startFEN())];
+  const sans = [];
+  let st = states[0];
+  for(const san of v.s){
+    let mv;
+    try { mv = sanToMove(san, st); } catch(e){ mv = null; }
+    if(!mv) break;               // stop at first illegal (shouldn't happen with clean data)
+    st = applyMove(st, mv);
+    sans.push(san);
+    states.push(st);
+  }
+
+  nlearn = {
+    fam, variation: v, mode,
+    sans, states,
+    idx: 0,
+    side: 'w',
+    awaiting: false,
+    flip: false,
+    explorerOpen: false,
+    explorerDb: 'masters',
+    evalToken: 0,
+    varIdx, famIdx,
+  };
+
+  document.getElementById('nlearn-title').innerHTML =
+    `${nopEsc(fam.f)}<small>${nopEsc(nopVariationLabel(v, varIdx))} · ECO ${v.eco}</small>`;
+  const pill = document.getElementById('nlearn-mode-pill');
+
+  showSection('nlearn');
+
+  if(mode === 'drill'){
+    pill.className = 'nlearn-mode-pill nlearn-mode-drill';
+    pill.textContent = 'DRILL';
+    nlearnRenderDrillPicker();
+  } else {
+    pill.className = 'nlearn-mode-pill nlearn-mode-learn';
+    pill.textContent = 'LEARN';
+    nlearn.idx = 0;
+    nlearnRenderLearn();
+  }
+  window.scrollTo(0,0);
+};
+
+window.nlearnExit = function(){
+  showSection('openings');
+  // restore variation list if we came from a family
+  if(nlearn.fam){
+    document.getElementById('nop-home').style.display = 'none';
+    document.getElementById('nop-varlist').style.display = 'block';
+    nopCurrentFamily = nlearn.fam;
+    nopRenderVariationRows(document.getElementById('nop-varsearch')?.value || '');
+  }
+};
+
+function nlearnSetProgress(done, total){
+  const fill = document.getElementById('nlearn-progress-fill');
+  if(fill) fill.style.width = total ? `${Math.round(100*done/total)}%` : '0%';
+}
+
+// ---- LEARN MODE ----
+function nlearnRenderLearn(){
+  const host = document.getElementById('nlearn-stage-host');
+  const total = nlearn.sans.length;
+  nlearnSetProgress(nlearn.idx, total);
+
+  host.innerHTML = `
+    <div class="nlearn-stage">
+      <div>
+        <div style="display:inline-flex;flex-direction:column;position:relative">
+          <div style="display:flex;gap:0;position:relative">
+            <div class="board-ranks" id="board-ranks-nl"></div>
+            <div id="board-nl" class="chess-board"></div>
+          </div>
+          <div class="board-files" id="board-files-nl"></div>
+        </div>
+        <div class="nlearn-board-controls">
+          <button class="btn btn-outline btn-sm" onclick="nlearnBack()">← Back</button>
+          <button class="btn btn-outline btn-sm" onclick="flipBoard('board-nl')">⇅ Flip</button>
+          <button class="btn btn-gold btn-sm" onclick="nlearnNext()" id="nl-next-btn">Next move →</button>
+        </div>
+      </div>
+      <div class="nlearn-side">
+        <div class="nlearn-movebadge" id="nl-movebadge"></div>
+        <div class="nlearn-explain" id="nl-explain"></div>
+        <div class="nlearn-eval" id="nl-eval"></div>
+        <div id="nl-explorer-host"></div>
+      </div>
+    </div>`;
+
+  nlearnRenderLearnStep();
+  nlearnRenderExplorerPanel();
+}
+
+function nlearnRenderLearnStep(){
+  const idx = nlearn.idx;          // moves shown
+  const state = nlearn.states[idx];
+  const highlights = [];
+  if(idx > 0){
+    // highlight last move's squares
+    const prev = nlearn.states[idx-1];
+    const mv = sanToMove(nlearn.sans[idx-1], prev);
+    if(mv){ highlights.push(mv.from, mv.to); }
+  }
+  renderBoardEl('board-nl', 'board-ranks-nl', 'board-files-nl', state, highlights, null);
+
+  const badge = document.getElementById('nl-movebadge');
+  const explain = document.getElementById('nl-explain');
+  const nextBtn = document.getElementById('nl-next-btn');
+
+  if(idx === 0){
+    badge.textContent = 'Starting position';
+    explain.innerHTML = `This is the <strong>${nopEsc(nlearn.fam.f)}</strong>. Press <strong>Next move →</strong> to walk through the line one move at a time. Each move shows a plain-English idea plus the engine's evaluation.`;
+    nextBtn.textContent = 'Start →';
+    nlearnSetEval(null);
+  } else {
+    const san = nlearn.sans[idx-1];
+    const moverWhite = ((idx-1) % 2 === 0);
+    const num = Math.floor((idx-1)/2)+1;
+    badge.textContent = moverWhite ? `${num}. ${san}` : `${num}… ${san}`;
+    // heuristic text (reuse plainMoveExplanation with detail=null)
+    let text;
+    try { text = plainMoveExplanation(san, idx-1, nlearn.sans, null, true); }
+    catch(e){ text = `<strong>${nopEsc(san)}</strong> — a key move in this line.`; }
+    // note where book theory ends
+    if(nlearn.variation.tp && idx === nlearn.variation.tp){
+      text += ` <em style="color:var(--text3)">(End of named theory — the rest follows the most common continuation.)</em>`;
+    }
+    explain.innerHTML = text;
+    nextBtn.textContent = idx >= nlearn.sans.length ? '✓ Done' : 'Next move →';
+    if(idx >= nlearn.sans.length){
+      nextBtn.classList.remove('btn-gold'); nextBtn.classList.add('btn-outline');
+    } else {
+      nextBtn.classList.add('btn-gold'); nextBtn.classList.remove('btn-outline');
+    }
+    nlearnRequestEval(state);
+  }
+  nlearnSetProgress(idx, nlearn.sans.length);
+  nlearnRenderExplorerPanel();   // refresh explorer to current position if open
+}
+
+window.nlearnNext = function(){
+  if(nlearn.idx < nlearn.sans.length){
+    nlearn.idx++;
+    nlearnRenderLearnStep();
+  } else {
+    // finished learning — mark mastered for learn? we reserve mastery for drill.
+  }
+};
+window.nlearnBack = function(){
+  if(nlearn.idx > 0){ nlearn.idx--; nlearnRenderLearnStep(); }
+};
+
+// ---- engine eval for a position ----
+function nlearnSetEval(result){
+  const el = document.getElementById('nl-eval');
+  if(!el) return;
+  if(result === null){ el.innerHTML = ''; return; }
+  if(result === 'loading'){ el.innerHTML = '<span style="color:var(--text3)">Engine thinking…</span>'; return; }
+  let cls, txt;
+  if(result.isMate){
+    cls = result.mateIn > 0 ? 'nlearn-eval-pos' : 'nlearn-eval-neg';
+    txt = `#${Math.abs(result.mateIn)}`;
+  } else {
+    const cp = result.score/100;
+    cls = cp > 0.3 ? 'nlearn-eval-pos' : (cp < -0.3 ? 'nlearn-eval-neg' : 'nlearn-eval-eq');
+    txt = (cp>0?'+':'') + cp.toFixed(2);
+  }
+  const verbal = nlearnEvalWords(result);
+  el.innerHTML = `<span>Engine:</span> <span class="nlearn-eval-num ${cls}">${txt}</span> <span style="color:var(--text3)">${verbal}</span>`;
+}
+function nlearnEvalWords(r){
+  if(r.isMate) return r.mateIn>0 ? 'White is winning' : 'Black is winning';
+  const cp = r.score/100;
+  const a = Math.abs(cp);
+  let who = cp>0 ? 'White' : 'Black';
+  if(a < 0.3) return 'roughly equal';
+  if(a < 0.8) return `${who} slightly better`;
+  if(a < 1.6) return `${who} clearly better`;
+  return `${who} winning`;
+}
+async function nlearnRequestEval(state){
+  const token = ++nlearn.evalToken;
+  nlearnSetEval('loading');
+  try {
+    if(typeof evalPosition !== 'function'){ nlearnSetEval(null); return; }
+    const fen = stateToFEN(state);
+    const result = await evalPosition(fen, 12, 1);
+    if(token !== nlearn.evalToken) return;   // stale
+    nlearnSetEval(result);
+  } catch(e){
+    if(token === nlearn.evalToken) nlearnSetEval(null);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DRILL MODE
+// ═══════════════════════════════════════════════════════════════
+function nlearnRenderDrillPicker(){
+  const host = document.getElementById('nlearn-stage-host');
+  nlearnSetProgress(0,1);
+  host.innerHTML = `
+    <div class="ndrill-pick">
+      <h3>Drill: ${nopEsc(nopVariationLabel(nlearn.variation, nlearn.varIdx))}</h3>
+      <p>Play the whole line from memory. Pick which side you want to recall:</p>
+      <div class="ndrill-side-row">
+        <div class="ndrill-side-card" onclick="nlearnBeginDrill('w')">
+          <div class="ndrill-side-icon">♔</div>
+          <div class="ndrill-side-label">Play White</div>
+        </div>
+        <div class="ndrill-side-card" onclick="nlearnBeginDrill('b')">
+          <div class="ndrill-side-icon">♚</div>
+          <div class="ndrill-side-label">Play Black</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+window.nlearnBeginDrill = function(side){
+  nlearn.side = side;
+  nlearn.idx = 0;
+  nlearn.flip = (side === 'b');
+  nlearn.mistakes = 0;
+  nlearn.awaiting = false;
+
+  const host = document.getElementById('nlearn-stage-host');
+  host.innerHTML = `
+    <div class="nlearn-stage">
+      <div>
+        <div style="display:inline-flex;flex-direction:column;position:relative">
+          <div style="display:flex;gap:0;position:relative">
+            <div class="board-ranks" id="board-ranks-nl"></div>
+            <div id="board-nl" class="chess-board"></div>
+          </div>
+          <div class="board-files" id="board-files-nl"></div>
+        </div>
+        <div class="nlearn-board-controls">
+          <button class="btn btn-outline btn-sm" onclick="flipBoard('board-nl')">⇅ Flip</button>
+          <button class="btn btn-outline btn-sm" onclick="nlearnRenderDrillPicker()">↺ Restart</button>
+        </div>
+      </div>
+      <div class="nlearn-side">
+        <div class="nlearn-movebadge" id="nl-movebadge">Your move</div>
+        <div class="nlearn-explain" id="nl-explain"></div>
+        <div class="nlearn-feedback" id="nl-feedback"></div>
+        <div class="nlearn-actions" id="nl-actions"></div>
+      </div>
+    </div>`;
+
+  if(nlearn.flip){ try { if(!isBoardFlipped('board-nl')) flipBoard('board-nl'); } catch(e){} }
+
+  nlearnDrillStep();
+};
+
+function nlearnDrillStep(){
+  const idx = nlearn.idx;
+  const state = nlearn.states[idx];
+  const total = nlearn.sans.length;
+  nlearnSetProgress(idx, total);
+
+  // finished?
+  if(idx >= total){
+    nlearnDrillComplete();
+    return;
+  }
+
+  // whose move is it at this ply?
+  const moverWhite = (idx % 2 === 0);
+  const userTurn = (nlearn.side === 'w') === moverWhite;
+
+  renderBoardEl('board-nl', 'board-ranks-nl', 'board-files-nl', state,
+    idx>0 ? nlearnLastMoveHL(idx) : [], null);
+
+  const badge = document.getElementById('nl-movebadge');
+  const explain = document.getElementById('nl-explain');
+  const fb = document.getElementById('nl-feedback');
+  const actions = document.getElementById('nl-actions');
+  fb.innerHTML = ''; actions.innerHTML = '';
+
+  if(userTurn){
+    badge.textContent = 'Your move';
+    explain.innerHTML = `Play move <strong>${Math.floor(idx/2)+1}${moverWhite?'.':'…'}</strong> for ${nlearn.side==='w'?'White':'Black'}. Click your piece, then its destination.`;
+    nlearn.awaiting = true;
+    makeBoardInteractive('board-nl', state, nlearnOnDrillMove);
+  } else {
+    // auto-play opponent move after a beat
+    badge.textContent = 'Opponent replies…';
+    const san = nlearn.sans[idx];
+    explain.innerHTML = `Opponent plays <strong>${nopEsc(san)}</strong>.`;
+    nlearn.awaiting = false;
+    setTimeout(() => {
+      if(nlearn.mode!=='drill') return;
+      nlearn.idx++;
+      nlearnDrillStep();
+    }, 650);
+  }
+}
+
+function nlearnLastMoveHL(idx){
+  try {
+    const prev = nlearn.states[idx-1];
+    const mv = sanToMove(nlearn.sans[idx-1], prev);
+    return mv ? [mv.from, mv.to] : [];
+  } catch(e){ return []; }
+}
+
+function nlearnOnDrillMove(from, to, newState, san){
+  if(!nlearn.awaiting) return;
+  const idx = nlearn.idx;
+  const expected = nlearn.sans[idx];
+  const norm = s => (s||'').replace(/[+#!?]/g,'');
+  const fb = document.getElementById('nl-feedback');
+  const actions = document.getElementById('nl-actions');
+
+  if(norm(san) === norm(expected)){
+    // correct
+    nlearn.awaiting = false;
+    nlearn.idx++;
+    fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${nopEsc(expected)} — correct!</span>`;
+    setTimeout(() => { if(nlearn.mode==='drill') nlearnDrillStep(); }, 380);
+  } else {
+    // wrong — show correct, let them retry (per chosen behaviour)
+    nlearn.mistakes = (nlearn.mistakes||0) + 1;
+    fb.innerHTML = `<span class="nlearn-fb-wrong">✗ Not quite. The move here is <strong>${nopEsc(expected)}</strong>.</span>`;
+    actions.innerHTML = `<button class="nop-mini-btn gold" onclick="nlearnRetryDrill()">Show me & continue →</button>`;
+    nlearn.awaiting = false;
+    // re-render board to current (undo their wrong move visually)
+    renderBoardEl('board-nl', 'board-ranks-nl', 'board-files-nl', nlearn.states[idx],
+      idx>0 ? nlearnLastMoveHL(idx) : [], null);
+  }
+}
+
+// After a wrong move: play the correct move for them, then continue
+window.nlearnRetryDrill = function(){
+  const idx = nlearn.idx;
+  // advance past the correct move (it's auto-applied)
+  nlearn.idx++;
+  // briefly show the correct move highlighted
+  const fb = document.getElementById('nl-feedback');
+  const actions = document.getElementById('nl-actions');
+  if(actions) actions.innerHTML = '';
+  if(fb) fb.innerHTML = '';
+  nlearnDrillStep();
+};
+
+function nlearnDrillComplete(){
+  const host = document.getElementById('nlearn-stage-host');
+  const id = nopVarId(nlearn.fam.f, nlearn.variation.n, nlearn.variation.eco);
+  const mistakes = nlearn.mistakes || 0;
+  const perfect = mistakes === 0;
+  if(perfect) nopMarkMastered(id);
+  nlearnSetProgress(1,1);
+
+  host.innerHTML = `
+    <div class="ndrill-pick">
+      <div class="ndrill-side-icon">${perfect?'🏆':'✓'}</div>
+      <h3>${perfect ? 'Mastered!' : 'Line complete'}</h3>
+      <p>${perfect
+        ? 'You recalled the entire line without a single slip. This variation is now marked as mastered.'
+        : `You made it through with ${mistakes} ${mistakes===1?'slip':'slips'}. Run it again clean to mark it mastered.`}</p>
+      <div class="ndrill-side-row">
+        <div class="ndrill-side-card" onclick="nlearnRenderDrillPicker()">
+          <div class="ndrill-side-icon">🔁</div>
+          <div class="ndrill-side-label">Drill again</div>
+        </div>
+        <div class="ndrill-side-card" onclick="nlearnStart(${nlearn.famIdx}, ${nlearn.varIdx}, 'learn')">
+          <div class="ndrill-side-icon">📖</div>
+          <div class="ndrill-side-label">Review (Learn)</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// OPENING EXPLORER (live Lichess via server proxy)
+// ═══════════════════════════════════════════════════════════════
+function nlearnRenderExplorerPanel(){
+  const host = document.getElementById('nl-explorer-host');
+  if(!host) return;
+  const open = nlearn.explorerOpen;
+  host.innerHTML = `
+    <div class="nexp-panel">
+      <div class="nexp-head" onclick="nlearnToggleExplorer()">
+        <span style="font-size:16px">🔎</span>
+        <h4>Opening Explorer ${open?'':'<span style="color:var(--text3);font-weight:400">— see what players actually play here</span>'}</h4>
+        ${open ? `<div class="nexp-db-toggle" onclick="event.stopPropagation()">
+          <button class="${nlearn.explorerDb==='masters'?'active':''}" onclick="nlearnSetExplorerDb('masters')">Masters</button>
+          <button class="${nlearn.explorerDb==='lichess'?'active':''}" onclick="nlearnSetExplorerDb('lichess')">Lichess</button>
+        </div>` : ''}
+        <span style="color:var(--text3)">${open?'▲':'▼'}</span>
+      </div>
+      ${open ? `<div class="nexp-body" id="nexp-body"><div class="nexp-loading">Loading…</div></div>` : ''}
+    </div>`;
+  if(open) nlearnLoadExplorer();
+}
+
+window.nlearnToggleExplorer = function(){
+  nlearn.explorerOpen = !nlearn.explorerOpen;
+  nlearnRenderExplorerPanel();
+};
+window.nlearnSetExplorerDb = function(db){
+  nlearn.explorerDb = db;
+  nlearnRenderExplorerPanel();
+};
+
+// Convert current line (up to nlearn.idx) into UCI for the explorer
+function nlearnCurrentUci(){
+  const uci = [];
+  let st = nlearn.states[0];
+  const upto = (nlearn.mode==='learn') ? nlearn.idx : nlearn.idx;
+  for(let i=0;i<upto;i++){
+    const mv = sanToMove(nlearn.sans[i], st);
+    if(!mv) break;
+    uci.push(mv.from + mv.to + (mv.promotion ? mv.promotion : ''));
+    st = applyMove(st, mv);
+  }
+  return uci;
+}
+
+async function nlearnLoadExplorer(){
+  const body = document.getElementById('nexp-body');
+  if(!body) return;
+  const token = ++nlearn.evalToken; // reuse token as a generic staleness guard for explorer
+  const myToken = token;
+  body.innerHTML = '<div class="nexp-loading">Loading from Lichess…</div>';
+  const uci = nlearnCurrentUci();
+  const play = uci.join(',');
+  const db = nlearn.explorerDb;
+  try {
+    const res = await fetch(`/api/explorer/${db}?play=${encodeURIComponent(play)}`);
+    if(!res.ok) throw new Error('explorer http '+res.status);
+    const data = await res.json();
+    if(myToken !== nlearn.evalToken) return; // position changed
+    nlearnRenderExplorerData(data);
+  } catch(e){
+    if(body) body.innerHTML = `<div class="nexp-empty">Couldn't reach the Lichess Explorer.<br><span style="font-size:11px">(Needs internet; the local server proxies the request.)</span></div>`;
+  }
+}
+
+function nlearnRenderExplorerData(data){
+  const body = document.getElementById('nexp-body');
+  if(!body) return;
+  const moves = (data && data.moves) || [];
+  if(!moves.length){ body.innerHTML = '<div class="nexp-empty">No games found for this position in this database.</div>'; return; }
+  let html = '';
+  for(const m of moves.slice(0, 12)){
+    const w = m.white||0, d = m.draws||0, b = m.black||0;
+    const tot = w+d+b || 1;
+    const pw = Math.round(100*w/tot), pd = Math.round(100*d/tot), pb = 100-pw-pd;
+    const games = tot;
+    const gamesLabel = games >= 1000 ? (games/1000).toFixed(games>=10000?0:1)+'k' : games;
+    html += `<div class="nexp-row" onclick="nlearnPlayExplorerMove('${nopEsc(m.san)}')">
+      <span class="nexp-move">${nopEsc(m.san)}</span>
+      <div class="nexp-bar">
+        ${pw>6?`<span class="w" style="width:${pw}%">${pw}%</span>`:`<span class="w" style="width:${pw}%"></span>`}
+        ${pd>6?`<span class="d" style="width:${pd}%">${pd}%</span>`:`<span class="d" style="width:${pd}%"></span>`}
+        ${pb>6?`<span class="b" style="width:${pb}%">${pb}%</span>`:`<span class="b" style="width:${pb}%"></span>`}
+      </div>
+      <span class="nexp-games">${gamesLabel} games</span>
+    </div>`;
+  }
+  body.innerHTML = html;
+}
+
+// Clicking an explorer move (learn mode only): if it matches the next book move, advance;
+// otherwise branch off by appending it as an exploratory move.
+window.nlearnPlayExplorerMove = function(san){
+  if(nlearn.mode !== 'learn') return;
+  const idx = nlearn.idx;
+  const norm = s => (s||'').replace(/[+#!?]/g,'');
+  // if it's the line's next move, just advance
+  if(idx < nlearn.sans.length && norm(nlearn.sans[idx]) === norm(san)){
+    nlearn.idx++;
+    nlearnRenderLearnStep();
+    return;
+  }
+  // otherwise branch: append the explored move into the working line from current point
+  const st = nlearn.states[idx];
+  let mv;
+  try { mv = sanToMove(san, st); } catch(e){ mv = null; }
+  if(!mv) return;
+  const newState = applyMove(st, mv);
+  // truncate any forward states and splice in the explored move
+  nlearn.sans = nlearn.sans.slice(0, idx).concat([san]);
+  nlearn.states = nlearn.states.slice(0, idx+1).concat([newState]);
+  nlearn.idx = idx + 1;
+  nlearnRenderLearnStep();
+};
+
 </script>
 </body>
 </html>

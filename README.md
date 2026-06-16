@@ -2,6 +2,36 @@
 
 A chess training platform running locally on your laptop.
 
+## Openings (v4 — Lichess-sourced)
+
+The Openings tab is built from the **Lichess opening database** (148 families,
+3,733 variations). For each opening you can:
+
+- Browse every **family** and drill into **all of its variations**.
+- **Learn** a variation move-by-move — plain-English idea per move **plus a live
+  Stockfish evaluation** of each position.
+- **Drill** it from memory: pick **White or Black**, play the whole line back;
+  a wrong move shows you the correct one and lets you continue. A clean run marks
+  the variation **mastered**.
+- Open the **Opening Explorer** (button inside the Learn view) to see what real
+  players actually play next — Masters or Lichess databases, live.
+
+Opening data lives in `public/openings_data.json` and is served statically. The
+Explorer calls the Lichess API through the local server proxy (`/api/explorer/:db`),
+so it works without CORS issues. **Internet is only needed for the Explorer button** —
+everything else (learning, drilling, engine eval) works fully offline.
+
+### Optional: deepen lines to true 20+ ply
+Every variation already ships with a valid mainline. If you want maximum depth
+(real most-played continuations pulled live from Lichess), run once:
+
+```cmd
+node bake_explorer.js
+```
+
+It rewrites `public/openings_data.json` (a backup is saved first). Requires that
+your network can reach `explorer.lichess.ovh`. This step is **entirely optional**.
+
 ## ⚠️ If the page is blank or "not responding"
 
 The most common cause is **browser cache** holding an old broken version.

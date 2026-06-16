@@ -59,7 +59,7 @@ function nodeFetch(url, opts = {}) {
       });
     });
     req.on('error', reject);
-    req.setTimeout(45000, () => { req.destroy(); reject(new Error('Timeout')); });
+    req.setTimeout(opts.timeout || 45000, () => { req.destroy(); reject(new Error('Timeout')); });
     if(opts.body) req.write(opts.body);
     req.end();
   });
@@ -147,6 +147,29 @@ app.get('/api/lichess/games/:user', async (req, res) => {
 
 app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', mode: 'lite' });
+});
+
+// ════════════════════════════════════════════════════════
+// OPENING EXPLORER — proxies the Lichess opening Explorer API.
+// db = 'masters' | 'lichess'. Pass through play (UCI moves), fen, ratings, speeds.
+// The Explorer host blocks some browsers via CORS, so we proxy server-side.
+// ════════════════════════════════════════════════════════
+app.get('/api/explorer/:db', async (req, res) => {
+  const db = req.params.db === 'masters' ? 'masters' : 'lichess';
+  const allowed = ['play', 'fen', 'ratings', 'speeds', 'moves', 'topGames', 'recentGames', 'since', 'until'];
+  const params = new URLSearchParams();
+  for (const k of allowed) {
+    if (req.query[k] !== undefined) params.set(k, req.query[k]);
+  }
+  try {
+    const r = await nodeFetch(`https://explorer.lichess.ovh/${db}?${params.toString()}`, { timeout: 8000 });
+    if (!r.ok) return res.status(r.status).json({ error: `Explorer error (HTTP ${r.status})` });
+    const data = r.json();
+    if (!data) return res.status(502).json({ error: 'Empty Explorer response' });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'Explorer request failed' });
+  }
 });
 
 app.get('*', (req, res) => {
