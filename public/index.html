@@ -1708,7 +1708,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.22 DEEP+</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.23 DRILLFIX</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -19326,17 +19326,20 @@ function showMasteredScreen(){
 
   const stage = document.querySelector('.learn-stage');
   const detail = OPENING_DETAILS[learnState.openingId] || OPENING_DETAILS[learnState.openingId.replace('-','_')];
-  const canDrill = learnState.isVariation;
+  const hasDrillData = typeof QUIZ_VARIATIONS !== 'undefined'
+    && QUIZ_VARIATIONS[learnState.openingId]
+    && QUIZ_VARIATIONS[learnState.openingId].length > 0;
+  const canDrill = learnState.isVariation && hasDrillData;
   stage.innerHTML = `
     <div class="learn-mastered" style="grid-column:1/-1">
       <div class="learn-mastered-icon">🏆</div>
       <div class="learn-mastered-title">Mastered!</div>
       <div class="learn-mastered-sub">
         You\'ve learned <strong style="color:var(--gold)">${learnState.lessonName}</strong>${detail ? ' of the ' + detail.title : ''}.
-        ${canDrill ? 'Now test your memory with a drill to lock it in.' : 'Now dive into the variations to deepen your knowledge.'}
+        ${canDrill ? 'Now test your memory with a drill to lock it in.' : (learnState.isVariation ? 'Great work! Keep learning the other variations of this opening.' : 'Now dive into the variations to deepen your knowledge.')}
       </div>
       <div class="learn-mastered-buttons">
-        ${canDrill ? `<button class="btn btn-gold" onclick="startVariationDrillFromLearn('${learnState.openingId}', ${learnState.variationIdx})">▶ Drill this variation</button>` : ''}
+        ${canDrill ? `<button class="btn btn-gold" onclick="startVariationDrillFromLearn('${learnState.openingId}', ${learnState.variationIdx}, '${(learnState.lessonName||'').replace(/'/g, "\\'").replace(/"/g,'&quot;')}')">▶ Drill this variation</button>` : ''}
         <button class="btn btn-outline" onclick="startLearnOpening('${learnState.openingId}')">${canDrill ? 'Back to lessons' : 'Explore variations →'}</button>
         <button class="btn btn-outline" onclick="exitLearn()">Exit</button>
       </div>
@@ -19344,15 +19347,42 @@ function showMasteredScreen(){
 }
 
 // ─── Drill launcher: jump into the existing quiz/variation drill ───
-window.startVariationDrillFromLearn = function(openingId, varIdx){
+window.startVariationDrillFromLearn = function(openingId, varIdx, varName){
   exitLearn();
   showSection('quizzes');
   setTimeout(() => {
-    // Launch the variation drill directly (no picker page)
-    if(QUIZ_VARIATIONS[openingId] && QUIZ_VARIATIONS[openingId].length > 0){
+    const drills = QUIZ_VARIATIONS[openingId];
+    if(drills && drills.length > 0){
       varCurrentOpening = openingId;
-      // Jump to the matching variation if its index is valid, else start at 0
-      varLineIdx = (typeof varIdx === 'number' && varIdx >= 0 && varIdx < QUIZ_VARIATIONS[openingId].length) ? varIdx : 0;
+      // Match the drill to the learn variation BY NAME, not by index — the two
+      // lists (OPENING_DETAILS.lines vs QUIZ_VARIATIONS) have different orderings
+      // and counts, so a raw index lands on the wrong variation.
+      let matchIdx = -1;
+      if(varName){
+        const norm = s => (s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+        const target = norm(varName);
+        // 1) exact normalized match
+        matchIdx = drills.findIndex(d => norm(d.name) === target);
+        // 2) one name contains the other (e.g. "Najdorf" vs "Najdorf Main Line")
+        if(matchIdx === -1){
+          matchIdx = drills.findIndex(d => {
+            const n = norm(d.name);
+            return n.includes(target) || target.includes(n);
+          });
+        }
+        // 3) shared significant word (first word of either)
+        if(matchIdx === -1){
+          const firstWord = norm(varName.split(/\s+/)[0]);
+          if(firstWord.length >= 3){
+            matchIdx = drills.findIndex(d => norm(d.name).includes(firstWord));
+          }
+        }
+      }
+      // Fall back to the numeric index if it's valid, else 0
+      if(matchIdx === -1){
+        matchIdx = (typeof varIdx === 'number' && varIdx >= 0 && varIdx < drills.length) ? varIdx : 0;
+      }
+      varLineIdx = matchIdx;
       varStreak = 0;
       varCompleted = 0;
       loadCurrentVariation();
