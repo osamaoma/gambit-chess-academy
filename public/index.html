@@ -1708,7 +1708,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.21 DEEP</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.22 DEEP+</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -3244,10 +3244,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 e5 2. Nf3 Nc6 3. Bc4",
     sanList: ["e4","e5","Nf3","Nc6","Bc4"],
     lines: [
-      {name:"Giuoco Piano", moves:"3...Bc5 4.c3 Nf6 5.d4", badge:"solid", bl:"Classical"},
-      {name:"Two Knights", moves:"3...Nf6 4.Ng5 d5", badge:"sharp", bl:"Tactical"},
-      {name:"Evans Gambit", moves:"3...Bc5 4.b4!? Bxb4 5.c3", badge:"sharp", bl:"Gambit"},
-      {name:"Hungarian Defence", moves:"3...Be7 4.d4 Nf6", badge:"solid", bl:"Solid"},
+      {name:"Giuoco Piano", moves:"1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.O-O O-O 7.cxd4 Nxe4", badge:"solid", bl:"Classical"},
+      {name:"Two Knights", moves:"1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5 d5 5.exd5 Bd7 6.dxc6 bxc6 7.O-O Bc5", badge:"sharp", bl:"Tactical"},
+      {name:"Evans Gambit", moves:"1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Nge7 6.cxb4 O-O 7.O-O Nxb4", badge:"sharp", bl:"Gambit"},
+      {name:"Hungarian Defence", moves:"1.e4 e5 2.Nf3 Nc6 3.Bc4 Be7 4.d4 Nf6 5.Be3 exd4 6.O-O dxe3 7.fxe3 O-O", badge:"solid", bl:"Solid"},
     ],
     ideas: ["Bc4 targets f7 and controls center diagonals","c3+d4 builds ideal pawn center","Ne2-g3 maneuver common in modern Italian","Slow maneuvering plans — no rush to attack"]
   },
@@ -3257,11 +3257,11 @@ const OPENING_DETAILS = {
     moves: "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3",
     sanList: ["e4","c5","Nf3","d6","d4","cxd4","Nxd4","Nf6","Nc3"],
     lines: [
-      {name:"Najdorf", moves:"5...a6 — most popular worldwide", badge:"sharp", bl:"Most played"},
-      {name:"Dragon", moves:"5...g6 — fianchetto bishop", badge:"sharp", bl:"Sharpest"},
-      {name:"Classical", moves:"5...Nc6 6.Bg5 e6", badge:"solid", bl:"Classical"},
-      {name:"Scheveningen", moves:"5...e6 — flexible", badge:"positional", bl:"Flexible"},
-      {name:"Four Knights", moves:"5...Nc6 6.Nxc6 bxc6", badge:"solid", bl:"Solid"},
+      {name:"Najdorf", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Bxa6 Nxa6 7.O-O Bf5", badge:"sharp", bl:"Most played"},
+      {name:"Dragon", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.Bc4 Be6 7.O-O Bxc4", badge:"sharp", bl:"Sharpest"},
+      {name:"Classical", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 Nc6 6.Bg5 e6 7.Bc4 Nxd4", badge:"solid", bl:"Classical"},
+      {name:"Scheveningen", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 e6 6.Bd3 Nbd7 7.O-O Be7", badge:"positional", bl:"Flexible"},
+      {name:"Four Knights", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 Nc6 6.Nxc6 bxc6 7.Bf4 Bd7", badge:"solid", bl:"Solid"},
     ],
     ideas: ["Use c-file for rook counterplay after ...c5xd4","Launch queenside minority attack while White attacks kingside","Knight on d4 is the cornerstone — challenge or trade it","Create passed pawns with accurate endgame technique"]
   },
@@ -3331,10 +3331,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6",
     sanList: ["e4","c5","Nf3","d6","d4","cxd4","Nxd4","Nf6","Nc3","g6"],
     lines: [
-      {name:"Yugoslav Attack", moves:"6.Be3 Bg7 7.f3 O-O 8.Qd2 — main battle", badge:"sharp", bl:"Razor sharp"},
-      {name:"Classical", moves:"6.Be2 Bg7 7.O-O — quieter approach", badge:"solid", bl:"Classical"},
-      {name:"Levenfish Attack", moves:"6.f4 — direct kingside aggression", badge:"sharp", bl:"Aggressive"},
-      {name:"Fianchetto Variation", moves:"6.g3 — White fianchettos too", badge:"positional", bl:"Positional"},
+      {name:"Yugoslav Attack", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.Be3 Bg7 7.f3 O-O 8.Qd2", badge:"sharp", bl:"Razor sharp"},
+      {name:"Classical", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.Be2 Bg7 7.O-O O-O", badge:"solid", bl:"Classical"},
+      {name:"Levenfish Attack", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.f4 Bd7 7.Bc4 Bg7", badge:"sharp", bl:"Aggressive"},
+      {name:"Fianchetto Variation", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.g3 Bf5 7.exf5 gxf5", badge:"positional", bl:"Positional"},
     ],
     ideas: ["Bg7 is Black's pride — aim along the a1-h8 diagonal","...Rc8 + ...Nc4 sacrifice is a key plan","Race: opposite-side castling means whoever attacks faster wins","Don't trade Bg7 lightly — it defends the king and attacks"]
   },
@@ -3344,10 +3344,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 e6",
     sanList: ["e4","c5","Nf3","d6","d4","cxd4","Nxd4","Nf6","Nc3","e6"],
     lines: [
-      {name:"Keres Attack", moves:"6.g4 — direct kingside expansion", badge:"sharp", bl:"Aggressive"},
-      {name:"English Attack", moves:"6.Be3 a6 7.f3 b5", badge:"sharp", bl:"Theoretical"},
-      {name:"Classical", moves:"6.Be2 a6 7.O-O Be7 — quieter", badge:"solid", bl:"Classical"},
-      {name:"Fianchetto", moves:"6.g3 — positional setup", badge:"positional", bl:"Positional"},
+      {name:"Keres Attack", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 e6 6.g4 Be7 7.Bf4 O-O", badge:"sharp", bl:"Aggressive"},
+      {name:"English Attack", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 e6 6.Be3 a6 7.f3 b5", badge:"sharp", bl:"Theoretical"},
+      {name:"Classical", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 e6 6.Be2 a6 7.O-O Be7", badge:"solid", bl:"Classical"},
+      {name:"Fianchetto", moves:"1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 e6 6.g3 Nbd7 7.Be3 Be7", badge:"positional", bl:"Positional"},
     ],
     ideas: ["Small center (...d6 + ...e6) supports central control","...a6 + ...b5 + ...Bb7 is the standard plan","Watch out for the f4-f5 break by White","Knights often maneuver Nf6-d7 to e5 squares"]
   },
@@ -3357,11 +3357,11 @@ const OPENING_DETAILS = {
     moves: "1. e4 e6 2. d4 d5 3. Nc3",
     sanList: ["e4","e6","d4","d5","Nc3"],
     lines: [
-      {name:"Winawer Variation", moves:"3...Bb4 — pinning the knight", badge:"sharp", bl:"Sharp"},
-      {name:"Classical", moves:"3...Nf6 4.Bg5 Be7 5.e5", badge:"solid", bl:"Classical"},
-      {name:"Advance Variation", moves:"3.e5 c5 4.c3 Nc6", badge:"positional", bl:"Positional"},
-      {name:"Tarrasch", moves:"3.Nd2 — avoiding Winawer", badge:"solid", bl:"Solid"},
-      {name:"Exchange", moves:"3.exd5 exd5 — symmetrical", badge:"solid", bl:"Drawish"},
+      {name:"Winawer Variation", moves:"1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd3 Nc6 5.Bd2 dxe4 6.Nge2 exd3 7.O-O dxe2", badge:"sharp", bl:"Sharp"},
+      {name:"Classical", moves:"1.e4 e6 2.d4 d5 3.Nc3 Nf6 4.Bg5 Be7 5.e5 Nbd7 6.exf6 O-O 7.fxe7 Ne5", badge:"solid", bl:"Classical"},
+      {name:"Advance Variation", moves:"1.e4 e6 2.d4 d5 3.Nc3 dxe4 4.Be3 Bc5 5.dxc5 Ne7 6.Nf3 exf3 7.gxf3 O-O", badge:"positional", bl:"Positional"},
+      {name:"Tarrasch", moves:"1.e4 e6 2.d4 d5 3.Nc3 dxe4 4.Bc4 Bd6 5.Bd2 Nf6 6.Nge2 O-O 7.O-O Nbd7", badge:"solid", bl:"Solid"},
+      {name:"Exchange", moves:"1.e4 e6 2.d4 d5 3.Nc3 dxe4 4.Bf4 Bc5 5.dxc5 Nf6 6.Be2 O-O 7.Qxd8 Rxd8", badge:"solid", bl:"Drawish"},
     ],
     ideas: ["Solid pawn chain c6-d5-e6 is the French signature","Bad light-squared bishop is a long-term problem to solve","Counterattack with ...c5 break at the right moment","Often play ...f6 to challenge White's e5 pawn"]
   },
@@ -3371,10 +3371,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4",
     sanList: ["e4","c6","d4","d5","Nc3","dxe4","Nxe4"],
     lines: [
-      {name:"Classical", moves:"4...Bf5 5.Ng3 Bg6 6.h4 h6", badge:"solid", bl:"Main line"},
-      {name:"Advance Variation", moves:"3.e5 Bf5 4.Nf3 e6", badge:"positional", bl:"Positional"},
-      {name:"Exchange Variation", moves:"3.exd5 cxd5 4.Bd3", badge:"solid", bl:"Symmetrical"},
-      {name:"Two Knights", moves:"3.Nc3 dxe4 4.Nxe4 Nf6 5.Nxf6+", badge:"sharp", bl:"Tactical"},
+      {name:"Classical", moves:"1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bf5 5.Ng3 Bg6 6.h4 h6 7.Bxh6 Nxh6", badge:"solid", bl:"Main line"},
+      {name:"Advance Variation", moves:"1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nd7 5.Ne2 Ngf6 6.Bf4 Nxe4 7.d5 cxd5", badge:"positional", bl:"Positional"},
+      {name:"Exchange Variation", moves:"1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bd7 5.Be3 Nf6 6.Bc4 Nxe4 7.Ne2 Na6", badge:"solid", bl:"Symmetrical"},
+      {name:"Two Knights", moves:"1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nd7 5.Bf4 Ngf6 6.Nxf6+ gxf6 7.Bc4 Bh6", badge:"sharp", bl:"Tactical"},
     ],
     ideas: ["c6 supports d5 without blocking the light-squared bishop","Good endgame chances due to sound pawn structure","Bring out Bf5 early before Black plays e6","Knight on e4 — trade it or drive it back with ...Nd7"]
   },
@@ -3384,10 +3384,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 d6 2. d4 Nf6 3. Nc3 g6",
     sanList: ["e4","d6","d4","Nf6","Nc3","g6"],
     lines: [
-      {name:"Austrian Attack", moves:"4.f4 Bg7 5.Nf3 — most ambitious", badge:"sharp", bl:"Aggressive"},
-      {name:"Classical", moves:"4.Nf3 Bg7 5.Be2 O-O", badge:"solid", bl:"Solid"},
-      {name:"150 Attack", moves:"4.Be3 Bg7 5.Qd2 — practical try", badge:"sharp", bl:"Modern"},
-      {name:"Fianchetto", moves:"4.g3 — positional", badge:"positional", bl:"Quiet"},
+      {name:"Austrian Attack", moves:"1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.f4 Bg7 5.Nf3 Bd7 6.Bc4 O-O 7.O-O Na6", badge:"sharp", bl:"Aggressive"},
+      {name:"Classical", moves:"1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Nf3 Bg7 5.Be2 O-O 6.O-O Be6 7.Bf4 Nc6", badge:"solid", bl:"Solid"},
+      {name:"150 Attack", moves:"1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Be3 Bg7 5.Qd2 Be6 6.O-O-O O-O 7.Bd3 Nbd7", badge:"sharp", bl:"Modern"},
+      {name:"Fianchetto", moves:"1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.g3 Be6 5.Bf4 Nc6 6.Nge2 Bh6 7.Bxh6 O-O", badge:"positional", bl:"Quiet"},
     ],
     ideas: ["Let White build the center — then attack with ...c5 or ...e5","Bg7 fianchetto is the soul of the Pirc","Castle short and watch for the f4-f5 break by White","Knights often maneuver to e5 or c5 via d7 or a6"]
   },
@@ -3397,10 +3397,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3",
     sanList: ["e4","Nf6","e5","Nd5","d4","d6","Nf3"],
     lines: [
-      {name:"Modern Variation", moves:"4...g6 5.Bc4 Nb6", badge:"sharp", bl:"Main line"},
-      {name:"Four Pawns Attack", moves:"4.c4 Nb6 5.f4 — maximum aggression", badge:"sharp", bl:"Ambitious"},
-      {name:"Exchange", moves:"4.c4 Nb6 5.exd6", badge:"solid", bl:"Quieter"},
-      {name:"Chase Variation", moves:"2...Nd5 3.c4 Nb6 4.c5 — chasing", badge:"sharp", bl:"Provocative"},
+      {name:"Modern Variation", moves:"1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 g6 5.Bc4 Nb6 6.O-O dxe5 7.dxe5 Nxc4", badge:"sharp", bl:"Main line"},
+      {name:"Four Pawns Attack", moves:"1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 Bg4 5.Bf4 dxe5 6.Bc4 exf4 7.O-O Bxf3", badge:"sharp", bl:"Ambitious"},
+      {name:"Exchange", moves:"1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 Bf5 5.Bf4 dxe5 6.dxe5 Nc6 7.Be2 Nxf4", badge:"solid", bl:"Quieter"},
+      {name:"Chase Variation", moves:"1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 Be6 5.Nbd2 dxe5 6.dxe5 Nd7 7.Bc4 Nxe5", badge:"sharp", bl:"Provocative"},
     ],
     ideas: ["Invite White to overextend, then undermine the center","Knight goes Nf6-d5-b6 looking for outposts","Counterattack with ...c5 or ...f6 against e5","Endgame often favors Black due to better structure"]
   },
@@ -3410,10 +3410,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 e5 2. f4",
     sanList: ["e4","e5","f4"],
     lines: [
-      {name:"Accepted - Modern", moves:"2...exf4 3.Nf3 d5 — solid defense", badge:"sharp", bl:"Main accepted"},
-      {name:"Accepted - Kieseritzky", moves:"2...exf4 3.Nf3 g5 4.h4 g4 5.Ne5", badge:"sharp", bl:"Razor sharp"},
-      {name:"Falkbeer Counter-Gambit", moves:"2...d5 — counter-gambit", badge:"sharp", bl:"Counter-gambit"},
-      {name:"Declined - Classical", moves:"2...Bc5 — safest", badge:"solid", bl:"Declined"},
+      {name:"Accepted - Modern", moves:"1.e4 e5 2.f4 exf4 3.Nf3 d5 4.Bd3 Be6 5.exd5 Nf6 6.dxe6 Nbd7 7.exd7+ Kxd7", badge:"sharp", bl:"Main accepted"},
+      {name:"Accepted - Kieseritzky", moves:"1.e4 e5 2.f4 exf4 3.Nf3 g5 4.h4 g4 5.Ne5 Bd6 6.Bc4 Bxe5 7.O-O Ne7", badge:"sharp", bl:"Razor sharp"},
+      {name:"Falkbeer Counter-Gambit", moves:"1.e4 e5 2.f4 d5 3.fxe5 dxe4 4.Bd3 exd3 5.cxd3 Bc5 6.Nc3 Be6 7.Nf3 Nf6", badge:"sharp", bl:"Counter-gambit"},
+      {name:"Declined - Classical", moves:"1.e4 e5 2.f4 Bc5 3.fxe5 Ne7 4.Bc4 Nbc6 5.Nc3 Bxg1 6.Bxf7+ Kxf7 7.Rxg1 Nxe5", badge:"solid", bl:"Declined"},
     ],
     ideas: ["Open f-file is the entire point — rooks come to f1","Rapid development and king safety are the priorities","Black must return material at the right moment","Bg5 + Bxf6 is a common idea to weaken Black's king"]
   },
@@ -3423,10 +3423,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 e5 2. Nf3 Nf6",
     sanList: ["e4","e5","Nf3","Nf6"],
     lines: [
-      {name:"Classical", moves:"3.Nxe5 d6 4.Nf3 Nxe4 5.d4", badge:"solid", bl:"Main line"},
-      {name:"Steinitz Variation", moves:"3.d4 exd4 4.e5 Ne4 5.Qxd4", badge:"sharp", bl:"Sharper"},
-      {name:"Three Knights", moves:"3.Nc3 — avoiding mainline", badge:"solid", bl:"Quiet"},
-      {name:"Italian Four Knights", moves:"3.Nc3 Nc6 4.Bb5 — transposes", badge:"solid", bl:"Solid"},
+      {name:"Classical", moves:"1.e4 e5 2.Nf3 Nf6 3.Nxe5 d6 4.Nf3 Nxe4 5.d4 Be6 6.Bd3 Be7 7.O-O O-O", badge:"solid", bl:"Main line"},
+      {name:"Steinitz Variation", moves:"1.e4 e5 2.Nf3 Nf6 3.d4 exd4 4.e5 Ne4 5.Qxd4 Bc5 6.Bf4 Bxd4 7.Nxd4 O-O", badge:"sharp", bl:"Sharper"},
+      {name:"Three Knights", moves:"1.e4 e5 2.Nf3 Nf6 3.Nc3 Bd6 4.Bc4 Nc6 5.O-O O-O 6.Nxe5 Nxe5 7.Bxf7+ Kxf7", badge:"solid", bl:"Quiet"},
+      {name:"Italian Four Knights", moves:"1.e4 e5 2.Nf3 Nf6 3.Nc3 Nc6 4.Bb5 Bc5 5.Bxc6 dxc6 6.O-O O-O 7.Nxe5 Bd7", badge:"solid", bl:"Solid"},
     ],
     ideas: ["Direct counterattack on e4 equalizes immediately","Be ready to return the pawn with ...d5 or ...Nxe4","Excellent endgame technique required","Solid drawing weapon vs higher-rated opponents"]
   },
@@ -3436,10 +3436,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6",
     sanList: ["e4","e5","Nf3","Nc6","Nc3","Nf6"],
     lines: [
-      {name:"Spanish Variation", moves:"4.Bb5 — Ruy López setup", badge:"solid", bl:"Spanish"},
-      {name:"Scotch Variation", moves:"4.d4 exd4 5.Nxd4", badge:"sharp", bl:"Scotch hybrid"},
-      {name:"Italian Variation", moves:"4.Bc4 Nxe4 — sharp tactics", badge:"sharp", bl:"Tactical"},
-      {name:"Belgrade Gambit", moves:"4.d4 exd4 5.Nd5", badge:"sharp", bl:"Gambit"},
+      {name:"Spanish Variation", moves:"1.e4 e5 2.Nf3 Nc6 3.Nc3 Nf6 4.Bb5 Bd6 5.Bxc6 bxc6 6.O-O O-O 7.Nxe5 Bxe5", badge:"solid", bl:"Spanish"},
+      {name:"Scotch Variation", moves:"1.e4 e5 2.Nf3 Nc6 3.Nc3 Nf6 4.d4 exd4 5.Nxd4 Nxd4 6.Bf4 Bc5 7.Bd3 O-O", badge:"sharp", bl:"Scotch hybrid"},
+      {name:"Italian Variation", moves:"1.e4 e5 2.Nf3 Nc6 3.Nc3 Nf6 4.Bc4 Nxe4 5.Nxe4 Be7 6.O-O O-O 7.Nxe5 Nxe5", badge:"sharp", bl:"Tactical"},
+      {name:"Belgrade Gambit", moves:"1.e4 e5 2.Nf3 Nc6 3.Nc3 Nf6 4.d4 exd4 5.Nd5 Bb4+ 6.Nxb4 O-O 7.Nxc6 dxc6", badge:"sharp", bl:"Gambit"},
     ],
     ideas: ["Symmetric development — fight for tempo","Often the player who breaks symmetry first benefits","Watch for d4 break or Bb5 pin","Endgames are usually balanced — middlegame skill decides"]
   },
@@ -3449,10 +3449,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 e5 2. Nc3",
     sanList: ["e4","e5","Nc3"],
     lines: [
-      {name:"Vienna Gambit", moves:"2...Nf6 3.f4 — aggressive", badge:"sharp", bl:"Gambit"},
-      {name:"Falkbeer Variation", moves:"2...Nf6 3.Bc4 Nxe4", badge:"sharp", bl:"Tactical"},
-      {name:"Max Lange Defense", moves:"2...Nc6 3.Bc4 Bc5", badge:"solid", bl:"Solid"},
-      {name:"Frankenstein-Dracula", moves:"2...Nf6 3.Bc4 Nxe4 4.Qh5", badge:"sharp", bl:"Wild"},
+      {name:"Vienna Gambit", moves:"1.e4 e5 2.Nc3 Nf6 3.f4 exf4 4.Bc4 Bd6 5.Nf3 Na6 6.O-O O-O 7.Bxa6 bxa6", badge:"sharp", bl:"Gambit"},
+      {name:"Falkbeer Variation", moves:"1.e4 e5 2.Nc3 Nf6 3.Bc4 Nxe4 4.Nge2 Nc6 5.Nxe4 Bd6 6.O-O O-O 7.Nxd6 cxd6", badge:"sharp", bl:"Tactical"},
+      {name:"Max Lange Defense", moves:"1.e4 e5 2.Nc3 Nc6 3.Bc4 Bc5 4.Nf3 Nf6 5.O-O O-O 6.Nxe5 Nxe5 7.Bxf7+ Kxf7", badge:"solid", bl:"Solid"},
+      {name:"Frankenstein-Dracula", moves:"1.e4 e5 2.Nc3 Nf6 3.Bc4 Nxe4 4.Qh5 Bd6 5.Nge2 Nc6 6.O-O O-O 7.Nxe4 Bc5", badge:"sharp", bl:"Wild"},
     ],
     ideas: ["Delay Nf3 to keep f-pawn flexible","Vienna Gambit (3.f4) creates kingside threats","Surprise weapon vs symmetric defenders","Bc4 + Qh5 attacks on f7 are common"]
   },
@@ -3462,10 +3462,10 @@ const OPENING_DETAILS = {
     moves: "1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4",
     sanList: ["e4","e5","Nf3","Nc6","d4","exd4","Nxd4"],
     lines: [
-      {name:"Classical Variation", moves:"4...Bc5 5.Nxc6 Qf6 6.Qd2", badge:"sharp", bl:"Classical"},
-      {name:"Schmidt Variation", moves:"4...Nf6 5.Nxc6 bxc6 6.e5", badge:"sharp", bl:"Main line"},
-      {name:"Mieses Variation", moves:"4...Nf6 5.Nxc6 bxc6 6.e5 Qe7 7.Qe2 Nd5 8.c4", badge:"sharp", bl:"Sharp"},
-      {name:"Scotch Gambit", moves:"4.Bc4 — gambit alternative", badge:"sharp", bl:"Gambit"},
+      {name:"Classical Variation", moves:"1.e4 e5 2.Nf3 Nc6 3.d4 exd4 4.Nxd4 Bc5 5.Nxc6 Qf6 6.Qd2 dxc6 7.Bb5 cxb5", badge:"sharp", bl:"Classical"},
+      {name:"Schmidt Variation", moves:"1.e4 e5 2.Nf3 Nc6 3.d4 exd4 4.Nxd4 Nf6 5.Nxc6 bxc6 6.e5 Bd6 7.exf6 O-O", badge:"sharp", bl:"Main line"},
+      {name:"Mieses Variation", moves:"1.e4 e5 2.Nf3 Nc6 3.d4 exd4 4.Nxd4 Nf6 5.Nxc6 bxc6 6.e5 Qe7 7.Qe2 Nd5 8.c4", badge:"sharp", bl:"Sharp"},
+      {name:"Scotch Gambit", moves:"1.e4 e5 2.Nf3 Nc6 3.d4 exd4 4.Nxd4 Nxd4 5.Bd3 Bd6 6.O-O Ne7 7.Nd2 O-O", badge:"sharp", bl:"Gambit"},
     ],
     ideas: ["Open central files for the rooks","Pawn on e5 cramps Black's pieces","Bishop pair often compensates for doubled pawns","Active piece play more important than pawn structure"]
   },
@@ -3477,11 +3477,11 @@ const OPENING_DETAILS = {
     moves: "1. d4 d5 2. c4",
     sanList: ["d4","d5","c4"],
     lines: [
-      {name:"QGD Orthodox", moves:"2...e6 3.Nc3 Nf6 4.Bg5 Be7", badge:"solid", bl:"Classical"},
-      {name:"QGA", moves:"2...dxc4 3.e3 Nf6 4.Bxc4", badge:"sharp", bl:"Active"},
-      {name:"Slav Defence", moves:"2...c6 3.Nf3 Nf6 4.Nc3", badge:"solid", bl:"Solid"},
-      {name:"Cambridge Springs", moves:"...Qa5 attack on c3", badge:"sharp", bl:"Tactical"},
-      {name:"Tarrasch", moves:"2...e6 3.Nc3 c5", badge:"sharp", bl:"Dynamic"},
+      {name:"QGD Orthodox", moves:"1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7 5.cxd5 exd5 6.Bxf6 gxf6 7.Nf3 O-O", badge:"solid", bl:"Classical"},
+      {name:"QGA", moves:"1.d4 d5 2.c4 dxc4 3.e3 Nf6 4.Bxc4 Be6 5.Nf3 Nbd7 6.O-O Bxc4 7.Bd2 Bxf1", badge:"sharp", bl:"Active"},
+      {name:"Slav Defence", moves:"1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 Be6 5.Be3 Nbd7 6.cxd5 cxd5 7.Nxd5 Nxd5", badge:"solid", bl:"Solid"},
+      {name:"Cambridge Springs", moves:"1.d4 d5 2.c4 Bd7 3.cxd5 Nf6 4.Bd2 Nc6 5.dxc6 bxc6 6.Nc3 Nd5 7.Nxd5 cxd5", badge:"sharp", bl:"Tactical"},
+      {name:"Tarrasch", moves:"1.d4 d5 2.c4 e6 3.Nc3 c5 4.Bf4 Nf6 5.cxd5 Bd6 6.Nf3 O-O 7.dxc5 exd5", badge:"sharp", bl:"Dynamic"},
     ],
     ideas: ["c4 undermines d5, forcing a structural decision","Bg5 pin on Nf6 creates long-term pressure","Minority attack with b2-b4-b5 in Exchange Variation","Use e-file after center exchanges for piece activity"]
   },
@@ -3551,10 +3551,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 d5 2. c4 dxc4 3. e3 Nf6 4. Bxc4",
     sanList: ["d4","d5","c4","dxc4","e3","Nf6","Bxc4"],
     lines: [
-      {name:"Classical Defense", moves:"4...e6 5.Nf3 c5", badge:"solid", bl:"Main line"},
-      {name:"Central Variation", moves:"4...e6 5.Nf3 a6 6.O-O", badge:"solid", bl:"Quiet"},
-      {name:"Two Knights", moves:"4...Nc6 5.Nf3 Bg4", badge:"sharp", bl:"Sharp"},
-      {name:"Symmetric", moves:"3.e4 e5 — counter-attack", badge:"sharp", bl:"Aggressive"},
+      {name:"Classical Defense", moves:"1.d4 d5 2.c4 dxc4 3.e3 Nf6 4.Bxc4 e6 5.Nf3 c5 6.O-O cxd4 7.exd4 Nc6", badge:"solid", bl:"Main line"},
+      {name:"Central Variation", moves:"1.d4 d5 2.c4 dxc4 3.e3 Nf6 4.Bxc4 e6 5.Nf3 a6 6.O-O Bd6 7.Nbd2 O-O", badge:"solid", bl:"Quiet"},
+      {name:"Two Knights", moves:"1.d4 d5 2.c4 dxc4 3.e3 Nf6 4.Bxc4 Nc6 5.Nf3 Bg4 6.O-O Bxf3 7.gxf3 Nxd4", badge:"sharp", bl:"Sharp"},
+      {name:"Symmetric", moves:"1.d4 d5 2.c4 dxc4 3.e3 Nf6 4.Bxc4 Be6 5.Bd2 Nc6 6.Bxe6 fxe6 7.Nc3 Nxd4", badge:"sharp", bl:"Aggressive"},
     ],
     ideas: ["Don't try to hold the c4-pawn — return it for development","...c5 break challenges White's center","Bishops out of the pawn chain — Bf5 or Bg4 helps","Aim for an isolated queen's pawn position for both sides"]
   },
@@ -3618,10 +3618,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 Nf6 2. c4 e6 3. Nc3 Bb4",
     sanList: ["d4","Nf6","c4","e6","Nc3","Bb4"],
     lines: [
-      {name:"Classical Variation", moves:"4.Qc2 — preventing pawn damage", badge:"solid", bl:"Main line"},
-      {name:"Rubinstein", moves:"4.e3 — flexible setup", badge:"solid", bl:"Solid"},
-      {name:"Sämisch Variation", moves:"4.a3 Bxc3+ 5.bxc3", badge:"sharp", bl:"Doubled pawns"},
-      {name:"Leningrad Variation", moves:"4.Bg5 — pinning back", badge:"sharp", bl:"Sharp"},
+      {name:"Classical Variation", moves:"1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.Qc2 Nc6 5.Bd2 Bxc3 6.bxc3 O-O 7.O-O-O Nxd4", badge:"solid", bl:"Main line"},
+      {name:"Rubinstein", moves:"1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 Bxc3+ 5.bxc3 Nc6 6.Nf3 O-O 7.Bd3 Nxd4", badge:"solid", bl:"Solid"},
+      {name:"Sämisch Variation", moves:"1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 Na6 6.Bg5 O-O 7.Nf3 Ne4", badge:"sharp", bl:"Doubled pawns"},
+      {name:"Leningrad Variation", moves:"1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.Bg5 Nc6 5.Nf3 Bxc3+ 6.bxc3 O-O 7.Bxf6 gxf6", badge:"sharp", bl:"Sharp"},
     ],
     ideas: ["...Bxc3 doubles White's pawns — long-term structural advantage","Control e4 with knight + bishop pressure","Bishop pair sacrifice is fine if pawn structure compensates","...c5 or ...d5 breaks open the center at the right moment"]
   },
@@ -3631,10 +3631,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 Nf6 2. c4 e6 3. Nf3 b6",
     sanList: ["d4","Nf6","c4","e6","Nf3","b6"],
     lines: [
-      {name:"Main Line", moves:"4.g3 Bb7 5.Bg2 Be7", badge:"solid", bl:"Classical"},
-      {name:"Petrosian Variation", moves:"4.a3 — preventing Bb4+", badge:"positional", bl:"Positional"},
-      {name:"Capablanca Variation", moves:"4.g3 Ba6 — bishop sortie", badge:"solid", bl:"Modern"},
-      {name:"4.Nc3", moves:"4.Nc3 Bb4 — transposes to Nimzo", badge:"solid", bl:"Transposes"},
+      {name:"Main Line", moves:"1.d4 Nf6 2.c4 e6 3.Nf3 b6 4.g3 Bb7 5.Bg2 Be7 6.O-O O-O 7.Bf4 Bxf3", badge:"solid", bl:"Classical"},
+      {name:"Petrosian Variation", moves:"1.d4 Nf6 2.c4 e6 3.Nf3 b6 4.a3 Bxa3 5.Nxa3 Nc6 6.Be3 O-O 7.d5 exd5", badge:"positional", bl:"Positional"},
+      {name:"Capablanca Variation", moves:"1.d4 Nf6 2.c4 e6 3.Nf3 b6 4.g3 Ba6 5.Bf4 Bb4+ 6.Nc3 O-O 7.Bg2 Bxc3+", badge:"solid", bl:"Modern"},
+      {name:"4.Nc3", moves:"1.d4 Nf6 2.c4 e6 3.Nf3 b6 4.Nc3 Bb4 5.Bf4 Nc6 6.Bxc7 O-O 7.Bxd8 Bxc3+", badge:"solid", bl:"Transposes"},
     ],
     ideas: ["...Bb7 controls the long diagonal — central pressure","...d5 or ...c5 breaks for activity","Don't trade the Bb7 lightly — it's a key piece","Knight maneuvers (Nf6-e4 or Nbd7-f8-g6) are common"]
   },
@@ -3712,10 +3712,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 d5 2. c4 c6",
     sanList: ["d4","d5","c4","c6"],
     lines: [
-      {name:"Main Line Slav", moves:"3.Nf3 Nf6 4.Nc3 dxc4 5.a4", badge:"solid", bl:"Classical"},
-      {name:"Semi-Slav", moves:"3.Nf3 Nf6 4.Nc3 e6 — Meran/Botvinnik", badge:"sharp", bl:"Sharp"},
-      {name:"Exchange Slav", moves:"3.cxd5 cxd5 4.Nc3", badge:"solid", bl:"Symmetric"},
-      {name:"Chebanenko Slav", moves:"3.Nf3 Nf6 4.Nc3 a6", badge:"positional", bl:"Modern"},
+      {name:"Main Line Slav", moves:"1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bg4 6.Be3 Bxf3 7.gxf3 Nbd7", badge:"solid", bl:"Classical"},
+      {name:"Semi-Slav", moves:"1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 e6 5.Be3 Bb4 6.cxd5 O-O 7.dxc6 Nxc6", badge:"sharp", bl:"Sharp"},
+      {name:"Exchange Slav", moves:"1.d4 d5 2.c4 c6 3.cxd5 cxd5 4.Nc3 Bd7 5.Nf3 Nf6 6.Bd2 Nc6 7.Nxd5 Nxd5", badge:"solid", bl:"Symmetric"},
+      {name:"Chebanenko Slav", moves:"1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 a6 5.Bd2 Nbd7 6.cxd5 cxd5 7.Nxd5 Nxd5", badge:"positional", bl:"Modern"},
     ],
     ideas: ["c6 supports d5 — c8 bishop stays unblocked","...Bf5 or ...Bg4 develops the problem bishop","Solid pawn chain is hard to break","Semi-Slav lines are some of the most analyzed in chess"]
   },
@@ -3725,10 +3725,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 f5",
     sanList: ["d4","f5"],
     lines: [
-      {name:"Leningrad Dutch", moves:"2.g3 Nf6 3.Bg2 g6 — fianchetto setup", badge:"sharp", bl:"Sharp"},
-      {name:"Stonewall Dutch", moves:"2.c4 e6 3.Nf3 d5 — solid wall", badge:"solid", bl:"Solid"},
-      {name:"Classical Dutch", moves:"2.c4 e6 3.Nf3 Nf6 4.g3 Be7", badge:"solid", bl:"Classical"},
-      {name:"Staunton Gambit", moves:"2.e4 — White gambit", badge:"sharp", bl:"Anti-Dutch"},
+      {name:"Leningrad Dutch", moves:"1.d4 f5 2.g3 Nf6 3.Bg2 g6 4.Nc3 Nc6 5.Be3 Bh6 6.Bxc6 dxc6 7.Nf3 O-O", badge:"sharp", bl:"Sharp"},
+      {name:"Stonewall Dutch", moves:"1.d4 f5 2.c4 e6 3.Nf3 d5 4.Bf4 Ne7 5.Nc3 dxc4 6.Bxc7 Nbc6 7.Bxd8 Kxd8", badge:"solid", bl:"Solid"},
+      {name:"Classical Dutch", moves:"1.d4 f5 2.c4 e6 3.Nf3 Nf6 4.g3 Be7 5.Be3 Nc6 6.Nc3 O-O 7.Bg2 Nxd4", badge:"solid", bl:"Classical"},
+      {name:"Staunton Gambit", moves:"1.d4 f5 2.e4 fxe4 3.Bb5 Nf6 4.Bf4 Nc6 5.Ne2 Nxd4 6.O-O Nxb5 7.Nd2 d5", badge:"sharp", bl:"Anti-Dutch"},
     ],
     ideas: ["...f5 prepares ...e6-...e5 or ...f5-...f4 break","Weakens kingside — be careful of king safety","Leningrad: aggressive kingside attack","Stonewall: closed center, slow maneuvering"]
   },
@@ -3738,10 +3738,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 d5 2. Nf3 Nf6 3. Bf4 e6 4. e3",
     sanList: ["d4","d5","Nf3","Nf6","Bf4","e6","e3"],
     lines: [
-      {name:"Main London", moves:"4...Bd6 5.Bg3 O-O 6.Nbd2", badge:"solid", bl:"Solid"},
-      {name:"vs King's Indian", moves:"2...Nf6 3.Bf4 g6 4.e3 Bg7", badge:"positional", bl:"Flexible"},
-      {name:"Jobava London", moves:"2.Nc3 Nf6 3.Bf4 — aggressive", badge:"sharp", bl:"Modern"},
-      {name:"Anti-Slav London", moves:"vs ...c6 setups", badge:"solid", bl:"Universal"},
+      {name:"Main London", moves:"1.d4 d5 2.Nf3 Nf6 3.Bf4 e6 4.e3 Bd6 5.Bg3 O-O 6.Nbd2 Nbd7 7.Bc4 dxc4", badge:"solid", bl:"Solid"},
+      {name:"vs King's Indian", moves:"1.d4 d5 2.Nf3 Nf6 3.Bf4 e6 4.e3 Nc6 5.Bc4 dxc4 6.O-O Bc5 7.dxc5 O-O", badge:"positional", bl:"Flexible"},
+      {name:"Jobava London", moves:"1.d4 d5 2.Nf3 Nf6 3.Bf4 e6 4.e3 Bd6 5.Bd3 Nc6 6.O-O O-O 7.Bxd6 cxd6", badge:"sharp", bl:"Modern"},
+      {name:"Anti-Slav London", moves:"1.d4 d5 2.Nf3 Nf6 3.Bf4 e6 4.e3 Bd6 5.Bc4 dxc4 6.O-O O-O 7.Bxd6 cxd6", badge:"solid", bl:"Universal"},
     ],
     ideas: ["Build pawn triangle: d4 + e3 + Bf4","Preserve the Bf4 — do not trade it lightly","Plan Bd3 or Ne5 for kingside pressure","Flexible — works against many Black setups"]
   },
@@ -3751,10 +3751,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 Nf6 2. Bg5",
     sanList: ["d4","Nf6","Bg5"],
     lines: [
-      {name:"2...e6", moves:"2...e6 3.e4 h6 4.Bxf6 Qxf6", badge:"sharp", bl:"Main line"},
-      {name:"2...Ne4", moves:"2...Ne4 3.Bf4 c5 — counter-attack", badge:"sharp", bl:"Active"},
-      {name:"2...c5", moves:"2...c5 3.d5 — Benoni style", badge:"sharp", bl:"Sharp"},
-      {name:"2...d5", moves:"2...d5 — solid", badge:"solid", bl:"Solid"},
+      {name:"2...e6", moves:"1.d4 Nf6 2.Bg5 e6 3.e4 h6 4.Bxf6 Qxf6 5.Bd3 Bd6 6.Ne2 O-O 7.O-O Nc6", badge:"sharp", bl:"Main line"},
+      {name:"2...Ne4", moves:"1.d4 Nf6 2.Bg5 Ne4 3.Bf4 c5 4.Nd2 cxd4 5.Nxe4 Nc6 6.Nf3 Ne5 7.Bxe5 e6", badge:"sharp", bl:"Active"},
+      {name:"2...c5", moves:"1.d4 Nf6 2.Bg5 c5 3.d5 Nc6 4.dxc6 dxc6 5.Nf3 Bf5 6.Nbd2 Bxc2 7.Bxf6 Bxd1", badge:"sharp", bl:"Sharp"},
+      {name:"2...d5", moves:"1.d4 Nf6 2.Bg5 d5 3.Nc3 Bd7 4.Nf3 Na6 5.Bxf6 gxf6 6.Nxd5 Bh6 7.Nxe7 Kxe7", badge:"solid", bl:"Solid"},
     ],
     ideas: ["Trade dark-squared bishop for knight — creates structural imbalances","Avoid main openings — opponent prep is wasted","Look for tactical possibilities with early Bxf6","Flexible setup — can transpose to many systems"]
   },
@@ -3764,10 +3764,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 Nf6 2. c4 c5 3. d5 b5",
     sanList: ["d4","Nf6","c4","c5","d5","b5"],
     lines: [
-      {name:"Accepted", moves:"4.cxb5 a6 5.bxa6 Bxa6", badge:"sharp", bl:"Main line"},
-      {name:"Declined", moves:"4.Nf3 — sidestepping", badge:"solid", bl:"Quieter"},
-      {name:"Modern", moves:"4.cxb5 a6 5.b6 — keeping pawn", badge:"sharp", bl:"Modern"},
-      {name:"Zaitsev", moves:"4.Nc3 — keeping flexibility", badge:"solid", bl:"Solid"},
+      {name:"Accepted", moves:"1.d4 Nf6 2.c4 c5 3.d5 b5 4.cxb5 a6 5.bxa6 Bxa6 6.Be3 Nc6 7.dxc6 dxc6", badge:"sharp", bl:"Main line"},
+      {name:"Declined", moves:"1.d4 Nf6 2.c4 c5 3.d5 b5 4.Nf3 bxc4 5.Be3 Nc6 6.dxc6 dxc6 7.Qxd8+ Kxd8", badge:"solid", bl:"Quieter"},
+      {name:"Modern", moves:"1.d4 Nf6 2.c4 c5 3.d5 b5 4.cxb5 a6 5.b6 Nc6 6.dxc6 dxc6 7.Be3 Be6", badge:"sharp", bl:"Modern"},
+      {name:"Zaitsev", moves:"1.d4 Nf6 2.c4 c5 3.d5 b5 4.Nc3 Nc6 5.dxc6 bxc4 6.Bf4 dxc6 7.Qxd8+ Kxd8", badge:"solid", bl:"Solid"},
     ],
     ideas: ["Pawn sacrifice for queenside attack — a, b, c-files","Bishop on long diagonal aims at a1 corner","Knight maneuvers Nf6-d7-b6 or Nb8-a6-b4","Excellent practical chances even in long endgames"]
   },
@@ -3777,10 +3777,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 Nf6 2. c4 c5 3. d5 e6",
     sanList: ["d4","Nf6","c4","c5","d5","e6"],
     lines: [
-      {name:"Modern Benoni", moves:"4.Nc3 exd5 5.cxd5 d6 6.e4 g6", badge:"sharp", bl:"Sharp main line"},
-      {name:"Taimanov Variation", moves:"...exd5 5.cxd5 d6 6.e4 g6 7.f4 Bg7 8.Bb5+", badge:"sharp", bl:"Aggressive"},
-      {name:"Classical", moves:"4.Nc3 exd5 5.cxd5 d6 6.Nf3", badge:"solid", bl:"Quieter"},
-      {name:"Snake Variation", moves:"...Bd6 instead of Bg7", badge:"sharp", bl:"Unusual"},
+      {name:"Modern Benoni", moves:"1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.Bd3 Bf5", badge:"sharp", bl:"Sharp main line"},
+      {name:"Taimanov Variation", moves:"1.d4 Nf6 2.c4 c5 3.d5 e6 4.Bf4 Nc6 5.dxc6 Bd6 6.Bxd6 O-O 7.Bxf8 Kxf8", badge:"sharp", bl:"Aggressive"},
+      {name:"Classical", moves:"1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.Nf3 Nc6 7.dxc6 bxc6", badge:"solid", bl:"Quieter"},
+      {name:"Snake Variation", moves:"1.d4 Nf6 2.c4 c5 3.d5 e6 4.Be3 Be7 5.Nd2 exd5 6.cxd5 O-O 7.Ngf3 Nc6", badge:"sharp", bl:"Unusual"},
     ],
     ideas: ["...b5 break is the soul of the Benoni","Kingside fianchetto bishop attacks center","Active piece play compensates for the cramped position","Watch for f4-f5 breakthrough by White"]
   },
@@ -3790,10 +3790,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 Nf6 2. c4 e5",
     sanList: ["d4","Nf6","c4","e5"],
     lines: [
-      {name:"Accepted", moves:"3.dxe5 Ng4 — main idea", badge:"sharp", bl:"Main line"},
-      {name:"Adler Variation", moves:"3.dxe5 Ng4 4.Bf4 Nc6 5.Nf3", badge:"sharp", bl:"Theoretical"},
-      {name:"Fajarowicz Variation", moves:"3.dxe5 Ne4 — alternative", badge:"sharp", bl:"Aggressive"},
-      {name:"Declined", moves:"3.d5 — declining gambit", badge:"solid", bl:"Quieter"},
+      {name:"Accepted", moves:"1.d4 Nf6 2.c4 e5 3.dxe5 Ng4 4.Nc3 Bd6 5.exd6 cxd6 6.Bg5 O-O 7.Bxd8 Na6", badge:"sharp", bl:"Main line"},
+      {name:"Adler Variation", moves:"1.d4 Nf6 2.c4 e5 3.dxe5 Ng4 4.Bf4 Nc6 5.Nf3 Bd6 6.exd6 O-O 7.dxc7 Nxf2", badge:"sharp", bl:"Theoretical"},
+      {name:"Fajarowicz Variation", moves:"1.d4 Nf6 2.c4 e5 3.dxe5 Ne4 4.Bf4 Bd6 5.exd6 cxd6 6.Nd2 O-O 7.Nxe4 Nc6", badge:"sharp", bl:"Aggressive"},
+      {name:"Declined", moves:"1.d4 Nf6 2.c4 e5 3.d5 Bd6 4.Be3 Nc6 5.dxc6 bxc6 6.Nc3 O-O 7.Nf3 Ba6", badge:"solid", bl:"Quieter"},
     ],
     ideas: ["Ng4 attacks the e5 pawn aiming to recapture","Active piece play compensates for the pawn","Bishop on c5 puts pressure on f2","Surprise weapon — avoid mainline theory"]
   },
@@ -3805,10 +3805,10 @@ const OPENING_DETAILS = {
     moves: "1. c4",
     sanList: ["c4"],
     lines: [
-      {name:"Symmetrical English", moves:"1...c5 — mirror response", badge:"solid", bl:"Solid"},
-      {name:"Reversed Sicilian", moves:"1...e5 — like reversed Sicilian", badge:"sharp", bl:"Active"},
-      {name:"Anglo-Indian", moves:"1...Nf6 — flexible", badge:"solid", bl:"Flexible"},
-      {name:"Anglo-Slav", moves:"1...c6 — Slav-like", badge:"solid", bl:"Solid"},
+      {name:"Symmetrical English", moves:"1.c4 c5 2.Nc3 Nf6 3.Nf3 Nc6 4.d4 cxd4 5.Be3 dxc3 6.bxc3 Nd4 7.cxd4 e5", badge:"solid", bl:"Solid"},
+      {name:"Reversed Sicilian", moves:"1.c4 e5 2.Nh3 Bc5 3.Nc3 Nc6 4.Nd5 Nge7 5.Nxe7 Kxe7 6.d4 exd4 7.Be3 dxe3", badge:"sharp", bl:"Active"},
+      {name:"Anglo-Indian", moves:"1.c4 Nf6 2.Nf3 Nc6 3.Nc3 d5 4.cxd5 Bg4 5.dxc6 bxc6 6.Nd5 cxd5 7.d4 Bxf3", badge:"solid", bl:"Flexible"},
+      {name:"Anglo-Slav", moves:"1.c4 c6 2.Nc3 Nf6 3.Nf3 Na6 4.Ne5 d5 5.cxd5 cxd5 6.Nxd5 Bd7 7.Nxf6+ gxf6", badge:"solid", bl:"Solid"},
     ],
     ideas: ["Control d5 from c4 + Nc3","Often fianchettos Bg2","Flexible — can transpose to many openings","Slow strategic build-up rather than immediate confrontation"]
   },
@@ -3818,10 +3818,10 @@ const OPENING_DETAILS = {
     moves: "1. Nf3 d5 2. c4",
     sanList: ["Nf3","d5","c4"],
     lines: [
-      {name:"Réti Accepted", moves:"2...dxc4 3.Nc3", badge:"sharp", bl:"Active"},
-      {name:"Slav-like", moves:"2...c6 3.b3 — quiet", badge:"solid", bl:"Quiet"},
-      {name:"King's Indian Attack", moves:"3.g3 — fianchetto", badge:"positional", bl:"KIA setup"},
-      {name:"New York System", moves:"2...e6 3.g3 Nf6 4.Bg2", badge:"solid", bl:"Strategic"},
+      {name:"Réti Accepted", moves:"1.Nf3 d5 2.c4 dxc4 3.Nc3 Bf5 4.Ne5 Nf6 5.Nxc4 Nc6 6.Ne5 Nxe5 7.d4 Be4", badge:"sharp", bl:"Active"},
+      {name:"Slav-like", moves:"1.Nf3 d5 2.c4 c6 3.b3 Bd7 4.Bb2 Nf6 5.Nc3 dxc4 6.bxc4 Na6 7.Ne5 e6", badge:"solid", bl:"Quiet"},
+      {name:"King's Indian Attack", moves:"1.Nf3 d5 2.c4 dxc4 3.Nc3 Nc6 4.Ne4 Be6 5.d4 Nf6 6.Bf4 Nxe4 7.Bxc7 Nxd4", badge:"positional", bl:"KIA setup"},
+      {name:"New York System", moves:"1.Nf3 d5 2.c4 e6 3.g3 Nf6 4.Bg2 Bd6 5.cxd5 exd5 6.O-O O-O 7.Nc3 Be6", badge:"solid", bl:"Strategic"},
     ],
     ideas: ["Attack center from afar — hypermodern style","Bg2 fianchetto controls long diagonal","Often transposes to English or KIA","Avoid theoretical mainlines"]
   },
@@ -3831,10 +3831,10 @@ const OPENING_DETAILS = {
     moves: "1. f4",
     sanList: ["f4"],
     lines: [
-      {name:"From's Gambit", moves:"1...e5 2.fxe5 d6 — counter-gambit", badge:"sharp", bl:"Aggressive"},
-      {name:"Classical", moves:"1...d5 2.Nf3 Nf6 3.e3", badge:"solid", bl:"Solid"},
-      {name:"Dutch-like", moves:"1...d5 2.Nf3 g6 3.g3", badge:"positional", bl:"Positional"},
-      {name:"Anti-Bird's Gambit", moves:"1...b6 2.Nf3 Bb7", badge:"solid", bl:"Quiet"},
+      {name:"From's Gambit", moves:"1.f4 e5 2.fxe5 d6 3.exd6 Bxd6 4.Nc3 Bf5 5.Nf3 Ne7 6.d4 O-O 7.Be3 Nd7", badge:"sharp", bl:"Aggressive"},
+      {name:"Classical", moves:"1.f4 d5 2.Nf3 Nf6 3.e3 Be6 4.Bd3 Nc6 5.Na3 Bf5 6.O-O Bxd3 7.cxd3 e5", badge:"solid", bl:"Solid"},
+      {name:"Dutch-like", moves:"1.f4 d5 2.Nf3 g6 3.g3 Bf5 4.Nc3 Nc6 5.Bg2 Nf6 6.O-O Bg7 7.Nxd5 O-O", badge:"positional", bl:"Positional"},
+      {name:"Anti-Bird's Gambit", moves:"1.f4 b6 2.Nf3 Bb7 3.Nc3 Nf6 4.d4 Nc6 5.Be3 Nxd4 6.Nxd4 Be4 7.Nxe4 Nxe4", badge:"solid", bl:"Quiet"},
     ],
     ideas: ["Like a reversed Dutch — control e5 with f4","Plan to attack kingside","Watch out for From's Gambit","Often plays Bb2 or Be3 fianchetto"]
   },
@@ -3844,10 +3844,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 Nf6 2. c4 e6 3. g3",
     sanList: ["d4","Nf6","c4","e6","g3"],
     lines: [
-      {name:"Open Catalan", moves:"3...d5 4.Bg2 dxc4 — accepting", badge:"sharp", bl:"Sharp"},
-      {name:"Closed Catalan", moves:"3...d5 4.Bg2 Be7 — declining", badge:"solid", bl:"Strategic"},
-      {name:"Open Catalan Main", moves:"...dxc4 5.Nf3 a6 — held pawn", badge:"sharp", bl:"Active"},
-      {name:"Anti-Catalan", moves:"3...c5 — early break", badge:"sharp", bl:"Counter"},
+      {name:"Open Catalan", moves:"1.d4 Nf6 2.c4 e6 3.g3 d5 4.Bg2 dxc4 5.Be3 Bc5 6.dxc5 O-O 7.Nd2 Nc6", badge:"sharp", bl:"Sharp"},
+      {name:"Closed Catalan", moves:"1.d4 Nf6 2.c4 e6 3.g3 d5 4.Bg2 Be7 5.Bf4 Nc6 6.cxd5 O-O 7.dxc6 bxc6", badge:"solid", bl:"Strategic"},
+      {name:"Open Catalan Main", moves:"1.d4 Nf6 2.c4 e6 3.g3 Bd6 4.Nc3 Nc6 5.Bd2 O-O 6.Nf3 Nxd4 7.Nxd4 Bxg3", badge:"sharp", bl:"Active"},
+      {name:"Anti-Catalan", moves:"1.d4 Nf6 2.c4 e6 3.g3 c5 4.Be3 Bd6 5.Nd2 Nc6 6.dxc5 O-O 7.cxd6 Nd5", badge:"sharp", bl:"Counter"},
     ],
     ideas: ["Bg2 fianchetto — long diagonal pressure","Often accept temporary pawn losses for positional gain","White typically has long-term initiative","Endgames often slightly better for White"]
   },
@@ -3857,10 +3857,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 d5 2. Nf3 Nf6 3. e3 e6 4. Bd3",
     sanList: ["d4","d5","Nf3","Nf6","e3","e6","Bd3"],
     lines: [
-      {name:"Colle-Koltanowski", moves:"5.c3 — classical Colle", badge:"solid", bl:"Classical"},
-      {name:"Colle-Zukertort", moves:"5.b3 — fianchetto bishop", badge:"positional", bl:"Modern"},
-      {name:"vs ...c5", moves:"4...c5 5.c3 Nc6", badge:"solid", bl:"Flexible"},
-      {name:"vs King's Indian", moves:"setup with g6", badge:"solid", bl:"Anti-KID"},
+      {name:"Colle-Koltanowski", moves:"1.d4 d5 2.Nf3 Nf6 3.e3 e6 4.Bd3 Be7 5.Nc3 Nc6 6.O-O O-O 7.Bd2 Bd7", badge:"solid", bl:"Classical"},
+      {name:"Colle-Zukertort", moves:"1.d4 d5 2.Nf3 Nf6 3.e3 e6 4.Bd3 Bd6 5.Nbd2 Bd7 6.O-O O-O 7.Bxh7+ Kxh7", badge:"positional", bl:"Modern"},
+      {name:"vs ...c5", moves:"1.d4 d5 2.Nf3 Nf6 3.e3 e6 4.Bd3 c5 5.c3 Nc6 6.O-O cxd4 7.cxd4 Bd6", badge:"solid", bl:"Flexible"},
+      {name:"vs King's Indian", moves:"1.d4 d5 2.Nf3 Nf6 3.e3 e6 4.Bd3 g6 5.Nc3 Bd6 6.O-O O-O 7.Bd2 Nbd7", badge:"solid", bl:"Anti-KID"},
     ],
     ideas: ["Goal is e3-e4 break with strong center","Bd3 + Bc1-b2 controls diagonals","Castle kingside and attack","Slow strategic build-up — minimal theory"]
   },
@@ -3870,10 +3870,10 @@ const OPENING_DETAILS = {
     moves: "1. d4 d5 2. e3 Nf6 3. Bd3 e6 4. f4",
     sanList: ["d4","d5","e3","Nf6","Bd3","e6","f4"],
     lines: [
-      {name:"Main Stonewall", moves:"4...c5 5.c3 Nc6 6.Nf3", badge:"sharp", bl:"Attacking"},
-      {name:"vs King's Indian", moves:"setup with g6", badge:"solid", bl:"Universal"},
-      {name:"Modern Stonewall", moves:"5.Nd2 — knight to f3 later", badge:"positional", bl:"Flexible"},
-      {name:"Closed Stonewall", moves:"avoiding ...c5 break", badge:"solid", bl:"Slow"},
+      {name:"Main Stonewall", moves:"1.d4 d5 2.e3 Nf6 3.Bd3 e6 4.f4 c5 5.c3 Nc6 6.Nf3 cxd4 7.O-O Bc5", badge:"sharp", bl:"Attacking"},
+      {name:"vs King's Indian", moves:"1.d4 d5 2.e3 Nf6 3.Bd3 e6 4.f4 g6 5.Nd2 Bb4 6.Ne2 O-O 7.O-O Bxd2", badge:"solid", bl:"Universal"},
+      {name:"Modern Stonewall", moves:"1.d4 d5 2.e3 Nf6 3.Bd3 e6 4.f4 Nc6 5.Bd2 Bd6 6.Nc3 O-O 7.Nge2 Bd7", badge:"positional", bl:"Flexible"},
+      {name:"Closed Stonewall", moves:"1.d4 d5 2.e3 Nf6 3.Bd3 e6 4.f4 Bd6 5.Bd2 Nbd7 6.Nc3 O-O 7.Nge2 Bxf4", badge:"solid", bl:"Slow"},
     ],
     ideas: ["Stonewall pawn chain c3-d4-e3-f4 is the foundation","Bd3 + Qf3 + Nf3 aim at kingside","Plan: Ne5, Qh5, possibly g4-g5 attack","Watch out for the weak e4 square — defend it"]
   }
