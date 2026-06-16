@@ -1692,6 +1692,84 @@ input:focus, select:focus, textarea:focus {
     cursor: pointer; font-size: 15px; font-family: 'DM Sans', sans-serif;
   }
   .tree-explore-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+
+  /* ── Visual Branch Map (map of maps) ── */
+  .tmap-layout { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 960px){ .tmap-layout { grid-template-columns: 1fr; } }
+  .tmap-board-col { position: sticky; top: 16px; }
+  .tmap-right { min-width: 0; }
+  .tmap-explain {
+    font-size: 15px; line-height: 1.6; color: var(--text);
+    font-family: 'DM Sans', sans-serif; margin-bottom: 14px;
+    background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 8px;
+    border-left: 3px solid var(--gold);
+  }
+  .tmap-explain strong { color: var(--gold); }
+  .tmap-explain .tmap-line-name { display:block; font-family:'Playfair Display',serif; font-size:17px; color:var(--gold); margin-bottom:4px; }
+  .tmap-hint { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
+  /* The scrollable map canvas */
+  .tmap-canvas {
+    position: relative; overflow: auto; max-height: 560px;
+    border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
+    background-size: 22px 22px;
+    background-color: rgba(0,0,0,0.18);
+    padding: 8px 4px;
+  }
+  .tmap-svg { display: block; }
+  /* Node card inside the map */
+  .tmap-node {
+    cursor: pointer;
+    transition: filter 0.12s;
+  }
+  .tmap-node:hover { filter: brightness(1.15); }
+  .tmap-node-rect {
+    rx: 9; ry: 9;
+    stroke-width: 1.4;
+  }
+  /* Node visual states via class on group */
+  .tmap-node.is-spine .tmap-node-rect { fill: rgba(212,175,55,0.10); stroke: rgba(212,175,55,0.55); }
+  .tmap-node.is-current .tmap-node-rect { fill: rgba(212,175,55,0.22); stroke: var(--gold); stroke-width: 2.2; }
+  .tmap-node.is-branch .tmap-node-rect { fill: var(--bg2); stroke: rgba(255,255,255,0.12); }
+  .tmap-node.is-leaf .tmap-node-rect { fill: rgba(110,231,168,0.07); stroke: rgba(110,231,168,0.4); }
+  .tmap-node.is-root .tmap-node-rect { fill: rgba(255,255,255,0.04); stroke: rgba(255,255,255,0.18); }
+  .tmap-node-move {
+    font-family: 'DM Mono', monospace; font-weight: 700; font-size: 14px;
+    fill: var(--gold); dominant-baseline: middle;
+  }
+  .tmap-node.is-current .tmap-node-move { fill: #fff; }
+  .tmap-node-label {
+    font-family: 'DM Sans', sans-serif; font-size: 11px;
+    fill: var(--text2); dominant-baseline: middle;
+  }
+  .tmap-node-eco {
+    font-family: 'DM Mono', monospace; font-size: 9.5px; fill: var(--text3);
+    dominant-baseline: middle;
+  }
+  .tmap-edge { stroke: rgba(255,255,255,0.16); stroke-width: 1.6; fill: none; }
+  .tmap-edge.on-path { stroke: rgba(212,175,55,0.6); stroke-width: 2.2; }
+  .tmap-leaf-flag { font-size: 9.5px; fill: #6ee7a8; font-family:'DM Sans',sans-serif; dominant-baseline: middle; }
+  .tmap-more-flag { font-size: 9.5px; fill: var(--text3); font-family:'DM Sans',sans-serif; dominant-baseline: middle; }
+  /* Toolbar above the map */
+  .tmap-toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .tmap-crumb-box {
+    font-family:'DM Mono',monospace; font-size:13px; color:var(--text2);
+    line-height:1.8; margin-bottom:12px;
+  }
+  .tmap-crumb { color: var(--gold); cursor:pointer; padding:1px 3px; border-radius:4px; }
+  .tmap-crumb:hover { background: rgba(212,175,55,0.15); text-decoration: underline; }
+  .tmap-crumb-base { color: var(--text3); }
+  .tmap-depth-toggle { display:flex; gap:0; border:1px solid rgba(255,255,255,0.12); border-radius:7px; overflow:hidden; }
+  .tmap-depth-toggle button {
+    background: var(--bg2); color: var(--text2); border:none; padding:5px 11px;
+    font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif;
+  }
+  .tmap-depth-toggle button.active { background: var(--gold); color:#1a1a1a; font-weight:700; }
+  .tmap-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--text3); margin-top:10px; }
+  .tmap-legend span { display:inline-flex; align-items:center; gap:5px; }
+  .tmap-legend i { width:11px; height:11px; border-radius:3px; display:inline-block; }
+
   .learn-feedback { margin-top: 20px; min-height: 40px; }
   .learn-fb-wrong {
     background: rgba(216,83,91,.08); border-left: 3px solid #d8535b;
@@ -1786,7 +1864,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.28 TREE</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v3.29 MAP</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -1847,7 +1925,7 @@ input:focus, select:focus, textarea:focus {
 <div id="sec-tree" class="section">
   <div class="tree-topbar">
     <button class="learn-exit" onclick="exitTree()">← Back to lessons</button>
-    <div class="tree-title" id="tree-title">Opening Tree Explorer</div>
+    <div class="tree-title" id="tree-title">Opening Branch Map</div>
   </div>
   <div class="tree-stage"></div>
 </div>
@@ -19253,7 +19331,7 @@ function renderStagePicker(openingId, detail){
     </div>
     ${(typeof OPENING_TREES !== 'undefined' && (OPENING_TREES[openingId] || OPENING_TREES[openingId.replace('-','_')])) ? `
     <button class="tree-explore-btn" onclick="openTreeExplorer('${openingId}')">
-      🌳 Explore the full opening tree — every line, every branch
+      🗺️ Open the branch map — see every line as a visual map next to the board
     </button>` : ''}`;
 
   if(detail.lines && detail.lines.length > 0){
@@ -19480,6 +19558,7 @@ window.openTreeExplorer = function(openingId, startMoves){
     base: data.base.slice(),
     path: [],
     tree: data.tree,
+    mapDepth: 3,
   };
   // If a variation's moves were passed, set the initial path to those (minus the base)
   if(startMoves && startMoves.length){
@@ -19552,73 +19631,264 @@ function treeMoveExplanation(){
   return coachExplain(san, i, fullLine, detail, true, side);
 }
 
+// How many plies of children to fan out in the map (depth of the visible sub-map)
+if(typeof treeState.mapDepth === 'undefined') treeState.mapDepth = 3;
+
+window.setTreeMapDepth = function(d){
+  treeState.mapDepth = d;
+  renderTreeExplorer();
+};
+
+// Shorten a long ECO variation name for a node label.
+function tmapShortName(fullName, parentName){
+  if(!fullName) return '';
+  // Names look like "Ruy Lopez: Closed, Chigorin Defense". Show the most specific tail.
+  let n = fullName;
+  // Drop the opening family prefix before the first colon
+  const colon = n.indexOf(':');
+  if(colon >= 0) n = n.slice(colon + 1).trim();
+  // If a parent label exists and this name starts with it, show only the new tail
+  if(parentName){
+    let p = parentName;
+    const pc = p.indexOf(':'); if(pc>=0) p = p.slice(pc+1).trim();
+    if(n.startsWith(p) && n.length > p.length){
+      const tail = n.slice(p.length).replace(/^[,\s]+/,'');
+      if(tail) n = tail;
+    }
+  }
+  // Keep it short — last 1-2 comma segments
+  const parts = n.split(',').map(s=>s.trim()).filter(Boolean);
+  if(parts.length > 2) n = parts.slice(-2).join(', ');
+  if(n.length > 34) n = n.slice(0, 32) + '…';
+  return n;
+}
+
+// Build a laid-out sub-map starting at the current node.
+// Returns {nodes, edges, width, height}. Coordinates in SVG units.
+function buildTreeMapLayout(){
+  const COL_W = 188;     // horizontal spacing between depth columns
+  const ROW_H = 46;      // vertical spacing between sibling rows
+  const NODE_W = 156;
+  const NODE_H = 34;
+  const PAD_X = 16, PAD_Y = 16;
+  const maxDepth = treeState.mapDepth;
+
+  const root = treeNodeAt(treeState.tree, treeState.path);
+  const basePly = treeState.base.length + treeState.path.length; // ply count at root position
+  const rootName = (function(){
+    // best-effort: name of node we're sitting on
+    let nm = root.n;
+    if(!nm){
+      // walk path to find last named ancestor
+      let node = treeState.tree; let last = node.n;
+      for(const mv of treeState.path){ if(!node.c) break; const nx=node.c.find(c=>c.m===mv); if(!nx) break; node=nx; if(node.n) last=node.n; }
+      nm = last;
+    }
+    return nm;
+  })();
+
+  const nodes = [];
+  const edges = [];
+  let nextRow = 0; // running leaf row counter for y assignment
+
+  // Recursive layout: assign y as the average of children's y (tidy tree).
+  function layout(node, depth, parentMove, parentName, parentRef, plyAtNode){
+    const id = nodes.length;
+    const rec = {
+      id, depth,
+      move: parentMove,           // the move that *leads to* this node (null for root)
+      name: node.n || '',
+      shortName: '',
+      plyAfter: plyAtNode,        // ply count after this node's move
+      isRoot: depth === 0,
+      isLeaf: !(node.c && node.c.length),
+      childCount: node.c ? node.c.length : 0,
+      // pathFromRoot: array of moves from current root to reach this node
+      rel: [],
+      x: PAD_X + depth * COL_W,
+      y: 0,
+      parentRef
+    };
+    nodes.push(rec);
+
+    if(depth > 0){
+      rec.shortName = tmapShortName(node.n, parentName);
+    }
+
+    const childrenWithin = (depth < maxDepth) && node.c && node.c.length;
+    if(childrenWithin){
+      const childIds = [];
+      node.c.forEach(child => {
+        const childRec = layout(
+          child, depth + 1, child.m,
+          node.n || parentName,
+          rec,
+          plyAtNode + 1
+        );
+        // build relative path
+        childRec.rel = rec.rel.concat([child.m]);
+        childIds.push(childRec.id);
+        edges.push({ from: rec.id, to: childRec.id });
+      });
+      // tidy: center parent on its children
+      const ys = childIds.map(cid => nodes[cid].y);
+      rec.y = (Math.min(...ys) + Math.max(...ys)) / 2;
+    } else {
+      rec.y = PAD_Y + nextRow * ROW_H;
+      nextRow++;
+    }
+    return rec;
+  }
+
+  layout(root, 0, null, rootName, null, basePly);
+
+  const width = PAD_X * 2 + (maxDepth) * COL_W + NODE_W;
+  const height = Math.max(PAD_Y * 2 + NODE_H, PAD_Y * 2 + nextRow * ROW_H);
+
+  return { nodes, edges, width, height, NODE_W, NODE_H, rootName, basePly };
+}
+
 function renderTreeExplorer(){
   const detail = OPENING_DETAILS[treeState.openingId] || OPENING_DETAILS[treeState.openingId.replace('-','_')];
   renderTreeBoard();
 
-  // Breadcrumb of current line
   const fullLine = treeState.base.concat(treeState.path);
+
+  // Breadcrumb of current line (clickable)
   let crumb = '';
   fullLine.forEach((san, idx) => {
     const isBase = idx < treeState.base.length;
     const moveNum = (idx % 2 === 0) ? `${Math.floor(idx/2)+1}.` : '';
     if(isBase){
-      crumb += `<span class="tree-crumb-base">${moveNum}${san}</span> `;
+      crumb += `<span class="tmap-crumb-base">${moveNum}${san}</span> `;
     } else {
       const pathIdx = idx - treeState.base.length;
-      crumb += `<span class="tree-crumb" onclick="treeJump(${pathIdx})">${moveNum}${san}</span> `;
+      crumb += `<span class="tmap-crumb" onclick="treeJump(${pathIdx})">${moveNum}${san}</span> `;
     }
   });
 
-  // The explanation for current position
   const explain = treeMoveExplanation();
-
-  // The branches available at the current node
+  const layout = buildTreeMapLayout();
   const node = treeNodeAt(treeState.tree, treeState.path);
-  const depthIndex = treeState.path.length;
-  let branchesHtml = '';
-  if(node.c && node.c.length){
-    const moverIsWhite = (fullLine.length % 2 === 0);
-    const moveNum = Math.floor(fullLine.length/2) + 1;
-    const prefix = moverIsWhite ? `${moveNum}.` : `${moveNum}...`;
-    branchesHtml = `<div class="tree-branch-label">${moverIsWhite ? 'White' : 'Black'} to move — pick a branch:</div>`;
-    node.c.forEach(child => {
-      const name = child.n ? `<span class="tree-branch-name">${child.n.replace(/^.*?:\s*/,'')}</span>` : '';
-      const hasMore = child.c && child.c.length ? '<span class="tree-branch-arrow">→</span>' : '<span class="tree-branch-leaf">end of theory</span>';
-      branchesHtml += `<div class="tree-branch" onclick="treeGo(${depthIndex}, '${child.m}')">
-        <span class="tree-branch-move">${prefix}${child.m}</span>
-        ${name}
-        ${hasMore}
-      </div>`;
-    });
-  } else {
-    branchesHtml = `<div class="tree-branch-end">🏁 End of the book here — this is as deep as the database theory goes for this line. Time to think for yourself!</div>`;
+  const atEnd = !(node.c && node.c.length);
+
+  // Build the SVG map
+  const { nodes, edges, width, height, NODE_W, NODE_H } = layout;
+
+  function nodeSVG(n){
+    const cx = n.x, cy = n.y;
+    let cls = 'tmap-node ';
+    if(n.isRoot) cls += 'is-current is-root';
+    else if(n.isLeaf) cls += 'is-leaf';
+    else cls += 'is-branch';
+
+    // move label with move-number prefix
+    let moveLabel = '';
+    if(n.move){
+      const moverWhite = ((n.plyAfter - 1) % 2 === 0);
+      const num = Math.floor((n.plyAfter - 1)/2) + 1;
+      moveLabel = moverWhite ? `${num}.${n.move}` : `${num}…${n.move}`;
+    } else {
+      moveLabel = 'Now';
+    }
+    const onclick = n.isRoot ? '' : `onclick="treeGoRelative(&quot;${encodeURIComponent(JSON.stringify(n.rel))}&quot;)"`;
+
+    const nameLine = n.shortName
+      ? `<text class="tmap-node-label" x="${cx+10}" y="${cy+10}">${escapeHtmlTM(n.shortName)}</text>`
+      : '';
+    const flag = (!n.isRoot && n.isLeaf)
+      ? `<text class="tmap-leaf-flag" x="${cx+NODE_W-8}" y="${cy-9}" text-anchor="end">book ends</text>`
+      : (!n.isRoot && n.childCount && n.depth === treeState.mapDepth
+          ? `<text class="tmap-more-flag" x="${cx+NODE_W-8}" y="${cy-9}" text-anchor="end">+${n.childCount} →</text>`
+          : '');
+
+    return `<g class="${cls}" ${onclick}>
+      <rect class="tmap-node-rect" x="${cx}" y="${cy-NODE_H/2}" width="${NODE_W}" height="${NODE_H}"></rect>
+      <text class="tmap-node-move" x="${cx+10}" y="${cy + (n.shortName? -4 : 0)}">${escapeHtmlTM(moveLabel)}</text>
+      ${nameLine}
+      ${flag}
+    </g>`;
   }
 
-  // Build the explorer UI
+  function edgeSVG(e){
+    const a = nodes[e.from], b = nodes[e.to];
+    const x1 = a.x + NODE_W, y1 = a.y;
+    const x2 = b.x, y2 = b.y;
+    const mx = (x1 + x2) / 2;
+    // on-path if both nodes lie on the first child chain? Just highlight root's direct edges subtly
+    const onPath = a.isRoot ? '' : '';
+    return `<path class="tmap-edge ${onPath}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"></path>`;
+  }
+
+  const svg = `<svg class="tmap-svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+    ${edges.map(edgeSVG).join('')}
+    ${nodes.map(nodeSVG).join('')}
+  </svg>`;
+
+  const moverIsWhite = (fullLine.length % 2 === 0);
+  const sideToMove = atEnd ? '' :
+    `<div class="tmap-hint">${moverIsWhite ? 'White' : 'Black'} to move — click any node to walk the board there. Each column is one move deeper.</div>`;
+
+  const endNote = atEnd
+    ? `<div class="tree-branch-end" style="margin-bottom:14px">🏁 End of the book here — this is as deep as the database theory goes for this line. Time to think for yourself!</div>`
+    : '';
+
+  const lineName = layout.rootName ? `<span class="tmap-line-name">${escapeHtmlTM(layout.rootName)}</span>` : '';
+
   const stage = document.querySelector('.tree-stage');
   stage.innerHTML = `
-    <div class="tree-board-col">
-      <div style="display:inline-flex;flex-direction:column;position:relative">
-        <div style="display:flex;gap:0;position:relative">
-          <div class="board-ranks" id="board-ranks-t"></div>
-          <div id="board-t" class="chess-board"></div>
+    <div class="tmap-layout">
+      <div class="tmap-board-col">
+        <div style="display:inline-flex;flex-direction:column;position:relative">
+          <div style="display:flex;gap:0;position:relative">
+            <div class="board-ranks" id="board-ranks-t"></div>
+            <div id="board-t" class="chess-board"></div>
+          </div>
+          <div class="board-files" id="board-files-t"></div>
         </div>
-        <div class="board-files" id="board-files-t"></div>
+        <div class="tree-board-controls">
+          <button class="btn btn-outline btn-sm" onclick="treeJump(${Math.max(0, treeState.path.length-1)})">← Back one</button>
+          <button class="btn btn-outline btn-sm" onclick="flipBoard('board-t')">⇅ Flip</button>
+          <button class="btn btn-outline btn-sm" onclick="treeReset()">⟲ Restart</button>
+        </div>
+        <div class="tmap-crumb-box">${crumb || '<em>Starting position of the opening</em>'}</div>
       </div>
-      <div class="tree-board-controls">
-        <button class="btn btn-outline btn-sm" onclick="treeJump(${Math.max(0, treeState.path.length-1)})">← Back one</button>
-        <button class="btn btn-outline btn-sm" onclick="flipBoard('board-t')">⇅ Flip</button>
-        <button class="btn btn-outline btn-sm" onclick="treeReset()">⟲ Restart</button>
+      <div class="tmap-right">
+        <div class="tmap-explain">${lineName}${explain || 'Explore the branches — this map shows every line that follows from the current position.'}</div>
+        ${endNote}
+        ${sideToMove}
+        <div class="tmap-toolbar">
+          <span style="font-size:12px;color:var(--text3)">Map depth:</span>
+          <div class="tmap-depth-toggle">
+            <button class="${treeState.mapDepth===2?'active':''}" onclick="setTreeMapDepth(2)">2</button>
+            <button class="${treeState.mapDepth===3?'active':''}" onclick="setTreeMapDepth(3)">3</button>
+            <button class="${treeState.mapDepth===4?'active':''}" onclick="setTreeMapDepth(4)">4</button>
+          </div>
+        </div>
+        <div class="tmap-canvas">${svg}</div>
+        <div class="tmap-legend">
+          <span><i style="background:rgba(212,175,55,0.5)"></i> current position</span>
+          <span><i style="background:var(--bg2);border:1px solid rgba(255,255,255,0.2)"></i> continuation</span>
+          <span><i style="background:rgba(110,231,168,0.4)"></i> end of theory</span>
+        </div>
       </div>
-      <div class="tree-crumb-box">${crumb || '<em>Starting position of the opening</em>'}</div>
-    </div>
-    <div class="tree-side-col">
-      <div class="tree-explain">${explain || '<em>Pick a move from the tree to begin exploring.</em>'}</div>
-      <div class="tree-branches">${branchesHtml}</div>
     </div>
   `;
 }
+
+// Small local HTML-escaper for SVG text
+function escapeHtmlTM(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Navigate by a relative move-path from the current root node (used by map node clicks).
+window.treeGoRelative = function(encRel){
+  let rel;
+  try { rel = JSON.parse(decodeURIComponent(encRel)); } catch(e){ return; }
+  if(!Array.isArray(rel) || !rel.length) return;
+  treeState.path = treeState.path.concat(rel);
+  renderTreeExplorer();
+};
 // ═══════════ END TREE EXPLORER ═══════════
 
 
