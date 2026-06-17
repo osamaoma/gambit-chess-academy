@@ -14,7 +14,34 @@ The Openings tab is built from the **Lichess opening database** (148 families,
   a wrong move shows you the correct one and lets you continue. A clean run marks
   the variation **mastered**.
 - Open the **Opening Explorer** (button inside the Learn view) to see what real
-  players actually play next — Masters or Lichess databases, live.
+  players actually play next. Three sources: **Masters**, **Lichess** (all rated
+  games), and **By rating** (rating-banded tiers, like chess.com's explorer).
+
+### Opening Explorer — works out of the box
+Press the Explorer button inside any opening's Learn view to see **the most
+common moves played from the current position**, ranked by popularity. This
+works instantly with **no token, no login, and no internet** — the move-
+popularity stats are bundled in `public/explorer_stats.json`.
+
+Three views (Masters / Lichess / By rating) are available. The bundled stats
+show move popularity; **White/Black win rates** require live data, which needs a
+free Lichess token (Lichess disabled anonymous access to its explorer in 2025).
+
+Two optional ways to get win rates:
+
+- **Add a token in the app:** open the Explorer, click "Add a token", paste a
+  free Lichess token (no scopes needed, from
+  https://lichess.org/account/oauth/token/create) — saved in your browser, then
+  you get live win rates for all three views at any depth. You can also set
+  `LICHESS_TOKEN` server-wide via `.env` so nobody needs to.
+- **Bake win rates offline (one time):** run
+  `LICHESS_TOKEN=lip_xxx node bake_explorer_stats.js` once. It fetches real
+  win/draw/loss stats for every opening position and writes them into
+  `public/explorer_stats.json`, so every user then sees win rates with no token.
+
+> Note: chess.com has no public opening-explorer API, so all stats come from the
+> Lichess opening book / database. The "By rating" view uses Lichess rated games
+> filtered by rating band (token required for live rating-band data).
 
 Opening data lives in `public/openings_data.json` and is served statically. The
 Explorer calls the Lichess API through the local server proxy (`/api/explorer/:db`),

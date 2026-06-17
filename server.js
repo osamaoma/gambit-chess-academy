@@ -8,6 +8,29 @@ const express = require('express');
 const path    = require('path');
 const https   = require('https');
 const http    = require('http');
+const fs      = require('fs');
+
+// Minimal .env loader (no dependency). Loads KEY=VALUE lines from a local
+// .env file into process.env if not already set. Used for LICHESS_TOKEN.
+(function loadDotEnv(){
+  try {
+    const envPath = path.join(__dirname, '.env');
+    if(!fs.existsSync(envPath)) return;
+    const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+    for(let line of lines){
+      line = line.trim();
+      if(!line || line.startsWith('#')) continue;
+      const eq = line.indexOf('=');
+      if(eq === -1) continue;
+      const key = line.slice(0, eq).trim();
+      let val = line.slice(eq + 1).trim();
+      if((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))){
+        val = val.slice(1, -1);
+      }
+      if(key && process.env[key] === undefined) process.env[key] = val;
+    }
+  } catch(e){ /* non-fatal */ }
+})();
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -20,9 +43,8 @@ app.use('/stockfish', (req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   next();
 });
-// Opening database JSON: cache for a day, but allow re-validation so a
-// re-baked (deepened) file is picked up without a year-long stale cache.
-app.use('/openings_data.json', (req, res, next) => {
+// Opening database JSON + baked explorer stats: cache for a day, revalidate.
+app.use(['/openings_data.json', '/explorer_stats.json'], (req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
   next();
 });
@@ -31,6 +53,7 @@ app.use('/openings_data.json', (req, res, next) => {
 app.use((req, res, next) => {
   if (req.path.startsWith('/stockfish/')) return next();           // already set
   if (req.path === '/openings_data.json') return next();           // already set
+  if (req.path === '/explorer_stats.json') return next();          // already set
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -160,8 +183,15 @@ app.get('/api/status', (req, res) => {
 // ════════════════════════════════════════════════════════
 // OPENING EXPLORER — proxies the Lichess opening Explorer API.
 // db = 'masters' | 'lichess'. Pass through play (UCI moves), fen, ratings, speeds.
-// The Explorer host blocks some browsers via CORS, so we proxy server-side.
+//
+// As of 2025 the Lichess opening-explorer endpoints REQUIRE authentication.
+// Provide a free Lichess API token via the LICHESS_TOKEN env var (server
+// default), or let the user supply their own with the `x-lichess-token`
+// request header (overrides the server default). No OAuth scopes are needed
+// for the explorer — any valid personal access token works.
 // ════════════════════════════════════════════════════════
+const SERVER_LICHESS_TOKEN = (process.env.LICHESS_TOKEN || '').trim();
+
 app.get('/api/explorer/:db', async (req, res) => {
   const db = req.params.db === 'masters' ? 'masters' : 'lichess';
   const allowed = ['play', 'fen', 'ratings', 'speeds', 'moves', 'topGames', 'recentGames', 'since', 'until'];
@@ -170,8 +200,22 @@ app.get('/api/explorer/:db', async (req, res) => {
     if (req.query[k] !== undefined) params.set(k, req.query[k]);
   }
   const targetUrl = `https://explorer.lichess.ovh/${db}?${params.toString()}`;
+
+  // Token: user-supplied header overrides the server default.
+  const userToken = (req.get('x-lichess-token') || '').trim();
+  const token = userToken || SERVER_LICHESS_TOKEN;
+  const headers = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
   try {
-    const r = await nodeFetch(targetUrl, { timeout: 15000 });
+    const r = await nodeFetch(targetUrl, { timeout: 15000, headers });
+    if (r.status === 401) {
+      console.warn('[explorer] 401 unauthorized — token missing/invalid for', targetUrl);
+      return res.status(401).json({
+        error: 'NO_TOKEN',
+        message: 'The Lichess Opening Explorer now requires a free API token.'
+      });
+    }
     if (r.status === 429) {
       console.warn('[explorer] rate limited (429) for', targetUrl);
       return res.status(429).json({ error: 'Lichess Explorer is rate-limiting requests. Wait a moment and try again.' });
@@ -201,6 +245,12 @@ app.get('/api/explorer/:db', async (req, res) => {
     console.error('[explorer] request failed:', e && (e.code || e.message), 'for', targetUrl);
     res.status(503).json({ error: reason });
   }
+});
+
+// Tells the front-end whether the server already has a token configured,
+// so the UI can skip prompting the user if LICHESS_TOKEN is set.
+app.get('/api/explorer-config', (req, res) => {
+  res.json({ serverTokenPresent: !!SERVER_LICHESS_TOKEN });
 });
 
 app.get('*', (req, res) => {

@@ -1910,6 +1910,26 @@ input:focus, select:focus, textarea:focus {
   .nexp-games { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); text-align:right; }
   .nexp-empty { padding:20px; text-align:center; color:var(--text3); font-size:13px; }
   .nexp-loading { padding:20px; text-align:center; color:var(--text2); font-size:13px; }
+  /* rating-band selector */
+  .nexp-bands { display:flex; gap:6px; flex-wrap:wrap; padding:10px 15px 4px; }
+  .nexp-band { background:var(--bg3); border:1px solid var(--border); color:var(--text2);
+    padding:4px 11px; font-size:11px; border-radius:14px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .nexp-band.active { background:var(--gold); color:#1a1a1a; font-weight:700; border-color:var(--gold); }
+  /* token entry */
+  .nexp-token { padding:16px 18px; font-size:13px; color:var(--text2); }
+  .nexp-token-msg { margin:0 0 10px; }
+  .nexp-token-msg strong { color:var(--gold); }
+  .nexp-token-steps { margin:0 0 12px; padding-left:20px; line-height:1.7; }
+  .nexp-token-steps a { color:var(--gold); }
+  .nexp-token-row { display:flex; gap:8px; margin-bottom:8px; }
+  .nexp-token-row input { flex:1; padding:9px 12px; border-radius:8px; background:var(--bg3);
+    border:1px solid var(--border); color:var(--text); font-family:'DM Mono',monospace; font-size:13px; }
+  .nexp-token-note { font-size:11px; color:var(--text3); margin:0; }
+  .nexp-token-note a { color:var(--gold); }
+  .nexp-foot { padding:9px 15px; font-size:11px; color:var(--text3); border-top:1px solid rgba(255,255,255,.05); }
+  .nexp-pop-bar { height:14px; background:var(--bg3); border-radius:3px; overflow:hidden; }
+  .nexp-pop-bar span { display:block; height:100%; background:linear-gradient(90deg,var(--gold),#b8860b); }
+  .nexp-link { background:none; border:none; color:var(--gold); cursor:pointer; font-size:11px; text-decoration:underline; padding:0; font-family:inherit; }
 
   /* ═══════════ CLEAN OPENINGS GRID ═══════════ */
   .op-clean-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 60px; }
@@ -1966,7 +1986,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.1 FIXES</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.3 EXPLORER</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -20630,6 +20650,7 @@ let nlearn = {
   evalToken: 0,        // explorer staleness guard
   evalTokenE: 0,       // engine-eval staleness guard
   explorerToken: 0,    // explorer staleness guard
+  ratingBand: null,
 };
 
 window.nlearnStart = function(famIdx, varIdx, mode){
@@ -20663,6 +20684,7 @@ window.nlearnStart = function(famIdx, varIdx, mode){
     evalToken: 0,
     evalTokenE: 0,
     explorerToken: 0,
+    ratingBand: null,
     varIdx, famIdx,
   };
 
@@ -21025,22 +21047,46 @@ function nlearnDrillComplete(){
 
 // ═══════════════════════════════════════════════════════════════
 // OPENING EXPLORER (live Lichess via server proxy)
+//   Sources:  masters | lichess (all) | rated (rating-banded, chess.com-style tiers)
+//   Auth:     Lichess now requires a token. Server may hold a default; user can
+//             paste their own (saved in localStorage), sent as x-lichess-token.
 // ═══════════════════════════════════════════════════════════════
+const NEXP_RATING_BANDS = [
+  { key: '1600,1800',          label: '1600–2000' },
+  { key: '2000,2200',          label: '2000–2400' },
+  { key: '2200,2500',          label: '2200+' },
+  { key: '0,1000,1200,1400,1600', label: 'Under 1600' },
+];
+function nexpGetToken(){ try { return localStorage.getItem('gambit_lichess_token') || ''; } catch(e){ return ''; } }
+function nexpSetToken(t){ try { if(t) localStorage.setItem('gambit_lichess_token', t); else localStorage.removeItem('gambit_lichess_token'); } catch(e){} }
+
 function nlearnRenderExplorerPanel(){
   const host = document.getElementById('nl-explorer-host');
   if(!host) return;
   const open = nlearn.explorerOpen;
+  const src = nlearn.explorerDb;  // 'masters' | 'lichess' | 'rated'
+  if(!nlearn.ratingBand) nlearn.ratingBand = NEXP_RATING_BANDS[0].key;
+
+  const sourceToggle = `<div class="nexp-db-toggle" onclick="event.stopPropagation()">
+      <button class="${src==='masters'?'active':''}" onclick="nlearnSetExplorerDb('masters')">Masters</button>
+      <button class="${src==='lichess'?'active':''}" onclick="nlearnSetExplorerDb('lichess')">Lichess</button>
+      <button class="${src==='rated'?'active':''}" onclick="nlearnSetExplorerDb('rated')">By rating</button>
+    </div>`;
+
+  const ratingRow = (open && src==='rated') ? `
+    <div class="nexp-bands" onclick="event.stopPropagation()">
+      ${NEXP_RATING_BANDS.map(b => `<button class="nexp-band ${nlearn.ratingBand===b.key?'active':''}" onclick="nlearnSetRatingBand('${b.key}')">${b.label}</button>`).join('')}
+    </div>` : '';
+
   host.innerHTML = `
     <div class="nexp-panel">
       <div class="nexp-head" onclick="nlearnToggleExplorer()">
         <span style="font-size:16px">🔎</span>
         <h4>Opening Explorer ${open?'':'<span style="color:var(--text3);font-weight:400">— see what players actually play here</span>'}</h4>
-        ${open ? `<div class="nexp-db-toggle" onclick="event.stopPropagation()">
-          <button class="${nlearn.explorerDb==='masters'?'active':''}" onclick="nlearnSetExplorerDb('masters')">Masters</button>
-          <button class="${nlearn.explorerDb==='lichess'?'active':''}" onclick="nlearnSetExplorerDb('lichess')">Lichess</button>
-        </div>` : ''}
+        ${open ? sourceToggle : ''}
         <span style="color:var(--text3)">${open?'▲':'▼'}</span>
       </div>
+      ${ratingRow}
       ${open ? `<div class="nexp-body" id="nexp-body"><div class="nexp-loading">Loading…</div></div>` : ''}
     </div>`;
   if(open) nlearnLoadExplorer();
@@ -21053,6 +21099,45 @@ window.nlearnToggleExplorer = function(){
 window.nlearnSetExplorerDb = function(db){
   nlearn.explorerDb = db;
   nlearnRenderExplorerPanel();
+};
+window.nlearnSetRatingBand = function(band){
+  nlearn.ratingBand = band;
+  nlearnLoadExplorer();
+};
+
+// Token entry UI (shown when the server returns NO_TOKEN / 401)
+function nexpRenderTokenPrompt(){
+  const body = document.getElementById('nexp-body');
+  if(!body) return;
+  const existing = nexpGetToken();
+  body.innerHTML = `
+    <div class="nexp-token">
+      <p class="nexp-token-msg">The Lichess Opening Explorer now needs a <strong>free API token</strong> (a one-time setup).</p>
+      <ol class="nexp-token-steps">
+        <li>Open <a href="https://lichess.org/account/oauth/token/create?description=Gambit+Chess+Academy" target="_blank" rel="noopener">this Lichess page</a> (you'll need a free Lichess account).</li>
+        <li>Leave all scopes unchecked — none are needed — and click <em>Create</em>.</li>
+        <li>Copy the token and paste it below.</li>
+      </ol>
+      <div class="nexp-token-row">
+        <input id="nexp-token-input" type="password" placeholder="lip_…" value="${existing ? existing.replace(/./g,'•') : ''}" autocomplete="off">
+        <button class="nop-mini-btn gold" onclick="nexpSaveTokenFromInput()">Save</button>
+      </div>
+      <p class="nexp-token-note">Stored only in your browser, sent securely to Lichess through this app's server. ${existing?'<a href="#" onclick="nexpClearToken();return false;">Clear saved token</a>':''}</p>
+    </div>`;
+}
+window.nexpSaveTokenFromInput = function(){
+  const input = document.getElementById('nexp-token-input');
+  if(!input) return;
+  let val = input.value.trim();
+  // if the field shows masked bullets and wasn't changed, keep existing token
+  if(/^•+$/.test(val)) val = nexpGetToken();
+  if(!val){ return; }
+  nexpSetToken(val);
+  nlearnLoadExplorer();
+};
+window.nexpClearToken = function(){
+  nexpSetToken('');
+  nexpRenderTokenPrompt();
 };
 
 // Convert current line (up to nlearn.idx) into UCI for the explorer
@@ -21069,56 +21154,154 @@ function nlearnCurrentUci(){
   return uci;
 }
 
+// ---- baked explorer stats (no token, instant) ----
+let NEXP_BAKED = undefined;   // undefined=not loaded, null=none available, obj=loaded
+async function nexpLoadBaked(){
+  if(NEXP_BAKED !== undefined) return NEXP_BAKED;
+  try {
+    const res = await fetch('/explorer_stats.json', { cache: 'force-cache' });
+    if(!res.ok){ NEXP_BAKED = null; return null; }
+    const data = await res.json();
+    NEXP_BAKED = (data && data.positions) ? data : null;
+  } catch(e){ NEXP_BAKED = null; }
+  return NEXP_BAKED;
+}
+// Convert a baked position record into the same shape the renderer expects.
+function nexpBakedToData(rec){
+  if(!rec || !rec.moves) return null;
+  return { moves: rec.moves.map(m => ({ uci:m.u, san:m.san, white:m.w||0, draws:m.d||0, black:m.b||0, n:m.n||0 })) };
+}
+
 async function nlearnLoadExplorer(){
   const body = document.getElementById('nexp-body');
   if(!body) return;
   const myToken = ++nlearn.explorerToken; // dedicated explorer staleness guard
-  body.innerHTML = '<div class="nexp-loading">Loading from Lichess…</div>';
+  body.innerHTML = '<div class="nexp-loading">Loading…</div>';
   const uci = nlearnCurrentUci();
   const play = uci.join(',');
-  const db = nlearn.explorerDb;
-  try {
-    const res = await fetch(`/api/explorer/${db}?play=${encodeURIComponent(play)}`);
-    let data = null;
-    try { data = await res.json(); } catch(_){ data = null; }
-    if(myToken !== nlearn.explorerToken) return; // position changed
-    if(!res.ok){
-      const msg = (data && data.error) ? data.error : `Explorer request failed (HTTP ${res.status}).`;
-      const retry = (res.status === 429 || res.status === 503 || res.status === 502)
-        ? `<br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button>` : '';
-      body.innerHTML = `<div class="nexp-empty">${msg}${retry}</div>`;
+  const src = nlearn.explorerDb;
+  const userTok = nexpGetToken();
+
+  // With a token → always fetch LIVE (real win rates, all sources, any depth).
+  // Without a token → serve BUNDLED popularity stats (instant, offline).
+  if(userTok){
+    await nlearnLoadExplorerLive(myToken, play, src, userTok);
+    return;
+  }
+
+  const baked = await nexpLoadBaked();
+  if(myToken !== nlearn.explorerToken) return;
+  if(baked && baked.positions){
+    const rec = baked.positions[play];
+    const data = rec ? nexpBakedToData(rec) : null;
+    if(data && data.moves && data.moves.length){
+      nlearnRenderExplorerData(data, 'baked');
       return;
     }
-    nlearnRenderExplorerData(data);
+    // position deeper than the bundled snapshot
+    body.innerHTML = `<div class="nexp-empty">No bundled stats for this exact position — it's deeper than the offline snapshot.<br><span style="font-size:11px">Add a free Lichess token for unlimited live data.</span><br><button class="nop-mini-btn gold" style="margin-top:10px" onclick="nexpRenderTokenPrompt()">Add a token (optional)</button></div>`;
+    return;
+  }
+  // no baked file at all and no token
+  nexpRenderNoData();
+}
+
+async function nlearnLoadExplorerLive(myToken, play, src, userTok){
+  const body = document.getElementById('nexp-body');
+  if(!body) return;
+  let url;
+  if(src === 'masters'){
+    url = `/api/explorer/masters?play=${encodeURIComponent(play)}`;
+  } else if(src === 'rated'){
+    const ratings = nlearn.ratingBand || NEXP_RATING_BANDS[0].key;
+    url = `/api/explorer/lichess?play=${encodeURIComponent(play)}&ratings=${encodeURIComponent(ratings)}&speeds=blitz,rapid,classical`;
+  } else {
+    url = `/api/explorer/lichess?play=${encodeURIComponent(play)}&speeds=blitz,rapid,classical`;
+  }
+  try {
+    const res = await fetch(url, { headers: { 'x-lichess-token': userTok } });
+    let data = null;
+    try { data = await res.json(); } catch(_){ data = null; }
+    if(myToken !== nlearn.explorerToken) return;
+    if(res.status === 401 || (data && data.error === 'NO_TOKEN')){
+      // token rejected — let them re-enter
+      body.innerHTML = `<div class="nexp-empty">Your Lichess token was rejected (it may be invalid).<br><button class="nop-mini-btn gold" style="margin-top:10px" onclick="nexpRenderTokenPrompt()">Re-enter token</button></div>`;
+      return;
+    }
+    if(!res.ok){
+      const msg = (data && (data.error && data.error !== 'NO_TOKEN' ? data.error : data.message)) || `Explorer request failed (HTTP ${res.status}).`;
+      const retry = (res.status === 429 || res.status === 503 || res.status === 502)
+        ? `<br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button>` : '';
+      body.innerHTML = `<div class="nexp-empty">${msg}${retry}<br><span style="font-size:11px;color:var(--text3)">Tip: the bundled stats still work — clear your token to use them.</span></div>`;
+      return;
+    }
+    nlearnRenderExplorerData(data, 'live');
   } catch(e){
     if(myToken !== nlearn.explorerToken) return;
-    body.innerHTML = `<div class="nexp-empty">Couldn't reach the server to load the Explorer.<br><span style="font-size:11px">Check that the app server is running.</span><br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button></div>`;
+    body.innerHTML = `<div class="nexp-empty">Couldn't reach the server.<br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button></div>`;
   }
 }
 
-function nlearnRenderExplorerData(data){
+// Shown when there are neither baked stats nor a token: offer the token (optional).
+function nexpRenderNoData(){
+  const body = document.getElementById('nexp-body');
+  if(!body) return;
+  body.innerHTML = `
+    <div class="nexp-empty">
+      No opening statistics are bundled yet for this position.
+      <br><span style="font-size:11px">You can add a free Lichess token for unlimited live data (optional), or bake stats offline — see the README.</span>
+      <br><button class="nop-mini-btn gold" style="margin-top:10px" onclick="nexpRenderTokenPrompt()">Add a token for live data</button>
+    </div>`;
+}
+
+function nlearnRenderExplorerData(data, sourceLabel){
   const body = document.getElementById('nexp-body');
   if(!body) return;
   const moves = (data && data.moves) || [];
   if(!moves.length){ body.innerHTML = '<div class="nexp-empty">No games found for this position in this database.</div>'; return; }
+
+  // Detect whether we have real win/draw/loss data or popularity-only counts.
+  const hasWinData = moves.some(m => (m.white||0)+(m.draws||0)+(m.black||0) > 0);
+
   let html = '';
-  for(const m of moves.slice(0, 12)){
-    const w = m.white||0, d = m.draws||0, b = m.black||0;
-    const tot = w+d+b || 1;
-    const pw = Math.round(100*w/tot), pd = Math.round(100*d/tot), pb = 100-pw-pd;
-    const games = tot;
-    const gamesLabel = games >= 1000 ? (games/1000).toFixed(games>=10000?0:1)+'k' : games;
-    html += `<div class="nexp-row" onclick="nlearnPlayExplorerMove('${nopEsc(m.san)}')">
-      <span class="nexp-move">${nopEsc(m.san)}</span>
-      <div class="nexp-bar">
-        ${pw>6?`<span class="w" style="width:${pw}%">${pw}%</span>`:`<span class="w" style="width:${pw}%"></span>`}
-        ${pd>6?`<span class="d" style="width:${pd}%">${pd}%</span>`:`<span class="d" style="width:${pd}%"></span>`}
-        ${pb>6?`<span class="b" style="width:${pb}%">${pb}%</span>`:`<span class="b" style="width:${pb}%"></span>`}
-      </div>
-      <span class="nexp-games">${gamesLabel} games</span>
-    </div>`;
+  if(hasWinData){
+    for(const m of moves.slice(0, 12)){
+      const w = m.white||0, d = m.draws||0, b = m.black||0;
+      const tot = w+d+b || 1;
+      const pw = Math.round(100*w/tot), pd = Math.round(100*d/tot), pb = 100-pw-pd;
+      const games = tot;
+      const gamesLabel = games >= 1000 ? (games/1000).toFixed(games>=10000?0:1)+'k' : games;
+      html += `<div class="nexp-row" onclick="nlearnPlayExplorerMove('${nopEsc(m.san)}')">
+        <span class="nexp-move">${nopEsc(m.san)}</span>
+        <div class="nexp-bar">
+          ${pw>6?`<span class="w" style="width:${pw}%">${pw}%</span>`:`<span class="w" style="width:${pw}%"></span>`}
+          ${pd>6?`<span class="d" style="width:${pd}%">${pd}%</span>`:`<span class="d" style="width:${pd}%"></span>`}
+          ${pb>6?`<span class="b" style="width:${pb}%">${pb}%</span>`:`<span class="b" style="width:${pb}%"></span>`}
+        </div>
+        <span class="nexp-games">${gamesLabel} games</span>
+      </div>`;
+    }
+    const foot = sourceLabel === 'baked'
+      ? `<div class="nexp-foot">📦 Bundled stats (no internet needed). Bar = White / draw / Black win %.</div>`
+      : `<div class="nexp-foot">🔴 Live from Lichess. Bar = White / draw / Black win %.</div>`;
+    body.innerHTML = html + foot;
+  } else {
+    // Popularity-only: show how often each move is played (share of total).
+    const counts = moves.map(m => m.n || 0);
+    const grand = counts.reduce((a,c)=>a+c,0) || 1;
+    const maxN = Math.max(...counts, 1);
+    for(const m of moves.slice(0, 14)){
+      const n = m.n || 0;
+      const share = Math.round(100*n/grand);
+      const barPct = Math.round(100*n/maxN);
+      html += `<div class="nexp-row" onclick="nlearnPlayExplorerMove('${nopEsc(m.san)}')">
+        <span class="nexp-move">${nopEsc(m.san)}</span>
+        <div class="nexp-pop-bar"><span style="width:${barPct}%"></span></div>
+        <span class="nexp-games">${share}%</span>
+      </div>`;
+    }
+    body.innerHTML = html + `<div class="nexp-foot">📦 Bundled popularity (no internet needed) — how often each move is played in this line. For White/Black win rates, add a free Lichess token. <button class="nexp-link" onclick="nexpRenderTokenPrompt()">Add token</button></div>`;
   }
-  body.innerHTML = html;
 }
 
 // Clicking an explorer move (learn mode only): if it matches the next book move, advance;
