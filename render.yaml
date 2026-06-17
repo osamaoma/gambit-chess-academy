@@ -14,5 +14,5 @@ services:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
-        value: 18
+        value: "20"                  # Node 20 LTS (18 is end-of-life)
     autoDeploy: true                 # redeploy on every git push to main

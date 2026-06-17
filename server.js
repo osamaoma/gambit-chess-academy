@@ -14,15 +14,23 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Stockfish files (large, never change) should be cacheable
+// Large static data files that rarely change should be cacheable.
+// Stockfish engine truly never changes → immutable, 1 year.
 app.use('/stockfish', (req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  next();
+});
+// Opening database JSON: cache for a day, but allow re-validation so a
+// re-baked (deepened) file is picked up without a year-long stale cache.
+app.use('/openings_data.json', (req, res, next) => {
+  res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
   next();
 });
 
 // CRITICAL: Disable caching for HTML/JS so users always get the latest code
 app.use((req, res, next) => {
-  if (req.path.startsWith('/stockfish/')) return next();  // Stockfish files already set
+  if (req.path.startsWith('/stockfish/')) return next();           // already set
+  if (req.path === '/openings_data.json') return next();           // already set
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');

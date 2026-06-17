@@ -1,7 +1,7 @@
 {
   "name": "gambit-chess-academy",
-  "version": "3.5.1",
-  "description": "Chess opening trainer with Stockfish analysis",
+  "version": "4.0.0",
+  "description": "Chess opening trainer with Lichess opening database, Stockfish analysis, and live Opening Explorer",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

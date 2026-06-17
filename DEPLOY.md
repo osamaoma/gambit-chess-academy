@@ -25,7 +25,7 @@ git remote add origin https://github.com/YOUR_USERNAME/gambit-chess-academy.git
 git push -u origin main
 ```
 
-> Note: `node_modules/` and `package-lock.json` are excluded by `.gitignore`. The Stockfish `.wasm` file (~700KB) is committed because the app needs it at runtime.
+> Note: `node_modules/` is excluded by `.gitignore`, but `package-lock.json` **is** committed so Render installs the exact same dependency versions. The Stockfish `.wasm` file (~7MB) and `openings_data.json` (~500KB) are committed because the app needs them at runtime.
 
 ## Step 2 — Deploy on Render
 
@@ -51,7 +51,7 @@ git push -u origin main
 
 ## Step 3 — Open your app
 
-Render gives you a URL like `https://gambit-chess-academy.onrender.com`. Open it — Stockfish should load, all openings should appear, and the runtime FEN validator should log `✓ All 875 quiz positions valid` to the browser console.
+Render gives you a URL like `https://gambit-chess-academy.onrender.com`. Open it — Stockfish should load, every opening from the Lichess database should appear under the Openings tab, the Opening Explorer button should pull live data, and the runtime FEN validator should log `✓ All 898 quiz positions valid` to the browser console.
 
 ## Free tier limitations
 
@@ -75,9 +75,11 @@ With `autoDeploy: true` in `render.yaml` (the default), every `git push` to `mai
 |---|---|
 | Build fails with `cannot find module 'express'` | Make sure `package.json` is in the root of your repo |
 | App boots but Stockfish doesn't load | Check that `public/stockfish/` (both `.js` and `.wasm`) is committed to git |
+| Openings tab is empty | Check that `public/openings_data.json` is committed to git |
+| Opening Explorer shows "Couldn't reach Lichess" | The Explorer needs outbound internet to `explorer.lichess.ovh`. Render allows this by default; if self-hosting behind a firewall, allow that host. Everything else works offline. |
 | First load is slow | Free tier spin-down — see "Free tier limitations" above |
 | Health check fails | Make sure the `/api/status` endpoint is reachable — it should return `{"status":"ok","mode":"lite"}` |
-| `node: command not found` during build | Render uses Node 18+ by default; check `engines.node` in `package.json` |
+| `node: command not found` during build | Render uses Node 20 by default (set in `render.yaml`); check `engines.node` in `package.json` |
 
 ## Privacy
 
