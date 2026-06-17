@@ -15,10 +15,4 @@ services:
         value: production
       - key: NODE_VERSION
         value: "20"                  # Node 20 LTS (18 is end-of-life)
-      # Optional: a free Lichess API token enables the Opening Explorer for all
-      # users without per-user setup. Create one (no scopes needed) at
-      # https://lichess.org/account/oauth/token/create and set it in the Render
-      # dashboard → Environment, or uncomment below and use a secret.
-      # - key: LICHESS_TOKEN
-      #   sync: false
     autoDeploy: true                 # redeploy on every git push to main

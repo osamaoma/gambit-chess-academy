@@ -1931,6 +1931,20 @@ input:focus, select:focus, textarea:focus {
   .nexp-pop-bar span { display:block; height:100%; background:linear-gradient(90deg,var(--gold),#b8860b); }
   .nexp-link { background:none; border:none; color:var(--gold); cursor:pointer; font-size:11px; text-decoration:underline; padding:0; font-family:inherit; }
 
+  /* Stockfish continuation */
+  .nlearn-evalbar { height:472px; }
+  .nl-engine-cta { margin-top:18px; padding:16px 18px; border:1px solid var(--border); border-radius:12px; background:rgba(90,160,230,.06); }
+  .nl-engine-cta-title { font-family:'Playfair Display',serif; font-size:17px; color:var(--text); margin-bottom:6px; }
+  .nl-engine-cta p { font-size:13px; color:var(--text2); line-height:1.6; margin:0 0 14px; }
+  .nl-engine-panel { margin-top:18px; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .nl-engine-head { display:flex; align-items:center; gap:10px; padding:11px 15px; background:rgba(90,160,230,.08); }
+  .nl-engine-head h4 { font-size:14px; margin:0; flex:1; color:var(--text); }
+  .nl-engine-best { padding:12px 15px; font-size:15px; color:var(--text); border-bottom:1px solid rgba(255,255,255,.05); }
+  .nl-engine-best strong { font-family:'DM Mono',monospace; }
+  .nl-eng-score { color:var(--text3); font-family:'DM Mono',monospace; font-size:13px; }
+  .nl-engine-controls { display:flex; gap:8px; flex-wrap:wrap; padding:12px 15px; }
+  .nl-engine-hint { padding:0 15px 14px; font-size:11px; color:var(--text3); line-height:1.5; }
+
   /* ═══════════ CLEAN OPENINGS GRID ═══════════ */
   .op-clean-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 60px; }
   .op-clean-hero { text-align: center; margin-bottom: 36px; }
@@ -1986,7 +2000,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.3 EXPLORER</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.4 ENGINE</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -20645,12 +20659,15 @@ let nlearn = {
   side: 'w',           // for drill: which side the user plays
   awaiting: false,     // drill: waiting for user's move
   flip: false,
-  explorerOpen: false,
-  explorerDb: 'masters',
-  evalToken: 0,        // explorer staleness guard
-  evalTokenE: 0,       // engine-eval staleness guard
-  explorerToken: 0,    // explorer staleness guard
-  ratingBand: null,
+  evalTokenE: 0,       // engine-eval (per-move panel) staleness guard
+  // Stockfish continuation
+  engineMode: false,
+  engShowArrows: true,
+  engStates: [],
+  engSans: [],
+  engToken: 0,
+  engLastBest: null,
+  engLastAlts: null,
 };
 
 window.nlearnStart = function(famIdx, varIdx, mode){
@@ -20679,12 +20696,14 @@ window.nlearnStart = function(famIdx, varIdx, mode){
     side: 'w',
     awaiting: false,
     flip: false,
-    explorerOpen: false,
-    explorerDb: 'masters',
-    evalToken: 0,
     evalTokenE: 0,
-    explorerToken: 0,
-    ratingBand: null,
+    engineMode: false,
+    engShowArrows: true,
+    engStates: [],
+    engSans: [],
+    engToken: 0,
+    engLastBest: null,
+    engLastAlts: null,
     varIdx, famIdx,
   };
 
@@ -20732,12 +20751,23 @@ function nlearnRenderLearn(){
   host.innerHTML = `
     <div class="nlearn-stage">
       <div>
-        <div style="display:inline-flex;flex-direction:column;position:relative">
-          <div style="display:flex;gap:0;position:relative">
-            <div class="board-ranks" id="board-ranks-nl"></div>
-            <div id="board-nl" class="chess-board"></div>
+        <div style="display:flex;align-items:flex-start;gap:0">
+          <!-- eval bar (hidden until engine mode) -->
+          <div class="eval-bar-vertical nlearn-evalbar" id="nl-evalbar" style="display:none">
+            <div class="eval-bar-black" id="nl-evalbar-black" style="height:50%"></div>
+            <div class="eval-bar-mid-line"></div>
+            <div class="eval-bar-score white-bg" id="nl-evalbar-score" style="top:47%">0.0</div>
           </div>
-          <div class="board-files" id="board-files-nl"></div>
+          <div style="display:inline-flex;flex-direction:column;position:relative">
+            <div style="display:flex;gap:0;position:relative">
+              <div class="board-ranks" id="board-ranks-nl"></div>
+              <div style="position:relative">
+                <div id="board-nl" class="chess-board"></div>
+                <svg class="arrow-overlay" id="arrow-overlay-nl" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+              </div>
+            </div>
+            <div class="board-files" id="board-files-nl"></div>
+          </div>
         </div>
         <div class="nlearn-board-controls">
           <button class="btn btn-outline btn-sm" onclick="nlearnBack()">← Back</button>
@@ -20749,17 +20779,23 @@ function nlearnRenderLearn(){
         <div class="nlearn-movebadge" id="nl-movebadge"></div>
         <div class="nlearn-explain" id="nl-explain"></div>
         <div class="nlearn-eval" id="nl-eval"></div>
-        <div id="nl-explorer-host"></div>
+        <div id="nl-engine-host"></div>
       </div>
     </div>`;
 
   nlearnRenderLearnStep();
-  nlearnRenderExplorerPanel();
 }
 
 function nlearnRenderLearnStep(){
   const idx = nlearn.idx;          // moves shown
   const state = nlearn.states[idx];
+
+  // If the engine continuation is active, hand off to its renderer.
+  if(nlearn.engineMode){
+    nlearnRenderEngineStep();
+    return;
+  }
+
   const highlights = [];
   if(idx > 0){
     // highlight last move's squares
@@ -20768,6 +20804,7 @@ function nlearnRenderLearnStep(){
     if(mv){ highlights.push(mv.from, mv.to); }
   }
   renderBoardEl('board-nl', 'board-ranks-nl', 'board-files-nl', state, highlights, null);
+  clearArrows('arrow-overlay-nl');
 
   const badge = document.getElementById('nl-movebadge');
   const explain = document.getElementById('nl-explain');
@@ -20792,7 +20829,7 @@ function nlearnRenderLearnStep(){
       text += ` <em style="color:var(--text3)">(End of named theory — the rest follows the most common continuation.)</em>`;
     }
     explain.innerHTML = text;
-    nextBtn.textContent = idx >= nlearn.sans.length ? '✓ Done' : 'Next move →';
+    nextBtn.textContent = idx >= nlearn.sans.length ? '✓ Line complete' : 'Next move →';
     if(idx >= nlearn.sans.length){
       nextBtn.classList.remove('btn-gold'); nextBtn.classList.add('btn-outline');
     } else {
@@ -20801,18 +20838,17 @@ function nlearnRenderLearnStep(){
     nlearnRequestEval(state);
   }
   nlearnSetProgress(idx, nlearn.sans.length);
-  nlearnRenderExplorerPanel();   // refresh explorer to current position if open
+  nlearnRenderEngineHost();   // shows the "Continue with Stockfish" button at line end
 }
 
 window.nlearnNext = function(){
   if(nlearn.idx < nlearn.sans.length){
     nlearn.idx++;
     nlearnRenderLearnStep();
-  } else {
-    // finished learning — mark mastered for learn? we reserve mastery for drill.
   }
 };
 window.nlearnBack = function(){
+  if(nlearn.engineMode){ nlearnExitEngine(); return; }
   if(nlearn.idx > 0){ nlearn.idx--; nlearnRenderLearnStep(); }
 };
 
@@ -21046,288 +21082,229 @@ function nlearnDrillComplete(){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// OPENING EXPLORER (live Lichess via server proxy)
-//   Sources:  masters | lichess (all) | rated (rating-banded, chess.com-style tiers)
-//   Auth:     Lichess now requires a token. Server may hold a default; user can
-//             paste their own (saved in localStorage), sent as x-lichess-token.
+// STOCKFISH CONTINUATION (optional engine play after the line ends)
+//   - Button appears when you reach the end of the variation.
+//   - Turns on Stockfish 18 Lite: blue arrows for top suggestions,
+//     a live eval bar beside the board, and free play (click your move
+//     or a suggested arrow; the engine keeps suggesting).
 // ═══════════════════════════════════════════════════════════════
-const NEXP_RATING_BANDS = [
-  { key: '1600,1800',          label: '1600–2000' },
-  { key: '2000,2200',          label: '2000–2400' },
-  { key: '2200,2500',          label: '2200+' },
-  { key: '0,1000,1200,1400,1600', label: 'Under 1600' },
-];
-function nexpGetToken(){ try { return localStorage.getItem('gambit_lichess_token') || ''; } catch(e){ return ''; } }
-function nexpSetToken(t){ try { if(t) localStorage.setItem('gambit_lichess_token', t); else localStorage.removeItem('gambit_lichess_token'); } catch(e){} }
 
-function nlearnRenderExplorerPanel(){
-  const host = document.getElementById('nl-explorer-host');
+// Host panel under the explanation: shows the "Continue with Stockfish" button
+// at the end of the line, or the engine controls when active.
+function nlearnRenderEngineHost(){
+  const host = document.getElementById('nl-engine-host');
   if(!host) return;
-  const open = nlearn.explorerOpen;
-  const src = nlearn.explorerDb;  // 'masters' | 'lichess' | 'rated'
-  if(!nlearn.ratingBand) nlearn.ratingBand = NEXP_RATING_BANDS[0].key;
-
-  const sourceToggle = `<div class="nexp-db-toggle" onclick="event.stopPropagation()">
-      <button class="${src==='masters'?'active':''}" onclick="nlearnSetExplorerDb('masters')">Masters</button>
-      <button class="${src==='lichess'?'active':''}" onclick="nlearnSetExplorerDb('lichess')">Lichess</button>
-      <button class="${src==='rated'?'active':''}" onclick="nlearnSetExplorerDb('rated')">By rating</button>
-    </div>`;
-
-  const ratingRow = (open && src==='rated') ? `
-    <div class="nexp-bands" onclick="event.stopPropagation()">
-      ${NEXP_RATING_BANDS.map(b => `<button class="nexp-band ${nlearn.ratingBand===b.key?'active':''}" onclick="nlearnSetRatingBand('${b.key}')">${b.label}</button>`).join('')}
-    </div>` : '';
-
-  host.innerHTML = `
-    <div class="nexp-panel">
-      <div class="nexp-head" onclick="nlearnToggleExplorer()">
-        <span style="font-size:16px">🔎</span>
-        <h4>Opening Explorer ${open?'':'<span style="color:var(--text3);font-weight:400">— see what players actually play here</span>'}</h4>
-        ${open ? sourceToggle : ''}
-        <span style="color:var(--text3)">${open?'▲':'▼'}</span>
-      </div>
-      ${ratingRow}
-      ${open ? `<div class="nexp-body" id="nexp-body"><div class="nexp-loading">Loading…</div></div>` : ''}
-    </div>`;
-  if(open) nlearnLoadExplorer();
-}
-
-window.nlearnToggleExplorer = function(){
-  nlearn.explorerOpen = !nlearn.explorerOpen;
-  nlearnRenderExplorerPanel();
-};
-window.nlearnSetExplorerDb = function(db){
-  nlearn.explorerDb = db;
-  nlearnRenderExplorerPanel();
-};
-window.nlearnSetRatingBand = function(band){
-  nlearn.ratingBand = band;
-  nlearnLoadExplorer();
-};
-
-// Token entry UI (shown when the server returns NO_TOKEN / 401)
-function nexpRenderTokenPrompt(){
-  const body = document.getElementById('nexp-body');
-  if(!body) return;
-  const existing = nexpGetToken();
-  body.innerHTML = `
-    <div class="nexp-token">
-      <p class="nexp-token-msg">The Lichess Opening Explorer now needs a <strong>free API token</strong> (a one-time setup).</p>
-      <ol class="nexp-token-steps">
-        <li>Open <a href="https://lichess.org/account/oauth/token/create?description=Gambit+Chess+Academy" target="_blank" rel="noopener">this Lichess page</a> (you'll need a free Lichess account).</li>
-        <li>Leave all scopes unchecked — none are needed — and click <em>Create</em>.</li>
-        <li>Copy the token and paste it below.</li>
-      </ol>
-      <div class="nexp-token-row">
-        <input id="nexp-token-input" type="password" placeholder="lip_…" value="${existing ? existing.replace(/./g,'•') : ''}" autocomplete="off">
-        <button class="nop-mini-btn gold" onclick="nexpSaveTokenFromInput()">Save</button>
-      </div>
-      <p class="nexp-token-note">Stored only in your browser, sent securely to Lichess through this app's server. ${existing?'<a href="#" onclick="nexpClearToken();return false;">Clear saved token</a>':''}</p>
-    </div>`;
-}
-window.nexpSaveTokenFromInput = function(){
-  const input = document.getElementById('nexp-token-input');
-  if(!input) return;
-  let val = input.value.trim();
-  // if the field shows masked bullets and wasn't changed, keep existing token
-  if(/^•+$/.test(val)) val = nexpGetToken();
-  if(!val){ return; }
-  nexpSetToken(val);
-  nlearnLoadExplorer();
-};
-window.nexpClearToken = function(){
-  nexpSetToken('');
-  nexpRenderTokenPrompt();
-};
-
-// Convert current line (up to nlearn.idx) into UCI for the explorer
-function nlearnCurrentUci(){
-  const uci = [];
-  let st = nlearn.states[0];
-  const upto = (nlearn.mode==='learn') ? nlearn.idx : nlearn.idx;
-  for(let i=0;i<upto;i++){
-    const mv = sanToMove(nlearn.sans[i], st);
-    if(!mv) break;
-    uci.push(mv.from + mv.to + (mv.promotion ? mv.promotion : ''));
-    st = applyMove(st, mv);
-  }
-  return uci;
-}
-
-// ---- baked explorer stats (no token, instant) ----
-let NEXP_BAKED = undefined;   // undefined=not loaded, null=none available, obj=loaded
-async function nexpLoadBaked(){
-  if(NEXP_BAKED !== undefined) return NEXP_BAKED;
-  try {
-    const res = await fetch('/explorer_stats.json', { cache: 'force-cache' });
-    if(!res.ok){ NEXP_BAKED = null; return null; }
-    const data = await res.json();
-    NEXP_BAKED = (data && data.positions) ? data : null;
-  } catch(e){ NEXP_BAKED = null; }
-  return NEXP_BAKED;
-}
-// Convert a baked position record into the same shape the renderer expects.
-function nexpBakedToData(rec){
-  if(!rec || !rec.moves) return null;
-  return { moves: rec.moves.map(m => ({ uci:m.u, san:m.san, white:m.w||0, draws:m.d||0, black:m.b||0, n:m.n||0 })) };
-}
-
-async function nlearnLoadExplorer(){
-  const body = document.getElementById('nexp-body');
-  if(!body) return;
-  const myToken = ++nlearn.explorerToken; // dedicated explorer staleness guard
-  body.innerHTML = '<div class="nexp-loading">Loading…</div>';
-  const uci = nlearnCurrentUci();
-  const play = uci.join(',');
-  const src = nlearn.explorerDb;
-  const userTok = nexpGetToken();
-
-  // With a token → always fetch LIVE (real win rates, all sources, any depth).
-  // Without a token → serve BUNDLED popularity stats (instant, offline).
-  if(userTok){
-    await nlearnLoadExplorerLive(myToken, play, src, userTok);
-    return;
-  }
-
-  const baked = await nexpLoadBaked();
-  if(myToken !== nlearn.explorerToken) return;
-  if(baked && baked.positions){
-    const rec = baked.positions[play];
-    const data = rec ? nexpBakedToData(rec) : null;
-    if(data && data.moves && data.moves.length){
-      nlearnRenderExplorerData(data, 'baked');
-      return;
-    }
-    // position deeper than the bundled snapshot
-    body.innerHTML = `<div class="nexp-empty">No bundled stats for this exact position — it's deeper than the offline snapshot.<br><span style="font-size:11px">Add a free Lichess token for unlimited live data.</span><br><button class="nop-mini-btn gold" style="margin-top:10px" onclick="nexpRenderTokenPrompt()">Add a token (optional)</button></div>`;
-    return;
-  }
-  // no baked file at all and no token
-  nexpRenderNoData();
-}
-
-async function nlearnLoadExplorerLive(myToken, play, src, userTok){
-  const body = document.getElementById('nexp-body');
-  if(!body) return;
-  let url;
-  if(src === 'masters'){
-    url = `/api/explorer/masters?play=${encodeURIComponent(play)}`;
-  } else if(src === 'rated'){
-    const ratings = nlearn.ratingBand || NEXP_RATING_BANDS[0].key;
-    url = `/api/explorer/lichess?play=${encodeURIComponent(play)}&ratings=${encodeURIComponent(ratings)}&speeds=blitz,rapid,classical`;
-  } else {
-    url = `/api/explorer/lichess?play=${encodeURIComponent(play)}&speeds=blitz,rapid,classical`;
-  }
-  try {
-    const res = await fetch(url, { headers: { 'x-lichess-token': userTok } });
-    let data = null;
-    try { data = await res.json(); } catch(_){ data = null; }
-    if(myToken !== nlearn.explorerToken) return;
-    if(res.status === 401 || (data && data.error === 'NO_TOKEN')){
-      // token rejected — let them re-enter
-      body.innerHTML = `<div class="nexp-empty">Your Lichess token was rejected (it may be invalid).<br><button class="nop-mini-btn gold" style="margin-top:10px" onclick="nexpRenderTokenPrompt()">Re-enter token</button></div>`;
-      return;
-    }
-    if(!res.ok){
-      const msg = (data && (data.error && data.error !== 'NO_TOKEN' ? data.error : data.message)) || `Explorer request failed (HTTP ${res.status}).`;
-      const retry = (res.status === 429 || res.status === 503 || res.status === 502)
-        ? `<br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button>` : '';
-      body.innerHTML = `<div class="nexp-empty">${msg}${retry}<br><span style="font-size:11px;color:var(--text3)">Tip: the bundled stats still work — clear your token to use them.</span></div>`;
-      return;
-    }
-    nlearnRenderExplorerData(data, 'live');
-  } catch(e){
-    if(myToken !== nlearn.explorerToken) return;
-    body.innerHTML = `<div class="nexp-empty">Couldn't reach the server.<br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button></div>`;
-  }
-}
-
-// Shown when there are neither baked stats nor a token: offer the token (optional).
-function nexpRenderNoData(){
-  const body = document.getElementById('nexp-body');
-  if(!body) return;
-  body.innerHTML = `
-    <div class="nexp-empty">
-      No opening statistics are bundled yet for this position.
-      <br><span style="font-size:11px">You can add a free Lichess token for unlimited live data (optional), or bake stats offline — see the README.</span>
-      <br><button class="nop-mini-btn gold" style="margin-top:10px" onclick="nexpRenderTokenPrompt()">Add a token for live data</button>
-    </div>`;
-}
-
-function nlearnRenderExplorerData(data, sourceLabel){
-  const body = document.getElementById('nexp-body');
-  if(!body) return;
-  const moves = (data && data.moves) || [];
-  if(!moves.length){ body.innerHTML = '<div class="nexp-empty">No games found for this position in this database.</div>'; return; }
-
-  // Detect whether we have real win/draw/loss data or popularity-only counts.
-  const hasWinData = moves.some(m => (m.white||0)+(m.draws||0)+(m.black||0) > 0);
-
-  let html = '';
-  if(hasWinData){
-    for(const m of moves.slice(0, 12)){
-      const w = m.white||0, d = m.draws||0, b = m.black||0;
-      const tot = w+d+b || 1;
-      const pw = Math.round(100*w/tot), pd = Math.round(100*d/tot), pb = 100-pw-pd;
-      const games = tot;
-      const gamesLabel = games >= 1000 ? (games/1000).toFixed(games>=10000?0:1)+'k' : games;
-      html += `<div class="nexp-row" onclick="nlearnPlayExplorerMove('${nopEsc(m.san)}')">
-        <span class="nexp-move">${nopEsc(m.san)}</span>
-        <div class="nexp-bar">
-          ${pw>6?`<span class="w" style="width:${pw}%">${pw}%</span>`:`<span class="w" style="width:${pw}%"></span>`}
-          ${pd>6?`<span class="d" style="width:${pd}%">${pd}%</span>`:`<span class="d" style="width:${pd}%"></span>`}
-          ${pb>6?`<span class="b" style="width:${pb}%">${pb}%</span>`:`<span class="b" style="width:${pb}%"></span>`}
+  const atEnd = nlearn.idx >= nlearn.sans.length;
+  if(nlearn.engineMode){
+    host.innerHTML = `
+      <div class="nl-engine-panel">
+        <div class="nl-engine-head">
+          <span style="font-size:15px">♟</span>
+          <h4>Stockfish 18 Lite</h4>
+          <button class="nop-mini-btn" onclick="nlearnExitEngine()">Done</button>
         </div>
-        <span class="nexp-games">${gamesLabel} games</span>
+        <div class="nl-engine-best" id="nl-engine-best"></div>
+        <div class="nl-engine-controls">
+          <button class="nop-mini-btn" id="nl-eng-arrows" onclick="nlearnToggleArrows()">${nlearn.engShowArrows?'Hide':'Show'} arrows</button>
+          <button class="nop-mini-btn" onclick="nlearnEnginePlayBest()">▶ Play best move</button>
+          <button class="nop-mini-btn" onclick="nlearnEngineUndo()">↶ Undo</button>
+        </div>
+        <div class="nl-engine-hint">Drag/click a piece to play your own move, or follow a blue arrow. The engine re-analyses after every move.</div>
       </div>`;
-    }
-    const foot = sourceLabel === 'baked'
-      ? `<div class="nexp-foot">📦 Bundled stats (no internet needed). Bar = White / draw / Black win %.</div>`
-      : `<div class="nexp-foot">🔴 Live from Lichess. Bar = White / draw / Black win %.</div>`;
-    body.innerHTML = html + foot;
+  } else if(atEnd){
+    host.innerHTML = `
+      <div class="nl-engine-cta">
+        <div class="nl-engine-cta-title">🏁 End of the line</div>
+        <p>Want to keep going? Turn on the engine to explore further — Stockfish 18 Lite will suggest moves with <span style="color:#5aa0e6;font-weight:600">blue arrows</span> and a live eval bar.</p>
+        <button class="btn btn-gold" onclick="nlearnStartEngine()">♟ Continue with Stockfish →</button>
+      </div>`;
   } else {
-    // Popularity-only: show how often each move is played (share of total).
-    const counts = moves.map(m => m.n || 0);
-    const grand = counts.reduce((a,c)=>a+c,0) || 1;
-    const maxN = Math.max(...counts, 1);
-    for(const m of moves.slice(0, 14)){
-      const n = m.n || 0;
-      const share = Math.round(100*n/grand);
-      const barPct = Math.round(100*n/maxN);
-      html += `<div class="nexp-row" onclick="nlearnPlayExplorerMove('${nopEsc(m.san)}')">
-        <span class="nexp-move">${nopEsc(m.san)}</span>
-        <div class="nexp-pop-bar"><span style="width:${barPct}%"></span></div>
-        <span class="nexp-games">${share}%</span>
-      </div>`;
-    }
-    body.innerHTML = html + `<div class="nexp-foot">📦 Bundled popularity (no internet needed) — how often each move is played in this line. For White/Black win rates, add a free Lichess token. <button class="nexp-link" onclick="nexpRenderTokenPrompt()">Add token</button></div>`;
+    host.innerHTML = '';
   }
 }
 
-// Clicking an explorer move (learn mode only): if it matches the next book move, advance;
-// otherwise branch off by appending it as an exploratory move.
-window.nlearnPlayExplorerMove = function(san){
-  if(nlearn.mode !== 'learn') return;
-  const idx = nlearn.idx;
-  const norm = s => (s||'').replace(/[+#!?]/g,'');
-  // if it's the line's next move, just advance
-  if(idx < nlearn.sans.length && norm(nlearn.sans[idx]) === norm(san)){
-    nlearn.idx++;
-    nlearnRenderLearnStep();
-    return;
-  }
-  // otherwise branch: append the explored move into the working line from current point
-  const st = nlearn.states[idx];
-  let mv;
-  try { mv = sanToMove(san, st); } catch(e){ mv = null; }
-  if(!mv) return;
-  const newState = applyMove(st, mv);
-  // truncate any forward states and splice in the explored move
-  nlearn.sans = nlearn.sans.slice(0, idx).concat([san]);
-  nlearn.states = nlearn.states.slice(0, idx+1).concat([newState]);
-  nlearn.idx = idx + 1;
+// ---- enter / exit engine continuation ----
+window.nlearnStartEngine = function(){
+  nlearn.engineMode = true;
+  nlearn.engShowArrows = true;
+  // engine line state = continuation moves beyond the book line
+  nlearn.engStates = [ nlearn.states[nlearn.sans.length] || nlearn.states[nlearn.idx] ];
+  nlearn.engSans = [];
+  nlearn.engBase = nlearn.states[nlearn.sans.length] || nlearn.states[nlearn.idx];
+  nlearn.engToken = (nlearn.engToken||0);
+  // show eval bar
+  const bar = document.getElementById('nl-evalbar');
+  if(bar) bar.style.display = '';
+  nlearnRenderEngineHost();
+  nlearnRenderEngineStep();
+};
+
+window.nlearnExitEngine = function(){
+  nlearn.engineMode = false;
+  clearArrows('arrow-overlay-nl');
+  const bar = document.getElementById('nl-evalbar');
+  if(bar) bar.style.display = 'none';
+  // return to the end of the book line
+  nlearn.idx = nlearn.sans.length;
   nlearnRenderLearnStep();
 };
+
+// Current state in the engine continuation
+function nlearnEngCurrentState(){
+  return nlearn.engStates[nlearn.engStates.length - 1];
+}
+
+// Render one step of the engine continuation: board, interactivity, analysis.
+function nlearnRenderEngineStep(){
+  const state = nlearnEngCurrentState();
+  const hl = [];
+  if(nlearn.engStates.length > 1){
+    const prev = nlearn.engStates[nlearn.engStates.length - 2];
+    const mv = sanToMove(nlearn.engSans[nlearn.engSans.length - 1], prev);
+    if(mv){ hl.push(mv.from, mv.to); }
+  }
+  renderBoardEl('board-nl', 'board-ranks-nl', 'board-files-nl', state, hl, null);
+  // let the user play moves
+  makeBoardInteractive('board-nl', state, nlearnOnEngineUserMove);
+
+  // badge + explanation
+  const badge = document.getElementById('nl-movebadge');
+  const explain = document.getElementById('nl-explain');
+  if(badge){
+    if(nlearn.engSans.length === 0){
+      badge.textContent = 'Engine continuation';
+    } else {
+      const ply = nlearn.sans.length + nlearn.engSans.length; // absolute ply
+      const last = nlearn.engSans[nlearn.engSans.length-1];
+      const moverWhite = ((ply-1) % 2 === 0);
+      const num = Math.floor((ply-1)/2)+1;
+      badge.textContent = moverWhite ? `${num}. ${last}` : `${num}… ${last}`;
+    }
+  }
+  if(explain){
+    const toMove = state.turn === 'w' ? 'White' : 'Black';
+    explain.innerHTML = `<strong>${toMove} to move.</strong> Follow a blue arrow (the engine's top picks) or play your own move. The eval bar on the left updates live.`;
+  }
+  document.getElementById('nl-eval') && (document.getElementById('nl-eval').innerHTML = '');
+
+  nlearnRunEngine(state);
+}
+
+// User played a move during the continuation
+function nlearnOnEngineUserMove(from, to, newState, san){
+  nlearn.engStates.push(newState);
+  nlearn.engSans.push(san);
+  nlearnRenderEngineStep();
+}
+
+window.nlearnEngineUndo = function(){
+  if(nlearn.engSans.length > 0){
+    nlearn.engSans.pop();
+    nlearn.engStates.pop();
+    nlearnRenderEngineStep();
+  }
+};
+
+window.nlearnEnginePlayBest = function(){
+  const best = nlearn.engLastBest;     // UCI string like "e2e4"
+  if(!best) return;
+  const state = nlearnEngCurrentState();
+  const from = best.slice(0,2), to = best.slice(2,4);
+  const promotion = best.length > 4 ? best[4].toUpperCase() : null;
+  let san;
+  try { san = moveToSAN(state, from, to, promotion); } catch(e){ san = null; }
+  const newState = applyMove(state, { from, to, promotion });
+  nlearn.engStates.push(newState);
+  nlearn.engSans.push(san || (from+to));
+  nlearnRenderEngineStep();
+};
+
+window.nlearnToggleArrows = function(){
+  nlearn.engShowArrows = !nlearn.engShowArrows;
+  const btn = document.getElementById('nl-eng-arrows');
+  if(btn) btn.textContent = (nlearn.engShowArrows?'Hide':'Show') + ' arrows';
+  if(!nlearn.engShowArrows){ clearArrows('arrow-overlay-nl'); }
+  else if(nlearn.engLastAlts){ nlearnDrawBlueArrows(nlearn.engLastAlts); }
+};
+
+// Run Stockfish on the current continuation position
+async function nlearnRunEngine(state){
+  const token = ++nlearn.engToken;
+  const bestEl = document.getElementById('nl-engine-best');
+  if(bestEl) bestEl.innerHTML = '<span style="color:var(--text3)">Stockfish thinking…</span>';
+  clearArrows('arrow-overlay-nl');
+
+  if(typeof evalPosition !== 'function'){ if(bestEl) bestEl.textContent = 'Engine unavailable.'; return; }
+  let fen;
+  try { fen = stateToFEN(state); } catch(e){ if(bestEl) bestEl.textContent = 'Position error.'; return; }
+
+  try {
+    const result = await evalPosition(fen, 14, 3);  // depth 14, top-3 lines
+    if(token !== nlearn.engToken) return;            // stale
+
+    // eval bar (always White's perspective, like the rest of the app)
+    updateEvalBar('nl-evalbar-black', 'nl-evalbar-score', result.score, result.isMate, result.mateIn);
+
+    // best move text + arrows
+    const alts = (result.alternatives && result.alternatives.length)
+      ? result.alternatives
+      : [{ pv: result.pv, score: result.score, isMate: result.isMate, mateIn: result.mateIn }];
+    nlearn.engLastAlts = alts;
+    nlearn.engLastBest = (alts[0] && alts[0].pv) ? alts[0].pv.trim().split(/\s+/)[0] : (result.bestMove || null);
+
+    if(bestEl){
+      const evalText = formatEval(result.score, result.isMate, result.mateIn);
+      const bestSan = nlearnUciToSanSafe(alts[0] && alts[0].pv ? alts[0].pv.trim().split(/\s+/)[0] : null, state);
+      bestEl.innerHTML = `Best: <strong style="color:#5aa0e6">${bestSan||'—'}</strong> <span class="nl-eng-score">(${evalText})</span>`;
+    }
+    if(nlearn.engShowArrows) nlearnDrawBlueArrows(alts);
+  } catch(e){
+    if(token === nlearn.engToken && bestEl) bestEl.textContent = 'Engine error — try another move.';
+  }
+}
+
+// Convert the first UCI of a pv into SAN for display (best-effort)
+function nlearnUciToSanSafe(uci, state){
+  if(!uci || uci.length < 4) return null;
+  const from = uci.slice(0,2), to = uci.slice(2,4);
+  const promotion = uci.length > 4 ? uci[4].toUpperCase() : null;
+  try { return moveToSAN(state, from, to, promotion); } catch(e){ return null; }
+}
+
+// Draw BLUE arrows for the engine's top suggestions (thicker = stronger).
+function nlearnDrawBlueArrows(alternatives){
+  const overlay = document.getElementById('arrow-overlay-nl');
+  if(!overlay) return;
+  overlay.innerHTML = `<defs>
+    <marker id="nlb-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(70,140,235,.95)"/></marker>
+    <marker id="nlb-2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(90,160,230,.75)"/></marker>
+    <marker id="nlb-3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(120,180,225,.55)"/></marker>
+  </defs>`;
+  const styles = [
+    { stroke:'rgba(70,140,235,.92)',  marker:'nlb-1', width:13 }, // best — bold blue
+    { stroke:'rgba(90,160,230,.70)',  marker:'nlb-2', width:8  }, // 2nd — medium blue
+    { stroke:'rgba(120,180,225,.52)', marker:'nlb-3', width:5  }, // 3rd — light blue
+  ];
+  const flipped = boardFlippedState.get('board-nl') === true;
+  let drawn = 0;
+  for(let i=0; i<alternatives.length && drawn<3; i++){
+    const pv = (alternatives[i].pv || '').trim();
+    if(!pv) continue;
+    const mv = pv.split(/\s+/)[0];
+    if(!mv || mv.length < 4) continue;
+    const from = mv.slice(0,2), to = mv.slice(2,4);
+    if(!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) continue;
+    const p1 = squareToSVG(from, flipped);
+    const p2 = squareToSVG(to, flipped);
+    const s = styles[drawn] || styles[2];
+    const dx = p2.x-p1.x, dy = p2.y-p1.y;
+    const len = Math.sqrt(dx*dx+dy*dy) || 1;
+    const endX = p2.x - (dx/len)*14, endY = p2.y - (dy/len)*14;
+    overlay.innerHTML += `<line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="${s.stroke}" stroke-width="${s.width}" stroke-linecap="round" marker-end="url(#${s.marker})" />`;
+    drawn++;
+  }
+}
+
 
 </script>
 </body>
