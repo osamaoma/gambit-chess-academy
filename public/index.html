@@ -1966,7 +1966,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.0 OPENINGS</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.1 FIXES</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -20627,7 +20627,9 @@ let nlearn = {
   flip: false,
   explorerOpen: false,
   explorerDb: 'masters',
-  evalToken: 0,
+  evalToken: 0,        // explorer staleness guard
+  evalTokenE: 0,       // engine-eval staleness guard
+  explorerToken: 0,    // explorer staleness guard
 };
 
 window.nlearnStart = function(famIdx, varIdx, mode){
@@ -20659,6 +20661,8 @@ window.nlearnStart = function(famIdx, varIdx, mode){
     explorerOpen: false,
     explorerDb: 'masters',
     evalToken: 0,
+    evalTokenE: 0,
+    explorerToken: 0,
     varIdx, famIdx,
   };
 
@@ -20801,7 +20805,8 @@ function nlearnSetEval(result){
     cls = result.mateIn > 0 ? 'nlearn-eval-pos' : 'nlearn-eval-neg';
     txt = `#${Math.abs(result.mateIn)}`;
   } else {
-    const cp = result.score/100;
+    // completeAnalysis() returns score already in PAWNS (e.g. 0.35), not centipawns.
+    const cp = result.score;
     cls = cp > 0.3 ? 'nlearn-eval-pos' : (cp < -0.3 ? 'nlearn-eval-neg' : 'nlearn-eval-eq');
     txt = (cp>0?'+':'') + cp.toFixed(2);
   }
@@ -20810,7 +20815,7 @@ function nlearnSetEval(result){
 }
 function nlearnEvalWords(r){
   if(r.isMate) return r.mateIn>0 ? 'White is winning' : 'Black is winning';
-  const cp = r.score/100;
+  const cp = r.score;   // pawns
   const a = Math.abs(cp);
   let who = cp>0 ? 'White' : 'Black';
   if(a < 0.3) return 'roughly equal';
@@ -20819,16 +20824,24 @@ function nlearnEvalWords(r){
   return `${who} winning`;
 }
 async function nlearnRequestEval(state){
-  const token = ++nlearn.evalToken;
+  const token = ++nlearn.evalTokenE;   // dedicated eval token (separate from explorer)
   nlearnSetEval('loading');
+  // Hard fallback so the panel never hangs on "thinking…" even if the engine stalls.
+  let settled = false;
+  const fallback = setTimeout(() => {
+    if(!settled && token === nlearn.evalTokenE) nlearnSetEval(null);
+  }, 8000);
   try {
-    if(typeof evalPosition !== 'function'){ nlearnSetEval(null); return; }
-    const fen = stateToFEN(state);
+    if(typeof evalPosition !== 'function'){ clearTimeout(fallback); nlearnSetEval(null); return; }
+    let fen;
+    try { fen = stateToFEN(state); } catch(e){ clearTimeout(fallback); nlearnSetEval(null); return; }
     const result = await evalPosition(fen, 12, 1);
-    if(token !== nlearn.evalToken) return;   // stale
+    settled = true; clearTimeout(fallback);
+    if(token !== nlearn.evalTokenE) return;   // stale (user moved on)
     nlearnSetEval(result);
   } catch(e){
-    if(token === nlearn.evalToken) nlearnSetEval(null);
+    settled = true; clearTimeout(fallback);
+    if(token === nlearn.evalTokenE) nlearnSetEval(null);
   }
 }
 
@@ -21059,20 +21072,27 @@ function nlearnCurrentUci(){
 async function nlearnLoadExplorer(){
   const body = document.getElementById('nexp-body');
   if(!body) return;
-  const token = ++nlearn.evalToken; // reuse token as a generic staleness guard for explorer
-  const myToken = token;
+  const myToken = ++nlearn.explorerToken; // dedicated explorer staleness guard
   body.innerHTML = '<div class="nexp-loading">Loading from Lichess…</div>';
   const uci = nlearnCurrentUci();
   const play = uci.join(',');
   const db = nlearn.explorerDb;
   try {
     const res = await fetch(`/api/explorer/${db}?play=${encodeURIComponent(play)}`);
-    if(!res.ok) throw new Error('explorer http '+res.status);
-    const data = await res.json();
-    if(myToken !== nlearn.evalToken) return; // position changed
+    let data = null;
+    try { data = await res.json(); } catch(_){ data = null; }
+    if(myToken !== nlearn.explorerToken) return; // position changed
+    if(!res.ok){
+      const msg = (data && data.error) ? data.error : `Explorer request failed (HTTP ${res.status}).`;
+      const retry = (res.status === 429 || res.status === 503 || res.status === 502)
+        ? `<br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button>` : '';
+      body.innerHTML = `<div class="nexp-empty">${msg}${retry}</div>`;
+      return;
+    }
     nlearnRenderExplorerData(data);
   } catch(e){
-    if(body) body.innerHTML = `<div class="nexp-empty">Couldn't reach the Lichess Explorer.<br><span style="font-size:11px">(Needs internet; the local server proxies the request.)</span></div>`;
+    if(myToken !== nlearn.explorerToken) return;
+    body.innerHTML = `<div class="nexp-empty">Couldn't reach the server to load the Explorer.<br><span style="font-size:11px">Check that the app server is running.</span><br><button class="nop-mini-btn" style="margin-top:10px" onclick="nlearnLoadExplorer()">↻ Try again</button></div>`;
   }
 }
 

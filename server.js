@@ -169,14 +169,37 @@ app.get('/api/explorer/:db', async (req, res) => {
   for (const k of allowed) {
     if (req.query[k] !== undefined) params.set(k, req.query[k]);
   }
+  const targetUrl = `https://explorer.lichess.ovh/${db}?${params.toString()}`;
   try {
-    const r = await nodeFetch(`https://explorer.lichess.ovh/${db}?${params.toString()}`, { timeout: 8000 });
-    if (!r.ok) return res.status(r.status).json({ error: `Explorer error (HTTP ${r.status})` });
+    const r = await nodeFetch(targetUrl, { timeout: 15000 });
+    if (r.status === 429) {
+      console.warn('[explorer] rate limited (429) for', targetUrl);
+      return res.status(429).json({ error: 'Lichess Explorer is rate-limiting requests. Wait a moment and try again.' });
+    }
+    if (!r.ok) {
+      console.warn('[explorer] upstream HTTP', r.status, 'for', targetUrl);
+      return res.status(502).json({ error: `Lichess Explorer returned HTTP ${r.status}.` });
+    }
     const data = r.json();
-    if (!data) return res.status(502).json({ error: 'Empty Explorer response' });
+    if (!data) {
+      // Some explorer responses stream as ndjson; the final complete line holds the full result.
+      const raw = r.text().trim();
+      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      let parsed = null;
+      for (let i = lines.length - 1; i >= 0; i--) {
+        try { parsed = JSON.parse(lines[i]); break; } catch (_) {}
+      }
+      if (parsed) return res.json(parsed);
+      console.warn('[explorer] empty/non-JSON body for', targetUrl);
+      return res.status(502).json({ error: 'Lichess Explorer returned an empty response.' });
+    }
     res.json(data);
   } catch (e) {
-    res.status(500).json({ error: e.message || 'Explorer request failed' });
+    const reason = e && e.message === 'Timeout'
+      ? 'The Lichess Explorer took too long to respond (timeout).'
+      : `Could not connect to the Lichess Explorer (${e && e.code ? e.code : (e && e.message) || 'network error'}).`;
+    console.error('[explorer] request failed:', e && (e.code || e.message), 'for', targetUrl);
+    res.status(503).json({ error: reason });
   }
 });
 
