@@ -640,8 +640,7 @@ input::placeholder{color:var(--text3)}
 
 
   /* ════════════ WEAKNESS DETECTION UI ════════════ */
-  .weaknesses-list{display:flex;flex-direction:column;gap:10px}
-  .weakness-card{padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s}
+  .weaknesses-list{display:flex;flex-direction:column;gap:10px}  .weakness-card{padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s}
   .weakness-card:hover{border-color:var(--gold);background:rgba(201,168,76,.05);transform:translateY(-1px)}
   .weakness-card.top{border-color:rgba(224,112,112,.55);background:linear-gradient(135deg,rgba(224,112,112,.07),var(--bg3))}
   .weakness-card.top:hover{border-color:#e07070}
@@ -1994,13 +1993,50 @@ input:focus, select:focus, textarea:focus {
     color: #7fc99c; margin-top: 8px; justify-content: center;
   }
 
+  /* ═══════════ PERFORMANCE: TIME + STYLE TWIN ═══════════ */
+  .perf-time-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:14px; }
+  .perf-stat { background:var(--bg3); border:1px solid var(--border); border-radius:9px; padding:14px; text-align:center; }
+  .perf-stat.warn { border-color:rgba(224,112,112,.5); background:linear-gradient(135deg,rgba(224,112,112,.08),var(--bg3)); }
+  .perf-stat-num { font-family:'DM Mono',monospace; font-size:24px; font-weight:700; color:var(--gold); }
+  .perf-stat.warn .perf-stat-num { color:#e07070; }
+  .perf-stat-label { font-size:11px; color:var(--text3); margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
+  .perf-phase-chart { background:var(--bg3); border:1px solid var(--border); border-radius:9px; padding:14px 16px; }
+  .perf-phase-row { display:grid; grid-template-columns:100px 1fr 130px; align-items:center; gap:12px; margin-bottom:8px; }
+  .perf-phase-name { font-size:12px; color:var(--text2); text-transform:capitalize; }
+  .perf-phase-bar { height:14px; background:var(--bg4); border-radius:7px; overflow:hidden; }
+  .perf-phase-bar span { display:block; height:100%; background:linear-gradient(90deg,var(--gold),#b8860b); }
+  .perf-phase-val { font-family:'DM Mono',monospace; font-size:12px; color:var(--text2); text-align:right; }
+  .perf-phase-legend { font-size:11px; color:var(--text3); margin-top:6px; }
+
+  .style-twin-card { display:flex; align-items:center; gap:22px; padding:24px 26px;
+    background:linear-gradient(135deg, rgba(201,168,76,.12), var(--bg2)); border:1.5px solid rgba(201,168,76,.4);
+    border-radius:14px; margin-bottom:14px; }
+  .stc-emoji { font-size:72px; line-height:1; flex-shrink:0; }
+  .stc-you { font-size:13px; color:var(--text3); }
+  .stc-name { font-family:'Playfair Display',serif; font-size:32px; color:var(--text); margin:2px 0; }
+  .stc-tag { font-size:14px; color:var(--gold); font-weight:600; margin-bottom:8px; }
+  .stc-blurb { font-size:13px; color:var(--text2); line-height:1.55; }
+  .stc-bars { background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
+  .stc-bar-row { display:grid; grid-template-columns:90px 1fr 32px; align-items:center; gap:12px; margin-bottom:9px; }
+  .stc-bar-label { font-size:12px; color:var(--text2); }
+  .stc-bar-track { position:relative; height:14px; background:var(--bg4); border-radius:7px; overflow:visible; }
+  .stc-bar-you { display:block; height:100%; background:linear-gradient(90deg,var(--gold),#e0b84a); border-radius:7px; }
+  .stc-bar-legend { position:absolute; top:-3px; width:3px; height:20px; background:#5aa0e6; border-radius:2px; transform:translateX(-1px); }
+  .stc-bar-val { font-family:'DM Mono',monospace; font-size:12px; color:var(--text2); text-align:right; }
+  .stc-bars-legend { font-size:11px; color:var(--text3); margin-top:8px; }
+  .stc-key-you, .stc-key-leg { display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:middle; }
+  .stc-key-you { background:var(--gold); } .stc-key-leg { background:#5aa0e6; }
+  .stc-runner { font-size:13px; color:var(--text2); margin:12px 0; }
+  .stc-share { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  .stc-share-note { font-size:12px; color:#7fc99c; margin-top:8px; min-height:16px; }
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.4 ENGINE</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v4.5 PERFORMANCE</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -13489,6 +13525,7 @@ window.runDeepAnalysis = async function(){
   // Reset state
   lastAnalysisMistakes = [];
   lastAnalysisTimeStats = {};
+  perfResetCollectors();
 
   resultEl.innerHTML = `
     <div class="da-progress">
@@ -13548,6 +13585,24 @@ window.runDeepAnalysis = async function(){
           const userScoreBefore = isWhite ? prevScore : -prevScore;
           const userScoreAfter = isWhite ? result.score : -result.score;
           const loss = userScoreBefore - userScoreAfter;
+
+          // ── collect raw per-move data for Time + Style analyses ──
+          try {
+            const mIdx = Math.floor((i-1) / 2);
+            const tUsed = userTimes[mIdx-1];
+            const clkNow = userClocks[mIdx];
+            const sanStr = hist[i].san || '';
+            perfCollectMove(sanStr, {
+              ply: i,
+              isWhite,
+              loss,
+              timeUsed: (typeof tUsed === 'number' ? tUsed : null),
+              clockAtMove: (typeof clkNow === 'number' ? clkNow : null),
+              from: hist[i].from || null,
+              to: hist[i].to || null,
+              phase: i < 16 ? 'opening' : (i > 50 ? 'endgame' : 'middlegame'),
+            });
+          } catch(_){}
 
           let category = null;
           if(loss >= 2.0){ totalBlunders++; category = 'blunder'; }
@@ -13691,21 +13746,6 @@ window.runDeepAnalysis = async function(){
       <div class="da-stat-card"><div class="das-num">${accuracy}%</div><div class="das-label">Accuracy</div></div>
     </div>
 
-    ${meanTime > 0 ? `
-    <div class="section-label" style="margin:14px 0 8px">⏱ Time Usage</div>
-    <div class="weakness-card" style="margin-bottom:6px">
-      <div class="weakness-title">Average ${meanTime.toFixed(1)}s per move · ${fastPct}% of your moves played in under 5 seconds</div>
-      <div class="weakness-text">${
-        fastPct > 30
-          ? `<strong>You play too fast.</strong> Over 30% of your moves are blitzed in under 5 seconds. Critical chess decisions often need 30+ seconds of calculation. Slow down on moves 8-20 — that's where most games are decided.`
-          : fastPct > 15
-          ? `Your time use is reasonable but ${fastPct}% of moves are under 5 sec — try to slow down on critical positions (when the opponent's last move was unexpected, or when material is hanging).`
-          : meanTime < 8
-          ? `You're using ${meanTime.toFixed(1)}s/move on average — quite fast. Consider longer time controls if you want to improve calculation depth.`
-          : `Good time discipline. Keep spending ~${Math.round(meanTime)}s on key middlegame decisions.`
-      }</div>
-    </div>` : ''}
-
     <div class="section-label" style="margin:14px 0 8px">🎯 Top Weaknesses</div>
     <div class="weaknesses-list">
       ${weaknesses.length === 0
@@ -13742,10 +13782,16 @@ window.runDeepAnalysis = async function(){
     </div>` : ''}
 
     <div id="weakness-detail-panel" style="display:none;margin-top:18px"></div>
+
+    <div id="perf-time-analysis" style="margin-top:24px"></div>
+    <div id="perf-style-twin" style="margin-top:24px"></div>
   `;
 
   // Store weaknesses for click handler
   window._lastWeaknesses = weaknesses;
+  // Render the two new Performance reports from collected data
+  try { perfRenderTimeAnalysis(); } catch(e){ console.error('time analysis render failed', e); }
+  try { perfRenderStyleTwin(perfUserCache); } catch(e){ console.error('style twin render failed', e); }
   button.disabled = false;
   button.textContent = '▶ Run deep Stockfish analysis (last 50 games)';
 };
@@ -21305,6 +21351,436 @@ function nlearnDrawBlueArrows(alternatives){
   }
 }
 
+
+
+// ==== PERFORMANCE: TIME + STYLE TWIN ====
+// ═══════════════════════════════════════════════════════════════
+// PERFORMANCE: TIME-USAGE ANALYSIS + STYLE TWIN
+// Fed by the deep Stockfish pass via perfCollectMove(). After analysis,
+// perfRenderTimeAnalysis() and perfRenderStyleTwin() draw the reports.
+// ═══════════════════════════════════════════════════════════════
+
+let perfMoves = [];   // [{san, ply, isWhite, loss, timeUsed, clockAtMove, from, to, phase, features:{...}}]
+
+function perfResetCollectors(){ perfMoves = []; }
+
+// Derive lightweight style features from a SAN string + context.
+function perfMoveFeatures(san, ctx){
+  const s = (san || '').replace(/[+#!?]/g, '');
+  const f = {
+    capture:   /x/.test(s),
+    check:     /\+/.test(san) || /#/.test(san),
+    castle:    s === 'O-O' || s === 'O-O-O',
+    pawnMove:  /^[a-h]/.test(s) && !/^[a-h]?x?[a-h][1-8]=/.test(s) ? /^[a-h]/.test(s) : /^[a-h]/.test(s),
+    promotion: /=/.test(s),
+    queenMove: /^Q/.test(s),
+    knightMove:/^N/.test(s),
+    bishopMove:/^B/.test(s),
+    rookMove:  /^R/.test(s),
+    kingMove:  /^K/.test(s),
+    pieceMove: /^[NBRQK]/.test(s),
+    // destination square (for center / king-attack heuristics)
+    destFile:  null, destRank: null,
+  };
+  const dest = s.match(/([a-h])([1-8])(?:=[QRBN])?$/);
+  if(dest){ f.destFile = dest[1]; f.destRank = parseInt(dest[2]); }
+  // central destination: d/e files, ranks 4-5
+  f.central = f.destFile && (f.destFile==='d'||f.destFile==='e') && (f.destRank===4||f.destRank===5);
+  // advance into opponent half (attacking intent): for white rank>=5, black rank<=4
+  if(f.destRank){
+    f.advance = ctx.isWhite ? f.destRank >= 5 : f.destRank <= 4;
+    // flank pawn storm: a/b/g/h pawn pushed into opp half
+    f.flankPawnPush = f.pawnMove && (f.destFile==='a'||f.destFile==='b'||f.destFile==='g'||f.destFile==='h') && f.advance;
+  }
+  f.earlyQueen = f.queenMove && ctx.ply <= 10;
+  return f;
+}
+
+function perfCollectMove(san, ctx){
+  const features = perfMoveFeatures(san, ctx);
+  perfMoves.push(Object.assign({ san }, ctx, { features }));
+}
+
+// ───────────────────────────────────────────────────────────────
+// TIME-USAGE ANALYSIS
+// ───────────────────────────────────────────────────────────────
+function perfRenderTimeAnalysis(){
+  const host = document.getElementById('perf-time-analysis');
+  if(!host) return;
+  const withTime = perfMoves.filter(m => typeof m.timeUsed === 'number' && m.timeUsed >= 0);
+  if(withTime.length < 8){
+    host.innerHTML = `<div class="section-label" style="margin:14px 0 8px">⏱ Time-Usage Patterns</div>
+      <div class="weakness-card"><div class="weakness-text">Not enough clock data in these games to analyse time usage. This works best with online games that record move times (most Lichess/Chess.com rapid & blitz games do).</div></div>`;
+    return;
+  }
+
+  const n = withTime.length;
+  const avg = withTime.reduce((a,m)=>a+m.timeUsed,0)/n;
+  const fast = withTime.filter(m => m.timeUsed < 5);
+  const fastPct = Math.round(100*fast.length/n);
+
+  // Correlation 1: do fast moves bleed more eval than slow moves?
+  const fastLoss = avgLoss(fast);
+  const slow = withTime.filter(m => m.timeUsed >= 15);
+  const slowLoss = avgLoss(slow);
+
+  // Correlation 2: blunders made in time trouble (<30s on clock)
+  const inTrouble = withTime.filter(m => typeof m.clockAtMove === 'number' && m.clockAtMove < 30);
+  const troubleBlunders = inTrouble.filter(m => m.loss >= 1.0);
+  const troublePct = inTrouble.length ? Math.round(100*troubleBlunders.length/inTrouble.length) : 0;
+
+  // Correlation 3: by phase — where do you over/under-spend?
+  const byPhase = {};
+  ['opening','middlegame','endgame'].forEach(p => {
+    const ms = withTime.filter(m => m.phase===p);
+    byPhase[p] = { avg: ms.length? ms.reduce((a,m)=>a+m.timeUsed,0)/ms.length : 0, loss: avgLoss(ms), count: ms.length };
+  });
+
+  // Correlation 4: the single worst "rushed blunder" — biggest eval drop on a <5s move
+  const rushed = fast.filter(m => m.loss >= 1.0).sort((a,b)=>b.loss-a.loss);
+  const worstRush = rushed[0] || null;
+
+  // Build findings (only the ones that actually apply to this player)
+  const findings = [];
+  if(fastPct >= 25 && fastLoss > slowLoss * 1.4 && fastLoss > 0.25){
+    findings.push({
+      bad: true,
+      title: `Rushing is costing you points`,
+      text: `When you move in under 5 seconds you lose <strong>${fastLoss.toFixed(2)}</strong> eval on average, vs <strong>${slowLoss.toFixed(2)}</strong> on moves where you think 15s+. That's the clearest rating leak here: ${fastPct}% of your moves are blitzed. Force yourself to pause on any move where the position just changed.`
+    });
+  }
+  if(troublePct >= 20 && troubleBlunders.length >= 3){
+    findings.push({
+      bad: true,
+      title: `Time trouble turns into blunders`,
+      text: `With under 30s on the clock, <strong>${troublePct}%</strong> of your moves were mistakes or blunders (${troubleBlunders.length} of them). You're spending too much earlier and paying for it late. Bank time in the opening by playing your prep quickly.`
+    });
+  }
+  // Over-spending in the opening
+  if(byPhase.opening.avg > 0 && byPhase.middlegame.avg > 0 && byPhase.opening.avg > byPhase.middlegame.avg){
+    findings.push({
+      bad: true,
+      title: `You burn time in the opening`,
+      text: `You average <strong>${byPhase.opening.avg.toFixed(1)}s</strong> per move in the opening but only <strong>${byPhase.middlegame.avg.toFixed(1)}s</strong> in the middlegame — backwards. The middlegame is where games are decided. Learn your openings well enough to play the first 8–10 moves quickly, then spend that saved time when it matters.`
+    });
+  }
+  // Under-thinking the middlegame
+  if(byPhase.middlegame.avg > 0 && byPhase.middlegame.avg < 6 && byPhase.middlegame.loss > 0.3){
+    findings.push({
+      bad: true,
+      title: `Middlegame moves are too quick`,
+      text: `Only <strong>${byPhase.middlegame.avg.toFixed(1)}s</strong> per middlegame move, and that's where your eval bleeds most (${byPhase.middlegame.loss.toFixed(2)} avg loss). Critical decisions need 30s+ of real calculation.`
+    });
+  }
+  if(findings.length === 0){
+    findings.push({
+      bad: false,
+      title: `Healthy time management`,
+      text: `Your time use looks balanced — fast moves aren't costing you noticeably more than slow ones, and you're not blundering in time trouble. Keep banking time for the middlegame.`
+    });
+  }
+
+  // Phase bar chart (avg seconds + avg loss)
+  const maxPhaseAvg = Math.max(byPhase.opening.avg, byPhase.middlegame.avg, byPhase.endgame.avg, 1);
+
+  host.innerHTML = `
+    <div class="section-label" style="margin:14px 0 8px">⏱ Time-Usage Patterns — why your rating bleeds</div>
+    <div class="perf-time-grid">
+      <div class="perf-stat"><div class="perf-stat-num">${avg.toFixed(1)}s</div><div class="perf-stat-label">avg / move</div></div>
+      <div class="perf-stat"><div class="perf-stat-num">${fastPct}%</div><div class="perf-stat-label">moves under 5s</div></div>
+      <div class="perf-stat ${fastLoss>slowLoss*1.3?'warn':''}"><div class="perf-stat-num">${fastLoss.toFixed(2)}</div><div class="perf-stat-label">eval lost when rushing</div></div>
+      <div class="perf-stat ${troublePct>=20?'warn':''}"><div class="perf-stat-num">${troublePct}%</div><div class="perf-stat-label">errors in time trouble</div></div>
+    </div>
+
+    <div class="perf-phase-chart">
+      ${['opening','middlegame','endgame'].map(p => `
+        <div class="perf-phase-row">
+          <div class="perf-phase-name">${p}</div>
+          <div class="perf-phase-bar"><span style="width:${Math.round(100*byPhase[p].avg/maxPhaseAvg)}%"></span></div>
+          <div class="perf-phase-val">${byPhase[p].avg.toFixed(1)}s${byPhase[p].loss>0.3?` · <span style="color:#e07070">−${byPhase[p].loss.toFixed(2)}</span>`:''}</div>
+        </div>`).join('')}
+      <div class="perf-phase-legend">Average seconds per move by phase. Red = average eval lost there.</div>
+    </div>
+
+    <div class="weaknesses-list" style="margin-top:12px">
+      ${findings.map(f => `
+        <div class="weakness-card ${f.bad?'top':''}">
+          <div class="weakness-header">
+            <div class="weakness-rank">${f.bad?'⚠':'✓'}</div>
+            <div class="weakness-info"><div class="weakness-title">${f.title}</div></div>
+          </div>
+          <div class="weakness-text">${f.text}</div>
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+function avgLoss(arr){
+  if(!arr || !arr.length) return 0;
+  // only count positive losses (a move can't "gain" against best play meaningfully here)
+  const losses = arr.map(m => Math.max(0, m.loss || 0));
+  return losses.reduce((a,b)=>a+b,0) / losses.length;
+}
+
+// ───────────────────────────────────────────────────────────────
+// STYLE TWIN
+// ───────────────────────────────────────────────────────────────
+// Each legend profile is a vector on 5 axes, 0..100:
+//   aggression  — attacking/sacrificial vs solid
+//   tactics     — sharp/forcing vs positional
+//   activity    — piece activity & initiative
+//   risk        — willingness to enter chaos/unbalanced positions
+//   technique   — endgame/grinding precision
+const STYLE_LEGENDS = [
+  { name:'Garry Kasparov',     emoji:'🔥', tag:'Relentless attacker', v:{aggression:95, tactics:90, activity:92, risk:80, technique:78},
+    blurb:'Dynamic, aggressive, deep preparation and a love of the initiative.' },
+  { name:'Mikhail Tal',        emoji:'🌋', tag:'The Magician', v:{aggression:99, tactics:98, activity:88, risk:99, technique:55},
+    blurb:'Wild sacrifices and chaos — drags opponents into the calculation jungle.' },
+  { name:'Bobby Fischer',      emoji:'⚡', tag:'Precise force', v:{aggression:80, tactics:85, activity:82, risk:55, technique:92},
+    blurb:'Crystal-clear aggression backed by flawless technique.' },
+  { name:'Magnus Carlsen',     emoji:'🐍', tag:'The Grinder', v:{aggression:62, tactics:70, activity:78, risk:48, technique:99},
+    blurb:'Squeezes tiny edges for hours; unmatched endgame technique and pressure.' },
+  { name:'Anatoly Karpov',     emoji:'🕸', tag:'The Boa Constrictor', v:{aggression:40, tactics:55, activity:60, risk:25, technique:95},
+    blurb:'Positional python — restricts your pieces and slowly squeezes.' },
+  { name:'Tigran Petrosian',   emoji:'🛡', tag:'The Fortress', v:{aggression:25, tactics:45, activity:42, risk:15, technique:90},
+    blurb:'Prophylaxis and defence — nothing happens until you are completely safe.' },
+  { name:'José Raúl Capablanca',emoji:'💎', tag:'Effortless clarity', v:{aggression:45, tactics:55, activity:65, risk:30, technique:97},
+    blurb:'Simple, clean, intuitive — wins endgames that look dead equal.' },
+  { name:'Hikaru Nakamura',    emoji:'⚙️', tag:'Speed tactician', v:{aggression:78, tactics:88, activity:85, risk:70, technique:84},
+    blurb:'Tactical sharpness and lightning calculation, thrives in complications.' },
+  { name:'Paul Morphy',        emoji:'🎩', tag:'Romantic attacker', v:{aggression:90, tactics:88, activity:95, risk:75, technique:70},
+    blurb:'Rapid development and open-position attacks — punishes slow play.' },
+  { name:'Vladimir Kramnik',   emoji:'🏛', tag:'Strategic rock', v:{aggression:50, tactics:60, activity:62, risk:30, technique:93},
+    blurb:'Deep strategy and airtight preparation; neutralises then outplays.' },
+];
+
+// Compute the user's style vector (0..100 on each axis) from collected moves.
+function perfComputeStyleVector(){
+  const ms = perfMoves;
+  if(!ms.length) return null;
+  const n = ms.length;
+  const cnt = sel => ms.filter(sel).length;
+  const pct = sel => 100 * cnt(sel) / n;
+
+  const capturePct   = pct(m => m.features.capture);
+  const checkPct     = pct(m => m.features.check);
+  const queenEarly   = cnt(m => m.features.earlyQueen);
+  const flankPush    = pct(m => m.features.flankPawnPush);
+  const advancePct   = pct(m => m.features.advance);
+  const centralPct   = pct(m => m.features.central);
+  const castleCount  = cnt(m => m.features.castle);
+  const pieceMovePct = pct(m => m.features.pieceMove);
+  const endgameMoves = ms.filter(m => m.phase==='endgame');
+  const endgameLoss  = avgLoss(endgameMoves);
+  const overallLoss  = avgLoss(ms);
+
+  // Map raw stats to 0..100 axes (clamped). These mappings are heuristic but
+  // produce a stable, intuitive fingerprint.
+  const clamp = x => Math.max(0, Math.min(100, x));
+  const aggression = clamp(advancePct*1.4 + checkPct*2.2 + flankPush*2.5 + capturePct*0.5);
+  const tactics    = clamp(capturePct*1.6 + checkPct*3.0 + (queenEarly>0?10:0));
+  const activity   = clamp(pieceMovePct*0.85 + centralPct*1.0);
+  const risk       = clamp(flankPush*3.0 + checkPct*2.0 + queenEarly*4 + advancePct*0.8);
+  // technique: better (lower) endgame loss → higher technique
+  const technique  = clamp(100 - endgameLoss*55 - overallLoss*25);
+
+  return { aggression, tactics, activity, risk, technique,
+    raw: { capturePct, checkPct, advancePct, centralPct, flankPush, endgameLoss: +endgameLoss.toFixed(2), overallLoss:+overallLoss.toFixed(2), moves:n } };
+}
+
+function perfStyleDistance(a, b){
+  const keys = ['aggression','tactics','activity','risk','technique'];
+  let sum = 0;
+  for(const k of keys){ const d = (a[k]-b[k]); sum += d*d; }
+  return Math.sqrt(sum);
+}
+
+function perfRenderStyleTwin(username){
+  const host = document.getElementById('perf-style-twin');
+  if(!host) return;
+  const vec = perfComputeStyleVector();
+  if(!vec || vec.raw.moves < 15){
+    host.innerHTML = `<div class="section-label" style="margin:14px 0 8px">🎭 Your Style Twin</div>
+      <div class="weakness-card"><div class="weakness-text">Need a few more analysed games to fingerprint your style. Run the deep analysis on more games.</div></div>`;
+    return;
+  }
+
+  // Rank legends by closeness
+  const ranked = STYLE_LEGENDS.map(L => ({ L, dist: perfStyleDistance(vec, L.v) }))
+    .sort((a,b) => a.dist - b.dist);
+  const top = ranked[0];
+  const runnerUp = ranked[1];
+  // similarity 0..100 (max meaningful distance ~ sqrt(5*100^2)=223)
+  const sim = Math.max(40, Math.round(100 - (top.dist / 223) * 100));
+
+  // axis labels for the mini-radar
+  const axes = [
+    { k:'aggression', label:'Aggression' },
+    { k:'tactics',    label:'Tactics' },
+    { k:'activity',   label:'Activity' },
+    { k:'risk',       label:'Risk-taking' },
+    { k:'technique',  label:'Technique' },
+  ];
+
+  host.innerHTML = `
+    <div class="section-label" style="margin:14px 0 8px">🎭 Your Style Twin</div>
+    <div class="style-twin-card" id="style-twin-card">
+      <div class="stc-emoji">${top.L.emoji}</div>
+      <div class="stc-main">
+        <div class="stc-you">You play like</div>
+        <div class="stc-name">${top.L.name}</div>
+        <div class="stc-tag">${top.L.tag} · ${sim}% match</div>
+        <div class="stc-blurb">${top.L.blurb}</div>
+      </div>
+    </div>
+
+    <div class="stc-bars">
+      ${axes.map(a => `
+        <div class="stc-bar-row">
+          <div class="stc-bar-label">${a.label}</div>
+          <div class="stc-bar-track">
+            <span class="stc-bar-you" style="width:${Math.round(vec[a.k])}%"></span>
+            <i class="stc-bar-legend" style="left:${Math.round(top.L.v[a.k])}%" title="${top.L.name}"></i>
+          </div>
+          <div class="stc-bar-val">${Math.round(vec[a.k])}</div>
+        </div>`).join('')}
+      <div class="stc-bars-legend"><span class="stc-key-you"></span> your style &nbsp;·&nbsp; <span class="stc-key-leg"></span> ${top.L.name}</div>
+    </div>
+
+    <div class="stc-runner">Also similar to <strong>${runnerUp.L.name}</strong> (${runnerUp.L.tag}).</div>
+
+    <div class="stc-share">
+      <button class="btn btn-gold" onclick="perfDownloadStyleCard('${encodeURIComponent(top.L.name)}','${top.L.emoji}','${encodeURIComponent(top.L.tag)}',${sim},'${encodeURIComponent(username||'')}')">⬇ Download share card</button>
+      <button class="nop-mini-btn" onclick="perfShare('twitter','${encodeURIComponent(top.L.name)}',${sim})">𝕏 / Twitter</button>
+      <button class="nop-mini-btn" onclick="perfShare('facebook','${encodeURIComponent(top.L.name)}',${sim})">Facebook</button>
+      <button class="nop-mini-btn" onclick="perfShare('whatsapp','${encodeURIComponent(top.L.name)}',${sim})">WhatsApp</button>
+      <button class="nop-mini-btn" onclick="perfShare('copy','${encodeURIComponent(top.L.name)}',${sim})">Copy text</button>
+    </div>
+    <div class="stc-share-note" id="stc-share-note"></div>
+  `;
+
+  // stash for the card generator
+  window._perfStyle = { vec, top: top.L, sim, username };
+}
+
+// ── Shareable PNG card (canvas) ──
+window.perfDownloadStyleCard = function(nameEnc, emoji, tagEnc, sim, userEnc){
+  const name = decodeURIComponent(nameEnc);
+  const tag = decodeURIComponent(tagEnc);
+  const user = decodeURIComponent(userEnc||'');
+  const vec = (window._perfStyle && window._perfStyle.vec) || null;
+
+  const W = 1080, H = 1080;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+
+  // background
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#15130f'); g.addColorStop(1,'#241d12');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  // gold frame
+  ctx.strokeStyle = 'rgba(201,168,76,.6)'; ctx.lineWidth = 6;
+  ctx.strokeRect(40,40,W-80,H-80);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#c9a84c';
+  ctx.font = '600 38px Georgia, serif';
+  ctx.fillText('♟  GAMBIT CHESS ACADEMY', W/2, 130);
+
+  ctx.fillStyle = '#9a9488';
+  ctx.font = '300 34px Georgia, serif';
+  ctx.fillText('MY CHESS STYLE TWIN', W/2, 210);
+
+  // emoji
+  ctx.font = '160px serif';
+  ctx.fillText(emoji, W/2, 400);
+
+  ctx.fillStyle = '#9a9488';
+  ctx.font = '300 36px Georgia, serif';
+  ctx.fillText('I play like', W/2, 470);
+
+  ctx.fillStyle = '#f4ecd8';
+  ctx.font = '700 76px Georgia, serif';
+  ctx.fillText(name, W/2, 555);
+
+  ctx.fillStyle = '#c9a84c';
+  ctx.font = '400 40px Georgia, serif';
+  ctx.fillText(tag + '  ·  ' + sim + '% match', W/2, 615);
+
+  // radar / bars
+  if(vec){
+    const axes = [['Aggression','aggression'],['Tactics','tactics'],['Activity','activity'],['Risk','risk'],['Technique','technique']];
+    let y = 720;
+    axes.forEach(([label,key]) => {
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#9a9488'; ctx.font = '400 30px Georgia, serif';
+      ctx.fillText(label, 140, y+8);
+      // track
+      const bx = 430, bw = 460, bh = 26;
+      ctx.fillStyle = 'rgba(255,255,255,.08)';
+      roundRect(ctx, bx, y-14, bw, bh, 13); ctx.fill();
+      // fill
+      const val = Math.max(0, Math.min(100, vec[key]));
+      const grad = ctx.createLinearGradient(bx,0,bx+bw,0);
+      grad.addColorStop(0,'#c9a84c'); grad.addColorStop(1,'#e0b84a');
+      ctx.fillStyle = grad;
+      roundRect(ctx, bx, y-14, bw*val/100, bh, 13); ctx.fill();
+      ctx.textAlign = 'right'; ctx.fillStyle = '#f4ecd8'; ctx.font = '600 26px Georgia, serif';
+      ctx.fillText(Math.round(val), bx+bw+50, y+8);
+      y += 60;
+    });
+  }
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#6f6a5e'; ctx.font = '300 26px Georgia, serif';
+  ctx.fillText(user ? `@${user} · gambit chess academy` : 'gambit chess academy', W/2, H-70);
+
+  // download
+  c.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `chess-style-${name.replace(/\s+/g,'-').toLowerCase()}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }, 'image/png');
+
+  const note = document.getElementById('stc-share-note');
+  if(note) note.textContent = 'Card downloaded! Post it on Instagram, Facebook, chess.com — anywhere.';
+};
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+window.perfShare = function(where, nameEnc, sim){
+  const name = decodeURIComponent(nameEnc);
+  const text = `My chess style twin is ${name} — ${sim}% match! Found out with Gambit Chess Academy ♟`;
+  const note = document.getElementById('stc-share-note');
+  if(where === 'copy'){
+    const doCopy = (t) => {
+      if(navigator.clipboard && navigator.clipboard.writeText){ return navigator.clipboard.writeText(t); }
+      const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); }catch(e){} ta.remove(); return Promise.resolve();
+    };
+    doCopy(text).then(()=>{ if(note) note.textContent = 'Copied! Paste it anywhere — Instagram caption, chess.com forum, a DM…'; });
+    return;
+  }
+  let url;
+  if(where === 'twitter') url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  else if(where === 'facebook') url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://gambit-chess-academy.onrender.com')}&quote=${encodeURIComponent(text)}`;
+  else if(where === 'whatsapp') url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  if(url){
+    window.open(url, '_blank', 'noopener');
+    if(note) note.textContent = 'Tip: also download the image card above to attach to your post.';
+  }
+};
 
 </script>
 </body>
