@@ -2104,66 +2104,180 @@ input:focus, select:focus, textarea:focus {
   .ol-plan-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold);margin-bottom:8px}
   .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
 
+  /* ═══════════════ OPENING EXPLORER ═══════════════ */
+  .expl-wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+  .expl-detect{text-align:center;margin-bottom:22px;min-height:78px}
+  .expl-detect-eco{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.15em;color:var(--gold);opacity:.85}
+  .expl-detect-name{font-family:'Playfair Display',serif;font-size:30px;color:var(--text);line-height:1.15;transition:opacity .2s}
+  .expl-detect-var{font-size:15px;color:var(--text2);margin-top:2px;min-height:20px}
+  .expl-main{display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:start}
+  @media(max-width:900px){.expl-main{grid-template-columns:1fr;justify-items:center}}
+  .expl-board-row{display:flex;gap:12px;align-items:stretch}
+  /* eval bar */
+  .expl-evalbar{position:relative;width:26px;height:448px;background:#f4ecd8;border-radius:5px;overflow:hidden;flex-shrink:0;border:1px solid #2a2218}
+  .expl-evalbar-black{position:absolute;top:0;left:0;right:0;background:#2b2b2b;transition:height .35s cubic-bezier(.4,0,.2,1)}
+  .expl-evalbar-mid{position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(201,168,76,.6);z-index:2}
+  .expl-evalbar-score{position:absolute;left:0;right:0;text-align:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;z-index:3;transition:all .35s;padding:2px 0}
+  .expl-evalbar-score.white{bottom:4px;color:#1a1a1a}
+  .expl-board-wrap{display:inline-flex;flex-direction:column}
+  .expl-board-controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+  /* side panel */
+  .expl-side{display:flex;flex-direction:column;gap:16px;min-width:0;width:100%;max-width:440px}
+  .expl-panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .expl-panel-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border)}
+  .expl-panel-head h3{font-size:15px;margin:0;flex:1;color:var(--text)}
+  .expl-engine-dot{width:9px;height:9px;border-radius:50%;background:var(--text3);flex-shrink:0}
+  .expl-engine-dot.thinking{background:var(--gold);animation:explpulse 1s infinite}
+  .expl-engine-dot.ready{background:#6ec882}
+  @keyframes explpulse{0%,100%{opacity:.4}50%{opacity:1}}
+  .expl-depth{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+  .expl-pv-list{padding:6px 0;min-height:50px}
+  .expl-pv-empty{padding:14px 16px;color:var(--text3);font-size:13px;text-align:center}
+  .expl-pv-row{display:grid;grid-template-columns:22px 56px 1fr;align-items:center;gap:10px;padding:8px 16px;cursor:pointer}
+  .expl-pv-row:hover{background:rgba(201,168,76,.07)}
+  .expl-pv-rank{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+  .expl-pv-eval{font-family:'DM Mono',monospace;font-weight:700;font-size:13px}
+  .expl-pv-eval.pos{color:#6ec882}.expl-pv-eval.neg{color:#e0706f}.expl-pv-eval.eq{color:var(--text2)}
+  .expl-pv-line{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* move list */
+  .expl-side-pick{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px}
+  .expl-side-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:3px 10px;border-radius:6px;font-size:12px;cursor:pointer}
+  .expl-side-btn.active{background:var(--gold);color:#1a1a1a;font-weight:700;border-color:var(--gold)}
+  .expl-movelist{padding:12px 16px;font-family:'DM Mono',monospace;font-size:13px;line-height:2;color:var(--text);max-height:160px;overflow:auto}
+  .expl-mv-num{color:var(--text3);margin-right:4px}
+  .expl-mv{cursor:pointer;padding:1px 6px;border-radius:4px;margin-right:4px}
+  .expl-mv:hover{background:rgba(201,168,76,.15);color:var(--gold)}
+  /* actions */
+  .expl-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .expl-save-note{font-size:12px;min-height:16px}
+  .expl-save-note.ok{color:#6ec882}.expl-save-note.warn{color:#e0a060}
+  /* library */
+  .expl-library{margin-top:26px;max-width:760px;margin-left:auto;margin-right:auto}
+  .expl-lib-head{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:12px}
+  .expl-lib-row{display:flex;align-items:center;gap:14px;padding:13px 16px;margin-bottom:9px;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:11px}
+  .expl-lib-info{flex:1;min-width:0}
+  .expl-lib-name{font-size:14px;color:var(--text);font-weight:600}
+  .expl-lib-var{color:var(--text2);font-weight:400}
+  .expl-lib-side{font-size:11px;color:var(--gold);margin-left:6px}
+  .expl-lib-acc{font-size:11px;color:#6ec882;margin-left:6px}
+  .expl-lib-moves{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .expl-lib-actions{display:flex;gap:6px;flex-shrink:0}
+  /* training */
+  .expl-train-top{display:flex;align-items:center;gap:16px;margin-bottom:10px}
+  .expl-train-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--text)}
+  .expl-train-stage{display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:start;margin-top:18px}
+  @media(max-width:900px){.expl-train-stage{grid-template-columns:1fr;justify-items:center}}
+  .expl-train-side{min-width:0;max-width:420px}
+  .expl-train-badge{font-family:'DM Mono',monospace;font-weight:700;font-size:18px;color:var(--gold);background:rgba(201,168,76,.1);padding:5px 14px;border-radius:8px;display:inline-block;margin-bottom:12px}
+  .expl-train-msg{font-size:15px;line-height:1.6;color:var(--text);margin-bottom:14px}
+  .expl-train-fb{min-height:28px;margin-bottom:8px}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v5.3 ITALIAN</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v6.0 EXPLORER</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
+    <button class="nav-tab active" onclick="showSection('explorer')">🧭 Opening Explorer</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
     <button class="nav-tab" onclick="showSection('review')">🔬 Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
 </nav>
 
-<!-- ══════════════ OPENINGS ══════════════ -->
-<div id="sec-openings" class="section active">
-  <div class="op-clean-wrap">
-    <!-- VIEW 1: home — search + filters + opening cards -->
-    <div id="ol-home">
-      <div class="op-clean-hero">
-        <h1>Chess <em>Openings</em> Library</h1>
-        <p>Master a focused repertoire of 23 essential openings. Every move explained in plain English, the most popular replies shown at every step, and drills to lock it all in.</p>
-        <div class="op-clean-search">
-          <input id="ol-search" placeholder="🔍  Search openings, variations, ideas (e.g. Sicilian, fianchetto, attack)…" oninput="olSearch(this.value)" autocomplete="off">
+<!-- ══════════════ OPENING EXPLORER ══════════════ -->
+<div id="sec-explorer" class="section active">
+  <div class="expl-wrap">
+    <!-- top bar: opening detection + controls -->
+    <div class="expl-detect" id="expl-detect">
+      <div class="expl-detect-eco" id="expl-eco">—</div>
+      <div class="expl-detect-name" id="expl-name">Starting position</div>
+      <div class="expl-detect-var" id="expl-var"></div>
+    </div>
+
+    <div class="expl-main">
+      <!-- LEFT: eval bar + board -->
+      <div class="expl-board-col">
+        <div class="expl-board-row">
+          <div class="expl-evalbar" id="expl-evalbar" title="Engine evaluation">
+            <div class="expl-evalbar-black" id="expl-evalbar-black" style="height:50%"></div>
+            <div class="expl-evalbar-mid"></div>
+            <div class="expl-evalbar-score white" id="expl-evalbar-score">0.0</div>
+          </div>
+          <div class="expl-board-wrap">
+            <div style="display:flex">
+              <div class="board-ranks" id="expl-ranks"></div>
+              <div style="position:relative">
+                <div id="expl-board" class="chess-board"></div>
+                <svg class="arrow-overlay" id="expl-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+              </div>
+            </div>
+            <div class="board-files" id="expl-files"></div>
+          </div>
         </div>
-        <div class="ol-filters" id="ol-filters">
-          <button class="ol-filter active" data-f="all" onclick="olSetFilter('all')">All</button>
-          <button class="ol-filter" data-f="aggressive" onclick="olSetFilter('aggressive')">⚔️ Aggressive</button>
-          <button class="ol-filter" data-f="positional" onclick="olSetFilter('positional')">♟ Positional</button>
-          <button class="ol-filter" data-f="gambit" onclick="olSetFilter('gambit')">🔥 Gambit</button>
-          <button class="ol-filter" data-f="solid" onclick="olSetFilter('solid')">🛡 Solid</button>
+        <div class="expl-board-controls">
+          <button class="btn btn-outline btn-sm" onclick="explUndo()" id="expl-undo">↶ Undo</button>
+          <button class="btn btn-outline btn-sm" onclick="explFlip()">⇅ Flip</button>
+          <button class="btn btn-outline btn-sm" onclick="explReset()">⟲ Reset</button>
+          <button class="btn btn-outline btn-sm" onclick="explToggleArrows()" id="expl-arrows-btn">Arrows: on</button>
         </div>
       </div>
-      <div id="ol-grid"></div>
-      <div id="ol-search-results" style="display:none"></div>
+
+      <!-- RIGHT: engine + moves + save -->
+      <div class="expl-side">
+        <!-- engine analysis -->
+        <div class="expl-panel">
+          <div class="expl-panel-head">
+            <span class="expl-engine-dot" id="expl-engine-dot"></span>
+            <h3>Stockfish 18</h3>
+            <span class="expl-depth" id="expl-depth"></span>
+          </div>
+          <div class="expl-pv-list" id="expl-pv-list"><div class="expl-pv-empty">Play a move to start analysis…</div></div>
+        </div>
+
+        <!-- move list -->
+        <div class="expl-panel">
+          <div class="expl-panel-head"><h3>Moves</h3>
+            <span class="expl-side-pick">
+              Side:
+              <button class="expl-side-btn active" id="expl-side-w" onclick="explSetSide('w')">White</button>
+              <button class="expl-side-btn" id="expl-side-b" onclick="explSetSide('b')">Black</button>
+            </span>
+          </div>
+          <div class="expl-movelist" id="expl-movelist"><div class="expl-pv-empty">No moves yet.</div></div>
+        </div>
+
+        <!-- save / train -->
+        <div class="expl-actions">
+          <button class="btn btn-gold" onclick="explSave()" id="expl-save-btn">💾 Save Exploration</button>
+          <button class="nop-mini-btn" onclick="explOpenLibrary()">📂 My Lines</button>
+        </div>
+        <div class="expl-save-note" id="expl-save-note"></div>
+      </div>
     </div>
 
-    <!-- VIEW 2: opening intro (main moves + key plans) -->
-    <div id="ol-intro" style="display:none"></div>
-
-    <!-- VIEW 3: variation list -->
-    <div id="ol-varlist" style="display:none"></div>
+    <!-- saved lines library (hidden until opened) -->
+    <div class="expl-library" id="expl-library" style="display:none"></div>
   </div>
 </div>
 
-<!-- LEARN / DRILL VIEW -->
-<div id="sec-olearn" class="section">
-  <div class="nlearn-wrap">
-    <div class="nlearn-top">
-      <button class="nop-back" id="olearn-back" onclick="olearnExit()" style="margin:0">← Back</button>
-      <div class="nlearn-title" id="olearn-title"></div>
-      <span class="nlearn-mode-pill" id="olearn-mode-pill"></span>
+<!-- TRAINING VIEW -->
+<div id="sec-train" class="section">
+  <div class="expl-wrap">
+    <div class="expl-train-top">
+      <button class="nop-back" onclick="explExitTrain()" style="margin:0">← Back to Explorer</button>
+      <div class="expl-train-title" id="expl-train-title"></div>
     </div>
-    <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="olearn-progress"></div></div>
-    <div id="olearn-host"></div>
+    <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="expl-train-progress"></div></div>
+    <div id="expl-train-host"></div>
   </div>
 </div>
 
-<!-- legacy hidden containers (kept so old code refs don't crash) -->
+<!-- legacy hidden containers (orphaned, not in nav) -->
+<div id="sec-openings" class="section" style="display:none"></div>
+<div id="sec-olearn" class="section" style="display:none"><div id="olearn-title"></div><div id="olearn-mode-pill"></div><div id="olearn-progress"></div><div id="olearn-host"></div></div>
 <div id="sec-nlearn" class="section" style="display:none">
   <div id="nlearn-title"></div><div id="nlearn-mode-pill"></div>
   <div id="nlearn-progress-fill"></div><div id="nlearn-stage-host"></div>
@@ -10396,7 +10510,7 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {openings:0, nlearn:0, olearn:0, analysis:1, review:2, quizzes:3};
+  const tabs = {explorer:0, train:0, openings:0, nlearn:0, olearn:0, analysis:1, review:2, quizzes:3};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
@@ -20600,8 +20714,8 @@ window.filterOpCards = function(q){
 // Defer init so the static HTML/CSS renders first - the page should NEVER appear blank
 function safeInit(){
   try {
-    olInit();
-  } catch(e){ console.error('openings init failed:', e); }
+    explInit();
+  } catch(e){ console.error('explorer init failed:', e); }
   try {
     initStockfish().catch(err => console.warn('Engine init failed (analysis will be unavailable):', err));
   } catch(e){ console.warn('initStockfish threw:', e); }
@@ -22676,6 +22790,460 @@ function olDrillNextOrDone(){
       <div class="ndrill-side-row">
         <div class="ndrill-side-card" onclick="olRenderDrillPicker()"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Drill again</div></div>
         <div class="ndrill-side-card" onclick="olShowVariations(${oldrill.opIdx})"><div class="ndrill-side-icon">📚</div><div class="ndrill-side-label">Variations</div></div>
+      </div>
+    </div>`;
+}
+
+
+// ==== OPENING EXPLORER ====
+// ═══════════════════════════════════════════════════════════════
+// OPENING EXPLORER — interactive board, Stockfish multi-PV, eval bar,
+// best-move arrows, real-time opening detection, save & train (localStorage).
+// ═══════════════════════════════════════════════════════════════
+let EXPL_DETECT = null;          // {openings: { uciSeq: {n,e} }}
+const expl = {
+  states: [parseFEN(startFEN())],
+  sans: [],
+  uci: [],
+  side: 'w',                     // side the user is exploring as
+  showArrows: true,
+  evalToken: 0,
+  lastDetect: { n:'Starting position', e:'', variation:'' },
+  multipv: 3,
+};
+
+async function explInit(){
+  // load detection data (non-blocking; board still works without it)
+  try {
+    const res = await fetch('/opening_detect.json', { cache:'force-cache' });
+    const data = await res.json();
+    EXPL_DETECT = data.openings || {};
+  } catch(e){ EXPL_DETECT = {}; console.warn('opening detect load failed', e); }
+  explRender();
+}
+
+// ── board + interaction ──
+function explCurrentState(){ return expl.states[expl.states.length-1]; }
+
+function explRender(){
+  const state = explCurrentState();
+  const hl = [];
+  if(expl.states.length > 1){
+    const prev = expl.states[expl.states.length-2];
+    const mv = sanToMove(expl.sans[expl.sans.length-1], prev);
+    if(mv){ hl.push(mv.from, mv.to); }
+  }
+  renderBoardEl('expl-board','expl-ranks','expl-files', state, hl, null);
+  makeBoardInteractive('expl-board', state, explOnUserMove);
+  explRenderMoveList();
+  explDetect();
+  explRunEngine();
+}
+
+function explOnUserMove(from, to, newState, san){
+  expl.states.push(newState);
+  expl.sans.push(san);
+  // track uci
+  const prev = expl.states[expl.states.length-2];
+  const mv = sanToMove(san, prev);
+  expl.uci.push(mv ? mv.from+mv.to+(mv.promotion?mv.promotion:'') : (from+to));
+  explRender();
+}
+
+window.explUndo = function(){
+  if(expl.sans.length === 0) return;
+  expl.sans.pop(); expl.uci.pop(); expl.states.pop();
+  explRender();
+};
+window.explReset = function(){
+  expl.states = [parseFEN(startFEN())]; expl.sans = []; expl.uci = [];
+  clearArrows('expl-arrows');
+  explRender();
+};
+window.explFlip = function(){ flipBoard('expl-board'); };
+window.explToggleArrows = function(){
+  expl.showArrows = !expl.showArrows;
+  const b = document.getElementById('expl-arrows-btn');
+  if(b) b.textContent = 'Arrows: ' + (expl.showArrows?'on':'off');
+  if(!expl.showArrows) clearArrows('expl-arrows');
+  else if(expl.lastAlts) explDrawArrows(expl.lastAlts);
+};
+window.explSetSide = function(s){
+  expl.side = s;
+  document.getElementById('expl-side-w').classList.toggle('active', s==='w');
+  document.getElementById('expl-side-b').classList.toggle('active', s==='b');
+  // flip board to match side
+  const flipped = isBoardFlipped('expl-board');
+  if((s==='b') !== flipped) flipBoard('expl-board');
+};
+
+// ── move list ──
+function explRenderMoveList(){
+  const host = document.getElementById('expl-movelist');
+  if(!host) return;
+  if(!expl.sans.length){ host.innerHTML = '<div class="expl-pv-empty">No moves yet — start playing on the board.</div>'; return; }
+  let html = '';
+  for(let i=0;i<expl.sans.length;i+=2){
+    const num = i/2+1;
+    const w = expl.sans[i];
+    const b = expl.sans[i+1] || '';
+    html += `<span class="expl-mv-num">${num}.</span><span class="expl-mv" onclick="explGoto(${i+1})">${w}</span>${b?`<span class="expl-mv" onclick="explGoto(${i+2})">${b}</span>`:''}`;
+  }
+  host.innerHTML = html;
+}
+window.explGoto = function(ply){
+  // truncate to this ply
+  if(ply < expl.sans.length){
+    expl.sans = expl.sans.slice(0, ply);
+    expl.uci = expl.uci.slice(0, ply);
+    expl.states = expl.states.slice(0, ply+1);
+    explRender();
+  }
+};
+
+// ── real-time opening detection (longest known prefix) ──
+function explDetect(){
+  const ecoEl = document.getElementById('expl-eco');
+  const nameEl = document.getElementById('expl-name');
+  const varEl = document.getElementById('expl-var');
+  if(!nameEl) return;
+  if(!expl.uci.length){
+    ecoEl.textContent = '—'; nameEl.textContent = 'Starting position'; varEl.textContent = '';
+    expl.lastDetect = { n:'Starting position', e:'', variation:'' };
+    return;
+  }
+  let best = null;
+  if(EXPL_DETECT){
+    // find the longest prefix of expl.uci that exists in the map
+    for(let len = expl.uci.length; len >= 1; len--){
+      const key = expl.uci.slice(0, len).join(',');
+      if(EXPL_DETECT[key]){ best = EXPL_DETECT[key]; break; }
+    }
+  }
+  if(best){
+    const full = best.n;
+    const colon = full.indexOf(':');
+    const family = colon >= 0 ? full.slice(0, colon).trim() : full;
+    const variation = colon >= 0 ? full.slice(colon+1).trim() : '';
+    ecoEl.textContent = best.e || '';
+    nameEl.textContent = family;
+    varEl.textContent = variation;
+    expl.lastDetect = { n:family, e:best.e||'', variation };
+  } else {
+    ecoEl.textContent = ''; nameEl.textContent = 'Unknown / transposition'; varEl.textContent = '';
+    expl.lastDetect = { n:'Unknown', e:'', variation:'' };
+  }
+}
+
+// ── engine (multi-PV) ──
+async function explRunEngine(){
+  const token = ++expl.evalToken;
+  const dot = document.getElementById('expl-engine-dot');
+  const pvHost = document.getElementById('expl-pv-list');
+  const depthEl = document.getElementById('expl-depth');
+  if(dot) dot.className = 'expl-engine-dot thinking';
+  clearArrows('expl-arrows');
+  if(typeof evalPosition !== 'function'){ if(pvHost) pvHost.innerHTML='<div class="expl-pv-empty">Engine unavailable.</div>'; return; }
+
+  const state = explCurrentState();
+  let fen; try { fen = stateToFEN(state); } catch(e){ return; }
+
+  try {
+    const result = await evalPosition(fen, 16, expl.multipv);
+    if(token !== expl.evalToken) return;
+    if(dot) dot.className = 'expl-engine-dot ready';
+    if(depthEl) depthEl.textContent = 'depth ' + (result.depth || 16);
+
+    // eval bar (white perspective)
+    updateEvalBar('expl-evalbar-black', 'expl-evalbar-score', result.score, result.isMate, result.mateIn);
+
+    const alts = (result.alternatives && result.alternatives.length)
+      ? result.alternatives
+      : [{ pv: result.pv, score: result.score, isMate: result.isMate, mateIn: result.mateIn }];
+    expl.lastAlts = alts;
+
+    // PV list
+    if(pvHost){
+      pvHost.innerHTML = alts.slice(0, expl.multipv).map((a, i) => {
+        const evalText = formatEval(a.score, a.isMate, a.mateIn);
+        const cls = (a.isMate ? (a.mateIn>0?'pos':'neg') : (a.score>0.3?'pos':(a.score<-0.3?'neg':'eq')));
+        const sanLine = explPvToSan(a.pv, state, 5);
+        const firstSan = explPvToSan(a.pv, state, 1);
+        return `<div class="expl-pv-row" onclick="explPlaySan('${firstSan.replace(/'/g,'')}')">
+          <span class="expl-pv-rank">${i+1}</span>
+          <span class="expl-pv-eval ${cls}">${evalText}</span>
+          <span class="expl-pv-line">${sanLine}</span>
+        </div>`;
+      }).join('');
+    }
+    if(expl.showArrows) explDrawArrows(alts);
+  } catch(e){
+    if(token === expl.evalToken && pvHost) pvHost.innerHTML = '<div class="expl-pv-empty">Engine error.</div>';
+    if(dot) dot.className = 'expl-engine-dot';
+  }
+}
+
+// convert a pv (uci string) to SAN for display, up to n moves
+function explPvToSan(pv, startState, n){
+  if(!pv) return '';
+  const moves = pv.trim().split(/\s+/);
+  let st = startState; const out = []; let count = 0;
+  for(const uci of moves){
+    if(count >= n) break;
+    if(uci.length < 4) break;
+    const from = uci.slice(0,2), to = uci.slice(2,4);
+    const promo = uci.length>4 ? uci[4].toUpperCase() : null;
+    let san; try { san = moveToSAN(st, from, to, promo); } catch(e){ break; }
+    if(!san) break;
+    out.push(san); st = applyMove(st, {from,to,promotion:promo}); count++;
+  }
+  return out.join(' ');
+}
+window.explPlaySan = function(san){
+  if(!san) return;
+  const state = explCurrentState();
+  let mv; try { mv = sanToMove(san, state); } catch(e){ mv = null; }
+  if(!mv) return;
+  const ns = applyMove(state, mv);
+  explOnUserMove(mv.from, mv.to, ns, san);
+};
+
+// ── best-move arrows (multi-PV: gold best, fading for others) ──
+function explDrawArrows(alts){
+  const overlay = document.getElementById('expl-arrows');
+  if(!overlay) return;
+  const palette = ['rgba(201,168,76,.95)','rgba(120,170,225,.7)','rgba(140,140,150,.55)'];
+  const widths = [13,8,6];
+  const flipped = isBoardFlipped('expl-board');
+  let defs = '<defs>';
+  palette.forEach((c,i)=>{ defs += `<marker id="expla-m${i}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`; });
+  defs += '</defs>';
+  let svg = defs;
+  alts.slice(0,3).forEach((a,i)=>{
+    const pv=(a.pv||'').trim(); if(!pv) return;
+    const mv = pv.split(/\s+/)[0]; if(!mv||mv.length<4) return;
+    const from=mv.slice(0,2), to=mv.slice(2,4);
+    if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to)) return;
+    const p1=squareToSVG(from,flipped), p2=squareToSVG(to,flipped);
+    const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
+    const ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
+    svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${palette[i]}" stroke-width="${widths[i]}" stroke-linecap="round" marker-end="url(#expla-m${i})" opacity="${i===0?1:0.85}"/>`;
+  });
+  overlay.innerHTML = svg;
+}
+
+// ═══════════════ SAVE / LIBRARY / MEMORY RECALL ═══════════════
+function explLoadSaved(){ try { return JSON.parse(localStorage.getItem('gambit_explorations')) || []; } catch(e){ return []; } }
+function explStoreSaved(arr){ try { localStorage.setItem('gambit_explorations', JSON.stringify(arr)); } catch(e){} }
+
+window.explSave = function(){
+  if(expl.sans.length < 1){ explNote('Play a few moves first, then save.', false); return; }
+  const saved = explLoadSaved();
+  const entry = {
+    id: 'expl_' + Date.now(),
+    name: expl.lastDetect.n || 'Custom line',
+    variation: expl.lastDetect.variation || '',
+    eco: expl.lastDetect.e || '',
+    side: expl.side,
+    sans: expl.sans.slice(),
+    uci: expl.uci.slice(),
+    saved: Date.now(),
+    trained: 0,        // times trained
+    bestScore: null,   // best accuracy %
+  };
+  saved.unshift(entry);
+  explStoreSaved(saved);
+  explNote(`Saved "${entry.name}${entry.variation?' — '+entry.variation:''}" as ${entry.side==='w'?'White':'Black'}. Find it in My Lines.`, true);
+};
+
+function explNote(msg, ok){
+  const el = document.getElementById('expl-save-note');
+  if(el){ el.textContent = msg; el.className = 'expl-save-note ' + (ok?'ok':'warn'); }
+}
+
+window.explOpenLibrary = function(){
+  const lib = document.getElementById('expl-library');
+  if(!lib) return;
+  const saved = explLoadSaved();
+  if(lib.style.display === 'block'){ lib.style.display = 'none'; return; }
+  lib.style.display = 'block';
+  if(!saved.length){
+    lib.innerHTML = `<div class="expl-lib-head">📂 My Saved Lines</div><div class="expl-pv-empty" style="padding:20px">No saved lines yet. Explore a line and hit “Save Exploration”.</div>`;
+    return;
+  }
+  lib.innerHTML = `<div class="expl-lib-head">📂 My Saved Lines (${saved.length})</div>` + saved.map(s => {
+    const movePreview = explFmtMoves(s.sans, 8);
+    const acc = s.bestScore!=null ? `<span class="expl-lib-acc">best ${s.bestScore}%</span>` : '';
+    return `<div class="expl-lib-row">
+      <div class="expl-lib-info">
+        <div class="expl-lib-name">${explEsc(s.name)}${s.variation?` <span class="expl-lib-var">${explEsc(s.variation)}</span>`:''}
+          <span class="expl-lib-side">${s.side==='w'?'♔ White':'♚ Black'}</span> ${acc}</div>
+        <div class="expl-lib-moves">${explEsc(movePreview)}</div>
+      </div>
+      <div class="expl-lib-actions">
+        <button class="nop-mini-btn gold" onclick="explTrainStart('${s.id}')">🎯 Train</button>
+        <button class="nop-mini-btn" onclick="explLoadIntoBoard('${s.id}')">↺ Load</button>
+        <button class="nop-mini-btn" onclick="explDeleteSaved('${s.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+window.explLoadIntoBoard = function(id){
+  const s = explLoadSaved().find(x => x.id === id);
+  if(!s) return;
+  explReset();
+  // replay
+  let st = parseFEN(startFEN());
+  for(const san of s.sans){
+    let mv; try { mv = sanToMove(san, st); } catch(e){ mv = null; }
+    if(!mv) break;
+    const ns = applyMove(st, mv);
+    expl.states.push(ns); expl.sans.push(san);
+    expl.uci.push(mv.from+mv.to+(mv.promotion?mv.promotion:''));
+    st = ns;
+  }
+  explSetSide(s.side);
+  document.getElementById('expl-library').style.display = 'none';
+  explRender();
+};
+
+window.explDeleteSaved = function(id){
+  let saved = explLoadSaved();
+  saved = saved.filter(x => x.id !== id);
+  explStoreSaved(saved);
+  // re-render the (still open) library
+  const lib = document.getElementById('expl-library');
+  if(lib){ lib.style.display = 'none'; explOpenLibrary(); }
+};
+
+function explFmtMoves(sans, max){
+  let out=''; const lim = max?Math.min(sans.length,max):sans.length;
+  for(let i=0;i<lim;i++){ if(i%2===0) out+=`${i/2+1}.`; out+=sans[i]+' '; }
+  if(max && sans.length>max) out+='…';
+  return out.trim();
+}
+function explEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════ TRAINING MODE ═══════════════
+let train = null;
+window.explTrainStart = function(id){
+  const s = explLoadSaved().find(x => x.id === id);
+  if(!s) return;
+  // build states
+  const states = [parseFEN(startFEN())]; let st = states[0]; const sans=[];
+  for(const san of s.sans){ let mv; try{mv=sanToMove(san,st);}catch(e){mv=null;} if(!mv) break; st=applyMove(st,mv); sans.push(san); states.push(st); }
+  train = { entry:s, sans, states, idx:0, side:s.side, mistakes:0, awaiting:false };
+  document.getElementById('expl-train-title').innerHTML = `${explEsc(s.name)}${s.variation?' — '+explEsc(s.variation):''} <span class="expl-lib-side">${s.side==='w'?'♔ White':'♚ Black'}</span>`;
+  showSection('train');
+  explTrainStep();
+  window.scrollTo(0,0);
+};
+window.explExitTrain = function(){ showSection('explorer'); explRender(); };
+
+function explTrainSetProgress(){
+  const f = document.getElementById('expl-train-progress');
+  if(f) f.style.width = train.sans.length ? `${Math.round(100*train.idx/train.sans.length)}%` : '0%';
+}
+
+function explTrainStep(){
+  const host = document.getElementById('expl-train-host');
+  const idx = train.idx, total = train.sans.length;
+  explTrainSetProgress();
+
+  if(idx >= total){ explTrainComplete(); return; }
+
+  if(!document.getElementById('train-board')){
+    host.innerHTML = `
+      <div class="expl-train-stage">
+        <div class="expl-board-wrap">
+          <div style="display:flex">
+            <div class="board-ranks" id="train-ranks"></div>
+            <div id="train-board" class="chess-board"></div>
+          </div>
+          <div class="board-files" id="train-files"></div>
+        </div>
+        <div class="expl-train-side">
+          <div class="expl-train-badge" id="train-badge"></div>
+          <div class="expl-train-msg" id="train-msg"></div>
+          <div class="expl-train-fb" id="train-fb"></div>
+          <div class="nlearn-actions" id="train-actions"></div>
+        </div>
+      </div>`;
+    if(train.side==='b'){ try{ if(!isBoardFlipped('train-board')) flipBoard('train-board'); }catch(e){} }
+  }
+
+  const state = train.states[idx];
+  const moverWhite = (idx % 2 === 0);
+  const userTurn = (train.side==='w') === moverWhite;
+  const hl = idx>0 ? (()=>{ const mv=sanToMove(train.sans[idx-1],train.states[idx-1]); return mv?[mv.from,mv.to]:[]; })() : [];
+  renderBoardEl('train-board','train-ranks','train-files', state, hl, null);
+
+  const badge = document.getElementById('train-badge');
+  const msg = document.getElementById('train-msg');
+  const fb = document.getElementById('train-fb');
+  const actions = document.getElementById('train-actions');
+  fb.innerHTML=''; actions.innerHTML='';
+
+  if(userTurn){
+    badge.textContent = `Move ${Math.floor(idx/2)+1}${moverWhite?'.':'…'} — your turn`;
+    msg.innerHTML = `Play the move you saved for <strong>${train.side==='w'?'White':'Black'}</strong>.`;
+    train.awaiting = true;
+    makeBoardInteractive('train-board', state, explTrainUserMove);
+  } else {
+    badge.textContent = 'Opponent replies…';
+    msg.innerHTML = `Opponent plays <strong>${explEsc(train.sans[idx])}</strong>.`;
+    train.awaiting = false;
+    setTimeout(()=>{ if(train){ train.idx++; explTrainStep(); } }, 550);
+  }
+}
+
+function explTrainUserMove(from, to, newState, san){
+  if(!train.awaiting) return;
+  const idx = train.idx;
+  const expected = train.sans[idx];
+  const norm = s => (s||'').replace(/[+#!?]/g,'');
+  const fb = document.getElementById('train-fb');
+  const actions = document.getElementById('train-actions');
+
+  if(norm(san) === norm(expected)){
+    train.awaiting = false;
+    fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${explEsc(expected)} — correct!</span>`;
+    train.idx++;
+    setTimeout(()=>{ if(train) explTrainStep(); }, 350);
+  } else {
+    train.mistakes++;
+    fb.innerHTML = `<span class="nlearn-fb-wrong">✗ Not the saved move. You played ${explEsc(san)}; the line goes <strong>${explEsc(expected)}</strong>.</span>`;
+    actions.innerHTML = `<button class="nop-mini-btn gold" onclick="explTrainReveal()">Show me & continue →</button>`;
+    train.awaiting = false;
+    // re-render to current (undo their wrong move)
+    renderBoardEl('train-board','train-ranks','train-files', train.states[idx],
+      idx>0 ? (()=>{ const mv=sanToMove(train.sans[idx-1],train.states[idx-1]); return mv?[mv.from,mv.to]:[]; })() : [], null);
+  }
+}
+window.explTrainReveal = function(){ train.idx++; explTrainStep(); };
+
+function explTrainComplete(){
+  const host = document.getElementById('expl-train-host');
+  const total = train.sans.length;
+  const userMoves = Math.ceil(total/2); // rough
+  const accuracy = Math.max(0, Math.round(100 * (1 - train.mistakes / Math.max(1, total))));
+  // update saved entry stats
+  const saved = explLoadSaved();
+  const e = saved.find(x => x.id === train.entry.id);
+  if(e){ e.trained = (e.trained||0)+1; e.bestScore = e.bestScore==null ? accuracy : Math.max(e.bestScore, accuracy); e.lastTrained = Date.now(); explStoreSaved(saved); }
+  const perfect = train.mistakes === 0;
+  explTrainSetProgress();
+  host.innerHTML = `
+    <div class="ndrill-pick">
+      <div class="ndrill-side-icon">${perfect?'🏆':'✓'}</div>
+      <h3>${perfect?'Perfect recall!':'Line complete'}</h3>
+      <p>${perfect
+        ? 'You played the entire saved line without a single slip. This line is locked in.'
+        : `You finished with ${train.mistakes} mistake${train.mistakes===1?'':'s'} (${accuracy}% accuracy). Run it again to reinforce it.`}</p>
+      <div class="ndrill-side-row">
+        <div class="ndrill-side-card" onclick="explTrainStart('${train.entry.id}')"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Train again</div></div>
+        <div class="ndrill-side-card" onclick="explExitTrain()"><div class="ndrill-side-icon">🧭</div><div class="ndrill-side-label">Back to Explorer</div></div>
       </div>
     </div>`;
 }
