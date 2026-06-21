@@ -2100,6 +2100,9 @@ input:focus, select:focus, textarea:focus {
   .ol-fam-name{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold)}
   .ol-fam-intro{font-size:13px;color:var(--text2);margin-top:3px;line-height:1.5;max-width:680px}
   .ol-fam-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);background:rgba(255,255,255,.05);padding:3px 9px;border-radius:10px;flex-shrink:0}
+  .ol-plan-box{margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.12),var(--bg2));border:1.5px solid rgba(201,168,76,.4);border-radius:12px}
+  .ol-plan-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold);margin-bottom:8px}
+  .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
 
 </style>
 </head>
@@ -2107,7 +2110,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v5.2 ITALIAN</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v5.3 ITALIAN</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -22407,8 +22410,19 @@ function olRenderLearnStep(){
   const isOpponentTurn = (state.turn === 'w') !== openingForWhite;
 
   clearArrows('ol-arrows');
-  if(pos && pos.m && pos.m.length){
-    // draw arrows: RED if opponent to move, BLUE-ish if the side we're learning
+  const atEnd = idx >= olearn.sans.length;
+  const planHtml = (atEnd && olearn.v && olearn.v.plan)
+    ? `<div class="ol-plan-box">
+         <div class="ol-plan-title">🧭 How to proceed — your plans &amp; ideas</div>
+         <div class="ol-plan-text">${olEsc(olearn.v.plan)}</div>
+       </div>`
+    : '';
+
+  if(atEnd){
+    // reached the end of the line: show the plan, no arrows
+    popular.innerHTML = planHtml || `<div class="ol-pop-title" style="color:var(--text3)">End of the line — play on with the ideas you've learned.</div>`;
+  } else if(pos && pos.m && pos.m.length){
+    // draw arrows: RED if opponent to move, gold if the side we're learning
     const color = isOpponentTurn ? 'red' : 'main';
     olDrawMoveArrows(pos.m, state, color);
 
@@ -22425,7 +22439,7 @@ function olRenderLearnStep(){
       </div>`;
     }).join('');
   } else {
-    popular.innerHTML = `<div class="ol-pop-title" style="color:var(--text3)">End of the database — keep playing with the ideas you've learned.</div>`;
+    popular.innerHTML = planHtml || `<div class="ol-pop-title" style="color:var(--text3)">End of the database — keep playing with the ideas you've learned.</div>`;
   }
 }
 
