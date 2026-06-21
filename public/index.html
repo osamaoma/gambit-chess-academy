@@ -2107,7 +2107,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v5.1 ITALIAN</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v5.2 ITALIAN</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -22036,7 +22036,9 @@ window.olOpenIntro = function(opIdx){
   intro.style.display = 'block';
 
   const base = op.v.reduce((a,b)=> b.tp<a.tp?b:a, op.v[0]);
-  const plans = olGeneratePlans(op, base);
+  const plans = (op.intro && op.intro.summary)
+    ? { summary: olEsc(op.intro.summary), points: (op.intro.plans||[]).map(p=>olEsc(p)) }
+    : olGeneratePlans(op, base);
   const mainMoves = olFmtMoves(base.s, 10);
 
   intro.innerHTML = `
@@ -22267,16 +22269,13 @@ function olRenderVarRows(opIdx, q){
 
 // short intros for the Italian Game families (extend as more openings are curated)
 const OL_FAMILY_INTRO = {
-  'Giuoco Piano':"The 'Quiet Game' — 4.c3 and d4 build a classical big centre. Sound and principled.",
-  'Giuoco Pianissimo':"The 'Very Quiet Game' — White plays d3 for a slow manoeuvring battle, popular at the top level.",
-  'Classical (3...Bc5)':"Black answers 3.Bc4 with 3...Bc5, mirroring White and fighting for the centre directly.",
-  'Two Knights Defense (3...Nf6)':"Black plays 3...Nf6, hitting e4 and inviting sharp play like the Fried Liver and Knight Attack.",
-  'Evans Gambit':"4.b4!? — White sacrifices a pawn to deflect the bishop and rip open the centre for a fierce attack.",
-  'Evans Gambit Declined':"Black sidesteps the gambit, declining the b4-pawn to keep the position calmer.",
-  'Evans Gambit Accepted':"Black grabs the b4-pawn and tries to weather White's attacking storm.",
-  'Scotch Gambit':"4.d4!? — White strikes the centre immediately, offering a pawn for fast development.",
-  'Hungarian Defense':"3...Be7 — a solid, modest retreat that avoids all the sharp Italian theory.",
-  'Other Gambits & Sidelines':"Offbeat gambits and rare tries — the Jerome Gambit, Rousseau, and other surprise weapons.",
+  'Giuoco Piano':"The 'Quiet Game' — c3 and d4 build a classic big centre. Principled, sound, and packs a punch once it opens up.",
+  'Giuoco Pianissimo':"The 'Very Quiet Game' — the slow d3 squeeze the world's best players actually use today. Patience is the weapon.",
+  'Evans Gambit':"4.b4!? — chuck a pawn at the bishop, rip open the centre, and attack like it's 1850. Romance with teeth.",
+  'Two Knights Defense':"Black plays 3...Nf6 and invites chaos — the Fried Liver, the Traxler, the Max Lange. Buckle up.",
+  'Quiet Lines':"For when you (or your opponent) want a calm, solid, no-drama Italian. The Hungarian Defense lives here.",
+  'Scotch Gambit':"3.d4!? early — White cracks the centre open and offers a pawn (or two) for a roaring lead in development.",
+  'Other Gambits & Fun':"Gloriously dubious surprise weapons — the Jerome Gambit and friends. Terrible theory, unbeatable vibes.",
 };
 // ═══════════════ LEARN VIEW ═══════════════
 // Walk the variation move by move. At every position show the top-3 popular
@@ -22384,7 +22383,13 @@ function olRenderLearnStep(){
     const moverWhite = ((idx-1)%2===0);
     const num = Math.floor((idx-1)/2)+1;
     badge.textContent = moverWhite ? `${num}. ${san}` : `${num}… ${san}`;
-    explain.innerHTML = olExplainMove(san, idx-1, olearn.sans, olearn.op);
+    // prefer the hand-written note for this ply if the variation has one
+    const notes = olearn.v && olearn.v.notes;
+    if(notes && notes[idx-1]){
+      explain.innerHTML = olEsc(notes[idx-1]).replace(/^([\dO][^—]*—)/, '<strong>$1</strong>');
+    } else {
+      explain.innerHTML = olExplainMove(san, idx-1, olearn.sans, olearn.op);
+    }
   }
   nextBtn.textContent = idx >= olearn.sans.length ? '✓ End of variation' : 'Next →';
   nextBtn.classList.toggle('btn-gold', idx < olearn.sans.length);
