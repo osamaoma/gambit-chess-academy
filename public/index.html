@@ -2172,15 +2172,56 @@ input:focus, select:focus, textarea:focus {
   .expl-train-msg{font-size:15px;line-height:1.6;color:var(--text);margin-bottom:14px}
   .expl-train-fb{min-height:28px;margin-bottom:8px}
 
+  /* ═══════════════ REPERTOIRE ═══════════════ */
+  .rep-hero{text-align:center;max-width:680px;margin:10px auto 30px}
+  .rep-hero h1{font-family:'Playfair Display',serif;font-size:38px;color:var(--text);margin:0 0 8px}
+  .rep-hero h1 em{color:var(--gold);font-style:italic}
+  .rep-hero p{font-size:15px;color:var(--text2);line-height:1.6;margin:0 0 20px}
+  .rep-hero-actions{display:flex;gap:10px;justify-content:center}
+  .rep-empty{max-width:560px;margin:40px auto;text-align:center;color:var(--text2);font-size:15px;line-height:1.7;padding:30px;border:1px dashed var(--border);border-radius:14px}
+  .rep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;max-width:1000px;margin:0 auto}
+  .rep-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s}
+  .rep-card:hover{border-color:rgba(201,168,76,.4)}
+  .rep-card-top{display:flex;justify-content:space-between;align-items:center}
+  .rep-card-side{font-size:12px;font-weight:700;padding:2px 9px;border-radius:10px}
+  .rep-card-side.w{background:rgba(244,236,216,.12);color:#f4ecd8}
+  .rep-card-side.b{background:rgba(80,80,90,.25);color:#cfcfd6}
+  .rep-card-moves-n{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+  .rep-card-name{font-family:'Playfair Display',serif;font-size:21px;color:var(--text)}
+  .rep-card-line{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rep-card-meta{display:flex;gap:10px;min-height:16px}
+  .rep-card-acc{font-size:11px;color:#6ec882}
+  .rep-card-streak{font-size:11px;color:var(--gold)}
+  .rep-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  /* workspace top bar */
+  .expl-ws-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .expl-ws-name{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif}
+  .expl-ws-name:focus{outline:none;border-color:var(--gold)}
+  .expl-saved-tag{font-size:11px;color:#6ec882}
+  /* train counter + results */
+  .expl-train-counter{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);margin-bottom:10px}
+  .rt-results{max-width:520px;margin:30px auto;text-align:center}
+  .rt-results-acc{font-family:'Playfair Display',serif;font-size:72px;line-height:1}
+  .rt-results-acc.great{color:#6ec882}.rt-results-acc.ok{color:var(--gold)}.rt-results-acc.low{color:#e0706f}
+  .rt-results-sub{font-size:13px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px}
+  .rt-results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .rt-stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 8px}
+  .rt-stat-n{font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--text)}
+  .rt-stat-l{font-size:11px;color:var(--text3);margin-top:3px}
+  .rt-weak{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:left;margin-bottom:8px}
+  .rt-weak-title{font-size:13px;color:var(--gold);font-weight:600;margin-bottom:8px}
+  .rt-weak-row{font-size:13px;color:var(--text2);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .rt-perfect{background:rgba(110,200,130,.1);border:1px solid rgba(110,200,130,.3);border-radius:12px;padding:18px;color:#6ec882;font-size:15px}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v6.0 EXPLORER</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v6.1 REPERTOIRE</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showSection('explorer')">🧭 Opening Explorer</button>
+    <button class="nav-tab active" onclick="showSection('explorer')">📁 Repertoire</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
     <button class="nav-tab" onclick="showSection('review')">🔬 Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
@@ -2190,76 +2231,133 @@ input:focus, select:focus, textarea:focus {
 <!-- ══════════════ OPENING EXPLORER ══════════════ -->
 <div id="sec-explorer" class="section active">
   <div class="expl-wrap">
-    <!-- top bar: opening detection + controls -->
-    <div class="expl-detect" id="expl-detect">
-      <div class="expl-detect-eco" id="expl-eco">—</div>
-      <div class="expl-detect-name" id="expl-name">Starting position</div>
-      <div class="expl-detect-var" id="expl-var"></div>
+    <!-- ===== HOME: repertoire library ===== -->
+    <div id="expl-home">
+      <div class="rep-hero">
+        <h1>My <em>Repertoire</em></h1>
+        <p>Build your opening knowledge one line at a time. Explore on the board with the engine, save your ideas, then review and train them. Everything lives here in one place.</p>
+        <div class="rep-hero-actions">
+          <button class="btn btn-gold" onclick="explNewOpening()">+ New Opening</button>
+          <button class="nop-mini-btn" onclick="explNewOpening()">+ New Variation</button>
+        </div>
+      </div>
+      <div id="expl-rep-grid"></div>
     </div>
 
-    <div class="expl-main">
-      <!-- LEFT: eval bar + board -->
-      <div class="expl-board-col">
-        <div class="expl-board-row">
-          <div class="expl-evalbar" id="expl-evalbar" title="Engine evaluation">
-            <div class="expl-evalbar-black" id="expl-evalbar-black" style="height:50%"></div>
-            <div class="expl-evalbar-mid"></div>
-            <div class="expl-evalbar-score white" id="expl-evalbar-score">0.0</div>
-          </div>
-          <div class="expl-board-wrap">
-            <div style="display:flex">
-              <div class="board-ranks" id="expl-ranks"></div>
-              <div style="position:relative">
-                <div id="expl-board" class="chess-board"></div>
-                <svg class="arrow-overlay" id="expl-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
-              </div>
+    <!-- ===== WORKSPACE: analysis board ===== -->
+    <div id="expl-workspace" style="display:none">
+      <div class="expl-ws-top">
+        <button class="nop-back" onclick="explBackHome()" style="margin:0">← Repertoire</button>
+        <input id="expl-ws-name" class="expl-ws-name" placeholder="Opening name (optional)…" autocomplete="off">
+        <span class="expl-side-pick">
+          <button class="expl-side-btn active" id="expl-side-w" onclick="explSetSide('w')">♔ White</button>
+          <button class="expl-side-btn" id="expl-side-b" onclick="explSetSide('b')">♚ Black</button>
+        </span>
+      </div>
+
+      <!-- detection -->
+      <div class="expl-detect" id="expl-detect">
+        <div class="expl-detect-eco" id="expl-eco">—</div>
+        <div class="expl-detect-name" id="expl-name">Starting position</div>
+        <div class="expl-detect-var" id="expl-var"></div>
+      </div>
+
+      <div class="expl-main">
+        <div class="expl-board-col">
+          <div class="expl-board-row">
+            <div class="expl-evalbar" id="expl-evalbar" title="Engine evaluation">
+              <div class="expl-evalbar-black" id="expl-evalbar-black" style="height:50%"></div>
+              <div class="expl-evalbar-mid"></div>
+              <div class="expl-evalbar-score white" id="expl-evalbar-score">0.0</div>
             </div>
-            <div class="board-files" id="expl-files"></div>
+            <div class="expl-board-wrap">
+              <div style="display:flex">
+                <div class="board-ranks" id="expl-ranks"></div>
+                <div style="position:relative">
+                  <div id="expl-board" class="chess-board"></div>
+                  <svg class="arrow-overlay" id="expl-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+                </div>
+              </div>
+              <div class="board-files" id="expl-files"></div>
+            </div>
           </div>
+          <div class="expl-board-controls">
+            <button class="btn btn-outline btn-sm" onclick="explUndo()" id="expl-undo">↶ Undo</button>
+            <button class="btn btn-outline btn-sm" onclick="explFlip()">⇅ Flip</button>
+            <button class="btn btn-outline btn-sm" onclick="explReset()">⟲ Reset</button>
+            <button class="btn btn-outline btn-sm" onclick="explToggleArrows()" id="expl-arrows-btn">Engine arrows: on</button>
+          </div>
+        </div>
+
+        <div class="expl-side">
+          <div class="expl-panel">
+            <div class="expl-panel-head">
+              <span class="expl-engine-dot" id="expl-engine-dot"></span>
+              <h3>Stockfish 18</h3>
+              <span class="expl-depth" id="expl-depth"></span>
+            </div>
+            <div class="expl-pv-list" id="expl-pv-list"><div class="expl-pv-empty">Play a move to start analysis…</div></div>
+          </div>
+
+          <div class="expl-panel">
+            <div class="expl-panel-head"><h3>Moves</h3>
+              <span class="expl-saved-tag" id="expl-saved-tag"></span>
+            </div>
+            <div class="expl-movelist" id="expl-movelist"><div class="expl-pv-empty">No moves yet.</div></div>
+          </div>
+
+          <div class="expl-actions">
+            <button class="btn btn-gold" onclick="explSave()" id="expl-save-btn">💾 Save</button>
+            <button class="nop-mini-btn" onclick="explReviewFromWorkspace()" id="expl-review-btn" style="display:none">👁 Review</button>
+          </div>
+          <div class="expl-save-note" id="expl-save-note"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW VIEW -->
+<div id="sec-rep-review" class="section">
+  <div class="expl-wrap">
+    <div class="expl-ws-top">
+      <button class="nop-back" onclick="explBackHome()" style="margin:0">← Repertoire</button>
+      <div class="expl-train-title" id="rev-title"></div>
+      <button class="nop-mini-btn" onclick="revContinueExploring()">✏️ Continue &amp; save new ideas</button>
+    </div>
+    <div class="expl-detect" id="rev-detect" style="min-height:50px">
+      <div class="expl-detect-name" id="rev-name" style="font-size:22px"></div>
+      <div class="expl-detect-var" id="rev-path"></div>
+    </div>
+    <div class="expl-main">
+      <div class="expl-board-col">
+        <div class="expl-board-wrap">
+          <div style="display:flex">
+            <div class="board-ranks" id="rev-ranks"></div>
+            <div style="position:relative">
+              <div id="rev-board" class="chess-board"></div>
+              <svg class="arrow-overlay" id="rev-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+            </div>
+          </div>
+          <div class="board-files" id="rev-files"></div>
         </div>
         <div class="expl-board-controls">
-          <button class="btn btn-outline btn-sm" onclick="explUndo()" id="expl-undo">↶ Undo</button>
-          <button class="btn btn-outline btn-sm" onclick="explFlip()">⇅ Flip</button>
-          <button class="btn btn-outline btn-sm" onclick="explReset()">⟲ Reset</button>
-          <button class="btn btn-outline btn-sm" onclick="explToggleArrows()" id="expl-arrows-btn">Arrows: on</button>
+          <button class="btn btn-outline btn-sm" onclick="revBack()">← Back</button>
+          <button class="btn btn-outline btn-sm" onclick="revFlip()">⇅ Flip</button>
+          <button class="btn btn-outline btn-sm" onclick="revReset()">⟲ Start</button>
         </div>
       </div>
-
-      <!-- RIGHT: engine + moves + save -->
       <div class="expl-side">
-        <!-- engine analysis -->
         <div class="expl-panel">
-          <div class="expl-panel-head">
-            <span class="expl-engine-dot" id="expl-engine-dot"></span>
-            <h3>Stockfish 18</h3>
-            <span class="expl-depth" id="expl-depth"></span>
-          </div>
-          <div class="expl-pv-list" id="expl-pv-list"><div class="expl-pv-empty">Play a move to start analysis…</div></div>
+          <div class="expl-panel-head"><h3>Saved moves from here</h3></div>
+          <div class="expl-pv-list" id="rev-branches"></div>
         </div>
-
-        <!-- move list -->
         <div class="expl-panel">
-          <div class="expl-panel-head"><h3>Moves</h3>
-            <span class="expl-side-pick">
-              Side:
-              <button class="expl-side-btn active" id="expl-side-w" onclick="explSetSide('w')">White</button>
-              <button class="expl-side-btn" id="expl-side-b" onclick="explSetSide('b')">Black</button>
-            </span>
-          </div>
-          <div class="expl-movelist" id="expl-movelist"><div class="expl-pv-empty">No moves yet.</div></div>
+          <div class="expl-panel-head"><h3>Line so far</h3></div>
+          <div class="expl-movelist" id="rev-movelist"></div>
         </div>
-
-        <!-- save / train -->
-        <div class="expl-actions">
-          <button class="btn btn-gold" onclick="explSave()" id="expl-save-btn">💾 Save Exploration</button>
-          <button class="nop-mini-btn" onclick="explOpenLibrary()">📂 My Lines</button>
-        </div>
-        <div class="expl-save-note" id="expl-save-note"></div>
       </div>
     </div>
-
-    <!-- saved lines library (hidden until opened) -->
-    <div class="expl-library" id="expl-library" style="display:none"></div>
   </div>
 </div>
 
@@ -10510,7 +10608,7 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {explorer:0, train:0, openings:0, nlearn:0, olearn:0, analysis:1, review:2, quizzes:3};
+  const tabs = {explorer:0, train:0, 'rep-review':0, openings:0, nlearn:0, olearn:0, analysis:1, review:2, quizzes:3};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
@@ -22819,7 +22917,7 @@ async function explInit(){
     const data = await res.json();
     EXPL_DETECT = data.openings || {};
   } catch(e){ EXPL_DETECT = {}; console.warn('opening detect load failed', e); }
-  explRender();
+  repRenderGrid();   // show the repertoire library on load
 }
 
 // ── board + interaction ──
@@ -23032,221 +23130,445 @@ function explDrawArrows(alts){
   overlay.innerHTML = svg;
 }
 
-// ═══════════════ SAVE / LIBRARY / MEMORY RECALL ═══════════════
-function explLoadSaved(){ try { return JSON.parse(localStorage.getItem('gambit_explorations')) || []; } catch(e){ return []; } }
-function explStoreSaved(arr){ try { localStorage.setItem('gambit_explorations', JSON.stringify(arr)); } catch(e){} }
 
-window.explSave = function(){
-  if(expl.sans.length < 1){ explNote('Play a few moves first, then save.', false); return; }
-  const saved = explLoadSaved();
-  const entry = {
-    id: 'expl_' + Date.now(),
-    name: expl.lastDetect.n || 'Custom line',
-    variation: expl.lastDetect.variation || '',
-    eco: expl.lastDetect.e || '',
-    side: expl.side,
-    sans: expl.sans.slice(),
-    uci: expl.uci.slice(),
-    saved: Date.now(),
-    trained: 0,        // times trained
-    bestScore: null,   // best accuracy %
-  };
-  saved.unshift(entry);
-  explStoreSaved(saved);
-  explNote(`Saved "${entry.name}${entry.variation?' — '+entry.variation:''}" as ${entry.side==='w'?'White':'Black'}. Find it in My Lines.`, true);
-};
+
+// ==== REPERTOIRE SYSTEM ====
+// ═══════════════════════════════════════════════════════════════
+// REPERTOIRE SYSTEM — move-tree storage, merge-on-save, review (blue
+// arrows), train (every saved move), results. localStorage-backed.
+// Each opening: {id,name,side,root:{children:[node]},created,trained,bestAccuracy,streak,lastTrained}
+// node: {uci,san,children:[node]}
+// ═══════════════════════════════════════════════════════════════
+
+const REP_KEY = 'gambit_repertoire';
+let repCurrentId = null;   // opening currently open in the workspace (null = new)
 
 function explNote(msg, ok){
   const el = document.getElementById('expl-save-note');
   if(el){ el.textContent = msg; el.className = 'expl-save-note ' + (ok?'ok':'warn'); }
 }
 
-window.explOpenLibrary = function(){
-  const lib = document.getElementById('expl-library');
-  if(!lib) return;
-  const saved = explLoadSaved();
-  if(lib.style.display === 'block'){ lib.style.display = 'none'; return; }
-  lib.style.display = 'block';
-  if(!saved.length){
-    lib.innerHTML = `<div class="expl-lib-head">📂 My Saved Lines</div><div class="expl-pv-empty" style="padding:20px">No saved lines yet. Explore a line and hit “Save Exploration”.</div>`;
-    return;
-  }
-  lib.innerHTML = `<div class="expl-lib-head">📂 My Saved Lines (${saved.length})</div>` + saved.map(s => {
-    const movePreview = explFmtMoves(s.sans, 8);
-    const acc = s.bestScore!=null ? `<span class="expl-lib-acc">best ${s.bestScore}%</span>` : '';
-    return `<div class="expl-lib-row">
-      <div class="expl-lib-info">
-        <div class="expl-lib-name">${explEsc(s.name)}${s.variation?` <span class="expl-lib-var">${explEsc(s.variation)}</span>`:''}
-          <span class="expl-lib-side">${s.side==='w'?'♔ White':'♚ Black'}</span> ${acc}</div>
-        <div class="expl-lib-moves">${explEsc(movePreview)}</div>
-      </div>
-      <div class="expl-lib-actions">
-        <button class="nop-mini-btn gold" onclick="explTrainStart('${s.id}')">🎯 Train</button>
-        <button class="nop-mini-btn" onclick="explLoadIntoBoard('${s.id}')">↺ Load</button>
-        <button class="nop-mini-btn" onclick="explDeleteSaved('${s.id}')">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
-};
-
-window.explLoadIntoBoard = function(id){
-  const s = explLoadSaved().find(x => x.id === id);
-  if(!s) return;
-  explReset();
-  // replay
-  let st = parseFEN(startFEN());
-  for(const san of s.sans){
-    let mv; try { mv = sanToMove(san, st); } catch(e){ mv = null; }
-    if(!mv) break;
-    const ns = applyMove(st, mv);
-    expl.states.push(ns); expl.sans.push(san);
-    expl.uci.push(mv.from+mv.to+(mv.promotion?mv.promotion:''));
-    st = ns;
-  }
-  explSetSide(s.side);
-  document.getElementById('expl-library').style.display = 'none';
-  explRender();
-};
-
-window.explDeleteSaved = function(id){
-  let saved = explLoadSaved();
-  saved = saved.filter(x => x.id !== id);
-  explStoreSaved(saved);
-  // re-render the (still open) library
-  const lib = document.getElementById('expl-library');
-  if(lib){ lib.style.display = 'none'; explOpenLibrary(); }
-};
-
-function explFmtMoves(sans, max){
-  let out=''; const lim = max?Math.min(sans.length,max):sans.length;
-  for(let i=0;i<lim;i++){ if(i%2===0) out+=`${i/2+1}.`; out+=sans[i]+' '; }
-  if(max && sans.length>max) out+='…';
-  return out.trim();
+function repLoad(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(REP_KEY));
+    if(Array.isArray(raw)) return raw;
+  } catch(e){}
+  // migrate old flat v6 saves if present
+  return repMigrateOld();
 }
-function explEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function repStore(arr){ try { localStorage.setItem(REP_KEY, JSON.stringify(arr)); } catch(e){} }
 
-// ═══════════════ TRAINING MODE ═══════════════
-let train = null;
-window.explTrainStart = function(id){
-  const s = explLoadSaved().find(x => x.id === id);
-  if(!s) return;
-  // build states
-  const states = [parseFEN(startFEN())]; let st = states[0]; const sans=[];
-  for(const san of s.sans){ let mv; try{mv=sanToMove(san,st);}catch(e){mv=null;} if(!mv) break; st=applyMove(st,mv); sans.push(san); states.push(st); }
-  train = { entry:s, sans, states, idx:0, side:s.side, mistakes:0, awaiting:false };
-  document.getElementById('expl-train-title').innerHTML = `${explEsc(s.name)}${s.variation?' — '+explEsc(s.variation):''} <span class="expl-lib-side">${s.side==='w'?'♔ White':'♚ Black'}</span>`;
-  showSection('train');
-  explTrainStep();
+// migrate gambit_explorations (flat lines) → tree openings
+function repMigrateOld(){
+  let old = [];
+  try { old = JSON.parse(localStorage.getItem('gambit_explorations')) || []; } catch(e){}
+  const out = old.map(s => {
+    const root = { children: [] };
+    let node = root;
+    (s.uci||[]).forEach((u, i) => {
+      const child = { uci:u, san:(s.sans&&s.sans[i])||u, children:[] };
+      node.children.push(child); node = child;
+    });
+    return { id:s.id||('rep_'+Math.random().toString(36).slice(2)), name:s.name||'Saved line',
+      side:s.side||'w', root, created:s.saved||Date.now(),
+      trained:s.trained||0, bestAccuracy:s.bestScore!=null?s.bestScore:null, streak:0, lastTrained:s.lastTrained||null };
+  });
+  if(out.length){ repStore(out); }
+  return out;
+}
+
+function repEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function repFmtMoves(sans, max){
+  let out=''; const lim=max?Math.min(sans.length,max):sans.length;
+  for(let i=0;i<lim;i++){ if(i%2===0) out+=`${i/2+1}.`; out+=sans[i]+' '; }
+  if(max&&sans.length>max) out+='…'; return out.trim();
+}
+
+// count total saved moves (nodes) in a tree
+function repCountNodes(node){
+  let c = 0;
+  (node.children||[]).forEach(ch => { c += 1 + repCountNodes(ch); });
+  return c;
+}
+// collect every (position→move) test case in tree order: returns [{path:[uci...], expectUci, expectSan, ply}]
+function repCollectTests(opening){
+  const tests = [];
+  function walk(node, path){
+    (node.children||[]).forEach(ch => {
+      tests.push({ path: path.slice(), expectUci: ch.uci, expectSan: ch.san, ply: path.length });
+      walk(ch, path.concat(ch.uci));
+    });
+  }
+  walk(opening.root, []);
+  return tests;
+}
+// preview line: the first/main path through the tree
+function repMainLine(opening){
+  const sans=[]; let node=opening.root;
+  while(node.children && node.children.length){ node=node.children[0]; sans.push(node.san); }
+  return sans;
+}
+
+// ═══════════════ HOME / LIBRARY ═══════════════
+window.explBackHome = function(){
+  document.getElementById('expl-workspace').style.display='none';
+  document.getElementById('expl-home').style.display='block';
+  showSection('explorer');
+  repRenderGrid();
   window.scrollTo(0,0);
 };
-window.explExitTrain = function(){ showSection('explorer'); explRender(); };
 
-function explTrainSetProgress(){
-  const f = document.getElementById('expl-train-progress');
-  if(f) f.style.width = train.sans.length ? `${Math.round(100*train.idx/train.sans.length)}%` : '0%';
+function repRenderGrid(){
+  const host = document.getElementById('expl-rep-grid');
+  if(!host) return;
+  const reps = repLoad();
+  if(!reps.length){
+    host.innerHTML = `<div class="rep-empty">Your repertoire is empty. Hit <strong>+ New Opening</strong> to open the board, explore a line with the engine, and save it.</div>`;
+    return;
+  }
+  host.innerHTML = `<div class="rep-grid">` + reps.map(op => {
+    const moves = repCountNodes(op.root);
+    const main = repFmtMoves(repMainLine(op), 8);
+    const acc = op.bestAccuracy!=null ? `<span class="rep-card-acc">best ${op.bestAccuracy}%</span>` : '';
+    const streak = op.streak ? `<span class="rep-card-streak">🔥 ${op.streak}</span>` : '';
+    return `<div class="rep-card">
+      <div class="rep-card-top">
+        <span class="rep-card-side ${op.side==='w'?'w':'b'}">${op.side==='w'?'♔ White':'♚ Black'}</span>
+        <span class="rep-card-moves-n">${moves} move${moves===1?'':'s'}</span>
+      </div>
+      <div class="rep-card-name">${repEsc(op.name||'Untitled opening')}</div>
+      <div class="rep-card-line">${repEsc(main||'(empty)')}</div>
+      <div class="rep-card-meta">${acc}${streak}</div>
+      <div class="rep-card-actions">
+        <button class="nop-mini-btn gold" onclick="repReview('${op.id}')">👁 Review</button>
+        <button class="nop-mini-btn" onclick="repTrain('${op.id}')">🎯 Train</button>
+        <button class="nop-mini-btn" onclick="repEdit('${op.id}')">✏️ Edit</button>
+        <button class="nop-mini-btn" onclick="repDelete('${op.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('') + `</div>`;
 }
 
-function explTrainStep(){
+window.repDelete = function(id){
+  let reps = repLoad().filter(o => o.id !== id);
+  repStore(reps); repRenderGrid();
+};
+
+// ═══════════════ WORKSPACE (analysis board) ═══════════════
+window.explNewOpening = function(){
+  repCurrentId = null;
+  explReset();
+  const nameInput = document.getElementById('expl-ws-name');
+  if(nameInput) nameInput.value = '';
+  expl.side = 'w';
+  explSetSide('w');
+  document.getElementById('expl-saved-tag').textContent = '';
+  document.getElementById('expl-review-btn').style.display = 'none';
+  document.getElementById('expl-home').style.display='none';
+  document.getElementById('expl-workspace').style.display='block';
+  explRender();
+  window.scrollTo(0,0);
+};
+
+window.repEdit = function(id){
+  const op = repLoad().find(o => o.id === id);
+  if(!op) return;
+  repCurrentId = id;
+  // load the main line into the board so user can continue building
+  explReset();
+  let node = op.root, st = parseFEN(startFEN());
+  while(node.children && node.children.length){
+    const ch = node.children[0];
+    let mv; try { mv = sanToMove(ch.san, st); } catch(e){ mv = null; }
+    if(!mv) break;
+    const ns = applyMove(st, mv);
+    expl.states.push(ns); expl.sans.push(ch.san); expl.uci.push(ch.uci);
+    st = ns; node = ch;
+  }
+  document.getElementById('expl-ws-name').value = op.name || '';
+  explSetSide(op.side);
+  document.getElementById('expl-saved-tag').textContent = '● editing saved opening';
+  document.getElementById('expl-review-btn').style.display = '';
+  document.getElementById('expl-home').style.display='none';
+  document.getElementById('expl-workspace').style.display='block';
+  explRender();
+  window.scrollTo(0,0);
+};
+
+// SAVE: merge the current board's move path into the opening's tree
+window.explSave = function(){
+  if(expl.sans.length < 1){ explNote('Play at least one move before saving.', false); return; }
+  const reps = repLoad();
+  const nameInput = document.getElementById('expl-ws-name');
+  const givenName = (nameInput && nameInput.value.trim()) || expl.lastDetect.n || 'Untitled opening';
+
+  let op;
+  if(repCurrentId){ op = reps.find(o => o.id === repCurrentId); }
+  if(!op){
+    op = { id:'rep_'+Date.now(), name:givenName, side:expl.side, root:{children:[]},
+      created:Date.now(), trained:0, bestAccuracy:null, streak:0, lastTrained:null };
+    reps.unshift(op); repCurrentId = op.id;
+  } else {
+    op.name = givenName; op.side = expl.side;
+  }
+
+  // merge path into tree
+  let node = op.root, added = 0;
+  for(let i=0;i<expl.uci.length;i++){
+    const u = expl.uci[i], san = expl.sans[i];
+    let child = (node.children||[]).find(c => c.uci === u);
+    if(!child){ child = { uci:u, san, children:[] }; node.children.push(child); added++; }
+    node = child;
+  }
+  repStore(reps);
+  document.getElementById('expl-saved-tag').textContent = '● saved';
+  document.getElementById('expl-review-btn').style.display = '';
+  explNote(added>0 ? `Saved — ${added} new move${added===1?'':'s'} added to "${op.name}". Keep exploring to add more, or Review it.`
+                    : `Already saved in "${op.name}". Explore a new branch and save again to expand it.`, true);
+};
+
+window.explReviewFromWorkspace = function(){ if(repCurrentId) repReview(repCurrentId); };
+
+// ═══════════════ REVIEW (blue arrows over the saved tree) ═══════════════
+let rev = null;
+window.repReview = function(id){
+  const op = repLoad().find(o => o.id === id);
+  if(!op) return;
+  rev = { op, path:[], node:op.root, states:[parseFEN(startFEN())], sans:[] };
+  document.getElementById('rev-title').innerHTML = `${repEsc(op.name)} <span class="expl-lib-side">${op.side==='w'?'♔ White':'♚ Black'}</span>`;
+  showSection('rep-review');
+  if(op.side==='b'){ try{ if(!isBoardFlipped('rev-board')) flipBoard('rev-board'); }catch(e){} }
+  revRender();
+  window.scrollTo(0,0);
+};
+window.revReset = function(){ rev.path=[]; rev.node=rev.op.root; rev.states=[parseFEN(startFEN())]; rev.sans=[]; revRender(); };
+window.revBack = function(){
+  if(rev.sans.length===0) return;
+  rev.sans.pop(); rev.path.pop(); rev.states.pop();
+  // re-walk node
+  let node=rev.op.root; for(const u of rev.path){ node=node.children.find(c=>c.uci===u); }
+  rev.node=node; revRender();
+};
+window.revFlip = function(){ flipBoard('rev-board'); };
+
+function revRender(){
+  const state = rev.states[rev.states.length-1];
+  const hl = [];
+  if(rev.sans.length){ const mv=sanToMove(rev.sans[rev.sans.length-1], rev.states[rev.states.length-2]); if(mv){ hl.push(mv.from,mv.to); } }
+  renderBoardEl('rev-board','rev-ranks','rev-files', state, hl, null);
+
+  // BLUE arrows for every saved continuation from this node
+  const overlay = document.getElementById('rev-arrows');
+  const children = rev.node.children || [];
+  if(overlay){
+    const flipped = isBoardFlipped('rev-board');
+    let svg = `<defs><marker id="revb-m" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(90,150,235,.92)"/></marker></defs>`;
+    children.forEach(ch => {
+      const u = ch.uci; if(!u||u.length<4) return;
+      const from=u.slice(0,2), to=u.slice(2,4);
+      if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to)) return;
+      const p1=squareToSVG(from,flipped), p2=squareToSVG(to,flipped);
+      const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
+      const ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
+      svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(90,150,235,.85)" stroke-width="11" stroke-linecap="round" marker-end="url(#revb-m)"/>`;
+    });
+    overlay.innerHTML = svg;
+  }
+
+  // branch buttons
+  const bHost = document.getElementById('rev-branches');
+  if(bHost){
+    if(!children.length){ bHost.innerHTML = `<div class="expl-pv-empty">End of this line. Use “Continue &amp; save new ideas” to extend it.</div>`; }
+    else bHost.innerHTML = children.map((ch,i)=>`<div class="expl-pv-row" onclick="revGo(${i})">
+      <span class="expl-pv-rank" style="color:#5a96eb">▶</span>
+      <span class="expl-pv-line" style="color:var(--text)">${repEsc(ch.san)}</span>
+      <span class="expl-pv-eval eq">${repCountNodes(ch)} more</span>
+    </div>`).join('');
+  }
+  // line so far
+  const ml = document.getElementById('rev-movelist');
+  if(ml){
+    if(!rev.sans.length){ ml.innerHTML='<div class="expl-pv-empty">Start of the line.</div>'; }
+    else { let html=''; for(let i=0;i<rev.sans.length;i+=2){ html+=`<span class="expl-mv-num">${i/2+1}.</span><span class="expl-mv">${rev.sans[i]}</span>${rev.sans[i+1]?`<span class="expl-mv">${rev.sans[i+1]}</span>`:''}`; } ml.innerHTML=html; }
+  }
+  // path label
+  const pathEl = document.getElementById('rev-path');
+  if(pathEl) pathEl.textContent = rev.sans.length ? repFmtMoves(rev.sans) : 'Starting position — blue arrows show your saved moves';
+  const nameEl = document.getElementById('rev-name');
+  if(nameEl) nameEl.textContent = rev.op.name;
+}
+window.revGo = function(i){
+  const ch = rev.node.children[i]; if(!ch) return;
+  const state = rev.states[rev.states.length-1];
+  let mv; try{ mv=sanToMove(ch.san,state); }catch(e){ mv=null; }
+  if(!mv) return;
+  rev.states.push(applyMove(state,mv)); rev.sans.push(ch.san); rev.path.push(ch.uci); rev.node=ch;
+  revRender();
+};
+window.revContinueExploring = function(){
+  // hand the current review path into the workspace to keep building
+  repEdit(rev.op.id);
+  // then replay the exact review path (repEdit loads main line; override with rev path)
+  explReset();
+  let st=parseFEN(startFEN());
+  for(let i=0;i<rev.sans.length;i++){
+    let mv; try{mv=sanToMove(rev.sans[i],st);}catch(e){mv=null;} if(!mv) break;
+    const ns=applyMove(st,mv); expl.states.push(ns); expl.sans.push(rev.sans[i]); expl.uci.push(rev.path[i]); st=ns;
+  }
+  repCurrentId = rev.op.id;
+  document.getElementById('expl-ws-name').value = rev.op.name;
+  explSetSide(rev.op.side);
+  document.getElementById('expl-saved-tag').textContent='● editing saved opening';
+  document.getElementById('expl-review-btn').style.display='';
+  document.getElementById('expl-home').style.display='none';
+  document.getElementById('expl-workspace').style.display='block';
+  explRender();
+  window.scrollTo(0,0);
+};
+
+// ═══════════════ TRAIN (every saved move, tree order) ═══════════════
+let rtrain = null;
+window.repTrain = function(id){
+  const op = repLoad().find(o => o.id === id);
+  if(!op) return;
+  const tests = repCollectTests(op);
+  if(!tests.length){ alert('Nothing saved to train yet — add some moves first.'); return; }
+  rtrain = { op, tests, i:0, correct:0, incorrect:0, wrongList:[] };
+  document.getElementById('expl-train-title').innerHTML = `Training: ${repEsc(op.name)} <span class="expl-lib-side">${op.side==='w'?'♔ White':'♚ Black'}</span>`;
+  showSection('train');
+  rtrainStep();
+  window.scrollTo(0,0);
+};
+
+function rtrainBuildState(path){
+  let st = parseFEN(startFEN());
+  for(const u of path){
+    const from=u.slice(0,2), to=u.slice(2,4), promo=u.length>4?u[4].toUpperCase():null;
+    st = applyMove(st, {from,to,promotion:promo});
+  }
+  return st;
+}
+
+function rtrainStep(){
   const host = document.getElementById('expl-train-host');
-  const idx = train.idx, total = train.sans.length;
-  explTrainSetProgress();
+  const t = rtrain.tests[rtrain.i];
+  const total = rtrain.tests.length;
+  const prog = document.getElementById('expl-train-progress');
+  if(prog) prog.style.width = `${Math.round(100*rtrain.i/total)}%`;
 
-  if(idx >= total){ explTrainComplete(); return; }
+  if(rtrain.i >= total){ rtrainResults(); return; }
 
-  if(!document.getElementById('train-board')){
+  if(!document.getElementById('rt-board')){
     host.innerHTML = `
       <div class="expl-train-stage">
-        <div class="expl-board-wrap">
-          <div style="display:flex">
-            <div class="board-ranks" id="train-ranks"></div>
-            <div id="train-board" class="chess-board"></div>
+        <div class="expl-board-col">
+          <div class="expl-board-wrap">
+            <div style="display:flex">
+              <div class="board-ranks" id="rt-ranks"></div>
+              <div style="position:relative">
+                <div id="rt-board" class="chess-board"></div>
+                <svg class="arrow-overlay" id="rt-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+              </div>
+            </div>
+            <div class="board-files" id="rt-files"></div>
           </div>
-          <div class="board-files" id="train-files"></div>
         </div>
         <div class="expl-train-side">
-          <div class="expl-train-badge" id="train-badge"></div>
-          <div class="expl-train-msg" id="train-msg"></div>
-          <div class="expl-train-fb" id="train-fb"></div>
-          <div class="nlearn-actions" id="train-actions"></div>
+          <div class="expl-train-counter" id="rt-counter"></div>
+          <div class="expl-train-badge" id="rt-badge"></div>
+          <div class="expl-train-msg" id="rt-msg"></div>
+          <div class="expl-train-fb" id="rt-fb"></div>
         </div>
       </div>`;
-    if(train.side==='b'){ try{ if(!isBoardFlipped('train-board')) flipBoard('train-board'); }catch(e){} }
+    if(rtrain.op.side==='b'){ try{ if(!isBoardFlipped('rt-board')) flipBoard('rt-board'); }catch(e){} }
   }
 
-  const state = train.states[idx];
-  const moverWhite = (idx % 2 === 0);
-  const userTurn = (train.side==='w') === moverWhite;
-  const hl = idx>0 ? (()=>{ const mv=sanToMove(train.sans[idx-1],train.states[idx-1]); return mv?[mv.from,mv.to]:[]; })() : [];
-  renderBoardEl('train-board','train-ranks','train-files', state, hl, null);
+  const state = rtrainBuildState(t.path);
+  rtrain.curState = state;
+  clearArrows('rt-arrows');
+  renderBoardEl('rt-board','rt-ranks','rt-files', state, [], null);
+  makeBoardInteractive('rt-board', state, rtrainUserMove);
 
-  const badge = document.getElementById('train-badge');
-  const msg = document.getElementById('train-msg');
-  const fb = document.getElementById('train-fb');
-  const actions = document.getElementById('train-actions');
-  fb.innerHTML=''; actions.innerHTML='';
-
-  if(userTurn){
-    badge.textContent = `Move ${Math.floor(idx/2)+1}${moverWhite?'.':'…'} — your turn`;
-    msg.innerHTML = `Play the move you saved for <strong>${train.side==='w'?'White':'Black'}</strong>.`;
-    train.awaiting = true;
-    makeBoardInteractive('train-board', state, explTrainUserMove);
-  } else {
-    badge.textContent = 'Opponent replies…';
-    msg.innerHTML = `Opponent plays <strong>${explEsc(train.sans[idx])}</strong>.`;
-    train.awaiting = false;
-    setTimeout(()=>{ if(train){ train.idx++; explTrainStep(); } }, 550);
-  }
+  const moverWhite = (t.ply % 2 === 0);
+  document.getElementById('rt-counter').textContent = `Position ${rtrain.i+1} of ${total}`;
+  document.getElementById('rt-badge').textContent = `Move ${Math.floor(t.ply/2)+1}${moverWhite?'.':'…'}`;
+  document.getElementById('rt-msg').innerHTML = `What's your saved move here? Play it on the board.`;
+  document.getElementById('rt-fb').innerHTML = '';
+  rtrain.awaiting = true;
 }
 
-function explTrainUserMove(from, to, newState, san){
-  if(!train.awaiting) return;
-  const idx = train.idx;
-  const expected = train.sans[idx];
+function rtrainUserMove(from, to, newState, san){
+  if(!rtrain.awaiting) return;
+  const t = rtrain.tests[rtrain.i];
+  const playedUci = from+to;
   const norm = s => (s||'').replace(/[+#!?]/g,'');
-  const fb = document.getElementById('train-fb');
-  const actions = document.getElementById('train-actions');
+  const fb = document.getElementById('rt-fb');
+  rtrain.awaiting = false;
 
-  if(norm(san) === norm(expected)){
-    train.awaiting = false;
-    fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${explEsc(expected)} — correct!</span>`;
-    train.idx++;
-    setTimeout(()=>{ if(train) explTrainStep(); }, 350);
+  if(playedUci === t.expectUci.slice(0,4) || norm(san) === norm(t.expectSan)){
+    rtrain.correct++;
+    fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${repEsc(t.expectSan)} — correct!</span>`;
+    setTimeout(()=>{ if(rtrain){ rtrain.i++; rtrainStep(); } }, 350);
   } else {
-    train.mistakes++;
-    fb.innerHTML = `<span class="nlearn-fb-wrong">✗ Not the saved move. You played ${explEsc(san)}; the line goes <strong>${explEsc(expected)}</strong>.</span>`;
-    actions.innerHTML = `<button class="nop-mini-btn gold" onclick="explTrainReveal()">Show me & continue →</button>`;
-    train.awaiting = false;
-    // re-render to current (undo their wrong move)
-    renderBoardEl('train-board','train-ranks','train-files', train.states[idx],
-      idx>0 ? (()=>{ const mv=sanToMove(train.sans[idx-1],train.states[idx-1]); return mv?[mv.from,mv.to]:[]; })() : [], null);
+    rtrain.incorrect++;
+    rtrain.wrongList.push({ ply:t.ply, expect:t.expectSan, played:san, line:repFmtMoves(t.path.map(()=> '').length ? [] : []) });
+    fb.innerHTML = `<span class="nlearn-fb-wrong">✗ The saved move is <strong>${repEsc(t.expectSan)}</strong>. Watch the arrow…</span>`;
+    // show correct move arrow (green) and auto-play it
+    const u = t.expectUci;
+    const overlay = document.getElementById('rt-arrows');
+    if(overlay){
+      const flipped = isBoardFlipped('rt-board');
+      const from2=u.slice(0,2), to2=u.slice(2,4);
+      const p1=squareToSVG(from2,flipped), p2=squareToSVG(to2,flipped);
+      const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
+      const ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
+      overlay.innerHTML = `<defs><marker id="rtok" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(110,200,130,.95)"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(110,200,130,.9)" stroke-width="12" stroke-linecap="round" marker-end="url(#rtok)"/>`;
+    }
+    // re-render board at the position (undo wrong move) and show the correct move highlighted
+    renderBoardEl('rt-board','rt-ranks','rt-files', rtrain.curState, [], null);
+    if(overlay){ /* keep arrow */ }
+    setTimeout(()=>{ if(rtrain){ rtrain.i++; rtrainStep(); } }, 1300);
   }
 }
-window.explTrainReveal = function(){ train.idx++; explTrainStep(); };
 
-function explTrainComplete(){
+function rtrainResults(){
   const host = document.getElementById('expl-train-host');
-  const total = train.sans.length;
-  const userMoves = Math.ceil(total/2); // rough
-  const accuracy = Math.max(0, Math.round(100 * (1 - train.mistakes / Math.max(1, total))));
-  // update saved entry stats
-  const saved = explLoadSaved();
-  const e = saved.find(x => x.id === train.entry.id);
-  if(e){ e.trained = (e.trained||0)+1; e.bestScore = e.bestScore==null ? accuracy : Math.max(e.bestScore, accuracy); e.lastTrained = Date.now(); explStoreSaved(saved); }
-  const perfect = train.mistakes === 0;
-  explTrainSetProgress();
+  const prog = document.getElementById('expl-train-progress'); if(prog) prog.style.width='100%';
+  const total = rtrain.tests.length;
+  const acc = total ? Math.round(100*rtrain.correct/total) : 0;
+  // update opening stats + streak
+  const reps = repLoad(); const op = reps.find(o => o.id === rtrain.op.id);
+  let streak = 0;
+  if(op){
+    op.trained = (op.trained||0)+1;
+    op.bestAccuracy = op.bestAccuracy==null ? acc : Math.max(op.bestAccuracy, acc);
+    op.lastTrained = Date.now();
+    // streak: consecutive sessions with accuracy >= 80
+    op.streak = acc >= 80 ? (op.streak||0)+1 : 0;
+    streak = op.streak;
+    repStore(reps);
+  }
+  // weakest positions (the wrong ones)
+  const weak = rtrain.wrongList.slice(0,5).map(w => `Move ${Math.floor(w.ply/2)+1}: expected <strong>${repEsc(w.expect)}</strong>, you played ${repEsc(w.played||'—')}`);
+
   host.innerHTML = `
-    <div class="ndrill-pick">
-      <div class="ndrill-side-icon">${perfect?'🏆':'✓'}</div>
-      <h3>${perfect?'Perfect recall!':'Line complete'}</h3>
-      <p>${perfect
-        ? 'You played the entire saved line without a single slip. This line is locked in.'
-        : `You finished with ${train.mistakes} mistake${train.mistakes===1?'':'s'} (${accuracy}% accuracy). Run it again to reinforce it.`}</p>
-      <div class="ndrill-side-row">
-        <div class="ndrill-side-card" onclick="explTrainStart('${train.entry.id}')"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Train again</div></div>
-        <div class="ndrill-side-card" onclick="explExitTrain()"><div class="ndrill-side-icon">🧭</div><div class="ndrill-side-label">Back to Explorer</div></div>
+    <div class="rt-results">
+      <div class="rt-results-acc ${acc>=90?'great':acc>=70?'ok':'low'}">${acc}%</div>
+      <div class="rt-results-sub">Accuracy</div>
+      <div class="rt-results-grid">
+        <div class="rt-stat"><div class="rt-stat-n" style="color:#6ec882">${rtrain.correct}</div><div class="rt-stat-l">Correct</div></div>
+        <div class="rt-stat"><div class="rt-stat-n" style="color:#e0706f">${rtrain.incorrect}</div><div class="rt-stat-l">Incorrect</div></div>
+        <div class="rt-stat"><div class="rt-stat-n">${total}</div><div class="rt-stat-l">Total tested</div></div>
+        <div class="rt-stat"><div class="rt-stat-n" style="color:var(--gold)">🔥 ${streak}</div><div class="rt-stat-l">Streak</div></div>
+      </div>
+      ${weak.length ? `<div class="rt-weak"><div class="rt-weak-title">Weakest positions</div>${weak.map(w=>`<div class="rt-weak-row">${w}</div>`).join('')}</div>` : `<div class="rt-perfect">🏆 Flawless — every saved move recalled correctly!</div>`}
+      <div class="ndrill-side-row" style="margin-top:18px">
+        <div class="ndrill-side-card" onclick="repTrain('${rtrain.op.id}')"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Train again</div></div>
+        <div class="ndrill-side-card" onclick="explBackHome()"><div class="ndrill-side-icon">📁</div><div class="ndrill-side-label">Repertoire</div></div>
       </div>
     </div>`;
 }
+window.explExitTrain = function(){ explBackHome(); };
 
 </script>
 </body>
