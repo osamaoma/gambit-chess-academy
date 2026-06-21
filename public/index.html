@@ -2095,6 +2095,11 @@ input:focus, select:focus, textarea:focus {
   .ol-var-moves{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ol-var-actions{display:flex;gap:8px;flex-shrink:0}
   .ol-var-mastered{color:#7fc99c}
+  .ol-fam-section{margin-bottom:22px}
+  .ol-fam-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 0 12px;border-bottom:1px solid rgba(201,168,76,.25);margin-bottom:10px}
+  .ol-fam-name{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold)}
+  .ol-fam-intro{font-size:13px;color:var(--text2);margin-top:3px;line-height:1.5;max-width:680px}
+  .ol-fam-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);background:rgba(255,255,255,.05);padding:3px 9px;border-radius:10px;flex-shrink:0}
 
 </style>
 </head>
@@ -2102,7 +2107,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v5.0 LIBRARY</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v5.1 ITALIAN</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -22189,35 +22194,90 @@ function olRenderVarRows(opIdx, q){
   q = (q||'').trim().toLowerCase();
   const mastery = olMasteryGet();
 
-  const rows = op.v.map((v, vIdx) => {
-    const label = v.b ? 'Main Line' : (v.n || `Variation ${vIdx+1}`);
-    if(q && !label.toLowerCase().includes(q) && !v.eco.toLowerCase().includes(q)) return '';
+  // dedupe display labels within the flat list (append a hint when repeated)
+  const labelCount = {};
+  op.v.forEach(v => { const l = v.n||'Main Line'; labelCount[l] = (labelCount[l]||0)+1; });
+  const labelSeen = {};
+
+  function rowHTML(v, vIdx){
+    let label = v.n || `Variation ${vIdx+1}`;
+    // disambiguate repeated labels (e.g. several "Main Line") by depth
+    if(labelCount[label] > 1){
+      labelSeen[label] = (labelSeen[label]||0)+1;
+      const moveHint = v.s.length >= 2 ? olFmtMoves(v.s.slice(-2)) : '';
+      label = `${label} <span style="color:var(--text3);font-weight:400;font-size:12px">(${v.s.length>>1} moves${moveHint?', '+olEsc(moveHint):''})</span>`;
+    }
+    if(q){
+      const plain = (v.n||'').toLowerCase();
+      if(!plain.includes(q) && !v.eco.toLowerCase().includes(q) && !v.s.join(' ').toLowerCase().includes(q)) return '';
+    }
     const isM = !!mastery[olVarId(op, vIdx)];
     return `<div class="ol-var-row">
       <span class="ol-var-eco">${v.eco}</span>
       <div class="ol-var-info">
-        <div class="ol-var-name">${olEsc(label)} ${isM?'<span class="ol-var-mastered">✓</span>':''}</div>
-        <div class="ol-var-moves">${olEsc(olFmtMoves(v.s,10))}</div>
+        <div class="ol-var-name">${label} ${isM?'<span class="ol-var-mastered">✓</span>':''}</div>
+        <div class="ol-var-moves">${olEsc(olFmtMoves(v.s,12))}</div>
       </div>
       <div class="ol-var-actions">
         <button class="nop-mini-btn gold" onclick="olStartLearn(${opIdx},${vIdx})">📖 Learn</button>
         <button class="nop-mini-btn" onclick="olStartDrill(${opIdx},${vIdx})">🎯 Drill</button>
       </div>
     </div>`;
-  }).filter(Boolean).join('');
+  }
+
+  let body = '';
+  if(op.families && op.families.length){
+    // grouped by family — each family is a section with its own drill
+    op.families.forEach((fam, fi) => {
+      const rowsInFam = op.v
+        .map((v, vIdx) => ({v, vIdx}))
+        .filter(x => x.v.fi === fi)
+        .map(x => rowHTML(x.v, x.vIdx))
+        .filter(Boolean);
+      if(!rowsInFam.length) return;
+      const firstVar = op.v.find(v => v.fi === fi);
+      const intro = OL_FAMILY_INTRO[fam.name] || '';
+      body += `<div class="ol-fam-section">
+        <div class="ol-fam-header">
+          <div>
+            <div class="ol-fam-name">${olEsc(fam.name)}</div>
+            ${intro?`<div class="ol-fam-intro">${intro}</div>`:''}
+          </div>
+          <span class="ol-fam-count">${rowsInFam.length}</span>
+        </div>
+        ${rowsInFam.join('')}
+      </div>`;
+    });
+  } else {
+    body = op.v.map((v, vIdx) => rowHTML(v, vIdx)).filter(Boolean).join('');
+  }
 
   host.innerHTML = `
     <div class="nop-vlist-wrap">
       <button class="nop-back" onclick="olOpenIntro(${opIdx})">← ${olEsc(op.f)} overview</button>
       <div class="nop-vhead"><em>${olEsc(op.f)}</em> variations</div>
-      <div class="nop-vsub">${op.v.length} variations · ECO ${op.eco} · ${OL_STYLE_LABEL[op.style]||op.style}</div>
+      <div class="nop-vsub">${op.v.length} variations${op.families?` in ${op.families.length} families`:''} · ECO ${op.eco} · ${OL_STYLE_LABEL[op.style]||op.style}</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-        <input class="nop-vsearch" style="margin:0;flex:1" placeholder="🔍 Filter variations…" oninput="olVarFilter(this.value)" autocomplete="off">
+        <input class="nop-vsearch" style="margin:0;flex:1" placeholder="🔍 Filter variations…" oninput="olVarFilter(this.value)" autocomplete="off" value="${olEsc(q)}">
         <button class="btn btn-gold btn-sm" onclick="olStartMixedDrill(${opIdx})">🎯 Mixed drill (all)</button>
       </div>
-      <div id="ol-var-rows">${rows || '<div class="ol-empty">No variations match.</div>'}</div>
+      <div id="ol-var-rows">${body || '<div class="ol-empty">No variations match.</div>'}</div>
     </div>`;
 }
+
+// short intros for the Italian Game families (extend as more openings are curated)
+const OL_FAMILY_INTRO = {
+  'Giuoco Piano':"The 'Quiet Game' — 4.c3 and d4 build a classical big centre. Sound and principled.",
+  'Giuoco Pianissimo':"The 'Very Quiet Game' — White plays d3 for a slow manoeuvring battle, popular at the top level.",
+  'Classical (3...Bc5)':"Black answers 3.Bc4 with 3...Bc5, mirroring White and fighting for the centre directly.",
+  'Two Knights Defense (3...Nf6)':"Black plays 3...Nf6, hitting e4 and inviting sharp play like the Fried Liver and Knight Attack.",
+  'Evans Gambit':"4.b4!? — White sacrifices a pawn to deflect the bishop and rip open the centre for a fierce attack.",
+  'Evans Gambit Declined':"Black sidesteps the gambit, declining the b4-pawn to keep the position calmer.",
+  'Evans Gambit Accepted':"Black grabs the b4-pawn and tries to weather White's attacking storm.",
+  'Scotch Gambit':"4.d4!? — White strikes the centre immediately, offering a pawn for fast development.",
+  'Hungarian Defense':"3...Be7 — a solid, modest retreat that avoids all the sharp Italian theory.",
+  'Other Gambits & Sidelines':"Offbeat gambits and rare tries — the Jerome Gambit, Rousseau, and other surprise weapons.",
+};
 // ═══════════════ LEARN VIEW ═══════════════
 // Walk the variation move by move. At every position show the top-3 popular
 // moves; draw RED arrows for the opponent's candidate replies; explain each move.
