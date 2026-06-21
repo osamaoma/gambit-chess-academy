@@ -44,7 +44,7 @@ app.use('/stockfish', (req, res, next) => {
   next();
 });
 // Opening database JSON: cache for a day, revalidate.
-app.use(['/openings_data.json', '/openings_v5.json', '/opening_detect.json'], (req, res, next) => {
+app.use('/openings_data.json', (req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
   next();
 });
@@ -53,8 +53,6 @@ app.use(['/openings_data.json', '/openings_v5.json', '/opening_detect.json'], (r
 app.use((req, res, next) => {
   if (req.path.startsWith('/stockfish/')) return next();           // already set
   if (req.path === '/openings_data.json') return next();           // already set
-  if (req.path === '/openings_v5.json') return next();             // already set
-  if (req.path === '/opening_detect.json') return next();          // already set
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
