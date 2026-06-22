@@ -2213,16 +2213,102 @@ input:focus, select:focus, textarea:focus {
   .rt-weak-row{font-size:13px;color:var(--text2);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
   .rt-perfect{background:rgba(110,200,130,.1);border:1px solid rgba(110,200,130,.3);border-radius:12px;padding:18px;color:#6ec882;font-size:15px}
 
+  /* ═══════════════ OPENING ACADEMY ═══════════════ */
+  .acad-wrap{max-width:1140px;margin:0 auto;padding:20px 20px 70px}
+  .acad-hero{text-align:center;max-width:720px;margin:14px auto 36px}
+  .acad-hero-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--gold);border:1px solid rgba(201,168,76,.4);padding:5px 14px;border-radius:20px;margin-bottom:18px}
+  .acad-hero h1{font-family:'Playfair Display',serif;font-size:42px;color:var(--text);margin:0 0 12px;line-height:1.1}
+  .acad-hero h1 em{color:var(--gold);font-style:italic}
+  .acad-hero p{font-size:16px;color:var(--text2);line-height:1.65}
+  .acad-course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+  .acad-course-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:10px}
+  .acad-course-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+  .acad-course-card.soon{opacity:.5;cursor:default}
+  .acad-course-card.soon:hover{transform:none;border-color:var(--border);box-shadow:none}
+  .acad-cc-top{display:flex;justify-content:space-between;align-items:center}
+  .acad-cc-eco{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);background:rgba(255,255,255,.05);padding:2px 8px;border-radius:6px}
+  .acad-cc-taught{font-size:11px;font-weight:700;color:#6ec882;background:rgba(110,200,130,.12);padding:2px 10px;border-radius:10px}
+  .acad-cc-pct{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold)}
+  .acad-cc-name{font-family:'Playfair Display',serif;font-size:24px;color:var(--text)}
+  .acad-cc-blurb{font-size:13px;color:var(--text2);line-height:1.55;flex:1}
+  .acad-cc-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+  .acad-cc-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#e0b84a);transition:width .4s}
+  .acad-cc-cta{font-size:13px;color:var(--gold);font-weight:600}
+  /* course top */
+  .acad-course-top{display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .acad-course-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--text);flex:1}
+  .acad-course-title em{color:var(--gold);font-style:italic}
+  .acad-course-stats{display:flex;gap:8px;flex-wrap:wrap}
+  .acad-stat-pill{font-size:12px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);padding:5px 12px;border-radius:14px}
+  .acad-stat-pill.due{color:var(--gold);border-color:rgba(201,168,76,.4);cursor:pointer}
+  .acad-mastery-bar{position:relative;height:30px;background:var(--bg3);border-radius:15px;overflow:hidden;margin-bottom:30px;border:1px solid var(--border)}
+  .acad-mastery-bar span{display:block;height:100%;background:linear-gradient(90deg,rgba(201,168,76,.7),rgba(110,200,130,.7));transition:width .5s}
+  .acad-mastery-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text)}
+  /* roadmap */
+  .acad-roadmap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:stretch}
+  .acad-rm-step{display:flex;align-items:center;gap:16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:all .15s}
+  .acad-rm-step.open{cursor:pointer;border-color:rgba(201,168,76,.35)}
+  .acad-rm-step.open:hover{border-color:var(--gold);transform:translateX(4px)}
+  .acad-rm-step.done{cursor:pointer;background:linear-gradient(135deg,rgba(110,200,130,.08),var(--bg2));border-color:rgba(110,200,130,.3)}
+  .acad-rm-step.locked{opacity:.5}
+  .acad-rm-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg4);flex-shrink:0}
+  .acad-rm-step.done .acad-rm-icon{background:rgba(110,200,130,.2);color:#6ec882}
+  .acad-rm-step.open .acad-rm-icon{background:rgba(201,168,76,.18)}
+  .acad-rm-info{flex:1;min-width:0}
+  .acad-rm-title{font-size:16px;color:var(--text);font-weight:600;display:flex;align-items:center;gap:8px}
+  .acad-rm-acc{font-family:'DM Mono',monospace;font-size:11px;color:#6ec882;background:rgba(110,200,130,.12);padding:1px 7px;border-radius:8px}
+  .acad-rm-sub{font-size:13px;color:var(--text3);margin-top:2px}
+  .acad-rm-type{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;flex-shrink:0}
+  .acad-rm-connector{width:2px;height:16px;background:var(--border);margin:2px auto}
+  .acad-rm-connector.done{background:rgba(110,200,130,.4)}
+  /* reading lessons */
+  .acad-lesson-wrap{max-width:1080px;margin:0 auto}
+  .acad-read{max-width:720px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:34px 40px}
+  .acad-read-icon{font-size:40px;text-align:center;margin-bottom:8px}
+  .acad-read h1{font-family:'Playfair Display',serif;font-size:30px;color:var(--text);text-align:center;margin:0 0 22px}
+  .acad-read p{font-size:15.5px;line-height:1.72;color:var(--text2);margin:0 0 16px}
+  .acad-read .btn{margin-top:14px}
+  .acad-idea-block{margin-bottom:26px}
+  .acad-idea-block h3{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold);margin:0 0 14px;border-bottom:1px solid rgba(201,168,76,.2);padding-bottom:8px}
+  .acad-idea{margin-bottom:14px}
+  .acad-idea-h{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px}
+  .acad-idea-t{font-size:14px;line-height:1.6;color:var(--text2)}
+  /* interactive lesson */
+  .acad-lesson-top{display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap}
+  .acad-lesson-title{font-family:'Playfair Display',serif;font-size:21px;color:var(--text);flex:1}
+  .acad-lesson-eco{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)}
+  .acad-lesson-stage{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;margin-top:16px}
+  @media(max-width:900px){.acad-lesson-stage{grid-template-columns:1fr;justify-items:center}}
+  .acad-lesson-controls{display:flex;gap:8px;margin-top:14px;justify-content:center;flex-wrap:wrap}
+  .acad-lesson-side{min-width:0;max-width:440px}
+  .acad-lesson-counter{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);margin-bottom:8px}
+  .acad-lesson-badge{font-family:'DM Mono',monospace;font-weight:700;font-size:18px;color:var(--gold);background:rgba(201,168,76,.1);padding:6px 14px;border-radius:8px;display:inline-block;margin-bottom:14px}
+  .acad-lesson-text{font-size:15.5px;line-height:1.7;color:var(--text)}
+  .acad-lesson-text strong{color:var(--gold)}
+  .acad-plan{margin-top:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(201,168,76,.1),var(--bg2));border:1px solid rgba(201,168,76,.3);border-radius:12px;font-size:14px;line-height:1.6;color:var(--text2)}
+  .acad-plan-h{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold);margin-bottom:6px}
+  .acad-lesson-engine{margin-top:16px;font-family:'DM Mono',monospace;font-size:13px;color:var(--text2)}
+  .acad-eng-think{color:var(--text3)}
+  .acad-eng-label{color:var(--text3)}.acad-eng-val{color:var(--gold);font-weight:700}.acad-eng-best{color:var(--text3);margin-left:8px}
+  .acad-lesson-fb{min-height:28px;margin-top:14px}
+  .acad-drill-why{font-size:13px;line-height:1.55;color:var(--text2);margin-top:8px;padding:10px 12px;background:var(--bg3);border-radius:8px}
+  /* done screens */
+  .acad-done{max-width:520px;margin:40px auto;text-align:center}
+  .acad-done-icon{font-size:56px;color:#6ec882}
+  .acad-done h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--text);margin:8px 0}
+  .acad-done p{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+  .acad-taught-banner{background:linear-gradient(135deg,rgba(110,200,130,.18),rgba(201,168,76,.12));border:1.5px solid rgba(110,200,130,.4);border-radius:14px;padding:16px;font-family:'Playfair Display',serif;font-size:19px;color:#8fd9a8;margin-bottom:22px}
+  .acad-taught-fail{background:rgba(224,112,111,.1);border:1px solid rgba(224,112,111,.3);border-radius:12px;padding:14px;font-size:14px;color:#e0a0a0;margin-bottom:20px}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v6.2 OPENINGS</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v7.0 ACADEMY</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showSection('openings')">📚 Openings</button>
-    <button class="nav-tab" onclick="showSection('explorer')">📁 Repertoire</button>
+    <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
     <button class="nav-tab" onclick="showSection('review')">🔬 Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
@@ -2375,7 +2461,15 @@ input:focus, select:focus, textarea:focus {
 </div>
 
 <!-- legacy hidden containers (orphaned, not in nav) -->
-<div id="sec-openings" class="section active">
+<!-- ══════════════ OPENING ACADEMY ══════════════ -->
+<div id="sec-academy" class="section active">
+  <div class="acad-wrap">
+    <div id="acad-home"></div>
+    <div id="acad-course" style="display:none"></div>
+  </div>
+</div>
+
+<div id="sec-openings" class="section">
   <div class="op-clean-wrap">
     <div id="ol-home">
       <div class="op-clean-hero">
@@ -10645,7 +10739,7 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {openings:0, nlearn:0, olearn:0, explorer:1, train:1, 'rep-review':1, analysis:2, review:3, quizzes:4};
+  const tabs = {academy:0, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, analysis:1, review:2, quizzes:3};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
@@ -20849,8 +20943,7 @@ window.filterOpCards = function(q){
 // Defer init so the static HTML/CSS renders first - the page should NEVER appear blank
 function safeInit(){
   try {
-    olInit();
-    explInit();
+    acadInit();
   } catch(e){ console.error('explorer init failed:', e); }
   try {
     initStockfish().catch(err => console.warn('Engine init failed (analysis will be unavailable):', err));
@@ -23607,6 +23700,656 @@ function rtrainResults(){
     </div>`;
 }
 window.explExitTrain = function(){ explBackHome(); };
+
+
+// ==== OPENING ACADEMY ====
+// ═══════════════════════════════════════════════════════════════
+// OPENING ACADEMY — course roadmap, lessons, drills, mixed training,
+// spaced repetition (SM-2), mastery tracking. localStorage-backed.
+// ═══════════════════════════════════════════════════════════════
+let ACAD = null;             // loaded course (Italian for now)
+const ACAD_COURSES = [
+  { id:'italian', file:'/course_italian.json', name:'Italian Game', eco:'C50–C54', style:'positional',
+    blurb:'The classic 1.e4 e5 2.Nf3 Nc6 3.Bc4 — from quiet squeezes to wild gambits.', ready:true },
+];
+
+// progress store: { [courseId]: { steps:{stepId:{done,bestAcc}}, srs:{lineName:{ef,interval,due,reps,lapses}}, streak, lastStudy } }
+function acadLoad(){ try { return JSON.parse(localStorage.getItem('gambit_academy')) || {}; } catch(e){ return {}; } }
+function acadStore(o){ try { localStorage.setItem('gambit_academy', JSON.stringify(o)); } catch(e){} }
+function acadProg(courseId){
+  const all = acadLoad();
+  if(!all[courseId]) all[courseId] = { steps:{}, srs:{}, streak:0, lastStudy:null };
+  return { all, p: all[courseId], save:()=>acadStore(all) };
+}
+function acadEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── entry: render the course picker / home ──
+async function acadInit(){
+  acadRenderHome();
+}
+
+function acadRenderHome(){
+  const host = document.getElementById('acad-home');
+  if(!host) return;
+  document.getElementById('acad-course') && (document.getElementById('acad-course').style.display='none');
+  host.style.display = 'block';
+  const all = acadLoad();
+  host.innerHTML = `
+    <div class="acad-hero">
+      <div class="acad-hero-badge">OPENING ACADEMY</div>
+      <h1>Learn openings the <em>right</em> way</h1>
+      <p>Complete courses that teach you the ideas, drill them into memory with active recall, and track your mastery — the quality of a paid course, free.</p>
+    </div>
+    <div class="acad-course-grid">
+      ${ACAD_COURSES.map(c => {
+        const prog = all[c.id];
+        const pct = prog ? acadCoursePct(c.id) : 0;
+        const taught = pct >= 100;
+        return `<div class="acad-course-card ${c.ready?'':'soon'}" ${c.ready?`onclick="acadOpenCourse('${c.id}')"`:''}>
+          <div class="acad-cc-top">
+            <span class="acad-cc-eco">${c.eco}</span>
+            ${taught?'<span class="acad-cc-taught">✓ TAUGHT</span>':(pct>0?`<span class="acad-cc-pct">${pct}%</span>`:'')}
+          </div>
+          <div class="acad-cc-name">${acadEsc(c.name)}</div>
+          <div class="acad-cc-blurb">${acadEsc(c.blurb)}</div>
+          <div class="acad-cc-bar"><span style="width:${pct}%"></span></div>
+          <div class="acad-cc-cta">${c.ready?(pct>0?'Continue course →':'Start course →'):'Coming soon'}</div>
+        </div>`;
+      }).join('')}
+      <div class="acad-course-card soon">
+        <div class="acad-cc-name" style="color:var(--text3)">24 more openings</div>
+        <div class="acad-cc-blurb">Ruy Lopez, Sicilian, Caro-Kann, French, King's Indian and more — built to the same standard, one at a time.</div>
+        <div class="acad-cc-cta">Coming soon</div>
+      </div>
+    </div>`;
+}
+
+function acadCoursePct(courseId){
+  // mastery % = weighted: lessons 40%, drills 35%, mixed 15%, mastery 10%
+  const all = acadLoad(); const p = all[courseId]; if(!p) return 0;
+  if(!ACAD || ACAD.id !== courseId){ // can't compute precisely without course; use steps done ratio fallback
+    const done = Object.values(p.steps||{}).filter(s=>s.done).length;
+    return Math.min(100, Math.round(done * 6));
+  }
+  const steps = ACAD.roadmap;
+  let total=0, got=0;
+  steps.forEach(s => {
+    const w = s.type==='lesson'?2 : s.type==='drill'?2 : s.type==='mixed'?3 : s.type==='mastery'?3 : 1;
+    total += w;
+    const st = p.steps[s.id];
+    if(st && st.done) got += w;
+  });
+  return total ? Math.round(100*got/total) : 0;
+}
+
+// ═══════════════ COURSE VIEW (roadmap) ═══════════════
+async function acadOpenCourse(courseId){
+  const meta = ACAD_COURSES.find(c=>c.id===courseId);
+  if(!meta || !meta.ready) return;
+  // load course data
+  if(!ACAD || ACAD.id !== courseId){
+    try { const r = await fetch(meta.file, {cache:'force-cache'}); ACAD = await r.json(); }
+    catch(e){ alert('Could not load course.'); return; }
+  }
+  document.getElementById('acad-home').style.display='none';
+  const cv = document.getElementById('acad-course');
+  cv.style.display='block';
+  acadRenderRoadmap();
+  window.scrollTo(0,0);
+}
+window.acadBackHome = function(){
+  document.getElementById('acad-course').style.display='none';
+  acadRenderHome();
+  window.scrollTo(0,0);
+};
+
+// a step is unlocked if it's the first, or the previous step is done
+function acadStepUnlocked(idx){
+  const { p } = acadProg(ACAD.id);
+  if(idx===0) return true;
+  const prev = ACAD.roadmap[idx-1];
+  return !!(p.steps[prev.id] && p.steps[prev.id].done);
+}
+
+function acadRenderRoadmap(){
+  const cv = document.getElementById('acad-course');
+  const { p } = acadProg(ACAD.id);
+  const pct = acadCoursePct(ACAD.id);
+  const dueCount = acadDueLines().length;
+
+  cv.innerHTML = `
+    <div class="acad-course-top">
+      <button class="nop-back" onclick="acadBackHome()" style="margin:0">← All courses</button>
+      <div class="acad-course-title"><em>${acadEsc(ACAD.name)}</em> Course</div>
+      <div class="acad-course-stats">
+        <span class="acad-stat-pill">${pct}% mastered</span>
+        ${p.streak?`<span class="acad-stat-pill">🔥 ${p.streak} day${p.streak===1?'':'s'}</span>`:''}
+        ${dueCount?`<span class="acad-stat-pill due" onclick="acadStartReview()">⏰ ${dueCount} due for review</span>`:''}
+      </div>
+    </div>
+
+    <div class="acad-mastery-bar"><span style="width:${pct}%"></span><div class="acad-mastery-label">${pct>=100?'✓ TAUGHT — course mastered!':`${pct}% to mastery`}</div></div>
+
+    <div class="acad-roadmap">
+      ${ACAD.roadmap.map((s, i) => {
+        const st = p.steps[s.id] || {};
+        const unlocked = acadStepUnlocked(i);
+        const done = !!st.done;
+        const cls = done?'done':(unlocked?'open':'locked');
+        const acc = (st.bestAcc!=null) ? `<span class="acad-rm-acc">${st.bestAcc}%</span>` : '';
+        const conn = i < ACAD.roadmap.length-1 ? `<div class="acad-rm-connector ${done?'done':''}"></div>` : '';
+        return `<div class="acad-rm-step ${cls}" ${unlocked?`onclick="acadStartStep('${s.id}')"`:''}>
+            <div class="acad-rm-icon">${done?'✓':(unlocked?s.icon:'🔒')}</div>
+            <div class="acad-rm-info">
+              <div class="acad-rm-title">${acadEsc(s.title)} ${acc}</div>
+              <div class="acad-rm-sub">${acadEsc(s.sub)}</div>
+            </div>
+            <div class="acad-rm-type">${s.type}</div>
+          </div>${conn}`;
+      }).join('')}
+    </div>`;
+}
+
+// ═══════════════ STEP DISPATCH ═══════════════
+window.acadStartStep = function(stepId){
+  const step = ACAD.roadmap.find(s=>s.id===stepId);
+  if(!step) return;
+  const idx = ACAD.roadmap.indexOf(step);
+  if(!acadStepUnlocked(idx)) return;
+  acadCurrentStep = step;
+  if(step.type==='intro') acadShowIntro();
+  else if(step.type==='ideas') acadShowIdeas();
+  else if(step.type==='lesson') acadStartLesson(step);
+  else if(step.type==='drill') acadStartDrill(step);
+  else if(step.type==='mixed') acadStartMixed(step);
+  else if(step.type==='mastery') acadStartMastery(step);
+};
+let acadCurrentStep = null;
+
+function acadMarkDone(stepId, bestAcc){
+  const { p, save } = acadProg(ACAD.id);
+  const st = p.steps[stepId] || {};
+  st.done = true;
+  if(bestAcc!=null) st.bestAcc = (st.bestAcc==null)? bestAcc : Math.max(st.bestAcc, bestAcc);
+  p.steps[stepId] = st;
+  // streak: count a study day
+  const today = new Date().toDateString();
+  if(p.lastStudy !== today){ p.streak = (p.lastStudy && (Date.now()-new Date(p.lastStudy).getTime())<2*864e5) ? (p.streak||0)+1 : 1; p.lastStudy = today; }
+  save();
+}
+
+// ═══════════════ INTRO / IDEAS (reading lessons) ═══════════════
+function acadShowIntro(){
+  const host = document.getElementById('acad-course');
+  const intro = ACAD.introduction;
+  host.innerHTML = `
+    <div class="acad-lesson-wrap">
+      <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0 0 16px">← Roadmap</button>
+      <div class="acad-read">
+        <div class="acad-read-icon">🏁</div>
+        <h1>${acadEsc(intro.title)}</h1>
+        ${intro.body.map(p=>`<p>${acadEsc(p)}</p>`).join('')}
+        <button class="btn btn-gold" onclick="acadCompleteReading('intro')">Got it — continue →</button>
+      </div>
+    </div>`;
+  window.scrollTo(0,0);
+}
+function acadShowIdeas(){
+  const host = document.getElementById('acad-course');
+  const sec = (s) => `<div class="acad-idea-block"><h3>${acadEsc(s.title)}</h3>${s.points.map(pt=>`<div class="acad-idea"><div class="acad-idea-h">${acadEsc(pt.h)}</div><div class="acad-idea-t">${acadEsc(pt.t)}</div></div>`).join('')}</div>`;
+  host.innerHTML = `
+    <div class="acad-lesson-wrap">
+      <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0 0 16px">← Roadmap</button>
+      <div class="acad-read">
+        <div class="acad-read-icon">📘</div>
+        <h1>Opening Ideas</h1>
+        ${sec(ACAD.ideas)}
+        ${sec(ACAD.structures)}
+        ${sec(ACAD.mistakes)}
+        <button class="btn btn-gold" onclick="acadCompleteReading('ideas')">Got it — continue →</button>
+      </div>
+    </div>`;
+  window.scrollTo(0,0);
+}
+window.acadCompleteReading = function(stepId){ acadMarkDone(stepId, null); acadRenderRoadmap(); };
+
+// ═══════════════ LESSON (interactive board walkthrough) ═══════════════
+let alesson = null;
+function acadBuildStates(sans){
+  const states=[parseFEN(startFEN())]; let st=states[0]; const clean=[];
+  for(const san of sans){ let mv; try{mv=sanToMove(san,st);}catch(e){mv=null;} if(!mv) break; st=applyMove(st,mv); clean.push(san); states.push(st); }
+  return {states, sans:clean};
+}
+function acadStartLesson(step){
+  const L = ACAD.lessons[step.line];
+  if(!L){ alert('Lesson data missing.'); return; }
+  const built = acadBuildStates(L.s);
+  alesson = { step, L, sans:built.sans, states:built.states, idx:0 };
+  const host = document.getElementById('acad-course');
+  host.innerHTML = `
+    <div class="acad-lesson-wrap">
+      <div class="acad-lesson-top">
+        <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0">← Roadmap</button>
+        <div class="acad-lesson-title">${acadEsc(L.family)} — ${acadEsc(L.name)}</div>
+        <span class="acad-lesson-eco">${acadEsc(L.eco||'')}</span>
+      </div>
+      <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="al-prog"></div></div>
+      <div class="acad-lesson-stage">
+        <div class="acad-lesson-boardcol">
+          <div class="expl-board-row">
+            <div class="expl-evalbar" id="al-evalbar"><div class="expl-evalbar-black" id="al-evalbar-black" style="height:50%"></div><div class="expl-evalbar-mid"></div><div class="expl-evalbar-score white" id="al-evalbar-score">0.0</div></div>
+            <div class="expl-board-wrap">
+              <div style="display:flex"><div class="board-ranks" id="al-ranks"></div>
+                <div style="position:relative"><div id="al-board" class="chess-board"></div>
+                  <svg class="arrow-overlay" id="al-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+                </div>
+              </div>
+              <div class="board-files" id="al-files"></div>
+            </div>
+          </div>
+          <div class="acad-lesson-controls">
+            <button class="btn btn-outline btn-sm" onclick="acadLessonPrev()">← Previous</button>
+            <button class="btn btn-outline btn-sm" onclick="flipBoard('al-board')">⇅ Flip</button>
+            <button class="btn btn-gold btn-sm" id="al-next" onclick="acadLessonNext()">Next move →</button>
+          </div>
+        </div>
+        <div class="acad-lesson-side">
+          <div class="acad-lesson-badge" id="al-badge"></div>
+          <div class="acad-lesson-text" id="al-text"></div>
+          <div class="acad-lesson-engine" id="al-engine"></div>
+        </div>
+      </div>
+    </div>`;
+  if(ACAD.side==='b'){ try{ if(!isBoardFlipped('al-board')) flipBoard('al-board'); }catch(e){} }
+  acadLessonStep();
+  window.scrollTo(0,0);
+}
+window.acadLessonNext = function(){
+  if(alesson.idx < alesson.sans.length){ alesson.idx++; acadLessonStep(); }
+  else { acadFinishLesson(); }
+};
+window.acadLessonPrev = function(){ if(alesson.idx>0){ alesson.idx--; acadLessonStep(); } };
+
+function acadLessonStep(){
+  const idx = alesson.idx, state = alesson.states[idx];
+  const hl = [];
+  if(idx>0){ const mv=sanToMove(alesson.sans[idx-1], alesson.states[idx-1]); if(mv){ hl.push(mv.from,mv.to); } }
+  renderBoardEl('al-board','al-ranks','al-files', state, hl, null);
+  const prog=document.getElementById('al-prog'); if(prog) prog.style.width=`${Math.round(100*idx/alesson.sans.length)}%`;
+  const badge=document.getElementById('al-badge'), text=document.getElementById('al-text'), nextBtn=document.getElementById('al-next');
+  clearArrows('al-arrows');
+
+  if(idx===0){
+    badge.textContent='Starting position';
+    text.innerHTML=`This is the <strong>${acadEsc(alesson.L.family)}</strong>. We'll walk through it one move at a time. Read each note to understand <em>what</em> the move does and <em>why</em>. Press <strong>Next</strong> to begin.`;
+    nextBtn.textContent='Start →';
+  } else {
+    const san=alesson.sans[idx-1], moverWhite=((idx-1)%2===0), num=Math.floor((idx-1)/2)+1;
+    badge.textContent = moverWhite?`${num}. ${san}`:`${num}… ${san}`;
+    const note = alesson.L.notes[idx-1];
+    text.innerHTML = note ? acadEsc(note).replace(/^([\dO][^—]*—)/, '<strong>$1</strong>') : `<strong>${acadEsc(san)}</strong>`;
+    const atEnd = idx>=alesson.sans.length;
+    nextBtn.textContent = atEnd ? '✓ Finish lesson' : 'Next move →';
+    if(atEnd && alesson.L.plan){
+      text.innerHTML += `<div class="acad-plan"><div class="acad-plan-h">🧭 How to proceed</div>${acadEsc(alesson.L.plan)}</div>`;
+    }
+  }
+  acadLessonEngine(state);
+}
+async function acadLessonEngine(state){
+  const host=document.getElementById('al-engine'); if(!host) return;
+  if(typeof evalPosition!=='function'){ host.innerHTML=''; return; }
+  host.innerHTML='<span class="acad-eng-think">Engine analysing…</span>';
+  let fen; try{ fen=stateToFEN(state); }catch(e){ host.innerHTML=''; return; }
+  const myToken = (alesson._tok = (alesson._tok||0)+1);
+  try {
+    const r = await evalPosition(fen, 14, 2);
+    if(myToken !== alesson._tok) return;
+    updateEvalBar('al-evalbar-black','al-evalbar-score', r.score, r.isMate, r.mateIn);
+    const alts = (r.alternatives&&r.alternatives.length)?r.alternatives:[{pv:r.pv,score:r.score}];
+    // best-move arrow (gold)
+    if(alts[0] && alts[0].pv){
+      const mv = alts[0].pv.trim().split(/\s+/)[0];
+      acadDrawArrow('al-arrows','al-board', mv, 'rgba(201,168,76,.9)');
+    }
+    const evalText = formatEval(r.score, r.isMate, r.mateIn);
+    host.innerHTML = `<span class="acad-eng-label">Engine:</span> <span class="acad-eng-val">${evalText}</span> <span class="acad-eng-best">best: ${acadEsc(acadUciToSan(alts[0]&&alts[0].pv?alts[0].pv.trim().split(/\s+/)[0]:'', state)||'—')}</span>`;
+  } catch(e){ host.innerHTML=''; }
+}
+function acadUciToSan(uci, state){ if(!uci||uci.length<4) return null; try{ return moveToSAN(state, uci.slice(0,2), uci.slice(2,4), uci.length>4?uci[4].toUpperCase():null); }catch(e){ return null; } }
+function acadDrawArrow(overlayId, boardId, uci, color){
+  const ov=document.getElementById(overlayId); if(!ov||!uci||uci.length<4) return;
+  const from=uci.slice(0,2), to=uci.slice(2,4);
+  if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to)) return;
+  const flipped=isBoardFlipped(boardId);
+  const p1=squareToSVG(from,flipped), p2=squareToSVG(to,flipped);
+  const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1, ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
+  ov.innerHTML=`<defs><marker id="${overlayId}-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${overlayId}-mk)"/>`;
+}
+function acadFinishLesson(){
+  acadMarkDone(alesson.step.id, null);
+  acadSrsEnsure(alesson.L.name);  // register line in SRS as 'learned'
+  const host=document.getElementById('acad-course');
+  host.innerHTML = `<div class="acad-lesson-wrap"><div class="acad-done">
+    <div class="acad-done-icon">✓</div>
+    <h2>Lesson complete</h2>
+    <p>You've learned the <strong>${acadEsc(alesson.L.family)} — ${acadEsc(alesson.L.name)}</strong>. Next up: drill it into memory so you can recall it in a real game.</p>
+    <div class="ndrill-side-row">
+      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon">🗺️</div><div class="ndrill-side-label">Roadmap</div></div>
+      <div class="ndrill-side-card" onclick="acadStartLesson(alesson.step)"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Replay</div></div>
+    </div>
+  </div></div>`;
+}
+
+// ═══════════════ DRILL (single variation, active recall) ═══════════════
+let adrill = null;
+function acadStartDrill(step){
+  const L = ACAD.lessons[step.line];
+  if(!L){ alert('Drill data missing.'); return; }
+  const built = acadBuildStates(L.s);
+  adrill = { step, L, sans:built.sans, states:built.states, idx:0, side:ACAD.side, mistakes:0, attempts:0, mode:'single' };
+  acadDrillRender(`${L.family} — ${L.name}`);
+}
+function acadDrillRender(title){
+  const host=document.getElementById('acad-course');
+  host.innerHTML = `
+    <div class="acad-lesson-wrap">
+      <div class="acad-lesson-top">
+        <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0">← Roadmap</button>
+        <div class="acad-lesson-title">🧠 Drill: ${acadEsc(title)}</div>
+      </div>
+      <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="ad-prog"></div></div>
+      <div class="acad-lesson-stage">
+        <div class="acad-lesson-boardcol">
+          <div class="expl-board-wrap">
+            <div style="display:flex"><div class="board-ranks" id="ad-ranks"></div>
+              <div style="position:relative"><div id="ad-board" class="chess-board"></div>
+                <svg class="arrow-overlay" id="ad-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+              </div>
+            </div>
+            <div class="board-files" id="ad-files"></div>
+          </div>
+          <div class="acad-lesson-controls">
+            <button class="btn btn-outline btn-sm" onclick="flipBoard('ad-board')">⇅ Flip</button>
+          </div>
+        </div>
+        <div class="acad-lesson-side">
+          <div class="acad-lesson-badge" id="ad-badge"></div>
+          <div class="acad-lesson-text" id="ad-text"></div>
+          <div class="acad-lesson-fb" id="ad-fb"></div>
+          <div class="nlearn-actions" id="ad-actions"></div>
+        </div>
+      </div>
+    </div>`;
+  if(adrill.side==='b'){ try{ if(!isBoardFlipped('ad-board')) flipBoard('ad-board'); }catch(e){} }
+  acadDrillStep();
+  window.scrollTo(0,0);
+}
+function acadDrillStep(){
+  const idx=adrill.idx, total=adrill.sans.length, state=adrill.states[idx];
+  const prog=document.getElementById('ad-prog'); if(prog) prog.style.width=`${Math.round(100*idx/total)}%`;
+  clearArrows('ad-arrows');
+  if(idx>=total){ acadDrillComplete(); return; }
+  const moverWhite=(idx%2===0), userTurn=(adrill.side==='w')===moverWhite;
+  const hl = idx>0 ? (()=>{ const mv=sanToMove(adrill.sans[idx-1],adrill.states[idx-1]); return mv?[mv.from,mv.to]:[]; })() : [];
+  renderBoardEl('ad-board','ad-ranks','ad-files', state, hl, null);
+  const badge=document.getElementById('ad-badge'), text=document.getElementById('ad-text'), fb=document.getElementById('ad-fb'), actions=document.getElementById('ad-actions');
+  fb.innerHTML=''; actions.innerHTML='';
+  if(userTurn){
+    badge.textContent=`Move ${Math.floor(idx/2)+1}${moverWhite?'.':'…'} — your turn`;
+    text.innerHTML=`Play the move from this variation. Think about the idea, not just the move.`;
+    adrill.awaiting=true;
+    makeBoardInteractive('ad-board', state, acadDrillUserMove);
+  } else {
+    badge.textContent='Opponent replies…';
+    text.innerHTML=`Opponent plays <strong>${acadEsc(adrill.sans[idx])}</strong>.`;
+    adrill.awaiting=false;
+    setTimeout(()=>{ if(adrill){ adrill.idx++; acadDrillStep(); } }, 550);
+  }
+}
+function acadDrillUserMove(from,to,newState,san){
+  if(!adrill.awaiting) return;
+  const idx=adrill.idx, expected=adrill.sans[idx];
+  const norm=s=>(s||'').replace(/[+#!?]/g,'');
+  const fb=document.getElementById('ad-fb'), actions=document.getElementById('ad-actions');
+  adrill.attempts++;
+  if(norm(san)===norm(expected)){
+    adrill.awaiting=false;
+    fb.innerHTML=`<span class="nlearn-fb-ok">✓ ${acadEsc(expected)} — correct!</span>`;
+    adrill.idx++;
+    setTimeout(()=>{ if(adrill) acadDrillStep(); }, 350);
+  } else {
+    adrill.mistakes++;
+    adrill.awaiting=false;
+    fb.innerHTML=`<span class="nlearn-fb-wrong">✗ Not quite. The move here is <strong>${acadEsc(expected)}</strong>.</span>`;
+    // explain via the lesson note for this ply
+    const note = adrill.L.notes[idx];
+    if(note){ fb.innerHTML += `<div class="acad-drill-why">${acadEsc(note)}</div>`; }
+    // show correct arrow
+    const mv=sanToMove(expected, adrill.states[idx]);
+    if(mv) acadDrawArrow('ad-arrows','ad-board', mv.from+mv.to, 'rgba(110,200,130,.9)');
+    actions.innerHTML=`<button class="nop-mini-btn gold" onclick="acadDrillRetry()">↺ Try again</button> <button class="nop-mini-btn" onclick="acadDrillReveal()">Show & continue →</button>`;
+    renderBoardEl('ad-board','ad-ranks','ad-files', adrill.states[idx], [], null);
+    if(mv) acadDrawArrow('ad-arrows','ad-board', mv.from+mv.to, 'rgba(110,200,130,.9)');
+  }
+}
+window.acadDrillRetry = function(){ document.getElementById('ad-fb').innerHTML=''; document.getElementById('ad-actions').innerHTML=''; clearArrows('ad-arrows'); adrill.awaiting=true; makeBoardInteractive('ad-board', adrill.states[adrill.idx], acadDrillUserMove); };
+window.acadDrillReveal = function(){ adrill.idx++; acadDrillStep(); };
+function acadDrillComplete(){
+  const total=adrill.sans.length;
+  const userMoves = adrill.sans.filter((_,i)=>((i%2===0)===(adrill.side==='w'))).length || 1;
+  const acc = Math.max(0, Math.round(100*(userMoves-adrill.mistakes)/userMoves));
+  acadMarkDone(adrill.step.id, acc);
+  acadSrsUpdate(adrill.L.name, adrill.mistakes===0);  // feed spaced repetition
+  const host=document.getElementById('acad-course');
+  const perfect=adrill.mistakes===0;
+  host.innerHTML = `<div class="acad-lesson-wrap"><div class="acad-done">
+    <div class="acad-done-icon">${perfect?'🏆':'✓'}</div>
+    <h2>${perfect?'Perfect drill!':'Drill complete'}</h2>
+    <p>${acc}% accuracy${perfect?' — flawless recall. This line is locked in.':` — ${adrill.mistakes} slip${adrill.mistakes===1?'':'s'}. Run it again to sharpen it.`}</p>
+    <div class="ndrill-side-row">
+      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon">🗺️</div><div class="ndrill-side-label">Roadmap</div></div>
+      <div class="ndrill-side-card" onclick="acadStartDrill(adrill.step)"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Drill again</div></div>
+    </div>
+  </div></div>`;
+}
+
+// ═══════════════ MIXED TRAINING (random learned variations) ═══════════════
+let amixed = null;
+function acadLearnedLines(){
+  // lines whose lesson step is done
+  const { p } = acadProg(ACAD.id);
+  const learned = [];
+  ACAD.roadmap.forEach(s => { if(s.type==='lesson' && p.steps[s.id] && p.steps[s.id].done && ACAD.lessons[s.line]) learned.push(s.line); });
+  // fallback: if nothing marked, use all lessons
+  return learned.length ? learned : Object.keys(ACAD.lessons);
+}
+function acadStartMixed(step){
+  const lines = acadLearnedLines();
+  // build a pool of test positions: each user-move across each line
+  const pool = [];
+  lines.forEach(name => {
+    const L = ACAD.lessons[name]; const built = acadBuildStates(L.s);
+    for(let i=0;i<built.sans.length;i++){
+      const moverWhite=(i%2===0);
+      if((ACAD.side==='w')===moverWhite){
+        pool.push({ name, family:L.family, path:built.sans.slice(0,i), expect:built.sans[i], ply:i, note:L.notes[i] });
+      }
+    }
+  });
+  // shuffle
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  const qs = pool.slice(0, Math.min(15, pool.length));
+  amixed = { step, qs, i:0, correct:0, wrong:0, wrongList:[] };
+  acadMixedStep();
+}
+function acadMixedStep(){
+  const host=document.getElementById('acad-course');
+  const total=amixed.qs.length;
+  if(amixed.i>=total){ acadMixedComplete(); return; }
+  const q=amixed.qs[amixed.i];
+  // build state from path
+  const built=acadBuildStates(q.path); const state=built.states[built.states.length-1];
+  amixed.curState=state;
+  if(!document.getElementById('am-board')){
+    host.innerHTML=`
+      <div class="acad-lesson-wrap">
+        <div class="acad-lesson-top">
+          <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0">← Roadmap</button>
+          <div class="acad-lesson-title">🎯 Mixed Training</div>
+        </div>
+        <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="am-prog"></div></div>
+        <div class="acad-lesson-stage">
+          <div class="acad-lesson-boardcol">
+            <div class="expl-board-wrap"><div style="display:flex"><div class="board-ranks" id="am-ranks"></div>
+              <div style="position:relative"><div id="am-board" class="chess-board"></div>
+                <svg class="arrow-overlay" id="am-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg></div></div>
+              <div class="board-files" id="am-files"></div></div>
+          </div>
+          <div class="acad-lesson-side">
+            <div class="acad-lesson-counter" id="am-counter"></div>
+            <div class="acad-lesson-badge" id="am-badge"></div>
+            <div class="acad-lesson-text" id="am-text"></div>
+            <div class="acad-lesson-fb" id="am-fb"></div>
+          </div>
+        </div>
+      </div>`;
+    if(ACAD.side==='b'){ try{ if(!isBoardFlipped('am-board')) flipBoard('am-board'); }catch(e){} }
+  }
+  const prog=document.getElementById('am-prog'); if(prog) prog.style.width=`${Math.round(100*amixed.i/total)}%`;
+  clearArrows('am-arrows');
+  renderBoardEl('am-board','am-ranks','am-files', state, [], null);
+  makeBoardInteractive('am-board', state, acadMixedUserMove);
+  document.getElementById('am-counter').textContent=`Position ${amixed.i+1} of ${total}`;
+  const moverWhite=(q.ply%2===0);
+  document.getElementById('am-badge').textContent=`Move ${Math.floor(q.ply/2)+1}${moverWhite?'.':'…'} — your move`;
+  document.getElementById('am-text').innerHTML=`You won't be told which variation this is — recall the move from memory.`;
+  document.getElementById('am-fb').innerHTML='';
+  amixed.awaiting=true;
+}
+function acadMixedUserMove(from,to,newState,san){
+  if(!amixed.awaiting) return;
+  const q=amixed.qs[amixed.i]; const norm=s=>(s||'').replace(/[+#!?]/g,'');
+  const fb=document.getElementById('am-fb'); amixed.awaiting=false;
+  if(norm(san)===norm(q.expect)){
+    amixed.correct++;
+    fb.innerHTML=`<span class="nlearn-fb-ok">✓ ${acadEsc(q.expect)} — correct! (${acadEsc(q.family)})</span>`;
+    setTimeout(()=>{ if(amixed){ amixed.i++; acadMixedStep(); } }, 500);
+  } else {
+    amixed.wrong++;
+    amixed.wrongList.push({family:q.family, expect:q.expect, played:san, ply:q.ply});
+    fb.innerHTML=`<span class="nlearn-fb-wrong">✗ It was <strong>${acadEsc(q.expect)}</strong> (${acadEsc(q.family)}).</span>`;
+    const mv=sanToMove(q.expect, amixed.curState);
+    if(mv) acadDrawArrow('am-arrows','am-board', mv.from+mv.to, 'rgba(110,200,130,.9)');
+    setTimeout(()=>{ if(amixed){ amixed.i++; acadMixedStep(); } }, 1300);
+  }
+}
+function acadMixedComplete(){
+  const total=amixed.qs.length, acc=total?Math.round(100*amixed.correct/total):0;
+  acadMarkDone(amixed.step.id, acc);
+  // feed SRS: lines that appeared and were wrong get penalized
+  const wrongFams=new Set(amixed.wrongList.map(w=>w.family));
+  acadLearnedLines().forEach(name=>{ const L=ACAD.lessons[name]; acadSrsUpdate(name, !wrongFams.has(L.family)); });
+  acadShowResults('Mixed Training', acc, amixed.correct, amixed.wrong, total, amixed.wrongList, ()=>acadStartMixed(amixed.step));
+}
+
+// ═══════════════ MASTERY CHECKPOINT ═══════════════
+function acadStartMastery(step){
+  // mastery = mixed over ALL lines, must hit >=90% to earn TAUGHT
+  const lines = Object.keys(ACAD.lessons);
+  const pool=[];
+  lines.forEach(name=>{ const L=ACAD.lessons[name]; const built=acadBuildStates(L.s);
+    for(let i=0;i<built.sans.length;i++){ const mw=(i%2===0); if((ACAD.side==='w')===mw) pool.push({name,family:L.family,path:built.sans.slice(0,i),expect:built.sans[i],ply:i}); } });
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  amixed = { step, qs:pool.slice(0,20), i:0, correct:0, wrong:0, wrongList:[], mastery:true };
+  acadMixedStep();
+}
+// override completion when mastery/review flag set
+const _origMixedComplete = acadMixedComplete;
+acadMixedComplete = function(){
+  if(amixed.review){
+    const total=amixed.qs.length, acc=total?Math.round(100*amixed.correct/total):0;
+    // update SRS per reviewed line based on whether its family had wrongs
+    const wrongFams=new Set(amixed.wrongList.map(w=>w.family));
+    (amixed.reviewLines||[]).forEach(name=>{ const L=ACAD.lessons[name]; acadSrsUpdate(name, !wrongFams.has(L.family)); });
+    acadShowResults('Review Session', acc, amixed.correct, amixed.wrong, total, amixed.wrongList, ()=>acadStartReview());
+    return;
+  }
+  if(amixed.mastery){
+    const total=amixed.qs.length, acc=total?Math.round(100*amixed.correct/total):0;
+    const passed = acc>=90;
+    if(passed) acadMarkDone(amixed.step.id, acc);
+    acadShowResults('Mastery Checkpoint', acc, amixed.correct, amixed.wrong, total, amixed.wrongList, ()=>acadStartMastery(amixed.step), passed);
+    return;
+  }
+  return _origMixedComplete();
+};
+
+// ═══════════════ RESULTS SCREEN ═══════════════
+function acadShowResults(title, acc, correct, wrong, total, wrongList, retryFn, masteryPassed){
+  window._acadRetry = retryFn;
+  const host=document.getElementById('acad-course');
+  const { p } = acadProg(ACAD.id);
+  const weak = wrongList.slice(0,5).map(w=>`Move ${Math.floor(w.ply/2)+1} in ${acadEsc(w.family)}: expected <strong>${acadEsc(w.expect)}</strong>, you played ${acadEsc(w.played||'—')}`);
+  const taughtBanner = masteryPassed===true ? `<div class="acad-taught-banner">✓ TAUGHT — you've mastered the ${acadEsc(ACAD.name)}!</div>`
+    : (masteryPassed===false ? `<div class="acad-taught-fail">So close — you need 90% to earn TAUGHT. Review your weak spots and try again.</div>` : '');
+  host.innerHTML = `<div class="acad-lesson-wrap"><div class="rt-results">
+    ${taughtBanner}
+    <div class="rt-results-acc ${acc>=90?'great':acc>=70?'ok':'low'}">${acc}%</div>
+    <div class="rt-results-sub">${acadEsc(title)} · Accuracy</div>
+    <div class="rt-results-grid">
+      <div class="rt-stat"><div class="rt-stat-n" style="color:#6ec882">${correct}</div><div class="rt-stat-l">Correct</div></div>
+      <div class="rt-stat"><div class="rt-stat-n" style="color:#e0706f">${wrong}</div><div class="rt-stat-l">Incorrect</div></div>
+      <div class="rt-stat"><div class="rt-stat-n">${total}</div><div class="rt-stat-l">Tested</div></div>
+      <div class="rt-stat"><div class="rt-stat-n" style="color:var(--gold)">🔥 ${p.streak||0}</div><div class="rt-stat-l">Streak</div></div>
+    </div>
+    ${weak.length?`<div class="rt-weak"><div class="rt-weak-title">Weakest positions (review these)</div>${weak.map(w=>`<div class="rt-weak-row">${w}</div>`).join('')}</div>`:`<div class="rt-perfect">🏆 Flawless — every position recalled!</div>`}
+    <div class="ndrill-side-row" style="margin-top:18px">
+      <div class="ndrill-side-card" onclick="window._acadRetry&&window._acadRetry()"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Try again</div></div>
+      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon">🗺️</div><div class="ndrill-side-label">Roadmap</div></div>
+    </div>
+  </div></div>`;
+  window.scrollTo(0,0);
+}
+
+// ═══════════════ SPACED REPETITION (SM-2 lite) ═══════════════
+function acadSrsEnsure(lineName){
+  const { p, save } = acadProg(ACAD.id);
+  if(!p.srs[lineName]){ p.srs[lineName] = { ef:2.5, interval:0, due:Date.now(), reps:0, lapses:0 }; save(); }
+}
+function acadSrsUpdate(lineName, correct){
+  const { p, save } = acadProg(ACAD.id);
+  const c = p.srs[lineName] || { ef:2.5, interval:0, due:Date.now(), reps:0, lapses:0 };
+  const DAY = 864e5;
+  if(correct){
+    c.reps += 1;
+    if(c.reps===1) c.interval=1; else if(c.reps===2) c.interval=3; else c.interval=Math.round(c.interval*c.ef);
+    c.ef = Math.max(1.3, c.ef + 0.1);
+  } else {
+    c.reps = 0; c.interval = 0; c.lapses += 1;   // review again very soon (today)
+    c.ef = Math.max(1.3, c.ef - 0.2);
+  }
+  c.due = Date.now() + c.interval*DAY;
+  p.srs[lineName] = c; save();
+}
+function acadDueLines(){
+  if(!ACAD) return [];
+  const { p } = acadProg(ACAD.id);
+  const now = Date.now();
+  return Object.keys(p.srs||{}).filter(name => p.srs[name].due <= now && ACAD.lessons[name]);
+}
+window.acadStartReview = function(){
+  const due = acadDueLines();
+  if(!due.length){ alert('Nothing due for review right now — great job! Come back later.'); return; }
+  // review = mixed over the due lines
+  const pool=[];
+  due.forEach(name=>{ const L=ACAD.lessons[name]; const built=acadBuildStates(L.s);
+    for(let i=0;i<built.sans.length;i++){ const mw=(i%2===0); if((ACAD.side==='w')===mw) pool.push({name,family:L.family,path:built.sans.slice(0,i),expect:built.sans[i],ply:i}); } });
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  amixed = { step:{id:'review'}, qs:pool.slice(0,15), i:0, correct:0, wrong:0, wrongList:[], review:true, reviewLines:due };
+  // on complete, update SRS per line
+  acadMixedStep();
+};
 
 </script>
 </body>
