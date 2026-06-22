@@ -2306,7 +2306,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v7.0 ACADEMY</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v7.1 ACADEMY</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -24338,6 +24338,11 @@ function acadDueLines(){
   const now = Date.now();
   return Object.keys(p.srs||{}).filter(name => p.srs[name].due <= now && ACAD.lessons[name]);
 }
+// expose module-scoped handlers used by inline onclick
+window.acadOpenCourse = acadOpenCourse;
+window.acadRenderRoadmap = acadRenderRoadmap;
+window.acadStartDrill = acadStartDrill;
+window.acadStartLesson = acadStartLesson;
 window.acadStartReview = function(){
   const due = acadDueLines();
   if(!due.length){ alert('Nothing due for review right now — great job! Come back later.'); return; }
