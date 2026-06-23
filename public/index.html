@@ -2386,7 +2386,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.1 CREATOR</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.2 CREATOR</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')">🛠️ Course Creator</button>
@@ -24693,13 +24693,31 @@ async function ccLoadExplorer(){
   if(!table) return;
   table.innerHTML='<div class="cc-explorer-loading">Loading master games…</div>';
   let fen; try{ fen=stateToFEN(ccCurrentState()); }catch(e){ table.innerHTML=''; return; }
+  // Try our server proxy first; if that fails, try Lichess directly from the browser.
+  // Whichever path works delivers the data.
+  async function fetchExplorer(){
+    const enc = encodeURIComponent(fen);
+    const sources = [
+      '/api/explorer?fen=' + enc,
+      'https://explorer.lichess.ovh/masters?fen=' + enc + '&moves=12&topGames=0',
+      'https://explorer.lichess.ovh/lichess?variant=standard&fen=' + enc + '&moves=12&topGames=0&recentGames=0'
+    ];
+    let lastErr = 'unknown';
+    for(const src of sources){
+      try {
+        const res = await fetch(src, { headers:{ 'Accept':'application/json' } });
+        if(!res.ok){ lastErr = 'HTTP ' + res.status; continue; }
+        const data = await res.json();
+        if(data && data.error){ lastErr = data.error; continue; }
+        if(data && data.moves){ return data; }
+        lastErr = 'no data';
+      } catch(e){ lastErr = e.message || 'fetch failed'; }
+    }
+    throw new Error(lastErr);
+  }
   try {
-    const url='/api/explorer?fen='+encodeURIComponent(fen);
-    const res=await fetch(url);
+    const data = await fetchExplorer();
     if(token!==CC.explorerToken) return;
-    if(!res.ok){ throw new Error('explorer HTTP '+res.status); }
-    const data=await res.json();
-    if(data && data.error){ throw new Error(data.error); }
     const total=(data.white||0)+(data.draws||0)+(data.black||0);
     if(sub) sub.textContent=total?`${ccFmtNum(total)} games`:'';
     if(!data.moves||!data.moves.length){ table.innerHTML='<div class="cc-explorer-off">No master games recorded from this position.</div>'; return; }

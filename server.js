@@ -79,6 +79,12 @@ function nodeFetch(url, opts = {}) {
       headers: { 'User-Agent': 'GambitChessAcademy/1.0', ...opts.headers }
     };
     const req = lib.request(reqOpts, (r) => {
+      // follow redirects (up to a small limit) — some APIs 3xx to a canonical URL
+      if (r.statusCode >= 300 && r.statusCode < 400 && r.headers.location && (opts._redirects||0) < 5) {
+        r.resume(); // drain
+        const next = new URL(r.headers.location, url).toString();
+        return resolve(nodeFetch(next, { ...opts, _redirects: (opts._redirects||0)+1 }));
+      }
       let data = '';
       r.on('data', c => data += c);
       r.on('end', () => {
@@ -179,27 +185,42 @@ app.get('/api/lichess/games/:user', async (req, res) => {
 });
 
 app.get('/api/explorer', async (req, res) => {
-  // Proxy the Lichess opening-explorer so the browser avoids CORS / rate-limit issues.
+  // Proxy the Lichess opening-explorer (avoids browser CORS / rate-limit issues).
   const fen = req.query.fen;
   if (!fen) return res.status(400).json({ error: 'fen required' });
-  const params = new URLSearchParams({
-    variant: 'standard',
-    fen: fen,
-    moves: '10',
-    topGames: '0',
-    recentGames: '0'
-  });
-  try {
-    const r = await nodeFetch(`https://explorer.lichess.ovh/lichess?${params}`, {
-      headers: { Accept: 'application/json' }
-    });
-    if (!r.ok) return res.status(r.status).json({ error: `explorer ${r.status}` });
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.json(r.json());
-  } catch (e) {
-    console.error('explorer proxy error:', e.message);
-    res.status(502).json({ error: e.message });
+
+  // Lichess asks API clients to send a descriptive User-Agent (ideally with contact).
+  const UA = 'GambitChessAcademy (https://github.com/osamaoma/gambit-chess-academy)';
+
+  // Try the masters database first (curated master games — what "Master games" should show),
+  // then fall back to the lichess games database if masters is unavailable.
+  const attempts = [
+    `https://explorer.lichess.ovh/masters?fen=${encodeURIComponent(fen)}&moves=12&topGames=0`,
+    `https://explorer.lichess.ovh/lichess?variant=standard&fen=${encodeURIComponent(fen)}&moves=12&topGames=0&recentGames=0`
+  ];
+
+  let lastStatus = 0, lastErr = '';
+  for (const url of attempts) {
+    try {
+      const r = await nodeFetch(url, { headers: { Accept: 'application/json', 'User-Agent': UA }, timeout: 20000 });
+      if (r.ok) {
+        const data = r.json();
+        if (data) {
+          res.setHeader('Cache-Control', 'public, max-age=3600');
+          return res.json(data);
+        }
+        lastErr = 'empty/invalid JSON';
+        continue;
+      }
+      lastStatus = r.status;
+      lastErr = `HTTP ${r.status}`;
+      // 404 just means no data for this position in that DB — try next DB
+    } catch (e) {
+      lastErr = e.message;
+    }
   }
+  console.error('explorer proxy failed:', lastErr);
+  return res.status(lastStatus || 502).json({ error: lastErr || 'explorer unavailable' });
 });
 
 app.get('/api/status', (req, res) => {
