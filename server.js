@@ -185,8 +185,40 @@ app.get('/api/lichess/games/:user', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.get('/api/explorer', async (req, res) => {
+  // Token-authenticated proxy to the Lichess opening explorer.
+  // The token lives ONLY in the server env (LICHESS_TOKEN) — never sent to the browser.
+  const fen = req.query.fen;
+  if (!fen) return res.status(400).json({ error: 'fen required' });
+  const token = process.env.LICHESS_TOKEN;
+  if (!token) return res.status(503).json({ error: 'no-token' });
+
+  const db = (req.query.db === 'masters') ? 'masters' : 'lichess';
+  const base = db === 'masters'
+    ? `https://explorer.lichess.ovh/masters?fen=${encodeURIComponent(fen)}&moves=12&topGames=0`
+    : `https://explorer.lichess.ovh/lichess?variant=standard&fen=${encodeURIComponent(fen)}&speeds=blitz,rapid,classical&ratings=1600,1800,2000,2200,2500&moves=12&topGames=0&recentGames=0`;
+  try {
+    const r = await nodeFetch(base, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+        'User-Agent': 'GambitChessAcademy (https://github.com/osamaoma/gambit-chess-academy)'
+      },
+      timeout: 20000
+    });
+    if (!r.ok) return res.status(r.status).json({ error: `HTTP ${r.status}` });
+    const data = r.json();
+    if (!data) return res.status(502).json({ error: 'invalid JSON' });
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(data);
+  } catch (e) {
+    console.error('explorer proxy error:', e.message);
+    res.status(502).json({ error: e.message });
+  }
+});
+
 app.get('/api/status', (req, res) => {
-  res.json({ status: 'ok', mode: 'lite' });
+  res.json({ status: 'ok', mode: 'lite', explorer: process.env.LICHESS_TOKEN ? 'live' : 'offline' });
 });
 
 

@@ -88,3 +88,23 @@ This app is fully self-contained:
 - All user progress is stored in **browser localStorage** — never sent to a server
 - The optional AI Coach feature requires the user to enter their own Anthropic API key (the key is only proxied through the server to api.anthropic.com; the server never stores it)
 - The chess.com and lichess game-import endpoints fetch public games only — no authentication required
+
+## Enabling live Master-game stats (Course Creator)
+
+Lichess locked their opening-explorer API behind login in Feb 2026. To show real
+%/Games/Winrate stats in the Course Creator, give the server a free Lichess token:
+
+1. Log in at lichess.org → https://lichess.org/account/oauth/token
+2. Click "New personal access token". No special scopes are needed for the explorer.
+   Give it a name (e.g. "Gambit explorer") and create it. Copy the token.
+3. In Render: your service → Environment → Add Environment Variable:
+       Key:   LICHESS_TOKEN
+       Value: (paste the token)
+   Save — Render redeploys automatically.
+
+That's it. The token lives ONLY on the server (never shipped to the browser).
+- With a token set: Course Creator shows live Master-game stats (Move/%/Games/Win rate).
+- Without a token: it automatically falls back to the offline Book-moves panel
+  (real opening names + ECO + engine eval), which always works.
+
+To run locally with stats:  LICHESS_TOKEN=yourtoken node server.js
