@@ -2326,15 +2326,70 @@ input:focus, select:focus, textarea:focus {
   .acad-lesson-text strong{color:var(--text)}
   .acad-lesson-engine{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:13px;color:var(--text2)}
 
+  /* ═══════════════ COURSE CREATOR ═══════════════ */
+  .cc-hero{text-align:center;max-width:680px;margin:14px auto 30px}
+  .cc-hero h1{font-family:'Playfair Display',serif;font-size:38px;color:var(--text);margin:0 0 10px}
+  .cc-hero h1 em{color:var(--gold);font-style:italic}
+  .cc-hero p{font-size:15px;color:var(--text2);line-height:1.6;margin:0 0 22px}
+  .cc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;max-width:900px;margin:30px auto 0}
+  .cc-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .cc-card-name{font-family:'Playfair Display',serif;font-size:19px;color:var(--text)}
+  .cc-card-meta{font-size:12px;color:var(--text3);margin:4px 0 12px}
+  .cc-card-actions{display:flex;gap:6px}
+  .cc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .cc-tool-icon{font-size:20px}
+  .cc-name-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:17px;font-family:'Playfair Display',serif}
+  .cc-name-input:focus{outline:none;border-color:var(--gold)}
+  .cc-analysis-toggle{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:14px;color:var(--text2)}
+  .cc-switch{position:relative;display:inline-block;width:42px;height:24px}
+  .cc-switch input{opacity:0;width:0;height:0}
+  .cc-slider{position:absolute;cursor:pointer;inset:0;background:var(--bg4);border-radius:24px;transition:.2s}
+  .cc-slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .cc-switch input:checked+.cc-slider{background:var(--gold)}
+  .cc-switch input:checked+.cc-slider:before{transform:translateX(18px)}
+  .cc-eval-inline{font-family:'DM Mono',monospace;font-weight:700;color:var(--gold);margin-left:auto}
+  .cc-stage{display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:start}
+  @media(max-width:900px){.cc-stage{grid-template-columns:1fr;justify-items:center}}
+  .cc-board-controls{display:flex;gap:8px;margin-top:14px;justify-content:center}
+  .cc-side{min-width:0;width:100%;max-width:460px;display:flex;flex-direction:column;gap:14px}
+  .cc-analysis-lines{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;min-height:10px}
+  .cc-aline{display:grid;grid-template-columns:54px 1fr;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);align-items:center}
+  .cc-aline:last-child{border-bottom:none}
+  .cc-aline-eval{font-family:'DM Mono',monospace;font-weight:700;font-size:13px}
+  .cc-aline-eval.pos{color:#1f9d63}.cc-aline-eval.neg{color:#e0556a}.cc-aline-eval.eq{color:var(--text2)}
+  .cc-aline-moves{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cc-movetree{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:14px;line-height:2;min-height:44px}
+  .cc-tree-empty{color:var(--text3);font-family:'DM Sans',sans-serif;font-size:13px}
+  .cc-tree-num{color:var(--text3);margin-right:4px}
+  .cc-tree-mv{cursor:pointer;padding:1px 6px;border-radius:5px;margin-right:3px;color:var(--text)}
+  .cc-tree-mv:hover{background:var(--gold3);color:var(--gold)}
+  .cc-note-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;min-height:70px}
+  .cc-note-input:focus{outline:none;border-color:var(--gold)}
+  .cc-explorer{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .cc-explorer-head{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text)}
+  .cc-explorer-sub{font-size:11px;color:var(--text3);font-weight:400}
+  .cc-explorer-loading,.cc-explorer-off{padding:16px 14px;font-size:13px;color:var(--text3);text-align:center}
+  .cc-ex-row{display:grid;grid-template-columns:1fr 44px 60px 90px;gap:8px;align-items:center;padding:8px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
+  .cc-ex-row:last-child{border-bottom:none}
+  .cc-ex-row:hover{background:var(--gold3)}
+  .cc-ex-head{cursor:default;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+  .cc-ex-head:hover{background:none}
+  .cc-ex-move{font-family:'DM Mono',monospace;font-weight:700;color:var(--text)}
+  .cc-ex-pct{font-family:'DM Mono',monospace;color:var(--text2)}
+  .cc-ex-games{font-family:'DM Mono',monospace;color:var(--text3);font-size:12px}
+  .cc-ex-wr{display:flex;height:16px;border-radius:3px;overflow:hidden;background:var(--bg4)}
+  .cc-ex-wr .wr-w{background:#e8e8e8}.cc-ex-wr .wr-d{background:#9a9a9a}.cc-ex-wr .wr-b{background:#3a3a3a}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v7.2 ACADEMY</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.0 CREATOR</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
+    <button class="nav-tab" onclick="showSection('creator')">🛠️ Course Creator</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
     <button class="nav-tab" onclick="showSection('review')">🔬 Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
@@ -2492,6 +2547,14 @@ input:focus, select:focus, textarea:focus {
   <div class="acad-wrap">
     <div id="acad-home"></div>
     <div id="acad-course" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ══════════════ COURSE CREATOR ══════════════ -->
+<div id="sec-creator" class="section">
+  <div class="acad-wrap">
+    <div id="cc-home"></div>
+    <div id="cc-workspace" style="display:none"></div>
   </div>
 </div>
 
@@ -10765,7 +10828,7 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {academy:0, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, analysis:1, review:2, quizzes:3};
+  const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, analysis:2, review:3, quizzes:4};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
@@ -20970,6 +21033,7 @@ window.filterOpCards = function(q){
 function safeInit(){
   try {
     acadInit();
+    try { ccInit(); } catch(e){ console.warn("cc init", e); }
   } catch(e){ console.error('explorer init failed:', e); }
   try {
     initStockfish().catch(err => console.warn('Engine init failed (analysis will be unavailable):', err));
@@ -23790,6 +23854,14 @@ function acadRenderHome(){
     </div>`;
 }
 
+function acadTotalLines(){ return ACAD ? Object.keys(ACAD.lessons).length : 0; }
+function acadLinesDiscovered(){
+  if(!ACAD) return 0;
+  const { p } = acadProg(ACAD.id);
+  let n=0; ACAD.roadmap.forEach(s=>{ if(s.type==='lesson' && p.steps[s.id] && p.steps[s.id].done) n++; });
+  return n;
+}
+
 function acadCoursePct(courseId){
   // mastery % = weighted: lessons 40%, drills 35%, mixed 15%, mastery 10%
   const all = acadLoad(); const p = all[courseId]; if(!p) return 0;
@@ -23845,6 +23917,7 @@ function acadRenderRoadmap(){
       <button class="nop-back" onclick="acadBackHome()" style="margin:0">← All courses</button>
       <div class="acad-course-title"><em>${acadEsc(ACAD.name)}</em> Course</div>
       <div class="acad-course-stats">
+        <span class="acad-stat-pill">📖 ${acadLinesDiscovered()}/${acadTotalLines()} lines learned</span>
         <span class="acad-stat-pill">${pct}% mastered</span>
         ${p.streak?`<span class="acad-stat-pill">🔥 ${p.streak} day${p.streak===1?'':'s'}</span>`:''}
         ${dueCount?`<span class="acad-stat-pill due" onclick="acadStartReview()">⏰ ${dueCount} due for review</span>`:''}
@@ -24149,7 +24222,7 @@ function acadDrillStep(){
   fb.innerHTML=''; actions.innerHTML='';
   if(userTurn){
     badge.textContent=`Move ${Math.floor(idx/2)+1}${moverWhite?'.':'…'} — your turn`;
-    text.innerHTML=`Play the move from this variation. Think about the idea, not just the move.`;
+    text.innerHTML=`<strong>What's the best move?</strong><br><span style="color:var(--text3)">Recall the move from this line and play it on the board.</span>`;
     adrill.awaiting=true;
     makeBoardInteractive('ad-board', state, acadDrillUserMove);
   } else {
@@ -24406,6 +24479,259 @@ window.acadStartReview = function(){
   amixed = { step:{id:'review'}, qs:pool.slice(0,15), i:0, correct:0, wrong:0, wrongList:[], review:true, reviewLines:due };
   // on complete, update SRS per line
   acadMixedStep();
+};
+
+
+// ==== COURSE CREATOR ====
+// ═══════════════════════════════════════════════════════════════
+// COURSE CREATOR — build your own course: analysis board, Stockfish
+// multi-line eval, Lichess opening-explorer stats (games/winrate),
+// move-tree builder, per-position notes, save to localStorage.
+// (Same model as ChessReps: explorer stats via the free Lichess API.)
+// ═══════════════════════════════════════════════════════════════
+const CC = {
+  states: [parseFEN(startFEN())],
+  sans: [],
+  uci: [],
+  tree: { children: [] },     // full move tree being built
+  node: null,                 // current tree node (null = root)
+  courseId: null,
+  name: 'Untitled Course',
+  notes: {},                  // { fenKey: noteText }
+  analysisOn: true,
+  evalToken: 0,
+  explorerToken: 0,
+  flipped: false,
+};
+CC.node = CC.tree;
+
+function ccInit(){
+  CC.tree = { children: [] }; CC.node = CC.tree;
+  CC.states = [parseFEN(startFEN())]; CC.sans = []; CC.uci = [];
+  ccRenderGrid();
+}
+
+// ── library of saved courses ──
+function ccLoad(){ try { return JSON.parse(localStorage.getItem('gambit_cc_courses')) || []; } catch(e){ return []; } }
+function ccStore(a){ try { localStorage.setItem('gambit_cc_courses', JSON.stringify(a)); } catch(e){} }
+function ccEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function ccRenderGrid(){
+  const host = document.getElementById('cc-home'); if(!host) return;
+  document.getElementById('cc-workspace').style.display='none';
+  host.style.display='block';
+  const courses = ccLoad();
+  host.innerHTML = `
+    <div class="cc-hero">
+      <div class="acad-hero-badge">COURSE CREATOR</div>
+      <h1>Build your <em>own</em> course</h1>
+      <p>Explore any opening on a full analysis board with engine evaluation and real master-game stats. Play moves to build your repertoire tree, add your own notes, and save it as a course you can review and train.</p>
+      <button class="acad-cta-btn" style="max-width:260px;margin:0 auto" onclick="ccNewCourse()">+ New Course</button>
+    </div>
+    ${courses.length?`<div class="cc-grid">${courses.map(c=>{
+      const moves=ccCountNodes(c.tree);
+      return `<div class="cc-card">
+        <div class="cc-card-name">${ccEsc(c.name||'Untitled Course')}</div>
+        <div class="cc-card-meta">${moves} move${moves===1?'':'s'} saved${c.notesCount?` · ${c.notesCount} notes`:''}</div>
+        <div class="cc-card-actions">
+          <button class="nop-mini-btn gold" onclick="ccEditCourse('${c.id}')">✏️ Open</button>
+          <button class="nop-mini-btn" onclick="ccDeleteCourse('${c.id}')">🗑</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`:''}`;
+}
+function ccCountNodes(node){ let c=0; (node.children||[]).forEach(ch=>{c+=1+ccCountNodes(ch);}); return c; }
+window.ccDeleteCourse = function(id){ ccStore(ccLoad().filter(c=>c.id!==id)); ccRenderGrid(); };
+
+// ── new / edit course ──
+window.ccNewCourse = function(){
+  CC.courseId=null; CC.name='Untitled Course'; CC.tree={children:[]}; CC.node=CC.tree;
+  CC.states=[parseFEN(startFEN())]; CC.sans=[]; CC.uci=[]; CC.notes={};
+  ccOpenWorkspace();
+};
+window.ccEditCourse = function(id){
+  const c=ccLoad().find(x=>x.id===id); if(!c) return;
+  CC.courseId=c.id; CC.name=c.name||'Untitled Course'; CC.tree=c.tree||{children:[]}; CC.node=CC.tree;
+  CC.notes=c.notes||{}; CC.states=[parseFEN(startFEN())]; CC.sans=[]; CC.uci=[];
+  ccOpenWorkspace();
+};
+function ccOpenWorkspace(){
+  document.getElementById('cc-home').style.display='none';
+  const ws=document.getElementById('cc-workspace'); ws.style.display='block';
+  ws.innerHTML = `
+    <div class="cc-top">
+      <button class="acad-learn-back" onclick="ccBackHome()">←</button>
+      <span class="cc-tool-icon">🛠️</span>
+      <input id="cc-name" class="cc-name-input" value="${ccEsc(CC.name)}" oninput="CC.name=this.value" placeholder="Course name…">
+      <button class="nop-mini-btn gold" onclick="ccSave()">☁ Save</button>
+    </div>
+    <div class="cc-analysis-toggle">
+      <label class="cc-switch"><input type="checkbox" id="cc-analysis-cb" ${CC.analysisOn?'checked':''} onchange="ccToggleAnalysis(this.checked)"><span class="cc-slider"></span></label>
+      <span>Analysis</span>
+      <span class="cc-eval-inline" id="cc-eval-inline"></span>
+    </div>
+    <div class="cc-stage">
+      <div class="cc-board-col">
+        <div class="expl-board-row">
+          <div class="expl-evalbar" id="cc-evalbar"><div class="expl-evalbar-black" id="cc-evalbar-black" style="height:50%"></div><div class="expl-evalbar-mid"></div><div class="expl-evalbar-score white" id="cc-evalbar-score">0.0</div></div>
+          <div class="expl-board-wrap">
+            <div style="display:flex"><div class="board-ranks" id="cc-ranks"></div>
+              <div style="position:relative"><div id="cc-board" class="chess-board"></div>
+                <svg class="arrow-overlay" id="cc-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+              </div>
+            </div>
+            <div class="board-files" id="cc-files"></div>
+          </div>
+        </div>
+        <div class="cc-board-controls">
+          <button class="btn btn-outline btn-sm" onclick="ccUndo()">↶ Undo</button>
+          <button class="btn btn-outline btn-sm" onclick="ccFlip()">⇅ Flip</button>
+          <button class="btn btn-outline btn-sm" onclick="ccReset()">⟲ Reset</button>
+        </div>
+      </div>
+      <div class="cc-side">
+        <div class="cc-analysis-lines" id="cc-analysis-lines"></div>
+        <div class="cc-movetree" id="cc-movetree"></div>
+        <textarea id="cc-note" class="cc-note-input" placeholder="Add a note for this position…" oninput="ccSaveNote(this.value)"></textarea>
+        <div class="cc-explorer">
+          <div class="cc-explorer-head"><span>Master games</span><span class="cc-explorer-sub" id="cc-explorer-sub"></span></div>
+          <div class="cc-explorer-table" id="cc-explorer-table"></div>
+        </div>
+      </div>
+    </div>`;
+  if(CC.flipped){ try{ if(!isBoardFlipped('cc-board')) flipBoard('cc-board'); }catch(e){} }
+  ccRender();
+  window.scrollTo(0,0);
+}
+window.ccBackHome = function(){ ccRenderGrid(); window.scrollTo(0,0); };
+window.ccToggleAnalysis = function(on){ CC.analysisOn=on; ccRender(); };
+
+function ccCurrentState(){ return CC.states[CC.states.length-1]; }
+function ccFenKey(){ try { return stateToFEN(ccCurrentState()).split(' ').slice(0,2).join(' '); } catch(e){ return CC.sans.join(','); } }
+
+function ccRender(){
+  const state=ccCurrentState();
+  const hl=[];
+  if(CC.sans.length){ const mv=sanToMove(CC.sans[CC.sans.length-1], CC.states[CC.states.length-2]); if(mv){ hl.push(mv.from,mv.to); } }
+  renderBoardEl('cc-board','cc-ranks','cc-files', state, hl, null);
+  makeBoardInteractive('cc-board', state, ccOnMove);
+  ccRenderMoveTree();
+  // load note for this position
+  const note=document.getElementById('cc-note'); if(note) note.value = CC.notes[ccFenKey()]||'';
+  if(CC.analysisOn){ ccRunEngine(); ccLoadExplorer(); }
+  else { document.getElementById('cc-analysis-lines').innerHTML=''; document.getElementById('cc-explorer-table').innerHTML='<div class="cc-explorer-off">Turn on Analysis to see master-game stats.</div>'; clearArrows('cc-arrows'); }
+}
+
+function ccOnMove(from,to,newState,san){
+  CC.states.push(newState); CC.sans.push(san);
+  const prev=CC.states[CC.states.length-2];
+  const mv=sanToMove(san,prev);
+  const uci=mv?mv.from+mv.to+(mv.promotion||''):from+to;
+  CC.uci.push(uci);
+  // add to tree
+  let child=(CC.node.children||[]).find(c=>c.uci===uci);
+  if(!child){ child={uci,san,children:[]}; CC.node.children.push(child); }
+  CC.node=child;
+  ccRender();
+}
+window.ccUndo = function(){
+  if(!CC.sans.length) return;
+  CC.sans.pop(); CC.uci.pop(); CC.states.pop();
+  // walk node back to root via path
+  let node=CC.tree; for(const u of CC.uci){ node=node.children.find(c=>c.uci===u)||node; }
+  CC.node=node; ccRender();
+};
+window.ccReset = function(){ CC.states=[parseFEN(startFEN())]; CC.sans=[]; CC.uci=[]; CC.node=CC.tree; clearArrows('cc-arrows'); ccRender(); };
+window.ccFlip = function(){ CC.flipped=!CC.flipped; flipBoard('cc-board'); };
+
+function ccRenderMoveTree(){
+  const host=document.getElementById('cc-movetree'); if(!host) return;
+  if(!CC.sans.length){ host.innerHTML='<div class="cc-tree-empty">Play moves on the board to build your course line.</div>'; return; }
+  let html=''; for(let i=0;i<CC.sans.length;i++){ if(i%2===0) html+=`<span class="cc-tree-num">${i/2+1}.</span>`; html+=`<span class="cc-tree-mv" onclick="ccGoto(${i+1})">${ccEsc(CC.sans[i])}</span>`; }
+  host.innerHTML=html;
+}
+window.ccGoto = function(ply){
+  if(ply<CC.sans.length){ CC.sans=CC.sans.slice(0,ply); CC.uci=CC.uci.slice(0,ply); CC.states=CC.states.slice(0,ply+1);
+    let node=CC.tree; for(const u of CC.uci){ node=node.children.find(c=>c.uci===u)||node; } CC.node=node; ccRender(); }
+};
+window.ccSaveNote = function(v){ const k=ccFenKey(); if(v.trim()) CC.notes[k]=v; else delete CC.notes[k]; };
+
+// ── engine multi-line analysis ──
+async function ccRunEngine(){
+  const token=++CC.evalToken;
+  const linesHost=document.getElementById('cc-analysis-lines');
+  const inline=document.getElementById('cc-eval-inline');
+  if(typeof evalPosition!=='function'){ if(linesHost) linesHost.innerHTML=''; return; }
+  const state=ccCurrentState(); let fen; try{ fen=stateToFEN(state); }catch(e){ return; }
+  try {
+    const r=await evalPosition(fen,16,3);
+    if(token!==CC.evalToken) return;
+    updateEvalBar('cc-evalbar-black','cc-evalbar-score', r.score, r.isMate, r.mateIn);
+    if(inline) inline.textContent=formatEval(r.score,r.isMate,r.mateIn);
+    const alts=(r.alternatives&&r.alternatives.length)?r.alternatives:[{pv:r.pv,score:r.score,isMate:r.isMate,mateIn:r.mateIn}];
+    // top line arrow (blue, like chessreps analysis)
+    clearArrows('cc-arrows');
+    if(alts[0]&&alts[0].pv){ const mv=alts[0].pv.trim().split(/\s+/)[0]; ccArrow(mv,'rgba(56,132,255,.85)'); }
+    if(linesHost){
+      linesHost.innerHTML=alts.slice(0,3).map(a=>{
+        const ev=formatEval(a.score,a.isMate,a.mateIn);
+        const cls=a.isMate?(a.mateIn>0?'pos':'neg'):(a.score>0.3?'pos':(a.score<-0.3?'neg':'eq'));
+        const line=ccPvSan(a.pv,state,8);
+        return `<div class="cc-aline"><span class="cc-aline-eval ${cls}">${ev}</span><span class="cc-aline-moves">${ccEsc(line)}</span></div>`;
+      }).join('');
+    }
+  } catch(e){ if(linesHost) linesHost.innerHTML=''; }
+}
+function ccPvSan(pv,startState,n){ if(!pv) return ''; const ms=pv.trim().split(/\s+/); let st=startState,out=[],cnt=0; for(const u of ms){ if(cnt>=n)break; if(u.length<4)break; const from=u.slice(0,2),to=u.slice(2,4),promo=u.length>4?u[4].toUpperCase():null; let san; try{san=moveToSAN(st,from,to,promo);}catch(e){break;} if(!san)break; out.push(san); st=applyMove(st,{from,to,promotion:promo}); cnt++; } return out.join(' '); }
+function ccArrow(uci,color){ const ov=document.getElementById('cc-arrows'); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped('cc-board'); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="cc-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="11" stroke-linecap="round" marker-end="url(#cc-mk)"/>`; }
+
+// ── Lichess opening-explorer (master-game stats), same source ChessReps uses ──
+async function ccLoadExplorer(){
+  const token=++CC.explorerToken;
+  const table=document.getElementById('cc-explorer-table');
+  const sub=document.getElementById('cc-explorer-sub');
+  if(!table) return;
+  table.innerHTML='<div class="cc-explorer-loading">Loading master games…</div>';
+  let fen; try{ fen=stateToFEN(ccCurrentState()); }catch(e){ table.innerHTML=''; return; }
+  try {
+    const url='https://explorer.lichess.ovh/lichess?variant=standard&speeds=blitz,rapid,classical&ratings=1600,1800,2000,2200,2500&fen='+encodeURIComponent(fen)+'&topGames=0&recentGames=0&moves=8';
+    const res=await fetch(url);
+    if(token!==CC.explorerToken) return;
+    if(!res.ok){ throw new Error('explorer '+res.status); }
+    const data=await res.json();
+    const total=(data.white||0)+(data.draws||0)+(data.black||0);
+    if(sub) sub.textContent=total?`${ccFmtNum(total)} games`:'';
+    if(!data.moves||!data.moves.length){ table.innerHTML='<div class="cc-explorer-off">No master games from this position.</div>'; return; }
+    table.innerHTML=`<div class="cc-ex-row cc-ex-head"><span>Move</span><span>%</span><span>Games</span><span>Win rate</span></div>`+
+      data.moves.map(m=>{
+        const g=(m.white||0)+(m.draws||0)+(m.black||0);
+        const pct=total?Math.round(100*g/total):0;
+        const ww=g?Math.round(100*(m.white||0)/g):0, dd=g?Math.round(100*(m.draws||0)/g):0, bb=g?Math.round(100*(m.black||0)/g):0;
+        return `<div class="cc-ex-row" onclick="ccPlayExplorer('${ccEsc(m.san)}')">
+          <span class="cc-ex-move">${ccEsc(m.san)}</span>
+          <span class="cc-ex-pct">${pct}%</span>
+          <span class="cc-ex-games">${ccFmtNum(g)}</span>
+          <span class="cc-ex-wr"><span class="wr-w" style="width:${ww}%" title="White ${ww}%"></span><span class="wr-d" style="width:${dd}%" title="Draws ${dd}%"></span><span class="wr-b" style="width:${bb}%" title="Black ${bb}%"></span></span>
+        </div>`;
+      }).join('');
+  } catch(e){
+    if(token!==CC.explorerToken) return;
+    table.innerHTML='<div class="cc-explorer-off">Master-game stats need an internet connection. (Engine analysis and your move tree still work offline.)</div>';
+    if(sub) sub.textContent='';
+  }
+}
+function ccFmtNum(n){ if(n>=1e9) return (n/1e9).toFixed(1)+'b'; if(n>=1e6) return (n/1e6).toFixed(1)+'m'; if(n>=1e3) return (n/1e3).toFixed(1)+'k'; return ''+n; }
+window.ccPlayExplorer = function(san){ const st=ccCurrentState(); let mv; try{mv=sanToMove(san,st);}catch(e){mv=null;} if(!mv) return; ccOnMove(mv.from,mv.to,applyMove(st,mv),san); };
+
+// ── save ──
+window.ccSave = function(){
+  const courses=ccLoad();
+  let c;
+  if(CC.courseId){ c=courses.find(x=>x.id===CC.courseId); }
+  if(!c){ c={id:'cc_'+Date.now()}; courses.unshift(c); CC.courseId=c.id; }
+  c.name=CC.name; c.tree=CC.tree; c.notes=CC.notes; c.notesCount=Object.keys(CC.notes).length; c.saved=Date.now();
+  ccStore(courses);
+  const btn=document.querySelector('.cc-top .nop-mini-btn.gold'); if(btn){ const t=btn.textContent; btn.textContent='✓ Saved'; setTimeout(()=>{ if(btn) btn.textContent=t; },1500); }
 };
 
 </script>
