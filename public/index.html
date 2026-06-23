@@ -799,61 +799,61 @@ input::placeholder{color:var(--text3)}
    ════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Refined color palette ── */
-  --bg:           #08090c;
-  --bg-elev-1:    #0e1015;
-  --bg-elev-2:    #14171e;
-  --bg-elev-3:    #1c2029;
-  --bg-elev-4:    #252a36;
+  /* ── LIGHT THEME (Chessly-inspired methodology, original colors) ── */
+  --bg:           #fbeef0;   /* soft pink page background */
+  --bg-elev-1:    #ffffff;   /* cards */
+  --bg-elev-2:    #f6f7fb;   /* subtle panels */
+  --bg-elev-3:    #eef0f6;
+  --bg-elev-4:    #e4e7f0;
 
   --bg2:  var(--bg-elev-1);
   --bg3:  var(--bg-elev-2);
   --bg4:  var(--bg-elev-3);
 
-  /* Borders — subtle, layered */
-  --border:    rgba(255,255,255,.06);
-  --border2:   rgba(255,255,255,.10);
-  --border3:   rgba(255,255,255,.15);
+  /* Borders — soft, light */
+  --border:    rgba(20,24,40,.08);
+  --border2:   rgba(20,24,40,.14);
+  --border3:   rgba(20,24,40,.20);
 
-  /* Text hierarchy — warmer */
-  --text:      #eef0f4;
-  --text2:     #a4a9b5;
-  --text3:     #6c7282;
-  --text-dim:  #3d4250;
+  /* Text hierarchy — dark on light */
+  --text:      #1c2030;
+  --text2:     #565c70;
+  --text3:     #8a90a2;
+  --text-dim:  #b8bccb;
 
-  /* Brand gold — slightly warmer */
-  --gold:      #d4a544;
-  --gold2:     #f0c462;
-  --gold3:     rgba(212, 165, 68, 0.15);
-  --gold-glow: rgba(212, 165, 68, 0.30);
+  /* Brand accent — teal (Chessly-style), replacing gold as the primary accent */
+  --gold:      #15b8a6;
+  --gold2:     #19d3bd;
+  --gold3:     rgba(21, 184, 166, 0.12);
+  --gold-glow: rgba(21, 184, 166, 0.28);
 
   /* Semantic colors */
-  --green:     #1f8a5e;
-  --green2:    #2dd4a0;
+  --green:     #1f9d63;
+  --green2:    #2dd48a;
   --green3:    #7fdcb4;
-  --red:       #c93d3d;
-  --red2:      #ee6464;
-  --red3:      #ff8989;
-  --blue:      #3b82f6;
-  --blue2:     #60a5fa;
+  --red:       #e0556a;
+  --red2:      #f06a7e;
+  --red3:      #ff8e9e;
+  --blue:      #3884ff;
+  --blue2:     #5a9bff;
   --blue3:     #93c5fd;
 
   /* Annotations */
-  --brilliant:    #14e8c2;
-  --inaccuracy:   #f0c454;
-  --mistake:      #ff8c52;
-  --blunder:      #ef4444;
+  --brilliant:    #12c2a8;
+  --inaccuracy:   #e0a020;
+  --mistake:      #f0824a;
+  --blunder:      #e0455a;
 
   /* Board */
-  --ws: #ebd5b3;
-  --bs: #a07a52;
+  --ws: #eef2f6;
+  --bs: #7e9bb5;
 
-  /* Shadows — layered for depth */
-  --shadow-sm:  0 1px 2px rgba(0,0,0,.4);
-  --shadow:     0 2px 8px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.5);
-  --shadow-md:  0 4px 16px rgba(0,0,0,.4), 0 2px 4px rgba(0,0,0,.45);
-  --shadow-lg:  0 10px 40px rgba(0,0,0,.5), 0 4px 12px rgba(0,0,0,.4);
-  --shadow-xl:  0 24px 60px rgba(0,0,0,.6), 0 8px 20px rgba(0,0,0,.45);
+  /* Shadows — soft, light-theme */
+  --shadow-sm:  0 1px 2px rgba(40,50,90,.06);
+  --shadow:     0 2px 10px rgba(40,50,90,.08), 0 1px 2px rgba(40,50,90,.06);
+  --shadow-md:  0 6px 20px rgba(40,50,90,.10), 0 2px 6px rgba(40,50,90,.06);
+  --shadow-lg:  0 14px 40px rgba(40,50,90,.12), 0 4px 12px rgba(40,50,90,.08);
+  --shadow-xl:  0 24px 60px rgba(40,50,90,.16), 0 8px 20px rgba(40,50,90,.10);
   --shadow-glow: 0 0 24px var(--gold-glow);
 
   /* Radii */
@@ -880,7 +880,7 @@ input::placeholder{color:var(--text3)}
 
 /* ── BASE ── */
 body{
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,165,68,.04) 0%, transparent 50%), var(--bg);
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(21,184,166,.05) 0%, transparent 55%), var(--bg);
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   font-size: 14px;
   line-height: 1.55;
@@ -2300,13 +2300,39 @@ input:focus, select:focus, textarea:focus {
   .acad-taught-banner{background:linear-gradient(135deg,rgba(110,200,130,.18),rgba(201,168,76,.12));border:1.5px solid rgba(110,200,130,.4);border-radius:14px;padding:16px;font-family:'Playfair Display',serif;font-size:19px;color:#8fd9a8;margin-bottom:22px}
   .acad-taught-fail{background:rgba(224,112,111,.1);border:1px solid rgba(224,112,111,.3);border-radius:12px;padding:14px;font-size:14px;color:#e0a0a0;margin-bottom:20px}
 
+  /* ═══════════ CHESSLY-STYLE LEARN FLOW ═══════════ */
+  .acad-learn-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .acad-learn-back{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-size:18px;cursor:pointer;flex-shrink:0}
+  .acad-learn-back:hover{background:var(--bg3)}
+  .acad-learn-titles{flex:1;min-width:0}
+  .acad-learn-chapter{font-size:18px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:8px}
+  .acad-learn-chapter span{color:var(--text)}
+  .acad-learn-sub{font-size:13px;color:var(--text2);margin-top:2px}
+  .acad-learn-progressbar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:22px}
+  .acad-learn-progressbar>div{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .35s;border-radius:4px}
+  .acad-stepper{display:flex;gap:8px;margin-bottom:16px}
+  .acad-step-btn{width:46px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;cursor:pointer;box-shadow:var(--shadow-sm);transition:all .12s}
+  .acad-step-btn:hover{background:var(--bg3);transform:translateY(-1px)}
+  .acad-step-btn:active{transform:translateY(0)}
+  .acad-viewing-old{display:inline-block;background:#fbe9c0;color:#9a7016;font-weight:700;font-size:13px;padding:8px 16px;border-radius:10px;margin-bottom:14px}
+  .acad-learn-move{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px}
+  .acad-opp-note{font-size:14px;color:var(--red);font-weight:600;margin-bottom:8px}
+  .acad-learn-cta{margin-top:18px}
+  .acad-cta-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#fff;font-size:15px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-md);transition:all .14s;font-family:'DM Sans',sans-serif}
+  .acad-cta-btn:hover{background:var(--gold2);transform:translateY(-2px)}
+  /* light-theme card surfaces for the lesson */
+  .acad-lesson-side{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+  .acad-lesson-text{font-size:15.5px;line-height:1.7;color:var(--text2)}
+  .acad-lesson-text strong{color:var(--text)}
+  .acad-lesson-engine{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:13px;color:var(--text2)}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v7.1 ACADEMY</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v7.2 ACADEMY</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
@@ -23805,10 +23831,7 @@ window.acadBackHome = function(){
 
 // a step is unlocked if it's the first, or the previous step is done
 function acadStepUnlocked(idx){
-  const { p } = acadProg(ACAD.id);
-  if(idx===0) return true;
-  const prev = ACAD.roadmap[idx-1];
-  return !!(p.steps[prev.id] && p.steps[prev.id].done);
+  return true;   // everything unlocked — free roam (progress still tracked)
 }
 
 function acadRenderRoadmap(){
@@ -23928,12 +23951,14 @@ function acadStartLesson(step){
   const host = document.getElementById('acad-course');
   host.innerHTML = `
     <div class="acad-lesson-wrap">
-      <div class="acad-lesson-top">
-        <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0">← Roadmap</button>
-        <div class="acad-lesson-title">${acadEsc(L.family)} — ${acadEsc(L.name)}</div>
-        <span class="acad-lesson-eco">${acadEsc(L.eco||'')}</span>
+      <div class="acad-learn-head">
+        <button class="acad-learn-back" onclick="acadRenderRoadmap()">←</button>
+        <div class="acad-learn-titles">
+          <div class="acad-learn-chapter">📖 LEARN <span>${acadEsc(L.family)}</span></div>
+          <div class="acad-learn-sub">${acadEsc(L.name)} · ${acadEsc(L.eco||'')}</div>
+        </div>
       </div>
-      <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="al-prog"></div></div>
+      <div class="acad-learn-progressbar"><div id="al-prog"></div></div>
       <div class="acad-lesson-stage">
         <div class="acad-lesson-boardcol">
           <div class="expl-board-row">
@@ -23947,16 +23972,18 @@ function acadStartLesson(step){
               <div class="board-files" id="al-files"></div>
             </div>
           </div>
-          <div class="acad-lesson-controls">
-            <button class="btn btn-outline btn-sm" onclick="acadLessonPrev()">← Previous</button>
-            <button class="btn btn-outline btn-sm" onclick="flipBoard('al-board')">⇅ Flip</button>
-            <button class="btn btn-gold btn-sm" id="al-next" onclick="acadLessonNext()">Next move →</button>
-          </div>
         </div>
         <div class="acad-lesson-side">
-          <div class="acad-lesson-badge" id="al-badge"></div>
+          <div class="acad-stepper">
+            <button class="acad-step-btn" onclick="acadLessonFirst()" title="Start">⏮</button>
+            <button class="acad-step-btn" onclick="acadLessonPrev()" title="Previous">◀</button>
+            <button class="acad-step-btn" onclick="acadLessonNext()" title="Next">▶</button>
+            <button class="acad-step-btn" onclick="acadLessonLast()" title="End">⏭</button>
+          </div>
+          <div class="acad-viewing-old" id="al-viewing" style="display:none">Viewing Old Moves</div>
           <div class="acad-lesson-text" id="al-text"></div>
           <div class="acad-lesson-engine" id="al-engine"></div>
+          <div class="acad-learn-cta" id="al-cta"></div>
         </div>
       </div>
     </div>`;
@@ -23966,54 +23993,79 @@ function acadStartLesson(step){
 }
 window.acadLessonNext = function(){
   if(alesson.idx < alesson.sans.length){ alesson.idx++; acadLessonStep(); }
-  else { acadFinishLesson(); }
 };
 window.acadLessonPrev = function(){ if(alesson.idx>0){ alesson.idx--; acadLessonStep(); } };
+window.acadLessonFirst = function(){ alesson.idx=0; acadLessonStep(); };
+window.acadLessonLast = function(){ alesson.idx=alesson.sans.length; acadLessonStep(); };
 
 function acadLessonStep(){
   const idx = alesson.idx, state = alesson.states[idx];
+  const total = alesson.sans.length;
+  // highlight the move that was just played to reach this position
   const hl = [];
   if(idx>0){ const mv=sanToMove(alesson.sans[idx-1], alesson.states[idx-1]); if(mv){ hl.push(mv.from,mv.to); } }
   renderBoardEl('al-board','al-ranks','al-files', state, hl, null);
-  const prog=document.getElementById('al-prog'); if(prog) prog.style.width=`${Math.round(100*idx/alesson.sans.length)}%`;
-  const badge=document.getElementById('al-badge'), text=document.getElementById('al-text'), nextBtn=document.getElementById('al-next');
+  const prog=document.getElementById('al-prog'); if(prog) prog.style.width=`${Math.round(100*idx/total)}%`;
+  const text=document.getElementById('al-text'), cta=document.getElementById('al-cta'), viewing=document.getElementById('al-viewing');
   clearArrows('al-arrows');
+  cta.innerHTML='';
 
-  if(idx===0){
-    badge.textContent='Starting position';
-    text.innerHTML=`This is the <strong>${acadEsc(alesson.L.family)}</strong>. We'll walk through it one move at a time. Read each note to understand <em>what</em> the move does and <em>why</em>. Press <strong>Next</strong> to begin.`;
-    nextBtn.textContent='Start →';
-  } else {
-    const san=alesson.sans[idx-1], moverWhite=((idx-1)%2===0), num=Math.floor((idx-1)/2)+1;
-    badge.textContent = moverWhite?`${num}. ${san}`:`${num}… ${san}`;
-    const note = alesson.L.notes[idx-1];
-    text.innerHTML = note ? acadEsc(note).replace(/^([\dO][^—]*—)/, '<strong>$1</strong>') : `<strong>${acadEsc(san)}</strong>`;
-    const atEnd = idx>=alesson.sans.length;
-    nextBtn.textContent = atEnd ? '✓ Finish lesson' : 'Next move →';
-    if(atEnd && alesson.L.plan){
-      text.innerHTML += `<div class="acad-plan"><div class="acad-plan-h">🧭 How to proceed</div>${acadEsc(alesson.L.plan)}</div>`;
+  const atEnd = idx>=total;
+  // "Viewing Old Moves" indicator (Chessly behaviour)
+  if(viewing) viewing.style.display = (!atEnd && idx>0 && idx<total) ? '' : 'none';
+
+  if(atEnd){
+    // end of line: show the plan + finish button, engine eval, no blue arrow
+    text.innerHTML = `<div class="acad-learn-move">✓ End of the ${acadEsc(alesson.L.name)}</div>`;
+    if(alesson.L.plan){
+      text.innerHTML += `<div class="acad-plan"><div class="acad-plan-h">🧭 How to proceed from here</div>${acadEsc(alesson.L.plan)}</div>`;
     }
+    if(viewing) viewing.style.display='none';
+    cta.innerHTML = `<button class="acad-cta-btn" onclick="acadFinishLesson()">✓ Mark lesson complete</button>`;
+    acadLessonEngine(state, null);
+    return;
   }
-  acadLessonEngine(state);
+
+  // we are about to PLAY the move alesson.sans[idx] — preview it with a BLUE arrow
+  const nextSan = alesson.sans[idx];
+  const mv = sanToMove(nextSan, state);
+  const moverWhite = (idx%2===0);
+  const num = Math.floor(idx/2)+1;
+  const whoIsUser = (ACAD.side==='w') === moverWhite;
+  const note = alesson.L.notes[idx];
+
+  // move label + note
+  const moveLabel = moverWhite ? `${num}. ${nextSan}` : `${num}… ${nextSan}`;
+  let body = note ? acadEsc(note).replace(/^([\dO][^—]*—)/, '<strong>$1</strong>') : `<strong>${acadEsc(moveLabel)}</strong>`;
+  // opponent-branch awareness: if it's the opponent's move, frame it as "if they play X"
+  if(!whoIsUser && idx>0){
+    body = `<div class="acad-opp-note">If your opponent plays <strong>${acadEsc(nextSan)}</strong>:</div>` + body;
+  }
+  text.innerHTML = `<div class="acad-learn-move">${acadEsc(moveLabel)}</div>${body}`;
+
+  // BLUE arrow for the move to play (Chessly style)
+  if(mv){ acadDrawArrow('al-arrows','al-board', mv.from+mv.to, 'rgba(56,132,255,.92)'); }
+
+  // next button as a clear CTA
+  cta.innerHTML = `<button class="acad-cta-btn" onclick="acadLessonNext()">${idx===0?'Start the line →':'Play this move →'}</button>`;
+
+  acadLessonEngine(state, mv);
 }
-async function acadLessonEngine(state){
+async function acadLessonEngine(state, lessonMove){
   const host=document.getElementById('al-engine'); if(!host) return;
   if(typeof evalPosition!=='function'){ host.innerHTML=''; return; }
   host.innerHTML='<span class="acad-eng-think">Engine analysing…</span>';
   let fen; try{ fen=stateToFEN(state); }catch(e){ host.innerHTML=''; return; }
   const myToken = (alesson._tok = (alesson._tok||0)+1);
   try {
-    const r = await evalPosition(fen, 14, 2);
+    const r = await evalPosition(fen, 14, 1);
     if(myToken !== alesson._tok) return;
     updateEvalBar('al-evalbar-black','al-evalbar-score', r.score, r.isMate, r.mateIn);
-    const alts = (r.alternatives&&r.alternatives.length)?r.alternatives:[{pv:r.pv,score:r.score}];
-    // best-move arrow (gold)
-    if(alts[0] && alts[0].pv){
-      const mv = alts[0].pv.trim().split(/\s+/)[0];
-      acadDrawArrow('al-arrows','al-board', mv, 'rgba(201,168,76,.9)');
-    }
+    // NOTE: we deliberately keep the BLUE lesson arrow as the focus and do NOT
+    // draw a competing engine arrow. Just surface the evaluation.
     const evalText = formatEval(r.score, r.isMate, r.mateIn);
-    host.innerHTML = `<span class="acad-eng-label">Engine:</span> <span class="acad-eng-val">${evalText}</span> <span class="acad-eng-best">best: ${acadEsc(acadUciToSan(alts[0]&&alts[0].pv?alts[0].pv.trim().split(/\s+/)[0]:'', state)||'—')}</span>`;
+    const verdict = r.isMate ? 'Forced mate' : (Math.abs(r.score)<0.4?'Roughly equal':(r.score>0?'White is better':'Black is better'));
+    host.innerHTML = `<span class="acad-eng-label">Engine:</span> <span class="acad-eng-val">${evalText}</span> <span class="acad-eng-best">${verdict}</span>`;
   } catch(e){ host.innerHTML=''; }
 }
 function acadUciToSan(uci, state){ if(!uci||uci.length<4) return null; try{ return moveToSAN(state, uci.slice(0,2), uci.slice(2,4), uci.length>4?uci[4].toUpperCase():null); }catch(e){ return null; } }
