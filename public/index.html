@@ -2369,16 +2369,16 @@ input:focus, select:focus, textarea:focus {
   .cc-explorer-head{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text)}
   .cc-explorer-sub{font-size:11px;color:var(--text3);font-weight:400}
   .cc-explorer-loading,.cc-explorer-off{padding:16px 14px;font-size:13px;color:var(--text3);text-align:center}
-  .cc-ex-row{display:grid;grid-template-columns:1fr 44px 60px 90px;gap:8px;align-items:center;padding:8px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
-  .cc-ex-row:last-child{border-bottom:none}
-  .cc-ex-row:hover{background:var(--gold3)}
-  .cc-ex-head{cursor:default;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
-  .cc-ex-head:hover{background:none}
-  .cc-ex-move{font-family:'DM Mono',monospace;font-weight:700;color:var(--text)}
-  .cc-ex-pct{font-family:'DM Mono',monospace;color:var(--text2)}
-  .cc-ex-games{font-family:'DM Mono',monospace;color:var(--text3);font-size:12px}
-  .cc-ex-wr{display:flex;height:16px;border-radius:3px;overflow:hidden;background:var(--bg4)}
-  .cc-ex-wr .wr-w{background:#e8e8e8}.cc-ex-wr .wr-d{background:#9a9a9a}.cc-ex-wr .wr-b{background:#3a3a3a}
+  .cc-bk-row{display:grid;grid-template-columns:54px 1fr 56px;gap:8px;align-items:center;padding:8px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
+  .cc-bk-row:last-child{border-bottom:none}
+  .cc-bk-row:hover{background:var(--gold3)}
+  .cc-bk-head{cursor:default;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+  .cc-bk-head:hover{background:none}
+  .cc-bk-move{font-family:'DM Mono',monospace;font-weight:700;color:var(--text)}
+  .cc-bk-name{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cc-bk-eco{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);margin-right:3px}
+  .cc-bk-eval{font-family:'DM Mono',monospace;font-weight:700;font-size:12px;text-align:right;color:var(--text3)}
+  .cc-bk-eval.pos{color:#1f9d63}.cc-bk-eval.neg{color:#e0556a}.cc-bk-eval.eq{color:var(--text2)}
 
 </style>
 </head>
@@ -2386,7 +2386,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.2 CREATOR</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.3 CREATOR</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')">🛠️ Course Creator</button>
@@ -24594,7 +24594,7 @@ function ccOpenWorkspace(){
         <div class="cc-movetree" id="cc-movetree"></div>
         <textarea id="cc-note" class="cc-note-input" placeholder="Add a note for this position…" oninput="ccSaveNote(this.value)"></textarea>
         <div class="cc-explorer">
-          <div class="cc-explorer-head"><span>Master games</span><span class="cc-explorer-sub" id="cc-explorer-sub"></span></div>
+          <div class="cc-explorer-head"><span>📖 Book moves from here</span><span class="cc-explorer-sub" id="cc-explorer-sub"></span></div>
           <div class="cc-explorer-table" id="cc-explorer-table"></div>
         </div>
       </div>
@@ -24619,7 +24619,7 @@ function ccRender(){
   // load note for this position
   const note=document.getElementById('cc-note'); if(note) note.value = CC.notes[ccFenKey()]||'';
   if(CC.analysisOn){ ccRunEngine(); ccLoadExplorer(); }
-  else { document.getElementById('cc-analysis-lines').innerHTML=''; document.getElementById('cc-explorer-table').innerHTML='<div class="cc-explorer-off">Turn on Analysis to see master-game stats.</div>'; clearArrows('cc-arrows'); }
+  else { document.getElementById('cc-analysis-lines').innerHTML=''; document.getElementById('cc-explorer-table').innerHTML='<div class="cc-explorer-off">Turn on Analysis to see book moves and engine evaluation.</div>'; clearArrows('cc-arrows'); }
 }
 
 function ccOnMove(from,to,newState,san){
@@ -24686,59 +24686,62 @@ function ccPvSan(pv,startState,n){ if(!pv) return ''; const ms=pv.trim().split(/
 function ccArrow(uci,color){ const ov=document.getElementById('cc-arrows'); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped('cc-board'); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="cc-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="11" stroke-linecap="round" marker-end="url(#cc-mk)"/>`; }
 
 // ── Lichess opening-explorer (master-game stats), same source ChessReps uses ──
+// ── Book moves (real opening data, offline) + engine eval per candidate ──
+let CC_BOOK = null;
+async function ccEnsureBook(){
+  if(CC_BOOK) return CC_BOOK;
+  try { const r=await fetch('/book_moves.json',{cache:'force-cache'}); CC_BOOK=await r.json(); }
+  catch(e){ CC_BOOK={}; }
+  return CC_BOOK;
+}
 async function ccLoadExplorer(){
   const token=++CC.explorerToken;
   const table=document.getElementById('cc-explorer-table');
   const sub=document.getElementById('cc-explorer-sub');
   if(!table) return;
-  table.innerHTML='<div class="cc-explorer-loading">Loading master games…</div>';
-  let fen; try{ fen=stateToFEN(ccCurrentState()); }catch(e){ table.innerHTML=''; return; }
-  // Try our server proxy first; if that fails, try Lichess directly from the browser.
-  // Whichever path works delivers the data.
-  async function fetchExplorer(){
-    const enc = encodeURIComponent(fen);
-    const sources = [
-      '/api/explorer?fen=' + enc,
-      'https://explorer.lichess.ovh/masters?fen=' + enc + '&moves=12&topGames=0',
-      'https://explorer.lichess.ovh/lichess?variant=standard&fen=' + enc + '&moves=12&topGames=0&recentGames=0'
-    ];
-    let lastErr = 'unknown';
-    for(const src of sources){
-      try {
-        const res = await fetch(src, { headers:{ 'Accept':'application/json' } });
-        if(!res.ok){ lastErr = 'HTTP ' + res.status; continue; }
-        const data = await res.json();
-        if(data && data.error){ lastErr = data.error; continue; }
-        if(data && data.moves){ return data; }
-        lastErr = 'no data';
-      } catch(e){ lastErr = e.message || 'fetch failed'; }
-    }
-    throw new Error(lastErr);
-  }
-  try {
-    const data = await fetchExplorer();
-    if(token!==CC.explorerToken) return;
-    const total=(data.white||0)+(data.draws||0)+(data.black||0);
-    if(sub) sub.textContent=total?`${ccFmtNum(total)} games`:'';
-    if(!data.moves||!data.moves.length){ table.innerHTML='<div class="cc-explorer-off">No master games recorded from this position.</div>'; return; }
-    table.innerHTML=`<div class="cc-ex-row cc-ex-head"><span>Move</span><span>%</span><span>Games</span><span>Win rate</span></div>`+
-      data.moves.map(m=>{
-        const g=(m.white||0)+(m.draws||0)+(m.black||0);
-        const pct=total?Math.round(100*g/total):0;
-        const ww=g?Math.round(100*(m.white||0)/g):0, dd=g?Math.round(100*(m.draws||0)/g):0, bb=g?Math.round(100*(m.black||0)/g):0;
-        return `<div class="cc-ex-row" onclick="ccPlayExplorer('${ccEsc(m.san)}')">
-          <span class="cc-ex-move">${ccEsc(m.san)}</span>
-          <span class="cc-ex-pct">${pct}%</span>
-          <span class="cc-ex-games">${ccFmtNum(g)}</span>
-          <span class="cc-ex-wr"><span class="wr-w" style="width:${ww}%" title="White ${ww}%"></span><span class="wr-d" style="width:${dd}%" title="Draws ${dd}%"></span><span class="wr-b" style="width:${bb}%" title="Black ${bb}%"></span></span>
-        </div>`;
-      }).join('');
-  } catch(e){
-    if(token!==CC.explorerToken) return;
-    table.innerHTML=`<div class="cc-explorer-off">Couldn't load master games (${ccEsc(e.message||'error')}). Engine analysis and your move tree still work.</div>`;
+  table.innerHTML='<div class="cc-explorer-loading">Finding book moves…</div>';
+  const book=await ccEnsureBook();
+  if(token!==CC.explorerToken) return;
+  const prefix=CC.uci.join(',');
+  const moves=book[prefix];
+  if(!moves || !Object.keys(moves).length){
+    table.innerHTML='<div class="cc-explorer-off">No established theory recorded from this exact position — you\u2019re out of book. Use the engine lines above to choose a move.</div>';
     if(sub) sub.textContent='';
+    return;
+  }
+  const entries=Object.keys(moves).map(uci=>({uci, ...moves[uci]}));
+  if(sub) sub.textContent=`${entries.length} book move${entries.length===1?'':'s'}`;
+  // render immediately (names/eco), then fill engine eval per move asynchronously
+  table.innerHTML=`<div class="cc-bk-row cc-bk-head"><span>Move</span><span>Opening</span><span>Eval</span></div>`+
+    entries.map((e,i)=>`<div class="cc-bk-row" onclick="ccPlayExplorer('${ccEsc(e.s)}')">
+      <span class="cc-bk-move">${ccEsc(e.s)}</span>
+      <span class="cc-bk-name"><span class="cc-bk-eco">${ccEsc(e.e||'')}</span> ${ccEsc(ccShortName(e.n))}</span>
+      <span class="cc-bk-eval" id="cc-bk-eval-${i}">·</span>
+    </div>`).join('');
+  // engine eval for each candidate (sequential, cancellable)
+  if(typeof evalPosition==='function'){
+    for(let i=0;i<entries.length;i++){
+      if(token!==CC.explorerToken) return;
+      const e=entries[i];
+      try {
+        const st=ccCurrentState(); const mv=sanToMove(e.s,st); if(!mv) continue;
+        const ns=applyMove(st,mv); const fen=stateToFEN(ns);
+        const r=await evalPosition(fen,12,1);
+        if(token!==CC.explorerToken) return;
+        const cell=document.getElementById('cc-bk-eval-'+i);
+        if(cell){ // eval is from side-to-move after the move; flip to White's perspective for consistency
+          let sc=r.score, mate=r.mateIn;
+          // evalPosition returns from side to move; after our move it's opponent's turn → negate to keep White-positive
+          sc = -sc; if(mate!=null) mate=-mate;
+          cell.textContent=formatEval(sc,r.isMate,mate);
+          cell.className='cc-bk-eval '+(r.isMate?(mate>0?'pos':'neg'):(sc>0.3?'pos':(sc<-0.3?'neg':'eq')));
+        }
+      } catch(err){ /* skip */ }
+    }
   }
 }
+function ccShortName(n){ if(!n) return ''; // trim very long variation names
+  return n.length>42 ? n.slice(0,40)+'…' : n; }
 function ccFmtNum(n){ if(n>=1e9) return (n/1e9).toFixed(1)+'b'; if(n>=1e6) return (n/1e6).toFixed(1)+'m'; if(n>=1e3) return (n/1e3).toFixed(1)+'k'; return ''+n; }
 window.ccPlayExplorer = function(san){ const st=ccCurrentState(); let mv; try{mv=sanToMove(san,st);}catch(e){mv=null;} if(!mv) return; ccOnMove(mv.from,mv.to,applyMove(st,mv),san); };
 

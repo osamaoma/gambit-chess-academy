@@ -44,7 +44,7 @@ app.use('/stockfish', (req, res, next) => {
   next();
 });
 // Opening database JSON: cache for a day, revalidate.
-app.use(['/openings_data.json', '/openings_v5.json', '/opening_detect.json', '/course_italian.json'], (req, res, next) => {
+app.use(['/openings_data.json', '/openings_v5.json', '/opening_detect.json', '/course_italian.json', '/book_moves.json'], (req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
   next();
 });
@@ -56,6 +56,7 @@ app.use((req, res, next) => {
   if (req.path === '/openings_v5.json') return next();             // already set
   if (req.path === '/opening_detect.json') return next();          // already set
   if (req.path === '/course_italian.json') return next();          // already set
+  if (req.path === '/book_moves.json') return next();              // already set
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -182,45 +183,6 @@ app.get('/api/lichess/games/:user', async (req, res) => {
     res.setHeader('Content-Type', 'application/x-ndjson');
     res.send(r.text());
   } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.get('/api/explorer', async (req, res) => {
-  // Proxy the Lichess opening-explorer (avoids browser CORS / rate-limit issues).
-  const fen = req.query.fen;
-  if (!fen) return res.status(400).json({ error: 'fen required' });
-
-  // Lichess asks API clients to send a descriptive User-Agent (ideally with contact).
-  const UA = 'GambitChessAcademy (https://github.com/osamaoma/gambit-chess-academy)';
-
-  // Try the masters database first (curated master games — what "Master games" should show),
-  // then fall back to the lichess games database if masters is unavailable.
-  const attempts = [
-    `https://explorer.lichess.ovh/masters?fen=${encodeURIComponent(fen)}&moves=12&topGames=0`,
-    `https://explorer.lichess.ovh/lichess?variant=standard&fen=${encodeURIComponent(fen)}&moves=12&topGames=0&recentGames=0`
-  ];
-
-  let lastStatus = 0, lastErr = '';
-  for (const url of attempts) {
-    try {
-      const r = await nodeFetch(url, { headers: { Accept: 'application/json', 'User-Agent': UA }, timeout: 20000 });
-      if (r.ok) {
-        const data = r.json();
-        if (data) {
-          res.setHeader('Cache-Control', 'public, max-age=3600');
-          return res.json(data);
-        }
-        lastErr = 'empty/invalid JSON';
-        continue;
-      }
-      lastStatus = r.status;
-      lastErr = `HTTP ${r.status}`;
-      // 404 just means no data for this position in that DB — try next DB
-    } catch (e) {
-      lastErr = e.message;
-    }
-  }
-  console.error('explorer proxy failed:', lastErr);
-  return res.status(lastStatus || 502).json({ error: lastErr || 'explorer unavailable' });
 });
 
 app.get('/api/status', (req, res) => {
