@@ -2396,6 +2396,21 @@ input:focus, select:focus, textarea:focus {
   .cc-endline-btn{width:100%;padding:12px;border-radius:12px;border:1px solid var(--gold);background:var(--gold3);color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;transition:all .14s;font-family:'DM Sans',sans-serif}
   .cc-endline-btn:hover{background:var(--gold);color:#fff}
   .cc-endline-btn.done{background:var(--green);border-color:var(--green);color:#fff}
+  /* eval-colored move tree */
+  .cc-tree-mv.incourse{background:rgba(31,157,99,.14)}
+  .cc-tree-mv.cur{outline:2px solid var(--gold);outline-offset:-1px}
+  .cc-tree-mv.ev-good{color:var(--text)}
+  .cc-tree-mv.ev-inaccuracy{color:#d99a1c}
+  .cc-tree-mv.ev-mistake{color:#e8842e}
+  .cc-tree-mv.ev-blunder{color:#e0455a}
+  /* play / coverage / common */
+  .cc-side-head{display:flex;align-items:center;gap:10px;margin-bottom:-2px}
+  .cc-lines-count{font-size:12px;color:var(--gold);font-weight:600}
+  .cc-coverage{font-size:11px;color:var(--text3);margin-right:auto}
+  .cc-play-btn{padding:6px 16px;border-radius:9px;border:none;background:var(--gold);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+  .cc-play-btn:hover{background:var(--gold2)}
+  .cc-common-toggle{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;cursor:pointer;margin-left:8px}
+  .cc-common-toggle input{cursor:pointer}
 
 </style>
 </head>
@@ -2403,7 +2418,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.4 CREATOR</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.5 CREATOR</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')">🛠️ Course Creator</button>
@@ -24521,6 +24536,8 @@ const CC = {
   explorerToken: 0,
   flipped: false,
   explorerMode: null,         // 'live' | 'offline' (detected from /api/status)
+  moveEval: {},               // { uciPrefix: classification } for tree coloring
+  commonOnly: true,           // Common Moves filter for the stats table
 };
 CC.node = CC.tree;
 
@@ -24611,13 +24628,17 @@ function ccOpenWorkspace(){
       <div class="cc-side">
         <div class="cc-side-head">
           <span class="cc-lines-count" id="cc-lines-count">0 lines in course</span>
+          <span class="cc-coverage" id="cc-coverage"></span>
+          <button class="cc-play-btn" id="cc-play-btn" onclick="ccPlayCourse()">▶ Play</button>
         </div>
         <div class="cc-analysis-lines" id="cc-analysis-lines"></div>
         <div class="cc-movetree" id="cc-movetree"></div>
         <button class="cc-endline-btn" id="cc-endline-btn" onclick="ccEndLine()">🏁 End line &amp; add to course</button>
         <textarea id="cc-note" class="cc-note-input" placeholder="Add a note for this position…" oninput="ccSaveNote(this.value)"></textarea>
         <div class="cc-explorer">
-          <div class="cc-explorer-head"><span id="cc-explorer-title">Moves from here</span><span class="cc-explorer-sub" id="cc-explorer-sub"></span></div>
+          <div class="cc-explorer-head"><span id="cc-explorer-title">Moves from here</span><span class="cc-explorer-sub" id="cc-explorer-sub"></span>
+            <label class="cc-common-toggle"><input type="checkbox" id="cc-common-cb" checked onchange="ccToggleCommon(this.checked)"> Common only</label>
+          </div>
           <div class="cc-explorer-table" id="cc-explorer-table"></div>
         </div>
       </div>
@@ -24670,12 +24691,27 @@ window.ccFlip = function(){ CC.flipped=!CC.flipped; flipBoard('cc-board'); };
 
 function ccRenderMoveTree(){
   const host=document.getElementById('cc-movetree'); if(!host) return;
-  if(!CC.sans.length){ host.innerHTML='<div class="cc-tree-empty">Play moves on the board to build your course line.</div>'; return; }
-  let html=''; for(let i=0;i<CC.sans.length;i++){ if(i%2===0) html+=`<span class="cc-tree-num">${i/2+1}.</span>`; html+=`<span class="cc-tree-mv" onclick="ccGoto(${i+1})">${ccEsc(CC.sans[i])}</span>`; }
+  if(!CC.sans.length){ host.innerHTML='<div class="cc-tree-empty">Play moves on the board to build your course line. Click any move to jump back.</div>'; return; }
+  const curPly=CC.sans.length;
+  let html=''; for(let i=0;i<CC.sans.length;i++){
+    if(i%2===0) html+=`<span class="cc-tree-num">${i/2+1}.</span>`;
+    const white=(i%2===0);
+    const isCur=(i===curPly-1);
+    const prefixSig=CC.uci.slice(0,i+1).join(',');
+    const inCourse=CC.courseLines.some(l=>l.uci.join(',').startsWith(prefixSig));
+    const evalCls=CC.moveEval[prefixSig] || '';   // good | inaccuracy | mistake | blunder
+    html+=`<span class="cc-tree-mv ${white?'w':'b'} ${isCur?'cur':''} ${inCourse?'incourse':''} ev-${evalCls}" onclick="ccGoto(${i+1})">${ccEsc(CC.sans[i])}</span>`;
+  }
   host.innerHTML=html;
 }
+// how many committed course lines pass through the current node
+function ccLinesThroughHere(){
+  if(!CC.uci.length) return CC.courseLines.length;
+  const sig=CC.uci.join(',');
+  return CC.courseLines.filter(l=>l.uci.join(',').startsWith(sig)).length;
+}
 window.ccGoto = function(ply){
-  if(ply<CC.sans.length){ CC.sans=CC.sans.slice(0,ply); CC.uci=CC.uci.slice(0,ply); CC.states=CC.states.slice(0,ply+1);
+  if(ply<=CC.sans.length){ CC.sans=CC.sans.slice(0,ply); CC.uci=CC.uci.slice(0,ply); CC.states=CC.states.slice(0,ply+1);
     let node=CC.tree; for(const u of CC.uci){ node=node.children.find(c=>c.uci===u)||node; } CC.node=node; ccRender(); }
 };
 window.ccSaveNote = function(v){ const k=ccFenKey(); if(v.trim()) CC.notes[k]=v; else delete CC.notes[k]; };
@@ -24703,6 +24739,29 @@ async function ccRunEngine(){
         const line=ccPvSan(a.pv,state,8);
         return `<div class="cc-aline"><span class="cc-aline-eval ${cls}">${ev}</span><span class="cc-aline-moves">${ccEsc(line)}</span></div>`;
       }).join('');
+    }
+    // classify the move that LED to this position (eval swing from the mover's perspective)
+    if(CC.uci.length){
+      const cur = r.isMate ? (r.mateIn>0?99:-99) : r.score;            // White-positive at this (post-move) position, side-to-move is opponent
+      // White-perspective eval after the move:
+      const whiteAfter = (CC.sans.length % 2 === 1) ? cur : -cur;        // if it was White's move (odd ply count now), side-to-move=Black so r.score is from Black; normalize
+      // store raw white-perspective eval per prefix; classify vs previous stored eval
+      const sig = CC.uci.join(',');
+      const prevSig = CC.uci.slice(0,-1).join(',');
+      const prevWhite = CC._evalAt && CC._evalAt[prevSig];
+      CC._evalAt = CC._evalAt || {}; CC._evalAt[sig] = whiteAfter;
+      if(typeof prevWhite === 'number'){
+        const moverWhite = (CC.sans.length % 2 === 1);
+        // gain from the mover's perspective (positive = move kept/improved their standing)
+        const delta = moverWhite ? (whiteAfter - prevWhite) : (prevWhite - whiteAfter);
+        let cls;
+        if(delta <= -2.0) cls='blunder';
+        else if(delta <= -0.9) cls='mistake';
+        else if(delta <= -0.4) cls='inaccuracy';
+        else cls='good';
+        CC.moveEval[sig] = cls;
+        ccRenderMoveTree();  // recolor with the new classification
+      }
     }
   } catch(e){ if(linesHost) linesHost.innerHTML=''; }
 }
@@ -24743,9 +24802,15 @@ async function ccLoadExplorer(){
       if(data.error) throw new Error(data.error);
       const total=(data.white||0)+(data.draws||0)+(data.black||0);
       if(sub) sub.textContent=total?`${ccFmtNum(total)} games`:'';
-      if(!data.moves||!data.moves.length){ table.innerHTML='<div class="cc-explorer-off">No games recorded from this position.</div>'; return; }
+      let movesList = data.moves||[];
+      if(CC.commonOnly){
+        // "Common only": keep moves with >=5% share (mainline replies)
+        movesList = movesList.filter(m=>{ const g=(m.white||0)+(m.draws||0)+(m.black||0); return total && (g/total)>=0.05; });
+        if(!movesList.length) movesList = (data.moves||[]).slice(0,3); // never show empty
+      }
+      if(!movesList.length){ table.innerHTML='<div class="cc-explorer-off">No games recorded from this position.</div>'; return; }
       table.innerHTML=`<div class="cc-ex-row cc-ex-head"><span>Move</span><span>%</span><span>Games</span><span>Win rate</span></div>`+
-        data.moves.map(m=>{
+        movesList.map(m=>{
           const g=(m.white||0)+(m.draws||0)+(m.black||0);
           const pct=total?Math.round(100*g/total):0;
           const ww=g?Math.round(100*(m.white||0)/g):0, dd=g?Math.round(100*(m.draws||0)/g):0, bb=g?Math.round(100*(m.black||0)/g):0;
@@ -24820,7 +24885,118 @@ window.ccEndLine = function(){
 function ccUpdateLinesCount(){
   const el=document.getElementById('cc-lines-count');
   if(el) el.textContent=`${CC.courseLines.length} line${CC.courseLines.length===1?'':'s'} in course`;
+  ccUpdateCoverage();
 }
+window.ccToggleCommon = function(on){ CC.commonOnly=on; ccLoadExplorer(); };
+
+// Coverage: of the committed lines, how deep/complete the repertoire is.
+// Simple, honest metric: average committed line length in moves, capped, shown as a small label.
+function ccUpdateCoverage(){
+  const el=document.getElementById('cc-coverage'); if(!el) return;
+  if(!CC.courseLines.length){ el.textContent=''; return; }
+  const totalPlies=CC.courseLines.reduce((s,l)=>s+l.uci.length,0);
+  const avg=(totalPlies/CC.courseLines.length/2).toFixed(1);
+  el.textContent=`avg depth ${avg} moves`;
+}
+
+// ── "Play" the course: drill against your committed lines ──
+let ccTrain=null;
+window.ccPlayCourse = function(){
+  if(!CC.courseLines.length){ alert('Add at least one line to the course first (use “End line & add to course”).'); return; }
+  // collect test positions: every position where it's the course-author's turn to move.
+  // author side = side to move at ply 0 of the first move of each line's first move's mover.
+  // We treat the course as the author's repertoire for whichever side makes the ODD plies (White) by default,
+  // but infer per line: the author's moves are the ones they chose — we test ALL plies the author would play.
+  // Simplest correct model: author plays the moves at even indices if line starts as White repertoire.
+  // We test every ply: present position before the move, ask for that move.
+  const tests=[];
+  CC.courseLines.forEach(line=>{
+    let st=parseFEN(startFEN());
+    for(let i=0;i<line.sans.length;i++){
+      tests.push({ path: line.sans.slice(0,i), expect: line.sans[i], ply:i });
+      try{ const mv=sanToMove(line.sans[i],st); st=applyMove(st,mv); }catch(e){ break; }
+    }
+  });
+  // test only the author's moves: assume the author is the side moving on even plies (White) unless
+  // a majority of lines look like Black. Heuristic: test plies where (ply % 2 === authorParity).
+  // Default authorParity=0 (White). Keep it simple & predictable.
+  ccTrain={ tests: tests.filter(t=>t.ply%2===0), i:0, correct:0, wrong:0, wrongList:[] };
+  if(!ccTrain.tests.length) ccTrain.tests=tests; // fallback
+  ccRenderTrain();
+};
+function ccRenderTrain(){
+  const ws=document.getElementById('cc-workspace');
+  const t=ccTrain.tests[ccTrain.i], total=ccTrain.tests.length;
+  if(ccTrain.i>=total){ ccTrainResults(); return; }
+  // build position
+  let st=parseFEN(startFEN()); for(const s of t.path){ try{const mv=sanToMove(s,st); st=applyMove(st,mv);}catch(e){} }
+  ccTrain.curState=st;
+  if(!document.getElementById('cct-board')){
+    ws.innerHTML=`<div class="cc-top">
+        <button class="acad-learn-back" onclick="ccExitTrain()">←</button>
+        <span class="cc-tool-icon">▶</span>
+        <div class="cc-name-input" style="flex:1;border:none;background:none">Playing: ${ccEsc(CC.name)}</div>
+      </div>
+      <div class="acad-learn-progressbar"><div id="cct-prog"></div></div>
+      <div class="cc-stage">
+        <div class="cc-board-col">
+          <div class="expl-board-wrap"><div style="display:flex"><div class="board-ranks" id="cct-ranks"></div>
+            <div style="position:relative"><div id="cct-board" class="chess-board"></div>
+              <svg class="arrow-overlay" id="cct-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg></div></div>
+            <div class="board-files" id="cct-files"></div></div>
+        </div>
+        <div class="cc-side">
+          <div class="acad-lesson-counter" id="cct-counter"></div>
+          <div class="acad-lesson-badge" id="cct-badge"></div>
+          <div class="acad-lesson-text" id="cct-msg"></div>
+          <div class="acad-lesson-fb" id="cct-fb"></div>
+        </div>
+      </div>`;
+    if(CC.flipped){ try{ if(!isBoardFlipped('cct-board')) flipBoard('cct-board'); }catch(e){} }
+  }
+  const prog=document.getElementById('cct-prog'); if(prog) prog.style.width=`${Math.round(100*ccTrain.i/total)}%`;
+  clearArrows('cct-arrows');
+  renderBoardEl('cct-board','cct-ranks','cct-files', st, [], null);
+  makeBoardInteractive('cct-board', st, ccTrainMove);
+  document.getElementById('cct-counter').textContent=`Position ${ccTrain.i+1} of ${total}`;
+  document.getElementById('cct-badge').textContent=`Move ${Math.floor(t.ply/2)+1}`;
+  document.getElementById('cct-msg').innerHTML=`<strong>What's your course move here?</strong>`;
+  document.getElementById('cct-fb').innerHTML='';
+  ccTrain.awaiting=true;
+}
+function ccTrainMove(from,to,ns,san){
+  if(!ccTrain.awaiting) return;
+  const t=ccTrain.tests[ccTrain.i], norm=s=>(s||'').replace(/[+#!?]/g,'');
+  const fb=document.getElementById('cct-fb'); ccTrain.awaiting=false;
+  if(norm(san)===norm(t.expect)){
+    ccTrain.correct++; fb.innerHTML=`<span class="nlearn-fb-ok">✓ ${ccEsc(t.expect)} — correct!</span>`;
+    setTimeout(()=>{ if(ccTrain){ ccTrain.i++; ccRenderTrain(); } },350);
+  } else {
+    ccTrain.wrong++; ccTrain.wrongList.push({expect:t.expect,played:san,ply:t.ply});
+    fb.innerHTML=`<span class="nlearn-fb-wrong">✗ Your course says <strong>${ccEsc(t.expect)}</strong>.</span>`;
+    const mv=sanToMove(t.expect, ccTrain.curState); if(mv) ccArrowOn('cct-arrows','cct-board', mv.from+mv.to, 'rgba(110,200,130,.9)');
+    setTimeout(()=>{ if(ccTrain){ ccTrain.i++; ccRenderTrain(); } },1200);
+  }
+}
+function ccArrowOn(ovId,boardId,uci,color){ const ov=document.getElementById(ovId); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped(boardId); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="${ovId}-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${ovId}-mk)"/>`; }
+function ccTrainResults(){
+  const ws=document.getElementById('cc-workspace');
+  const total=ccTrain.tests.length, acc=total?Math.round(100*ccTrain.correct/total):0;
+  ws.innerHTML=`<div class="acad-lesson-wrap"><div class="rt-results">
+    <div class="rt-results-acc ${acc>=90?'great':acc>=70?'ok':'low'}">${acc}%</div>
+    <div class="rt-results-sub">Course recall</div>
+    <div class="rt-results-grid">
+      <div class="rt-stat"><div class="rt-stat-n" style="color:#1f9d63">${ccTrain.correct}</div><div class="rt-stat-l">Correct</div></div>
+      <div class="rt-stat"><div class="rt-stat-n" style="color:#e0556a">${ccTrain.wrong}</div><div class="rt-stat-l">Incorrect</div></div>
+      <div class="rt-stat"><div class="rt-stat-n">${total}</div><div class="rt-stat-l">Tested</div></div>
+    </div>
+    <div class="ndrill-side-row" style="margin-top:18px">
+      <div class="ndrill-side-card" onclick="ccPlayCourse()"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Play again</div></div>
+      <div class="ndrill-side-card" onclick="ccExitTrain()"><div class="ndrill-side-icon">🛠️</div><div class="ndrill-side-label">Back to editor</div></div>
+    </div>
+  </div></div>`;
+}
+window.ccExitTrain = function(){ ccTrain=null; ccOpenWorkspace(); };
 
 // ── save ──
 window.ccSave = function(){
