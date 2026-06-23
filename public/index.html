@@ -3453,6 +3453,18 @@ function renderBoardEl(boardId, ranksId, filesId, state, highlights = [], fromSq
       boardEl.appendChild(div);
     });
   });
+  // user annotations (right-click arrows / highlights) on every board, persisting across re-renders
+  if(typeof makeBoardAnnotatable === 'function'){
+    makeBoardAnnotatable(boardId);
+    // clear annotations automatically when the POSITION changes (new move), like lichess
+    try {
+      const sig = Object.keys(state.board).sort().map(k=>k+state.board[k]).join('')+state.turn;
+      boardEl._posSig = boardEl._posSig || null;
+      if(boardEl._posSig !== null && boardEl._posSig !== sig && typeof clearAnnotations==='function'){ clearAnnotations(boardId); }
+      boardEl._posSig = sig;
+    } catch(e){}
+    if(typeof renderAnnotations === 'function') renderAnnotations(boardId);
+  }
 }
 
 // ════════════════════════════════════════════════════════
