@@ -178,6 +178,30 @@ app.get('/api/lichess/games/:user', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.get('/api/explorer', async (req, res) => {
+  // Proxy the Lichess opening-explorer so the browser avoids CORS / rate-limit issues.
+  const fen = req.query.fen;
+  if (!fen) return res.status(400).json({ error: 'fen required' });
+  const params = new URLSearchParams({
+    variant: 'standard',
+    fen: fen,
+    moves: '10',
+    topGames: '0',
+    recentGames: '0'
+  });
+  try {
+    const r = await nodeFetch(`https://explorer.lichess.ovh/lichess?${params}`, {
+      headers: { Accept: 'application/json' }
+    });
+    if (!r.ok) return res.status(r.status).json({ error: `explorer ${r.status}` });
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(r.json());
+  } catch (e) {
+    console.error('explorer proxy error:', e.message);
+    res.status(502).json({ error: e.message });
+  }
+});
+
 app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', mode: 'lite' });
 });

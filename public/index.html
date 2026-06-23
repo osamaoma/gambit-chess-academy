@@ -2386,7 +2386,7 @@ input:focus, select:focus, textarea:focus {
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.0 CREATOR</span></div>
+  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.1 CREATOR</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')">🛠️ Course Creator</button>
@@ -24694,14 +24694,15 @@ async function ccLoadExplorer(){
   table.innerHTML='<div class="cc-explorer-loading">Loading master games…</div>';
   let fen; try{ fen=stateToFEN(ccCurrentState()); }catch(e){ table.innerHTML=''; return; }
   try {
-    const url='https://explorer.lichess.ovh/lichess?variant=standard&speeds=blitz,rapid,classical&ratings=1600,1800,2000,2200,2500&fen='+encodeURIComponent(fen)+'&topGames=0&recentGames=0&moves=8';
+    const url='/api/explorer?fen='+encodeURIComponent(fen);
     const res=await fetch(url);
     if(token!==CC.explorerToken) return;
-    if(!res.ok){ throw new Error('explorer '+res.status); }
+    if(!res.ok){ throw new Error('explorer HTTP '+res.status); }
     const data=await res.json();
+    if(data && data.error){ throw new Error(data.error); }
     const total=(data.white||0)+(data.draws||0)+(data.black||0);
     if(sub) sub.textContent=total?`${ccFmtNum(total)} games`:'';
-    if(!data.moves||!data.moves.length){ table.innerHTML='<div class="cc-explorer-off">No master games from this position.</div>'; return; }
+    if(!data.moves||!data.moves.length){ table.innerHTML='<div class="cc-explorer-off">No master games recorded from this position.</div>'; return; }
     table.innerHTML=`<div class="cc-ex-row cc-ex-head"><span>Move</span><span>%</span><span>Games</span><span>Win rate</span></div>`+
       data.moves.map(m=>{
         const g=(m.white||0)+(m.draws||0)+(m.black||0);
@@ -24716,7 +24717,7 @@ async function ccLoadExplorer(){
       }).join('');
   } catch(e){
     if(token!==CC.explorerToken) return;
-    table.innerHTML='<div class="cc-explorer-off">Master-game stats need an internet connection. (Engine analysis and your move tree still work offline.)</div>';
+    table.innerHTML=`<div class="cc-explorer-off">Couldn't load master games (${ccEsc(e.message||'error')}). Engine analysis and your move tree still work.</div>`;
     if(sub) sub.textContent='';
   }
 }
