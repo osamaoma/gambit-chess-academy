@@ -9935,98 +9935,66 @@ async function analyseGame(white, black, username){
     const openingName = (bookEntry && bookEntry.n) || (reviewOpenings[fullSeq] && reviewOpenings[fullSeq].n) || null;
     const isBookMove  = !!bookEntry || !!reviewOpenings[fullSeq];
 
-    if(isMate1 || isMate2){
-      // Special handling for mate positions
-      if(loss > 0.5){ ann = 'blunder'; note = 'Allowed checkmate — the position was already lost or the best defence was missed.'; }
-      else if(wasBestMove){ ann = 'best'; }
-      else { ann = 'good'; }
-    } else if(isBookMove){
-      ann = 'book';
-      note = openingName ? ('Opening theory — ' + openingName) : 'A known opening theory move.';
-    } else if(wasBestMove){
-      // Played the exact engine top choice
-      ann = 'best';
-      note = 'The engine\'s top recommended move.';
-    } else {
-      // chess.com/lichess-style: classify by the drop in WIN PROBABILITY, not raw centipawns,
-      // so a small eval dip in an already-winning (or already-lost) position is NOT a "mistake".
-      const wDrop = winPct(playerBefore) - winPct(playerAfter);   // win% the mover gave up
-      if(wDrop < 2){
-        ann = 'excellent';
-        note = 'A very strong move, essentially as good as the engine\'s top choice.';
-      } else if(wDrop < 5){
-        ann = 'good';
-        note = 'A solid, reasonable move.';
-      } else if(wDrop < 10){
-        ann = 'inaccuracy';
-        note = 'Slightly imprecise — a better move kept more of your chances.';
-      } else if(wDrop < 20){
-        ann = 'mistake';
-        note = 'This move noticeably hurt your position — a clearly better continuation was available.';
-      } else {
-        ann = 'blunder';
-        note = 'A serious error that swings the game — a much better move was available.';
-      }
-    }
+    // ── Win % the mover gave up vs. best play (lichess/chess.com model) ──
+    const wDrop = winPct(playerBefore) - winPct(playerAfter);
 
-    // Brilliant: STRICT — true piece sacrifice for big advantage.
-    // Requirements (ALL must hold):
-    //   1. The move was the engine's best (or essentially so)
-    //   2. The moved piece is now HANGING (capturable for less material)
-    //   3. The piece sacrificed is at least a Knight/Bishop value (>= 3)
-    //   4. The resulting position is clearly winning (>= +1.5 for mover)
-    //   5. The mover gave up material compared to before (no equal-value recapture available)
-    let isBrilliant = false;
+    // ── Material context: sound sacrifice (→ brilliant) vs. free hang (→ blunder) ──
+    let isSacrifice = false, hangsPiece = false;
     try {
-      const goodEnough = wasBestMove || loss < 0.05;
-      const isWinning  = playerAfter >= 1.5;
-      let isSacrifice  = false;
-
-      if(goodEnough && isWinning && mv.from && mv.to && reviewHistory[i]?.state && typeof isPieceHanging === 'function'){
-        const stateAfter = reviewHistory[i].state;
+      const stateAfter = reviewHistory[i] && reviewHistory[i].state;
+      if(stateAfter && mv.from && mv.to && typeof isPieceHanging === 'function'){
         const movedPiece = stateAfter.board[mv.to];
-        if(movedPiece && movedPiece[1] !== 'K' && movedPiece[1] !== 'P'){
-          const pieceValue = PIECE_VALUES[movedPiece[1]] || 0;
-          if(pieceValue >= 3){
-            // Use isPieceHanging — returns {kind:'undefended'|'losing-exchange', ...} or null
-            const hanging = isPieceHanging(stateAfter, mv.to);
-            // Sacrifice ONLY if the moved piece is truly hanging now
-            // (undefended OR can be captured by a lesser piece in a losing exchange)
-            if(hanging){
-              isSacrifice = true;
-            }
+        if(movedPiece && movedPiece[1] !== 'K'){
+          const movedVal = PIECE_VALUES[movedPiece[1]] || 0;
+          if(movedVal >= 3 && isPieceHanging(stateAfter, mv.to)){
+            // The moved piece is hanging. Sound sacrifice if the engine still likes the
+            // position; otherwise the move simply hung material.
+            if((wasBestMove || wDrop < 3) && playerAfter >= 1.0 && i > 6) isSacrifice = true;
+            else if(wDrop >= 8) hangsPiece = true;
           }
         }
       }
-      // Also require that this isn't the first 6 plies (opening moves can\'t be brilliant)
-      isBrilliant = isSacrifice && i > 6;
-    } catch(err) {
-      isBrilliant = false;
-    }
+    } catch(e){}
 
-    if(isBrilliant){
+    if(isMate1 || isMate2){
+      if(wDrop >= 25 || playerAfter <= -2){ ann = 'blunder'; note = 'Walked into a forced mate — the defence collapsed.'; }
+      else if(wasBestMove){ ann = 'best'; note = 'The engine\'s top move.'; }
+      else { ann = 'good'; note = 'A reasonable move.'; }
+    } else if(isBookMove){
+      ann = 'book';
+      note = openingName ? ('Opening theory — ' + openingName) : 'A known opening theory move.';
+    } else if(isSacrifice){
+      // Sacrificing a piece for something better
       ann = 'brilliant';
-      note = 'A brilliant sacrifice! Material is given up, but the resulting position is decisively winning.';
+      note = 'A brilliant sacrifice — material is given up for a clearly stronger position.';
       bestLine = '';
-    }
-
-    // Great move: only-move scenarios where a meaningful improvement was found
-    // Heuristic: best move + position was difficult (large eval swing required precision)
-    const isGreat = wasBestMove && i > 6 && Math.abs(before) > 0.5 && Math.abs(loss) < 0.05 && !isBrilliant;
-    if(isGreat && ann === 'best'){
-      // upgrade "best" to "great" if this was a critical moment
-      const evalSwing = Math.abs(before - after);
-      if(evalSwing > 0.8){
-        ann = 'great';
-        note = 'A great move — found the precise continuation in a critical position.';
-      }
-    }
-
-    // Miss: detect cases where a winning advantage was thrown away
-    // Was winning (>1.5) and now equal/lost — this is a "missed win"
-    if(playerBefore > 1.5 && playerAfter < 0.3 && ann !== 'blunder'){
+    } else if(wasBestMove){
+      // The best move
+      ann = 'best';
+      note = 'The engine\'s top recommended move.';
+    } else if(hangsPiece){
+      // Completely hanging a piece
+      ann = 'blunder';
+      note = 'Hangs a piece — material is given away for nothing.';
+    } else if(playerBefore >= 1.5 && playerAfter >= 0.5 && wDrop >= 10){
+      // A chance to grow the advantage was missed (still winning, but a much stronger move existed)
       ann = 'miss';
-      note = 'Missed a winning continuation. The position was much better but slipped away.';
+      note = 'Missed a chance to grow your advantage — a much stronger move was available.';
+    } else if(wDrop >= 20){
+      ann = 'blunder';
+      note = 'A serious error that swings the game — a much better move was available.';
+    } else if(wDrop >= 10){
+      // A move that worsens the position
+      ann = 'mistake';
+      note = 'This move worsened your position — a clearly better continuation was available.';
+    } else if(wDrop >= 5){
+      // Not good, not bad — a slight imprecision
+      ann = 'inaccuracy';
+      note = 'A slight imprecision — not good or bad, but a better move was available.';
+    } else {
+      // Nothing wrong, but there was a better move
+      ann = 'good';
+      note = 'A good move — nothing wrong, though a slightly stronger option existed.';
     }
 
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
