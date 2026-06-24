@@ -10823,12 +10823,12 @@ async function analyzeBranchMove(idx){
   if(!sfWorker || !sfReady) return;
   try {
     const fenAfter = stateToFEN(m.state);
-    const afterResult = await evalPosition(fenAfter, 14, 1);
+    const afterResult = await evalPosition(fenAfter, 16, 1);
     m.eval = afterResult.score;
     m.isMate = afterResult.isMate;
     m.mateIn = afterResult.mateIn;
 
-    const beforeResult = await evalPosition(m.fenBefore, 14, 1);
+    const beforeResult = await evalPosition(m.fenBefore, 16, 1);
     m.bestMoveUCI = beforeResult.bestMove || null;
 
     // Classify with chess.com-style thresholds (matches game-review logic)
@@ -10840,15 +10840,33 @@ async function analyzeBranchMove(idx){
     const playedUCI = (m.from || '') + (m.to || '');
     const wasBestMove = m.bestMoveUCI && playedUCI === m.bestMoveUCI;
 
+    // Same taxonomy as the main game review: win-probability drop + material context
+    const wDrop = (typeof winPct === 'function') ? (winPct(playerBefore) - winPct(playerAfter)) : (loss * 12);
+    let isSacrifice = false, hangsPiece = false;
+    try {
+      const stateAfter = m.state;
+      if(stateAfter && m.from && m.to && typeof isPieceHanging === 'function'){
+        const movedPiece = stateAfter.board[m.to];
+        if(movedPiece && movedPiece[1] !== 'K'){
+          const movedVal = PIECE_VALUES[movedPiece[1]] || 0;
+          if(movedVal >= 3 && isPieceHanging(stateAfter, m.to)){
+            if((wasBestMove || wDrop < 3) && playerAfter >= 1.0) isSacrifice = true;
+            else if(wDrop >= 8) hangsPiece = true;
+          }
+        }
+      }
+    } catch(e){}
+
     let ann;
     if(afterResult.isMate && playerAfter < 0){ ann = 'blunder'; }
+    else if(isSacrifice){ ann = 'brilliant'; }
     else if(wasBestMove){ ann = 'best'; }
-    else if(loss < 0.05){ ann = 'excellent'; }
-    else if(loss < 0.15){ ann = 'good'; }
-    else if(loss < 0.40){ ann = 'inaccuracy'; }
-    else if(loss < 1.20){ ann = 'mistake'; }
-    else { ann = 'blunder'; }
-    if(playerBefore > 1.5 && playerAfter < 0.3 && ann !== 'blunder'){ ann = 'miss'; }
+    else if(hangsPiece){ ann = 'blunder'; }
+    else if(playerBefore >= 1.5 && playerAfter >= 0.5 && wDrop >= 10){ ann = 'miss'; }
+    else if(wDrop >= 20){ ann = 'blunder'; }
+    else if(wDrop >= 10){ ann = 'mistake'; }
+    else if(wDrop >= 5){ ann = 'inaccuracy'; }
+    else { ann = 'good'; }
 
     m.ann = ann;
     m.lossInPawns = Math.max(0, loss);
