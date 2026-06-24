@@ -18,6 +18,7 @@
   --blue:#1a3a5c;--blue2:#2980b9;--blue3:#7fb3d5;
   --brilliant:#1dd2af;--inaccuracy:#e9c46a;--mistake:#f4a261;--blunder:#e63946;
   --ws:#f0d9b5;--bs:#b58863;
+  --sq-yellow:#f6da5a;--sq-green:#5fb95f;--sq-green2:#2f9e44;
 }
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
 
@@ -60,11 +61,11 @@ input::placeholder{color:var(--text3)}
 .sq{width:56px;height:56px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all .1s}
 .sq.light{background:var(--ws)}
 .sq.dark{background:var(--bs)}
-.sq.hl-from{outline:3px solid var(--gold);outline-offset:-3px;z-index:2}
-.sq.hl-to{outline:3px solid var(--gold);outline-offset:-3px;z-index:2}
-.sq.hl-last{background:rgba(201,168,76,.35)!important}
-.sq.can-move::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.22);pointer-events:none;z-index:1}
-.sq.can-capture::after{content:'';position:absolute;inset:0;border-radius:0;border:4px solid rgba(0,0,0,.22);pointer-events:none;z-index:1}
+.sq.hl-from{outline:3px solid var(--sq-yellow);outline-offset:-3px;z-index:2}
+.sq.hl-to{outline:3px solid var(--sq-yellow);outline-offset:-3px;z-index:2}
+.sq.hl-last{background:rgba(246,218,90,.45)!important}
+.sq.can-move::after{content:'';position:absolute;inset:0;background:rgba(95,185,95,.45);pointer-events:none;z-index:1}
+.sq.can-capture::after{content:'';position:absolute;inset:0;background:rgba(47,158,68,.55);pointer-events:none;z-index:1}
 .piece{width:84%;height:84%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));position:relative;z-index:3;transition:transform .1s;pointer-events:none}
 .piece svg{width:100%;height:100%;display:block}
 .piece:hover{transform:scale(1.06)}
@@ -340,15 +341,13 @@ input::placeholder{color:var(--text3)}
 
 
   /* ── INTERACTIVE BOARD HIGHLIGHTS ── */
-  .sq.hl-sel{background-color:rgba(201,168,76,.45) !important;box-shadow:inset 0 0 0 2px var(--gold)}
+  .sq.hl-sel{background-color:rgba(246,218,90,.55) !important;box-shadow:inset 0 0 0 2px var(--sq-yellow)}
   .sq.hl-dest{cursor:pointer}
   .sq.hl-cap{cursor:pointer}
   .sq:hover .piece{cursor:pointer}
-  .legal-dot{position:absolute;left:50%;top:50%;width:30%;height:30%;border-radius:50%;background:rgba(20,20,20,.35);transform:translate(-50%,-50%);pointer-events:none;z-index:2;animation:fadeIn .15s}
-  .legal-cap{position:absolute;left:50%;top:50%;width:88%;height:88%;border:4px solid rgba(20,20,20,.4);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
-  .sq.light .legal-dot{background:rgba(40,40,40,.35)}
-  .sq.light .legal-cap{border-color:rgba(40,40,40,.45)}
-  @keyframes fadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  .legal-dot{position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(95,185,95,.45);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
+  .legal-cap{position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(47,158,68,.55);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   .sq{position:relative}
 
   /* ── PLAY-MODE INDICATOR ── */
@@ -8641,29 +8640,29 @@ function drawAnalysisArrows(overlayId, alternatives){
   // Derive the parent board ID from the overlay ID (arrow-overlay-r → board-r, etc.)
   const boardIdForOverlay = overlayId.replace('arrow-overlay-', 'board-');
 
-  // Distinct colors per rank for crystal-clear hierarchy:
-  // #1 best = thick bright green, #2 = medium blue, #3 = thin amber.
+  // Distinct shades of green per rank for crystal-clear hierarchy:
+  // #1 best = thick deep green, #2/#3/#4 = progressively lighter green.
   // The eye can instantly tell which arrow is the engine's TOP choice.
   overlay.innerHTML += `<defs>
     <marker id="ah-best" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(80,200,100,.98)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(47,158,68,.98)"/>
     </marker>
     <marker id="ah-alt1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(100,160,230,.90)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(95,185,95,.90)"/>
     </marker>
     <marker id="ah-alt2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,180,90,.80)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(150,210,150,.80)"/>
     </marker>
     <marker id="ah-alt3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(170,170,170,.55)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(190,225,190,.60)"/>
     </marker>
   </defs>`;
 
   const colors = [
-    {stroke: 'rgba(80,200,100,.92)',  marker: 'ah-best', width: 13},  // best — bright green
-    {stroke: 'rgba(100,160,230,.82)', marker: 'ah-alt1', width: 8},   // 2nd — blue
-    {stroke: 'rgba(220,180,90,.70)',  marker: 'ah-alt2', width: 5},   // 3rd — amber
-    {stroke: 'rgba(170,170,170,.50)', marker: 'ah-alt3', width: 3},   // 4th — grey (quiz only)
+    {stroke: 'rgba(47,158,68,.95)',   marker: 'ah-best', width: 13},  // best — deep green
+    {stroke: 'rgba(95,185,95,.85)',   marker: 'ah-alt1', width: 8},   // 2nd — medium green
+    {stroke: 'rgba(150,210,150,.72)', marker: 'ah-alt2', width: 5},   // 3rd — light green
+    {stroke: 'rgba(190,225,190,.55)', marker: 'ah-alt3', width: 3},   // 4th — pale green (quiz only)
   ];
 
   let drawn = 0;
@@ -10086,7 +10085,7 @@ window.selectReviewMove = function(idx){
         <div class="learn-loss">Lost <strong>${lossStr} pawns</strong> of advantage by missing this</div>
         <div style="display:flex;gap:14px;justify-content:center;font-size:11px;color:var(--text3);margin:4px 0 8px;font-family:'DM Mono',monospace">
           <span><span style="color:rgba(220,80,80,1)">→</span> Your move</span>
-          <span><span style="color:rgba(201,168,76,1)">→</span> Engine's recommendation</span>
+          <span><span style="color:rgba(246,218,90,1)">→</span> Engine's recommendation</span>
         </div>
         ${pvSAN ? `<div class="learn-line"><span class="ll-label">Best line:</span>${pvSAN}</div>` : ''}
         <div class="learn-lesson" id="${lessonId}">${lesson}</div>
@@ -10289,12 +10288,12 @@ window.showSuggestedMove = function(idx){
   renderReviewBoard();
   document.querySelectorAll('.move-cell').forEach(el => el.classList.remove('cur'));
   document.getElementById(`mc-${reviewIdx}`)?.classList.add('cur');
-  // Draw the engine recommendation as a single bold gold arrow on the pre-move position
+  // Draw the engine recommendation as a single bold yellow arrow on the pre-move position
   setTimeout(() => drawSingleArrow(ann.bestMoveUCI), 80);
 };
 
 // Draw arrows on the review board when a move is selected.
-// For sub-best moves: gold arrow = engine recommendation, red arrow = what the user played.
+// For sub-best moves: yellow arrow = engine recommendation, red arrow = what the user played.
 // For best/good moves: no arrows.
 function drawReviewArrows(ann, idx){
   const overlay = document.getElementById('arrow-overlay-r');
@@ -10309,9 +10308,9 @@ function drawReviewArrows(ann, idx){
   // Determine the colour of the best-move arrow based on classification:
   //   - For best/brilliant/good: GREEN (the move played WAS effectively the engine's recommendation,
   //     or close enough — the green arrow confirms "this was the right idea")
-  //   - For sub-best (inaccuracy/mistake/blunder): GOLD, to contrast with the red user-move arrow
-  const bestColor = isSubBest ? 'rgba(201,168,76,.95)' : 'rgba(127,201,156,.95)';
-  const bestMarkerId = isSubBest ? 'ah-best-gold' : 'ah-best-green';
+  //   - For sub-best (inaccuracy/mistake/blunder): YELLOW, to contrast with the red user-move arrow
+  const bestColor = isSubBest ? 'rgba(246,218,90,.95)' : 'rgba(127,201,156,.95)';
+  const bestMarkerId = isSubBest ? 'ah-best-yellow' : 'ah-best-green';
 
   // Get the user's actual move
   const userMove = reviewHistory[idx];
@@ -10326,8 +10325,8 @@ function drawReviewArrows(ann, idx){
     <marker id="ah-best-green" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(127,201,156,.95)"/>
     </marker>
-    <marker id="ah-best-gold" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(201,168,76,.95)"/>
+    <marker id="ah-best-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(246,218,90,.95)"/>
     </marker>
     <marker id="ah-bad" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.85)"/>
@@ -10391,16 +10390,16 @@ function drawQuizArrows(theoryMoveUCI, userMoveUCI){
 
 
 
-// Draw a green arrow for the played move + blue arrows for all alternative valid moves
+// Draw a deep-green arrow for the played move + lighter-green arrows for all alternative valid moves
 function drawAllCandidateArrows(q, playedMove){
   const overlay = document.getElementById('arrow-overlay-q');
   if(!overlay) return;
   let svg = `<defs>
     <marker id="qzc-main" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(127,201,156,.98)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(47,158,68,.98)"/>
     </marker>
     <marker id="qzc-alt" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(110,165,220,.95)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(150,210,150,.90)"/>
     </marker>
   </defs>`;
   // All candidates: q.correct + q.alsoOK
@@ -10410,7 +10409,7 @@ function drawAllCandidateArrows(q, playedMove){
     if(!uci || uci.length < 4) continue;
     const base = uci.toLowerCase().replace(/[+#x!?=]/g, '');
     const isPlayedMove = base === playedLower || base === playedLower + 'q';
-    const colour = isPlayedMove ? 'rgba(127,201,156,.98)' : 'rgba(110,165,220,.85)';
+    const colour = isPlayedMove ? 'rgba(47,158,68,.98)' : 'rgba(150,210,150,.80)';
     const width = isPlayedMove ? 11 : 7;
     const markerId = isPlayedMove ? 'qzc-main' : 'qzc-alt';
     svg += arrowSVG(uci.slice(0,2), uci.slice(2,4), colour, width, markerId);
@@ -10438,11 +10437,11 @@ function drawSingleArrow(uciMove){
   const endY = p2.y - (dy / len) * 14;
   overlay.innerHTML = `
     <defs>
-      <marker id="ah-gold" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(201,168,76,.95)"/>
+      <marker id="ah-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(246,218,90,.95)"/>
       </marker>
     </defs>
-    <line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="rgba(201,168,76,.9)" stroke-width="10" stroke-linecap="round" marker-end="url(#ah-gold)" />`;
+    <line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="rgba(246,218,90,.9)" stroke-width="10" stroke-linecap="round" marker-end="url(#ah-yellow)" />`;
 }
 
 // Actually play the recommended move on the review board (branches the game)
@@ -23006,8 +23005,8 @@ function olDrawMoveArrows(moves, state, color, overlayId){
   const palette = {
     red:   ['rgba(224,112,111,.92)','rgba(224,112,111,.62)','rgba(224,112,111,.42)'],
     green: ['rgba(110,200,130,.92)','rgba(110,200,130,.62)','rgba(110,200,130,.42)'],
-    main:  ['rgba(201,168,76,.92)','rgba(201,168,76,.6)','rgba(201,168,76,.42)'],
-  }[color] || ['rgba(201,168,76,.9)'];
+    main:  ['rgba(246,218,90,.92)','rgba(246,218,90,.6)','rgba(246,218,90,.42)'],
+  }[color] || ['rgba(246,218,90,.9)'];
   const widths = [12,8,5];
   const boardId = overlayId==='ol-arrows' ? 'ol-board' : 'old-board';
   const flipped = boardFlippedState.get(boardId) === true;
@@ -23449,11 +23448,11 @@ window.explPlaySan = function(san){
   explOnUserMove(mv.from, mv.to, ns, san);
 };
 
-// ── best-move arrows (multi-PV: gold best, fading for others) ──
+// ── best-move arrows (multi-PV: deep green best, fading lighter green for others) ──
 function explDrawArrows(alts){
   const overlay = document.getElementById('expl-arrows');
   if(!overlay) return;
-  const palette = ['rgba(201,168,76,.95)','rgba(120,170,225,.7)','rgba(140,140,150,.55)'];
+  const palette = ['rgba(47,158,68,.95)','rgba(95,185,95,.75)','rgba(150,210,150,.55)'];
   const widths = [13,8,6];
   const flipped = isBoardFlipped('expl-board');
   let defs = '<defs>';
