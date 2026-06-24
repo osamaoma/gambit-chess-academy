@@ -9853,6 +9853,13 @@ async function loadReview(gameIdx){
 // ════════ REAL STOCKFISH GAME ANALYSIS ════════
 let moveAnnotations = [];
 
+// Win-probability model (lichess/chess.com style): eval in pawns (mover's perspective) -> win %.
+// Classifying by win% drop avoids flagging harmless eval dips when already winning or losing.
+function winPct(pawns){
+  const cp = Math.max(-2000, Math.min(2000, (pawns || 0) * 100));
+  return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
+}
+
 async function analyseGame(white, black, username){
   moveAnnotations = [];
   const total = reviewHistory.length - 1;
@@ -9940,21 +9947,26 @@ async function analyseGame(white, black, username){
       // Played the exact engine top choice
       ann = 'best';
       note = 'The engine\'s top recommended move.';
-    } else if(loss < 0.05){
-      ann = 'excellent';
-      note = 'A very strong move, essentially as good as the engine\'s top choice.';
-    } else if(loss < 0.15){
-      ann = 'good';
-      note = 'A solid, reasonable move.';
-    } else if(loss < 0.40){
-      ann = 'inaccuracy';
-      note = 'Slightly imprecise — a better move was available that maintained more of the advantage.';
-    } else if(loss < 1.20){
-      ann = 'mistake';
-      note = 'This move loses significant advantage. A better continuation was available.';
     } else {
-      ann = 'blunder';
-      note = 'A serious error that gives away a large advantage or decisive material.';
+      // chess.com/lichess-style: classify by the drop in WIN PROBABILITY, not raw centipawns,
+      // so a small eval dip in an already-winning (or already-lost) position is NOT a "mistake".
+      const wDrop = winPct(playerBefore) - winPct(playerAfter);   // win% the mover gave up
+      if(wDrop < 2){
+        ann = 'excellent';
+        note = 'A very strong move, essentially as good as the engine\'s top choice.';
+      } else if(wDrop < 5){
+        ann = 'good';
+        note = 'A solid, reasonable move.';
+      } else if(wDrop < 10){
+        ann = 'inaccuracy';
+        note = 'Slightly imprecise — a better move kept more of your chances.';
+      } else if(wDrop < 20){
+        ann = 'mistake';
+        note = 'This move noticeably hurt your position — a clearly better continuation was available.';
+      } else {
+        ann = 'blunder';
+        note = 'A serious error that swings the game — a much better move was available.';
+      }
     }
 
     // Brilliant: STRICT — true piece sacrifice for big advantage.
@@ -24965,7 +24977,7 @@ async function ccRunEngine(){
     // top line arrow (blue, like chessreps analysis)
     clearArrows('cc-arrows');
     // Three arrows — first move of each of the engine's top lines (best = bold green)
-    const ccArrowSpec=[{c:'rgba(47,158,68,.95)',w:13},{c:'rgba(120,195,140,.82)',w:9},{c:'rgba(170,212,185,.6)',w:6}];
+    const ccArrowSpec=[{c:'rgba(237,158,40,.92)',w:11},{c:'rgba(237,158,40,.58)',w:9},{c:'rgba(237,158,40,.4)',w:8}];
     const ccArrowList=alts.slice(0,3).map((a,i)=>({uci:((a&&a.pv)||'').trim().split(/\s+/)[0],color:ccArrowSpec[i].c,width:ccArrowSpec[i].w})).filter(a=>a.uci&&a.uci.length>=4);
     ccDrawArrows([...ccArrowList].reverse());
     if(linesHost){
@@ -25068,7 +25080,39 @@ window.ccPlayLine=function(li, mi){
   }
   ccRender();
 };
-function ccDrawArrows(arrows){ const ov=document.getElementById('cc-arrows'); if(!ov)return; const fl=isBoardFlipped('cc-board'); let defs='',lines=''; (arrows||[]).forEach((a,i)=>{ const uci=a.uci; if(!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; defs+=`<marker id="cc-mk${i}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${a.color}"/></marker>`; lines+=`<line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${a.color}" stroke-width="${a.width||11}" stroke-linecap="round" marker-end="url(#cc-mk${i})"/>`; }); ov.innerHTML=`<defs>${defs}</defs>${lines}`; }
+// Clean, proportional analysis arrows (shaft + triangular head as polygons).
+// Knight moves bend into an L, like lichess / chessreps.
+function ccDrawArrows(arrows){
+  const ov=document.getElementById('cc-arrows'); if(!ov) return;
+  const fl=isBoardFlipped('cc-board');
+  let svg='';
+  (arrows||[]).forEach(a=>{
+    const uci=a.uci; if(!uci||uci.length<4) return;
+    const from=uci.slice(0,2),to=uci.slice(2,4);
+    if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to)) return;
+    const p1=squareToSVG(from,fl), p2=squareToSVG(to,fl);
+    const df=Math.abs((to.charCodeAt(0)-97)-(from.charCodeAt(0)-97));
+    const dr=Math.abs(parseInt(to[1])-parseInt(from[1]));
+    const knight=(df===1&&dr===2)||(df===2&&dr===1);
+    const w=a.width||10, headW=w*1.6, headL=w*2.0;
+    let corner=null, fx, fy;
+    if(knight){
+      if(Math.abs(p2.x-p1.x) > Math.abs(p2.y-p1.y)) corner={x:p2.x,y:p1.y};
+      else corner={x:p1.x,y:p2.y};
+      fx=p2.x-corner.x; fy=p2.y-corner.y;
+    } else { fx=p2.x-p1.x; fy=p2.y-p1.y; }
+    const flen=Math.hypot(fx,fy)||1, ux=fx/flen, uy=fy/flen, px=-uy, py=ux;
+    const tipX=p2.x-ux*7, tipY=p2.y-uy*7;
+    const baseX=tipX-ux*headL, baseY=tipY-uy*headL;
+    let d='M '+p1.x+' '+p1.y+' ';
+    if(knight) d+='L '+corner.x+' '+corner.y+' ';
+    d+='L '+baseX+' '+baseY;
+    const head=tipX+','+tipY+' '+(baseX+px*headW)+','+(baseY+py*headW)+' '+(baseX-px*headW)+','+(baseY-py*headW);
+    svg+='<path d="'+d+'" fill="none" stroke="'+a.color+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    svg+='<polygon points="'+head+'" fill="'+a.color+'"/>';
+  });
+  ov.innerHTML=svg;
+}
 function ccArrow(uci,color){ const ov=document.getElementById('cc-arrows'); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped('cc-board'); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="cc-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="11" stroke-linecap="round" marker-end="url(#cc-mk)"/>`; }
 
 // ── Explorer: live Lichess stats (token via server) OR offline book fallback ──
