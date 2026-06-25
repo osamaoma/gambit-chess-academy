@@ -9898,7 +9898,7 @@ async function analyseGame(white, black, username){
     if(stat) stat.textContent = `Deep analysing move ${i}/${analyseLimit} at depth 16…`;
 
     // Depth 2 with quiescence — enough to spot tactical mistakes
-    const result = await evalPosition(positions[i].fen, 16);
+    const result = await evalPosition(positions[i].fen, 16, 2);
     evals[i] = result;
 
     // CRITICAL: yield to the event loop between positions so the browser
@@ -9938,19 +9938,31 @@ async function analyseGame(white, black, username){
     // ── Win % the mover gave up vs. best play (lichess/chess.com model) ──
     const wDrop = winPct(playerBefore) - winPct(playerAfter);
 
-    // ── Material context: sound sacrifice (→ brilliant) vs. free hang (→ blunder) ──
+    // 2nd-best gap (MultiPV) — how much better the top move was than the alternative
+    let gap2 = null;
+    try {
+      const alts = evals[i - 1] && evals[i - 1].alternatives;
+      if(alts && alts.length >= 2 && typeof alts[0].score === 'number' && typeof alts[1].score === 'number'){
+        gap2 = Math.abs(alts[0].score - alts[1].score);
+      }
+    } catch(e){}
+
+    // ── Material context: a real sacrifice INVESTS net material (not an even/winning trade) ──
     let isSacrifice = false, hangsPiece = false;
     try {
-      const stateAfter = reviewHistory[i] && reviewHistory[i].state;
-      if(stateAfter && mv.from && mv.to && typeof isPieceHanging === 'function'){
-        const movedPiece = stateAfter.board[mv.to];
+      const stateAfter  = reviewHistory[i] && reviewHistory[i].state;
+      const stateBefore = reviewHistory[i - 1] && reviewHistory[i - 1].state;
+      if(stateAfter && stateBefore && mv.from && mv.to && typeof isPieceHanging === 'function'){
+        const movedPiece    = stateAfter.board[mv.to];
+        const capturedPiece = stateBefore.board[mv.to];                  // what this move captured (if anything)
+        const capturedVal   = capturedPiece ? (PIECE_VALUES[capturedPiece[1]] || 0) : 0;
         if(movedPiece && movedPiece[1] !== 'K'){
-          const movedVal = PIECE_VALUES[movedPiece[1]] || 0;
-          if(movedVal >= 3 && isPieceHanging(stateAfter, mv.to)){
-            // The moved piece is hanging. Sound sacrifice if the engine still likes the
-            // position; otherwise the move simply hung material.
-            if((wasBestMove || wDrop < 3) && playerAfter >= 1.0 && i > 6) isSacrifice = true;
-            else if(wDrop >= 8) hangsPiece = true;
+          const movedVal    = PIECE_VALUES[movedPiece[1]] || 0;
+          const netInvested = movedVal - capturedVal;                    // > 0 only if real material is risked
+          // A trade (capture of >= equal value) is never a sacrifice or a hang.
+          if(movedVal >= 3 && netInvested >= 2 && isPieceHanging(stateAfter, mv.to)){
+            if((wasBestMove || wDrop < 3) && playerAfter >= 0.3 && i > 6) isSacrifice = true;  // sound sacrifice
+            else if(wDrop >= 8) hangsPiece = true;                                              // just hung material
           }
         }
       }
@@ -9969,9 +9981,14 @@ async function analyseGame(white, black, username){
       note = 'A brilliant sacrifice — material is given up for a clearly stronger position.';
       bestLine = '';
     } else if(wasBestMove){
-      // The best move
-      ann = 'best';
-      note = 'The engine\'s top recommended move.';
+      if(gap2 !== null && gap2 >= 1.5 && i > 8 && Math.abs(playerBefore) < 6){
+        // The single move that held the advantage where the alternatives let it slip
+        ann = 'great';
+        note = 'A great move — the only continuation that kept the advantage.';
+      } else {
+        ann = 'best';
+        note = 'The engine\'s top recommended move.';
+      }
     } else if(hangsPiece){
       // Completely hanging a piece
       ann = 'blunder';
@@ -9991,10 +10008,14 @@ async function analyseGame(white, black, username){
       // Not good, not bad — a slight imprecision
       ann = 'inaccuracy';
       note = 'A slight imprecision — not good or bad, but a better move was available.';
-    } else {
-      // Nothing wrong, but there was a better move
+    } else if(wDrop >= 2){
+      // Nothing wrong, but a slightly better move existed
       ann = 'good';
       note = 'A good move — nothing wrong, though a slightly stronger option existed.';
+    } else {
+      // Essentially as strong as the engine's top choice
+      ann = 'excellent';
+      note = 'An excellent move — almost exactly as good as the engine\'s best.';
     }
 
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
@@ -10007,6 +10028,7 @@ async function analyseGame(white, black, username){
       evalBefore: before,           // White's perspective
       evalAfter: after,             // White's perspective
       lossInPawns: Math.max(0, loss),  // What the moving player lost (0 if good move)
+      winLoss: Math.max(0, wDrop),     // win-% the mover gave up (drives accuracy %)
       bestMoveUCI,                  // Engine's recommended move in UCI form (e.g. "g1f3")
       fenBefore,                    // FEN before this move was played (for SAN conversion + board display)
     });
@@ -10022,14 +10044,15 @@ async function analyseGame(white, black, username){
   const mistakes  = moveAnnotations.filter(m => m.ann === 'mistake').length;
   const blunders  = moveAnnotations.filter(m => m.ann === 'blunder').length;
   const allMoves  = moveAnnotations.length;
-  const goodMoves = moveAnnotations.filter(m => ['best','good','brilliant','great','excellent','book'].includes(m.ann)).length;
-  const accuracy  = allMoves > 0 ? Math.round((goodMoves / allMoves) * 100) : 0;
+  // Accuracy — chess.com/lichess win%-loss model: per-move accuracy averaged per player
+  const moveAcc = wl => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * Math.max(0, wl)) - 3.1669));
+  const accOf = arr => { const xs = arr.filter(m => typeof m.winLoss === 'number'); return xs.length ? Math.round(xs.reduce((s,m)=>s+moveAcc(m.winLoss),0) / xs.length) : 100; };
+  const accuracy = accOf(moveAnnotations);
 
   const wMoves = moveAnnotations.filter((_, i) => (i + 1) % 2 === 1);
   const bMoves = moveAnnotations.filter((_, i) => (i + 1) % 2 === 0);
-  const calcAcc = arr => arr.length > 0 ? Math.round(arr.filter(m => ['best','good','brilliant','great','excellent','book'].includes(m.ann)).length / arr.length * 100) : 0;
-  const wAcc = calcAcc(wMoves);
-  const bAcc = calcAcc(bMoves);
+  const wAcc = accOf(wMoves);
+  const bAcc = accOf(bMoves);
 
   const greatN  = moveAnnotations.filter(m => m.ann === 'great').length;
   const bestN   = moveAnnotations.filter(m => m.ann === 'best').length;
