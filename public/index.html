@@ -9642,9 +9642,9 @@ function coachLevel(rate){
 function coachCatBody(c){
   return `<div class="coach-rating r-${c.rating.cls}">${c.rating.word}</div>`+
     `<p class="coach-verdict">${c.verdict}</p>`+
-    (c.good?`<div class="coach-line lg"><span class="coach-line-ic">✓</span><div class="coach-line-tx"><b>What's working</b><p>${c.good}</p></div></div>`:'')+
-    (c.bad ?`<div class="coach-line lb"><span class="coach-line-ic">!</span><div class="coach-line-tx"><b>What's holding you back</b><p>${c.bad}</p></div></div>`:'')+
-    (c.study?`<div class="coach-study"><div class="coach-study-h">Coach says — study this</div><p>${c.study}</p></div>`:'')+
+    (c.good?`<div class="coach-line lg"><span class="coach-line-ic">✓</span><div class="coach-line-tx"><b>${c.goodLabel||"What's working"}</b><p>${c.good}</p></div></div>`:'')+
+    (c.bad ?`<div class="coach-line lb"><span class="coach-line-ic">!</span><div class="coach-line-tx"><b>${c.badLabel||"What's holding you back"}</b><p>${c.bad}</p></div></div>`:'')+
+    (c.study?`<div class="coach-study"><div class="coach-study-h">${c.studyLabel||'Coach says — study this'}</div><p>${c.study}</p></div>`:'')+
     (c.cta||'');
 }
 function coachScorecard(cats){
@@ -9706,23 +9706,59 @@ function coachCatEndgames(fp){
     bad:`Nothing urgent. The gains here are small refinements.`,
     study:`Sharpen your trickiest ending — ${(worst?(COACH_EG_NAME[worst.k]||'rook endgames'):'rook endgames').toLowerCase()} — so you win the really close ones too.`};
 }
-function coachCatTime(fp){
-  const tcs=[{n:'Rapid',r:fp.rapidWinRate,g:fp.rapidGames},{n:'Blitz',r:fp.blitzWinRate,g:fp.blitzGames},{n:'Bullet',r:fp.bulletWinRate,g:fp.bulletGames}].filter(t=>t.g>=3 && t.r!=null).sort((a,b)=>b.r-a.r);
-  if(!tcs.length) return null;
-  const best=tcs[0], worst=tcs[tcs.length-1];
-  if(tcs.length>1 && best.r-worst.r>=10){
-    const fast = (worst.n==='Bullet'||worst.n==='Blitz');
-    return {eyebrow:'Time control', title:'Your time controls', short:'Time control', rating:coachLevel(worst.r),
-      verdict:`You're much better at ${best.n} than at ${worst.n}.`,
-      good:`${best.n} suits you — it's your best chance to gain rating, so play it when you want to climb.`,
-      bad: fast ? `In ${worst.n} the clock trips you up — usually a quick blunder or losing on time.` : `In ${worst.n} you're not putting your extra thinking time to good use.`,
-      study: fast ? `Play more ${best.n} where you have time to think. In fast games, before each move take one second and ask yourself: "is anything of mine hanging?"` : `In ${worst.n} you have the time — slow down, compare two moves, and check for tactics before you commit.`};
+function coachCatClock(fp){
+  const slow = (fp.rapidGames>=4 && fp.rapidWinRate!=null) ? fp.rapidWinRate : null;
+  const fastArr = [{r:fp.blitzWinRate,g:fp.blitzGames},{r:fp.bulletWinRate,g:fp.bulletGames}].filter(t=>t.g>=4 && t.r!=null);
+  const fastAvg = fastArr.length ? Math.round(fastArr.reduce((s,t)=>s+t.r,0)/fastArr.length) : null;
+  const haveShort = fp.shortGames>=4 && fp.shortLossRate!=null;
+  const haveLong  = fp.longGames>=4 && fp.longLossRate!=null;
+  if(slow==null && fastAvg==null && !haveShort && !haveLong) return null;
+  const rush  = (slow!=null && fastAvg!=null && (slow-fastAvg)>=10);
+  const late  = (haveLong && fp.longLossRate>=55);
+  const early = (haveShort && fp.shortLossRate>=50);
+  if(rush) return {eyebrow:'Your clock', title:'How you use your clock', short:'Clock use', rating:coachLevel(fastAvg),
+    verdict:`You play your best when you give yourself time to think — speed is what trips you up.`,
+    good:`With a real clock, your results jump. You find the right ideas when you're not rushing.`,
+    bad:`In fast games you move too quickly and walk into things you'd normally spot. That's a clock habit, not a chess weakness.`,
+    study:`Before every move, pause for one breath and ask: "is anything of mine hanging, and what does my opponent want?" Build that habit in slow games, then carry it into fast ones.`};
+  if(late) return {eyebrow:'Your clock', title:'How you use your clock', short:'Clock use', rating:coachLevel(100-fp.longLossRate),
+    verdict:`You start games fine but lose the thread late — usually when the clock runs low.`,
+    good:`Through the opening and middlegame, your time use is sensible.`,
+    bad:`In long games you slip more — likely burning time early and then scrambling at the end.`,
+    study:`Spend your time on the few critical moments, not every move. Try to reach the endgame with time on your clock so you can finish calmly.`};
+  if(early) return {eyebrow:'Your clock', title:'How you use your clock', short:'Clock use', rating:coachLevel(100-fp.shortLossRate),
+    verdict:`A lot of your games end quickly — you may be moving on autopilot early.`,
+    good:`Once you settle into a game, you compete just fine.`,
+    bad:`Too many fast losses point to rushed opening moves and early blunders.`,
+    study:`Slow down for the first 10 moves. Develop a piece, get your king safe, and check each move isn't a free gift before you play it.`};
+  return {eyebrow:'Your clock', title:'How you use your clock', short:'Clock use', rating:coachLevel(slow!=null?slow:(fastAvg!=null?fastAvg:55)),
+    verdict:`Your clock habits look healthy — you don't melt down in time trouble.`,
+    good:`You spread your time sensibly across the game.`,
+    bad:`Nothing alarming. One small leak: don't auto-move in winning positions — that's where easy points get thrown away.`,
+    study:`Keep spending time on the moments that matter, and double-check before you play a forcing move or a capture.`};
+}
+function coachCatStyle(fp){
+  const buckets=[{k:'attack',n:fp.attackTotal||0},{k:'sharp',n:fp.sharpTotal||0},{k:'solid',n:fp.solidTotal||0},{k:'positional',n:fp.positionalTotal||0}].sort((a,b)=>b.n-a.n);
+  const dom=buckets[0];
+  if(!dom || dom.n<4) return null;
+  const endgameStrong = (fp.longGames>=4 && fp.longLossRate!=null && fp.longLossRate<=45);
+  let player, short, desc, strength, trap;
+  if(dom.k==='attack' || dom.k==='sharp'){
+    if(endgameStrong){ player='Garry Kasparov'; short='Kasparov'; desc='you grab the initiative early and press for the attack, but you can also grind out an endgame'; strength='You put opponents under pressure fast and rarely let them settle.'; trap='Aggression needs to be sound — make sure your attacks are backed by real threats, not just hope.'; }
+    else { player='Mikhail Tal'; short='Tal'; desc='you love the attack and will throw pieces into the fire for the initiative'; strength="You create chaos and chances most opponents simply can't calculate through."; trap='Not every sacrifice works. When an attack fizzles you can be left short of material — pick your moments.'; }
+  } else if(dom.k==='solid'){
+    player='Tigran Petrosian'; short='Petrosian'; desc='you play it safe, shut down threats before they start, and wait for your opponent to crack'; strength="You're hard to beat — you rarely walk into trouble."; trap='Too cautious and you hand over the initiative. Look for the moment to push for the win.';
+  } else {
+    if(endgameStrong){ player='Magnus Carlsen'; short='Carlsen'; desc="you'll play any position and squeeze wins from the smallest edge, especially in the endgame"; strength='You convert tiny advantages and outplay people in long games.'; trap='Patience can drift into shuffling — keep a concrete plan.'; }
+    else { player='Anatoly Karpov'; short='Karpov'; desc='you build slowly, improve your pieces, and quietly restrict your opponent'; strength='You gather small advantages and keep firm control.'; trap='If you never commit, strong opponents wriggle free — turn your pressure into something concrete.'; }
   }
-  return {eyebrow:'Time control', title:'Your time controls', short:'Time control', rating:coachLevel(best.r),
-    verdict:`${best.n} is your strongest format, and you're fairly steady across the board.`,
-    good:`${best.n} is where you feel most at home.`,
-    bad:`No format is a disaster — that's good, consistent play.`,
-    study:`Play ${best.n} when you want to gain points, and use any extra clock to double-check your moves.`};
+  return {eyebrow:'Your style', title:'Your playing style', short:'Style', informational:true,
+    rating:{word:short, cls:'ok'}, player:short,
+    verdict:`Based on your recent games, you play most like <strong>${player}</strong> — ${desc}.`,
+    good:strength, goodLabel:'The strength of your style',
+    bad:trap, badLabel:'The trap to avoid',
+    study:`Watch a few of ${player}'s games — the ideas will click faster because they already match how you play.`,
+    studyLabel:'Coach says'};
 }
 function coachSimpleProgress(prev, ctx){
   if(!prev || typeof prev.winPct!=='number') return `<div class="coach-rating r-ok">Starting point</div><p class="coach-verdict">This is your <strong>starting point</strong>.</p><p class="coach-note">I've saved this report on your device. Play some more games, come back, and I'll tell you — in plain words — whether you're improving.</p>`;
@@ -9739,36 +9775,78 @@ function renderCoachingReport(out, ctx){
   const key='gambit_perf_'+(ctx.platform||'cc')+'_'+String(ctx.username||'').toLowerCase();
   let prev=null; try{ prev=JSON.parse(localStorage.getItem(key)||'null'); }catch(e){}
 
-  // One self-contained page per category — skip any without enough games to judge
-  const cats=[ coachCatColor(fp), coachCatOpenings(ctx), coachCatEndgames(fp), coachCatTime(fp) ].filter(Boolean);
+  // Rated categories (improvable) + one informational style-match page
+  const perfCats=[ coachCatOpenings(ctx), coachCatEndgames(fp), coachCatClock(fp) ].filter(Boolean);
+  const styleCat=coachCatStyle(fp);
+  const cats = styleCat ? [...perfCats, styleCat] : perfCats;
   try{ localStorage.setItem(key, JSON.stringify({winPct:ctx.winPct,total:ctx.total,date:Date.now()})); }catch(e){}
 
   const name=coachEsc(ctx.username||'Player');
-  const sorted=[...cats].sort((a,b)=>a.rating.score-b.rating.score);
+  const sorted=[...perfCats].sort((a,b)=>a.rating.score-b.rating.score);
   const worst=sorted[0], best=sorted[sorted.length-1];
   const pages=[];
 
   // Overview — plain language, no raw stats
-  const ovVerdict = cats.length
-    ? `You've played ${ctx.total} games lately. In simple terms: your <strong>${coachEsc((worst.short||worst.title).toLowerCase())}</strong> need the most help, and your <strong>${coachEsc((best.short||best.title).toLowerCase())}</strong> ${best.rating.cls==='good'?'are a real strength':'are your steadiest part'}. I'll walk you through your game one piece at a time.`
+  const ovVerdict = perfCats.length
+    ? `You've played ${ctx.total} games lately. In simple terms: your <strong>${coachEsc((worst.short||worst.title).toLowerCase())}</strong> need the most help, and your <strong>${coachEsc((best.short||best.title).toLowerCase())}</strong> ${best.rating.cls==='good'?'are a real strength':'are your steadiest part'}${styleCat?`. You also play a lot like <strong>${coachEsc(styleCat.player)}</strong>`:''}. I'll walk you through your game one piece at a time.`
     : `You've played ${ctx.total} games. Play a few more and run this again — I need a little more to give you a clear read.`;
   pages.push({eyebrow:'Your coaching report', title:`${name}, here's the plan`, body:`<p class="coach-verdict">${ovVerdict}</p>`+(cats.length?coachScorecard(cats):'')+`<p class="coach-note">Tap <b>Next</b> to go through it one part at a time. Each page tells you exactly what to study.</p>`});
 
-  // A full page per category
+  // A full page per category (openings, endgames, clock use, then style)
   cats.forEach(c=>pages.push({eyebrow:c.eyebrow, title:c.title, body:coachCatBody(c)}));
 
-  // Plan — the two weakest areas, in order, with their study advice
-  const planCats=[...cats].sort((a,b)=>a.rating.score-b.rating.score).slice(0,2);
+  // Plan — the two weakest improvable areas
+  const planCats=[...perfCats].sort((a,b)=>a.rating.score-b.rating.score).slice(0,2);
   pages.push({eyebrow:'Do this next', title:'Your plan', body:(planCats.length?`<p class="coach-note">Two things to work on, in order:</p><ol class="coach-plan">${planCats.map((c,i)=>`<li><span class="coach-plan-when">${i===0?'Start here':'Then'}</span>${c.study}</li>`).join('')}</ol>`:`<p class="coach-note">Keep playing and come back — I'll spot the patterns once there's more to look at.</p>`)+`<button class="btn btn-gold coach-cta-btn" onclick="showSection('review')">Review your games →</button>`});
 
   // Progress — plain words, no numbers
   pages.push({eyebrow:'Over time', title:'Your progress', body:coachSimpleProgress(prev, ctx)});
 
   window._coachPages=pages; window._coachIdx=0;
-  window._coachShareText=`${ctx.username} — my chess coaching report\n`+(cats.length?`Strongest: ${(best.short||best.title)} (${best.rating.word}). Needs work: ${(worst.short||worst.title)} (${worst.rating.word}).\n`:``)+`${ctx.total} games reviewed — made with Gambit Chess Academy`;
-  out.innerHTML=`<div class="coach-wrap"><div class="coach-topbar"><div class="coach-brandline">Your coaching report</div><button class="coach-share-btn" onclick="coachShare()">↪ Share</button></div><div class="coach-stage" id="coach-stage"></div><div class="coach-nav"><button class="coach-navbtn" id="coach-back" onclick="coachNav(-1)">← Back</button><div class="coach-dots" id="coach-dots"></div><button class="coach-navbtn coach-next" id="coach-next" onclick="coachNav(1)">Next →</button></div></div>`;
+  window._coachCard={ name:String(ctx.username||'Player'), total:ctx.total,
+    cats: perfCats.map(c=>({short:c.short, word:c.rating.word, cls:c.rating.cls})),
+    style: styleCat?styleCat.player:null };
+  window._coachShareText=`${ctx.username} — my chess coaching report\n`+(perfCats.length?`Strongest: ${(best.short||best.title)} (${best.rating.word}). Needs work: ${(worst.short||worst.title)} (${worst.rating.word}).\n`:``)+(styleCat?`Plays like: ${styleCat.player}.\n`:``)+`${ctx.total} games reviewed — made with Gambit Chess Academy`;
+  out.innerHTML=`<div class="coach-wrap"><div class="coach-topbar"><div class="coach-brandline">Your coaching report</div><button class="coach-share-btn" onclick="coachShareImage()">↪ Share card</button></div><div class="coach-stage" id="coach-stage"></div><div class="coach-nav"><button class="coach-navbtn" id="coach-back" onclick="coachNav(-1)">← Back</button><div class="coach-dots" id="coach-dots"></div><button class="coach-navbtn coach-next" id="coach-next" onclick="coachNav(1)">Next →</button></div></div>`;
   coachShowPage(0);
 }
+
+// Render the report as a shareable image card (canvas → PNG → native share or download)
+window.coachShareImage = async function(){
+  const d=window._coachCard; if(!d) return;
+  const btn=document.querySelector('.coach-share-btn'); const orig=btn?btn.textContent:'↪ Share card';
+  if(btn){ btn.textContent='…'; btn.disabled=true; }
+  try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
+  const W=1080,H=1080, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d');
+  x.fillStyle='#14141a'; x.fillRect(0,0,W,H);
+  const g=x.createRadialGradient(W*0.82,H*0.05,0,W*0.82,H*0.05,W*1.1); g.addColorStop(0,'rgba(201,162,75,0.18)'); g.addColorStop(1,'rgba(201,162,75,0)'); x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(201,162,75,0.4)'; x.lineWidth=2; x.strokeRect(46,46,W-92,H-92);
+  const fit=(t,wt,sz,max)=>{ let s=sz; do{ x.font=`${wt} ${s}px "Space Grotesk", sans-serif`; if(x.measureText(t).width<=max) break; s-=4; }while(s>22); return s; };
+  x.textAlign='left'; x.textBaseline='alphabetic';
+  x.fillStyle='#c9a24b'; x.font='600 24px "DM Mono", monospace'; x.fillText('PERSONAL COACHING REPORT', 96, 152);
+  const ns=fit(d.name,'700',76,W-260); x.fillStyle='#ece8e0'; x.font=`700 ${ns}px "Space Grotesk", sans-serif`; x.fillText(d.name, 96, 236);
+  let yy=356;
+  (d.cats||[]).forEach(cat=>{
+    x.textAlign='left'; x.fillStyle='#cfcabf'; x.font='500 38px "Inter", sans-serif'; x.fillText(cat.short, 96, yy);
+    const col=cat.cls==='good'?'#5bbf7a':(cat.cls==='weak'?'#e0556a':'#c9a24b');
+    x.textAlign='right'; x.fillStyle=col; x.font='600 32px "DM Mono", monospace'; x.fillText(String(cat.word).toUpperCase(), W-96, yy);
+    yy+=90;
+  });
+  if(d.style){
+    yy+=8; x.strokeStyle='rgba(255,255,255,0.09)'; x.beginPath(); x.moveTo(96,yy-32); x.lineTo(W-96,yy-32); x.stroke();
+    x.textAlign='left'; x.fillStyle='#c9a24b'; x.font='600 24px "DM Mono", monospace'; x.fillText('PLAYS LIKE', 96, yy+30);
+    const ps=fit(d.style,'700',64,W-200); x.fillStyle='#ece8e0'; x.font=`700 ${ps}px "Space Grotesk", sans-serif`; x.fillText(d.style, 96, yy+104);
+  }
+  x.textAlign='left'; x.fillStyle='#716c62'; x.font='500 26px "Inter", sans-serif'; x.fillText('Gambit Chess Academy · '+d.total+' games analysed', 96, H-86);
+  cv.toBlob(async (blob)=>{
+    if(btn){ btn.textContent=orig; btn.disabled=false; }
+    if(!blob) return;
+    const file=new File([blob],'chess-coaching-report.png',{type:'image/png'});
+    try{ if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:'My chess coaching report', text:window._coachShareText||''}); return; } }catch(e){}
+    const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='chess-coaching-report.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),3000);
+    if(btn){ btn.textContent='✓ Saved'; setTimeout(()=>{ if(btn) btn.textContent=orig; },1600); }
+  },'image/png');
+};
 
 function coachShowPage(i){
   const pages=window._coachPages||[]; if(!pages.length) return;
