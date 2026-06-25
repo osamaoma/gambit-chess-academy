@@ -2653,6 +2653,24 @@ input::placeholder{color:var(--text3)}
 .trend-dots{display:flex; flex-wrap:wrap; gap:6px}
 .trend-dot{width:18px; height:18px; border-radius:5px}
 .trend-dot.td-w{background:#5bbf7a} .trend-dot.td-d{background:var(--text3)} .trend-dot.td-l{background:var(--red2)}
+/* ── What's bleeding your rating ── */
+.bleed-card{display:flex; gap:14px; background:var(--bg2); border:1px solid var(--border); border-left:3px solid var(--red2); border-radius:13px; padding:15px 16px; margin-bottom:10px}
+.bleed-rank{flex-shrink:0; font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; color:var(--red2); width:38px}
+.bleed-prob{font-size:15px; color:var(--text); line-height:1.5; margin-bottom:8px}
+.bleed-fix{font-size:14px; color:var(--text2); line-height:1.6}
+.bleed-fix-h{display:inline-block; font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#1c1505; background:var(--brass-grad); padding:2px 8px; border-radius:6px; margin-right:6px; vertical-align:middle}
+/* ── Course Creator: repertoire map ── */
+.cc-repviz{margin-top:14px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 16px}
+.rep-label{font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:10px}
+.rep-tree{overflow-x:auto; padding:4px 2px}
+.rep-row{display:flex; align-items:center; gap:16px; position:relative}
+.rep-node{background:var(--bg3); border:1px solid var(--border2); border-radius:8px; padding:5px 12px; font-family:'DM Mono',monospace; font-size:13px; color:var(--text); white-space:nowrap; flex-shrink:0; cursor:pointer; transition:all .15s var(--ease)}
+button.rep-node:hover{border-color:var(--gold); color:var(--gold); transform:translateY(-1px)}
+.rep-node.rep-root{background:var(--gold3); color:var(--gold); border-color:rgba(201,162,75,.4); cursor:default}
+.rep-node.rep-cur{background:var(--brass-grad); color:#1c1505; border-color:transparent; font-weight:700}
+.rep-children{display:flex; flex-direction:column; gap:10px; padding-left:18px; border-left:2px solid var(--border2)}
+.rep-children > .rep-row::before{content:''; position:absolute; left:-18px; top:50%; width:18px; height:2px; background:var(--border2)}
+.rep-empty{color:var(--text3); font-size:13px; line-height:1.5; padding:8px 2px}
 /* site credit (Cburnett piece attribution) */
 .site-credit{text-align:center; font-size:11px; color:var(--text3); padding:22px 16px; border-top:1px solid var(--border); font-family:'Inter',sans-serif; position:relative; z-index:1}
 .site-credit a{color:var(--text2); text-decoration:none; border-bottom:1px dotted var(--border3)}
@@ -9945,6 +9963,17 @@ window.gambitAsk = function(q){
   const inp=document.getElementById('gai-input'); if(inp) inp.value='';
 };
 window.gambitAskInput = function(){ const inp=document.getElementById('gai-input'); if(inp) gambitAsk(inp.value); };
+// The simple headline: what's costing you rating, and exactly what to do about it.
+function ratingBleedSection(fp, ctx){
+  const leaks = (typeof coachWeaknesses === 'function') ? coachWeaknesses(ctx).slice(0,3) : [];
+  if(!leaks.length){
+    return `<div class="section-label">What's bleeding your rating</div><p class="coach-verdict">Good news — nothing is badly bleeding your rating in these games.</p><p class="coach-note">Keep playing and re-run this. The moment a clear pattern shows up, I'll flag it here with the exact fix.</p>`;
+  }
+  return `<div class="section-label">What's bleeding your rating</div>
+  <p class="coach-verdict">The #1 thing costing you rating right now: <strong>${coachEsc(leaks[0].tag.toLowerCase())}</strong>.</p>
+  ${leaks.map((w,i)=>`<div class="bleed-card"><div class="bleed-rank">#${i+1}</div><div class="bleed-body"><div class="bleed-prob">${coachEsc(w.problem)}</div><div class="bleed-fix"><span class="bleed-fix-h">Do this</span> ${coachEsc(w.fix)}</div></div></div>`).join('')}
+  <p class="coach-note">That's the short version — fix the top one first, it's worth the most rating. The pages after this go deeper if you want them.</p>`;
+}
 function gambitAISection(fp, ctx){
   const cats=[coachCatOpenings(ctx),coachCatEndgames(fp),coachCatClock(fp)].filter(Boolean).sort((a,b)=>a.rating.score-b.rating.score);
   const w=cats[0];
@@ -10004,7 +10033,7 @@ window.paginateAnalysis = function(out){
       const fp = computeStyleFingerprint(games, user.toLowerCase());
       const gctx = { fp, rated: (window._perfRated || []) };
       window._gambitCtx = gctx;
-      const premium = gambitAISection(fp, gctx) + trainingPlanSection(fp, gctx) + trendsSection(games, user);
+      const premium = ratingBleedSection(fp, gctx) + gambitAISection(fp, gctx) + trainingPlanSection(fp, gctx) + trendsSection(games, user);
       const profile = wrap.querySelector('.profile-bar');
       if(profile) profile.insertAdjacentHTML('afterend', premium);
       else wrap.insertAdjacentHTML('afterbegin', premium);
@@ -10489,10 +10518,10 @@ async function analyseGame(white, black, username){
     const prog = document.getElementById('sf-progress');
     const stat = document.getElementById('sf-status');
     if(prog) prog.style.width = Math.round((i / analyseLimit) * 100) + '%';
-    if(stat) stat.textContent = `Deep analysing move ${i}/${analyseLimit} at depth 16…`;
+    if(stat) stat.textContent = `Analysing move ${i}/${analyseLimit}…`;
 
     // Depth 2 with quiescence — enough to spot tactical mistakes
-    const result = await evalPosition(positions[i].fen, 16, 2);
+    const result = await evalPosition(positions[i].fen, 12, 1);
     evals[i] = result;
 
     // CRITICAL: yield to the event loop between positions so the browser
@@ -25480,6 +25509,8 @@ function ccOpenWorkspace(){
     <div class="cc-analysis-toggle">
       <label class="cc-switch"><input type="checkbox" id="cc-analysis-cb" ${CC.analysisOn?'checked':''} onchange="ccToggleAnalysis(this.checked)"><span class="cc-slider"></span></label>
       <span>Analysis</span>
+      <label class="cc-switch" style="margin-left:20px"><input type="checkbox" id="cc-visual-cb" ${CC.visualOn?'checked':''} onchange="ccToggleVisual(this.checked)"><span class="cc-slider"></span></label>
+      <span>Repertoire</span>
       <span class="cc-eval-inline" id="cc-eval-inline"></span>
     </div>
     <div class="cc-stage">
@@ -25500,6 +25531,7 @@ function ccOpenWorkspace(){
           <button class="btn btn-outline btn-sm" onclick="ccFlip()">⇅ Flip</button>
           <button class="btn btn-outline btn-sm" onclick="ccReset()">⟲ Reset</button>
         </div>
+        <div class="cc-repviz" id="cc-repviz" style="display:none"></div>
       </div>
       <div class="cc-side">
         <div class="cc-side-head">
@@ -25520,6 +25552,43 @@ function ccOpenWorkspace(){
 }
 window.ccBackHome = function(){ ccRenderGrid(); window.scrollTo(0,0); };
 window.ccToggleAnalysis = function(on){ CC.analysisOn=on; ccRender(); };
+window.ccToggleVisual = function(on){ CC.visualOn=on; const el=document.getElementById('cc-repviz'); if(el){ el.style.display = on?'block':'none'; } if(on) ccRenderRepViz(); };
+// Repertoire map — render the whole course tree as a left-to-right branching diagram.
+function ccRepNode(node){
+  const kids = (node && node.children) || [];
+  const cur = (node === CC.node) ? ' rep-cur' : '';
+  const label = node && node.san
+    ? `<button class="rep-node${cur}" onclick="ccRepGo('${node.__sig||''}')">${ccEsc(node.san)}</button>`
+    : `<div class="rep-node rep-root${cur}">start</div>`;
+  if(!kids.length) return `<div class="rep-row">${label}</div>`;
+  return `<div class="rep-row">${label}<div class="rep-children">${kids.map(ccRepNode).join('')}</div></div>`;
+}
+function ccTagSigs(node, path){
+  node.__sig = path.join(',');
+  (node.children||[]).forEach(c=>ccTagSigs(c, path.concat(c.uci)));
+}
+function ccRenderRepViz(){
+  const host=document.getElementById('cc-repviz'); if(!host) return;
+  const root=CC.tree;
+  if(!root || !(root.children && root.children.length)){
+    host.innerHTML='<div class="rep-empty">Play moves to build your repertoire — every branch you add appears here as a map. Click any move to jump to it.</div>';
+    return;
+  }
+  try{ ccTagSigs(root, []); }catch(e){}
+  host.innerHTML='<div class="rep-label">Repertoire map · '+CC.courseLines.length+' line'+(CC.courseLines.length===1?'':'s')+'</div><div class="rep-tree">'+ccRepNode(root)+'</div>';
+}
+// Jump the board to a clicked node in the repertoire map.
+window.ccRepGo = function(sig){
+  const uci = sig ? sig.split(',').filter(Boolean) : [];
+  let st=parseFEN(startFEN()), states=[st], sans=[], node=CC.tree;
+  for(const u of uci){
+    const child=(node.children||[]).find(c=>c.uci===u); if(!child) break;
+    const from=u.slice(0,2),to=u.slice(2,4),promo=u.length>4?u[4].toUpperCase():null;
+    let ns; try{ ns=applyMove(st,{from,to,promotion:promo}); }catch(e){ break; }
+    st=ns; states.push(st); sans.push(child.san); node=child;
+  }
+  CC.states=states; CC.sans=sans; CC.uci=uci.slice(0, sans.length); CC.node=node; ccRender();
+};
 
 function ccCurrentState(){ return CC.states[CC.states.length-1]; }
 function ccFenKey(){ try { return stateToFEN(ccCurrentState()).split(' ').slice(0,2).join(' '); } catch(e){ return CC.sans.join(','); } }
@@ -25531,6 +25600,7 @@ function ccRender(){
   renderBoardEl('cc-board','cc-ranks','cc-files', state, hl, null);
   makeBoardInteractive('cc-board', state, ccOnMove);
   ccRenderMoveTree();
+  const _rv=document.getElementById('cc-repviz'); if(_rv){ _rv.style.display = CC.visualOn?'block':'none'; if(CC.visualOn) ccRenderRepViz(); }
   // load note for this position
   const note=document.getElementById('cc-note'); if(note) note.value = CC.notes[ccFenKey()]||'';
   if(CC.analysisOn){ ccRunEngine(); }
