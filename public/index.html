@@ -2611,6 +2611,9 @@ input::placeholder{color:var(--text3)}
 .coach-chip.r-good{color:#5bbf7a; background:rgba(91,191,122,.14)}
 .coach-chip.r-ok{color:var(--gold); background:var(--gold3)}
 .coach-chip.r-weak{color:var(--red2); background:rgba(224,85,106,.14)}
+/* paginated detailed analysis */
+.arep-stage{min-height:120px}
+@media (prefers-reduced-motion: no-preference){ .arep-page{animation:coach-in .35s var(--ease) both} }
 /* site credit (Cburnett piece attribution) */
 .site-credit{text-align:center; font-size:11px; color:var(--text3); padding:22px 16px; border-top:1px solid var(--border); font-family:'Inter',sans-serif; position:relative; z-index:1}
 .site-credit a{color:var(--text2); text-decoration:none; border-bottom:1px dotted var(--border3)}
@@ -2969,10 +2972,12 @@ input::placeholder{color:var(--text3)}
             </div>
           </div>
           <div class="board-controls">
-            <button class="btn btn-outline btn-sm" onclick="rvPrev()">← Prev</button>
+            <button class="btn btn-outline btn-sm" onclick="rvStart()" title="Back to the start position">⟲ Restart</button>
+            <button class="btn btn-outline btn-sm" onclick="rvPrev()">← Back</button>
             <button class="btn btn-outline btn-sm" onclick="rvNext()">Next →</button>
-            <button class="btn btn-outline btn-sm" onclick="rvStart()">⟳ Start</button>
-            <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board (view from the other side)">⇅ Flip</button>
+            <button class="btn btn-outline btn-sm" onclick="rvEnd()" title="Jump to the final position">End ⇥</button>
+            <button class="btn btn-gold btn-sm" onclick="rvSee()" title="Jump to your critical moments — blunders, mistakes, inaccuracies and misses">⚡ See key moments</button>
+            <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
           <div class="play-mode-bar" style="margin-bottom:6px">
@@ -9870,6 +9875,44 @@ window.coachShare=async function(){
   }catch(e){}
 };
 
+// Split the detailed analysis (rendered into .page-wrap) into Back/Next pages,
+// one page per section. Moves the existing nodes so handlers stay intact.
+window.paginateAnalysis = function(out){
+  const wrap = out && out.querySelector('.page-wrap');
+  if(!wrap || wrap.dataset.paged) return;
+  const kids = Array.from(wrap.children);
+  if(kids.length < 2) return;
+  // Group: each .section-label starts a new page; nodes before the first label form page 1.
+  const groups = []; let cur = [];
+  kids.forEach(el=>{
+    if(el.classList && el.classList.contains('section-label') && cur.length){ groups.push(cur); cur = []; }
+    cur.push(el);
+  });
+  if(cur.length) groups.push(cur);
+  if(groups.length < 2) return;
+  wrap.dataset.paged = '1';
+  const stage = document.createElement('div'); stage.className = 'arep-stage';
+  const pageEls = groups.map(g=>{ const pg = document.createElement('div'); pg.className = 'arep-page'; g.forEach(n=>pg.appendChild(n)); return pg; });
+  pageEls.forEach(p=>stage.appendChild(p));
+  const nav = document.createElement('div'); nav.className = 'coach-nav';
+  nav.innerHTML = `<button class="coach-navbtn" id="arep-back">← Back</button><div class="coach-dots" id="arep-dots"></div><button class="coach-navbtn coach-next" id="arep-next">Next →</button>`;
+  wrap.innerHTML = ''; wrap.appendChild(stage); wrap.appendChild(nav);
+  let idx = 0;
+  function show(i){
+    idx = Math.max(0, Math.min(pageEls.length-1, i));
+    pageEls.forEach((p,j)=>{ p.style.display = (j===idx)?'block':'none'; });
+    const back = document.getElementById('arep-back'), next = document.getElementById('arep-next'), dots = document.getElementById('arep-dots');
+    if(back) back.disabled = (idx===0);
+    if(next) next.textContent = (idx===pageEls.length-1) ? 'Done ✓' : 'Next →';
+    if(dots){ dots.innerHTML = pageEls.map((_,j)=>`<button class="coach-dot ${j===idx?'on':''}" data-i="${j}" aria-label="Page ${j+1}"></button>`).join(''); dots.querySelectorAll('.coach-dot').forEach(d=>{ d.onclick = ()=>show(parseInt(d.dataset.i)); }); }
+    try{ wrap.scrollIntoView({block:'start', behavior:'smooth'}); }catch(e){}
+  }
+  const backBtn = document.getElementById('arep-back'), nextBtn = document.getElementById('arep-next');
+  if(backBtn) backBtn.onclick = ()=>show(idx-1);
+  if(nextBtn) nextBtn.onclick = ()=>{ if(idx < pageEls.length-1) show(idx+1); };
+  show(0);
+};
+
 function renderAnalysis(games, username, out){
   // Cache the games + user so the "Review here" buttons can load any game into Game Review
   perfGamesCache = games;
@@ -9943,9 +9986,8 @@ function renderAnalysis(games, username, out){
   // (including the endgame recs section after the IIFE) can read it.
   const fp = computeStyleFingerprint(games, uname);
 
-  // Paginated personal coaching report (advice-first) replaces the raw-stats view.
-  renderCoachingReport(out, { username, total, totalW, totalD, totalL, winPct, rated, fp, platform: (typeof analysisPlatform !== 'undefined' ? analysisPlatform : 'cc') });
-  return;
+  // Render the original detailed analysis below, then split it into Back/Next pages.
+  setTimeout(function(){ try{ paginateAnalysis(out); }catch(e){} }, 0);
 
   out.innerHTML = `
   <div class="page-wrap">
@@ -11475,6 +11517,28 @@ window.rvEnd = function(){
     reviewIdx = reviewHistory.length - 1; renderReviewBoard();
     document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
   }
+};
+// "See key moments" — skip the quiet moves and jump straight to the next
+// real mistake (blunder, mistake, inaccuracy or miss), wrapping around.
+const RV_CRITICAL = ['blunder','mistake','inaccuracy','miss'];
+window.rvSee = function(){
+  const total = reviewHistory.length - 1;
+  if(total < 1 || !moveAnnotations || !moveAnnotations.length) return;
+  viewingBranch = false;                                   // leave any branch we're exploring
+  const start = (typeof reviewIdx === 'number') ? reviewIdx : 0;
+  let found = -1;
+  for(let step = 1; step <= total; step++){
+    const j = ((start + step - 1) % total) + 1;           // next position, wrapping to the start
+    const a = moveAnnotations[j - 1] && moveAnnotations[j - 1].ann;
+    if(RV_CRITICAL.indexOf(a) >= 0){ found = j; break; }
+  }
+  const lbl = document.getElementById('rv-move-idx');
+  if(found < 0){
+    if(lbl){ const t = lbl.textContent; lbl.textContent = 'No critical mistakes — clean game!'; setTimeout(()=>{ if(lbl) lbl.textContent = t; }, 2200); }
+    return;
+  }
+  reviewIdx = found; renderReviewBoard();
+  document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
 };
 
 // ═══════════════════════════════════════════════════════════════
