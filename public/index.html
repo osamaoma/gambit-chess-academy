@@ -2614,6 +2614,45 @@ input::placeholder{color:var(--text3)}
 /* paginated detailed analysis */
 .arep-stage{min-height:120px}
 @media (prefers-reduced-motion: no-preference){ .arep-page{animation:coach-in .35s var(--ease) both} }
+/* ── Gambit AI coach ── */
+.gai-card{background:linear-gradient(180deg, rgba(201,162,75,.06), var(--bg2)); border:1px solid var(--border2); border-radius:16px; padding:16px; box-shadow:var(--shadow)}
+.gai-head{display:flex; align-items:center; gap:12px; margin-bottom:12px}
+.gai-avatar{width:42px; height:42px; border-radius:12px; background:var(--brass-grad); color:#1c1505; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 4px 14px rgba(201,162,75,.3)}
+.gai-name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; color:var(--text)}
+.gai-status{font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; letter-spacing:.02em}
+.gai-log{display:flex; flex-direction:column; gap:9px; max-height:340px; overflow-y:auto; padding:6px 2px 4px}
+.gai-msg{font-size:14px; line-height:1.55; padding:10px 13px; border-radius:13px; max-width:90%}
+.gai-msg b{color:var(--gold)}
+.gai-bot{background:var(--bg3); border:1px solid var(--border); align-self:flex-start; border-bottom-left-radius:4px}
+.gai-user{background:var(--brass-grad); color:#1c1505; align-self:flex-end; border-bottom-right-radius:4px}
+.gai-user b{color:#1c1505}
+.gai-bot-name{display:block; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold); margin-bottom:3px; font-family:'DM Mono',monospace}
+.gai-chips{display:flex; flex-wrap:wrap; gap:7px; margin:12px 0}
+.gai-chip{background:var(--gold3); border:1px solid rgba(201,162,75,.3); color:var(--gold); font-size:12.5px; padding:7px 12px; border-radius:16px; cursor:pointer; font-family:'Inter',sans-serif; transition:all .18s var(--ease)}
+.gai-chip:hover{background:rgba(201,162,75,.18); transform:translateY(-1px)}
+.gai-inputrow{display:flex; gap:8px}
+.gai-input{flex:1; background:var(--bg3); border:1px solid var(--border2); border-radius:11px; padding:11px 14px; color:var(--text); font-size:14px}
+.gai-input:focus{border-color:var(--gold); outline:none; box-shadow:0 0 0 3px var(--gold3)}
+.gai-send{background:var(--brass-grad); color:#1c1505; border:none; border-radius:11px; padding:0 20px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Inter',sans-serif; transition:transform .15s var(--ease)}
+.gai-send:hover{transform:translateY(-1px)}
+/* ── Training plan ── */
+.plan-week{display:flex; flex-direction:column; gap:8px; margin-top:6px}
+.plan-day{display:flex; gap:13px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:13px 15px; align-items:flex-start}
+.plan-day-tag{flex-shrink:0; width:46px; text-align:center; font-family:'DM Mono',monospace; font-size:12px; font-weight:700; color:var(--gold); background:var(--gold3); border-radius:9px; padding:6px 0; letter-spacing:.04em}
+.plan-day-t{font-size:14.5px; font-weight:600; color:var(--text); margin-bottom:3px}
+.plan-day-s{font-size:13px; color:var(--text2); line-height:1.5}
+/* ── Trends ── */
+.trend-card{background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-bottom:10px}
+.trend-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:12px; gap:12px}
+.trend-now{font-family:'Space Grotesk',sans-serif; font-size:34px; font-weight:700; color:var(--gold); line-height:1}
+.trend-sub{font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; font-family:'DM Mono',monospace}
+.trend-delta{font-family:'DM Mono',monospace; font-size:13px; font-weight:600; text-align:right}
+.trend-delta.up{color:#5bbf7a} .trend-delta.down{color:var(--red2)}
+.trend-chart{width:100%; height:auto; display:block}
+.trend-label{font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; font-family:'DM Mono',monospace; margin-bottom:10px}
+.trend-dots{display:flex; flex-wrap:wrap; gap:6px}
+.trend-dot{width:18px; height:18px; border-radius:5px}
+.trend-dot.td-w{background:#5bbf7a} .trend-dot.td-d{background:var(--text3)} .trend-dot.td-l{background:var(--red2)}
 /* site credit (Cburnett piece attribution) */
 .site-credit{text-align:center; font-size:11px; color:var(--text3); padding:22px 16px; border-top:1px solid var(--border); font-family:'Inter',sans-serif; position:relative; z-index:1}
 .site-credit a{color:var(--text2); text-decoration:none; border-bottom:1px dotted var(--border3)}
@@ -9875,11 +9914,102 @@ window.coachShare=async function(){
   }catch(e){}
 };
 
+// ════════════════ PREMIUM PERFORMANCE FEATURES ════════════════
+// Gambit AI — an in-app coach that answers from the player's own game data (no external API).
+function gambitRespond(q){
+  const ctx = window._gambitCtx || {}; const fp = ctx.fp || {};
+  const s = String(q||'').toLowerCase();
+  const fmt = c => c ? `${c.verdict} ${c.bad ? coachEsc(c.bad)+' ' : ''}<b>What I'd do:</b> ${coachEsc(c.study)}` : null;
+  if(/open|repertoire|theory|first move/.test(s)) return fmt(coachCatOpenings(ctx)) || `I need a few more games to read your openings.`;
+  if(/endgame|ending|convert|technique/.test(s)) return fmt(coachCatEndgames(fp)) || `Not enough endgames to judge yet — play a few longer games.`;
+  if(/clock|time|rush|fast|blitz|bullet|flag/.test(s)) return fmt(coachCatClock(fp)) || `I need more games across time controls to read your clock habits.`;
+  if(/colou?r|white|black/.test(s)){ const c=coachCatColor(fp); return c? fmt(c) : `Play a few more games with each colour and I'll compare them.`; }
+  if(/style|play like|which player|tal|carlsen|kasparov|petrosian/.test(s)){ const st=coachCatStyle(fp); return st ? `${st.verdict} ${coachEsc(st.good)} ${coachEsc(st.study)}` : `Play a few more games and I'll tell you which famous player you resemble.`; }
+  if(/strength|good at|best|working/.test(s)){
+    const cats=[coachCatOpenings(ctx),coachCatEndgames(fp),coachCatClock(fp)].filter(Boolean).sort((a,b)=>b.rating.score-a.rating.score);
+    return cats[0] ? `Your strongest area is your <b>${coachEsc(cats[0].short.toLowerCase())}</b>. ${cats[0].verdict} Lean on it.` : `Keep playing — I'll surface your strengths soon.`;
+  }
+  if(/plan|study|improve|work on|next|weak|fix|biggest|lose/.test(s)){
+    const cats=[coachCatOpenings(ctx),coachCatEndgames(fp),coachCatClock(fp)].filter(Boolean).sort((a,b)=>a.rating.score-b.rating.score);
+    return cats[0] ? `Start with your <b>${coachEsc(cats[0].short.toLowerCase())}</b> — it's costing you the most right now. ${cats[0].verdict} <b>Do this:</b> ${coachEsc(cats[0].study)}` : `Play a few more games and I'll point you to the biggest win.`;
+  }
+  return `I can talk about your <b>openings</b>, <b>endgames</b>, <b>clock habits</b>, your <b>style</b>, or your <b>colours</b> — or just ask <b>"what should I study first?"</b> and I'll point you to the biggest win.`;
+}
+window.gambitAsk = function(q){
+  const log=document.getElementById('gai-log'); if(!log) return;
+  const txt=String(q||'').trim(); if(!txt) return;
+  log.insertAdjacentHTML('beforeend', `<div class="gai-msg gai-user">${coachEsc(txt)}</div>`);
+  const reply=gambitRespond(txt);
+  log.insertAdjacentHTML('beforeend', `<div class="gai-msg gai-bot"><span class="gai-bot-name">Gambit AI</span>${reply}</div>`);
+  log.scrollTop=log.scrollHeight;
+  const inp=document.getElementById('gai-input'); if(inp) inp.value='';
+};
+window.gambitAskInput = function(){ const inp=document.getElementById('gai-input'); if(inp) gambitAsk(inp.value); };
+function gambitAISection(fp, ctx){
+  const cats=[coachCatOpenings(ctx),coachCatEndgames(fp),coachCatClock(fp)].filter(Boolean).sort((a,b)=>a.rating.score-b.rating.score);
+  const w=cats[0];
+  const greet = w ? `Hi — I'm <b>Gambit AI</b>, your coach. I went through your games. The first thing I'd fix is your <b>${coachEsc(w.short.toLowerCase())}</b>. Ask me anything below.` : `Hi — I'm <b>Gambit AI</b>, your coach. Play a few more games and I'll have plenty to tell you. Ask me anything below.`;
+  const chips=['What should I study first?','How are my openings?','How are my endgames?','Do I rush my moves?',"What's my style?"];
+  return `<div class="section-label">Gambit AI · your coach</div>
+  <div class="gai-card">
+    <div class="gai-head"><div class="gai-avatar">♞</div><div><div class="gai-name">Gambit AI</div><div class="gai-status">Reads your real games · always free</div></div></div>
+    <div class="gai-log" id="gai-log"><div class="gai-msg gai-bot"><span class="gai-bot-name">Gambit AI</span>${greet}</div></div>
+    <div class="gai-chips">${chips.map(c=>`<button class="gai-chip" onclick="gambitAsk(this.textContent)">${coachEsc(c)}</button>`).join('')}</div>
+    <div class="gai-inputrow"><input id="gai-input" class="gai-input" placeholder="Ask Gambit AI…" onkeydown="if(event.key==='Enter')gambitAskInput()"><button class="gai-send" onclick="gambitAskInput()">Ask</button></div>
+  </div>`;
+}
+function trainingPlanSection(fp, ctx){
+  const cats=[coachCatOpenings(ctx),coachCatEndgames(fp),coachCatClock(fp)].filter(Boolean).sort((a,b)=>a.rating.score-b.rating.score);
+  const w=cats[0], n=cats[1], tasks=[];
+  if(w) tasks.push({d:'Mon', t:`Fix your weakest area — ${w.short.toLowerCase()}`, s:w.study});
+  tasks.push({d:'Tue', t:'Review 3 recent losses', s:'Open them in Game Review, tap "See key moments", and replay each mistake until you spot the right move.'});
+  if(n) tasks.push({d:'Wed', t:`Work on your ${n.short.toLowerCase()}`, s:n.study});
+  else  tasks.push({d:'Wed', t:'Sharpen one opening', s:'Pick your most-played opening and learn two more moves of theory.'});
+  tasks.push({d:'Thu', t:'15 minutes of tactics', s:'Daily puzzles build the pattern-recognition that stops blunders before they happen.'});
+  tasks.push({d:'Fri', t:'Play 3 rapid games', s:'Slow chess builds habits that carry into faster games. Use the clock to double-check every move.'});
+  if(w) tasks.push({d:'Sat', t:`Drill ${w.short.toLowerCase()} again`, s:'Repetition turns a weakness into a strength. One focused session.'});
+  else  tasks.push({d:'Sat', t:'Play a longer game', s:'Take your time and aim to reach a clean endgame.'});
+  tasks.push({d:'Sun', t:'Re-run this report', s:'Check your trends and see which weak spot moved. Next week, aim at the new weakest area.'});
+  const verd = cats.length ? `A week built around your weak spots: <strong>${cats.slice(0,2).map(c=>coachEsc(c.short.toLowerCase())).join('</strong> and <strong>')}</strong>.` : 'A balanced week to keep you improving.';
+  return `<div class="section-label">Your training plan</div>
+  <p class="coach-verdict" style="font-size:15px">${verd}</p>
+  <div class="plan-week">${tasks.map(t=>`<div class="plan-day"><div class="plan-day-tag">${t.d}</div><div class="plan-day-body"><div class="plan-day-t">${coachEsc(t.t)}</div><div class="plan-day-s">${coachEsc(t.s)}</div></div></div>`).join('')}</div>`;
+}
+function trendsSection(games, user){
+  const u=String(user||'').toLowerCase(), series=[], results=[];
+  for(let i=games.length-1;i>=0;i--){ const g=games[i]; const isW=String(g.white||'').toLowerCase()===u; const r=isW?g.whiteRating:g.blackRating; if(typeof r==='number' && r>0) series.push(r); }
+  for(let i=Math.min(games.length,24)-1;i>=0;i--){ const g=games[i]; const isW=String(g.white||'').toLowerCase()===u; const won=(isW&&g.result==='1-0')||(!isW&&g.result==='0-1'); const drew=g.result==='1/2-1/2'; results.unshift(won?'w':(drew?'d':'l')); }
+  let chart;
+  if(series.length>=4){
+    const W=560,H=150,pad=16, min=Math.min(...series), max=Math.max(...series), range=(max-min)||1;
+    const pts=series.map((v,i)=>{ const x=pad+(i/(series.length-1))*(W-2*pad); const y=H-pad-((v-min)/range)*(H-2*pad); return x.toFixed(1)+','+y.toFixed(1); }).join(' ');
+    const last=series[series.length-1], delta=last-series[0];
+    chart=`<div class="trend-head"><div><div class="trend-now">${last}</div><div class="trend-sub">current rating</div></div><div class="trend-delta ${delta>=0?'up':'down'}">${delta>=0?'▲ +':'▼ '}${delta} over ${series.length} rated games</div></div><svg class="trend-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+  } else { chart=`<p class="coach-note">Not enough games carry rating data to chart a trend yet.</p>`; }
+  const dots=results.map(r=>`<span class="trend-dot td-${r}" title="${r==='w'?'Win':r==='d'?'Draw':'Loss'}"></span>`).join('');
+  return `<div class="section-label">Your trends</div>
+  <div class="trend-card">${chart}</div>
+  <div class="trend-card"><div class="trend-label">Recent results (oldest → newest)</div><div class="trend-dots">${dots||'<span class="coach-note">No recent games.</span>'}</div></div>`;
+}
+
 // Split the detailed analysis (rendered into .page-wrap) into Back/Next pages,
 // one page per section. Moves the existing nodes so handlers stay intact.
 window.paginateAnalysis = function(out){
   const wrap = out && out.querySelector('.page-wrap');
   if(!wrap || wrap.dataset.paged) return;
+  // Inject the premium features (Gambit AI, training plan, trends) right after the profile bar.
+  try{
+    const games = (typeof perfGamesCache !== 'undefined' && perfGamesCache) || [], user = String((typeof perfUserCache !== 'undefined' && perfUserCache) || '');
+    if(games.length && user && typeof computeStyleFingerprint === 'function'){
+      const fp = computeStyleFingerprint(games, user.toLowerCase());
+      const gctx = { fp, rated: (window._perfRated || []) };
+      window._gambitCtx = gctx;
+      const premium = gambitAISection(fp, gctx) + trainingPlanSection(fp, gctx) + trendsSection(games, user);
+      const profile = wrap.querySelector('.profile-bar');
+      if(profile) profile.insertAdjacentHTML('afterend', premium);
+      else wrap.insertAdjacentHTML('afterbegin', premium);
+    }
+  }catch(e){}
   const kids = Array.from(wrap.children);
   if(kids.length < 2) return;
   // Group: each .section-label starts a new page; nodes before the first label form page 1.
@@ -9969,6 +10099,7 @@ function renderAnalysis(games, username, out){
     ...o, total: o.w + o.d + o.l,
     winPct: Math.round((o.w / (o.w + o.d + o.l)) * 100)
   }));
+  try{ window._perfRated = rated; }catch(e){}   // expose opening data for the premium features
   // Lower the threshold so strong players (with many openings) see results
   const strong = rated.filter(o => o.winPct >= 50 && o.total >= 2).sort((a,b) => b.winPct - a.winPct).slice(0, 8);
   const weak   = rated.filter(o => o.winPct < 50 && o.total >= 2).sort((a,b) => a.winPct - b.winPct).slice(0, 6);
