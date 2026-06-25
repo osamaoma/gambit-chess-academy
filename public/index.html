@@ -2549,6 +2549,51 @@ input::placeholder{color:var(--text3)}
 .cc-mini-pc{position:absolute; inset:7%; display:block}
 .cc-mini-pc svg{width:100%; height:100%; display:block}
 
+/* ── Personal coaching report ── */
+.coach-wrap{max-width:680px; margin:8px auto 40px; padding:0 4px}
+.coach-topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+.coach-brandline{font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--text3)}
+.coach-share-btn{background:var(--gold3); border:1px solid rgba(201,162,75,.35); color:var(--gold); font-family:'Inter',sans-serif; font-weight:600; font-size:12.5px; padding:7px 14px; border-radius:9px; cursor:pointer; transition:all .2s var(--ease)}
+.coach-share-btn:hover{background:rgba(201,162,75,.18); transform:translateY(-1px)}
+.coach-stage{min-height:300px}
+@media (prefers-reduced-motion: no-preference){ .coach-page{animation:coach-in .4s var(--ease) both} @keyframes coach-in{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}} }
+.coach-page-eyebrow{font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold)}
+.coach-page-title{font-family:'Space Grotesk',sans-serif; font-size:clamp(26px,4vw,34px); font-weight:700; letter-spacing:-.02em; margin:6px 0 16px; color:var(--text)}
+.coach-verdict{font-size:17px; line-height:1.55; color:var(--text); margin:0 0 16px}
+.coach-verdict strong{color:var(--gold)}
+.coach-note{font-size:13.5px; line-height:1.6; color:var(--text2); margin:14px 0 0}
+.coach-recline{display:flex; gap:10px; margin:4px 0 6px}
+.coach-recline span{flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center; display:flex; flex-direction:column; gap:2px}
+.coach-recline b{font-family:'Space Grotesk',sans-serif; font-size:20px; color:var(--gold)}
+.coach-recline i{font-style:normal; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3)}
+.coach-card{background:var(--bg2); border:1px solid var(--border); border-left:3px solid var(--border2); border-radius:12px; padding:14px 16px; margin-bottom:10px}
+.coach-card.cc-good{border-left-color:#5bbf7a}
+.coach-card.cc-weak{border-left-color:var(--red2)}
+.coach-card-tag{font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--text3); margin-bottom:6px; font-weight:600}
+.coach-card-tag.tg-good{color:#5bbf7a}
+.coach-card-tag.tg-weak{color:var(--red2)}
+.coach-card-problem{font-size:14px; color:var(--text); line-height:1.5; margin-bottom:6px}
+.coach-card-fix{font-size:13.5px; color:var(--text2); line-height:1.6}
+.coach-card-fix b{color:var(--gold)}
+.coach-plan{list-style:none; margin:0; padding:0}
+.coach-plan li{background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px; font-size:14px; line-height:1.55; color:var(--text2)}
+.coach-plan-when{display:block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:4px}
+.coach-cta-btn{margin-top:8px}
+.coach-nav{display:flex; align-items:center; justify-content:space-between; margin-top:18px; gap:12px}
+.coach-navbtn{background:var(--bg3); border:1px solid var(--border2); color:var(--text2); font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; padding:10px 18px; border-radius:10px; cursor:pointer; transition:all .2s var(--ease)}
+.coach-navbtn:hover:not(:disabled){border-color:var(--gold); color:var(--gold); transform:translateY(-1px)}
+.coach-navbtn:disabled{opacity:.35; cursor:default}
+.coach-next{background:var(--brass-grad); color:#1c1505; border-color:transparent}
+.coach-next:hover:not(:disabled){color:#1c1505; transform:translateY(-1px); box-shadow:0 8px 22px rgba(201,162,75,.28)}
+.coach-dots{display:flex; gap:7px; flex-wrap:wrap; justify-content:center}
+.coach-dot{width:8px; height:8px; border-radius:50%; background:var(--border3); border:none; cursor:pointer; padding:0; transition:all .2s var(--ease)}
+.coach-dot.on{background:var(--gold); transform:scale(1.25)}
+.coach-dot:hover{background:var(--gold2)}
+/* site credit (Cburnett piece attribution) */
+.site-credit{text-align:center; font-size:11px; color:var(--text3); padding:22px 16px; border-top:1px solid var(--border); font-family:'Inter',sans-serif; position:relative; z-index:1}
+.site-credit a{color:var(--text2); text-decoration:none; border-bottom:1px dotted var(--border3)}
+.site-credit a:hover{color:var(--gold)}
+
 </style>
 </head>
 <body>
@@ -9453,6 +9498,166 @@ function buildRecommendations(fingerprint, playedOpenings){
   return { recs: recs.slice(0, 6), topStyle: topStyle ? topStyle.label : null };
 }
 
+// ════════════════════════════════════════════════════════════════
+// PERSONAL COACHING REPORT — turns raw game data into a study plan.
+// Paginated (Next/Back), advice-first (no raw stat dumps), shareable.
+// ════════════════════════════════════════════════════════════════
+function coachEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]); }
+
+const COACH_EG_NAME = {pawn_only:'Pawn endgames',rook:'Rook endgames',rook_minor:'Rook + minor endgames',queen:'Queen endgames',minor:'Minor-piece endgames',major:'Major-piece endgames',complex:'Complex endgames',other:'Endgames'};
+const COACH_EG_TIP = {
+  pawn_only:"Opposition, key squares, and the rule of the square decide nearly every pawn ending. Drill them until they're automatic.",
+  rook:"Rook endgames are the most common of all. Learn the Lucena (winning) and Philidor (drawing) positions cold, and keep your rook active behind passed pawns.",
+  rook_minor:"Keep the rook active and use the minor piece to support a passed pawn or blockade the opponent's.",
+  queen:"Centralise the queen, watch for perpetual check, and convert with checks that gain a tempo.",
+  minor:"Learn good-bishop vs bad-bishop and knight vs bishop. Fix your pawns on the colour your bishop doesn't sit on.",
+  major:"Seize open files with the rooks, coordinate queen and rook, and create king threats before pushing pawns.",
+  complex:"Simplify toward an ending you already know, and trade pieces (not pawns) when you're ahead in material.",
+  other:"Trade into endings you understand, keep your king active, and push passed pawns."
+};
+
+function coachWeaknesses(ctx){
+  const fp = ctx.fp || {}, out = [];
+  if(fp.whiteGames>=5 && fp.blackGames>=5 && fp.whiteWinRate!=null && fp.blackWinRate!=null){
+    const gap = fp.whiteWinRate - fp.blackWinRate;
+    if(Math.abs(gap)>=12){
+      const weak = gap>0?'Black':'White', wr = gap>0?fp.blackWinRate:fp.whiteWinRate, strong = gap>0?fp.whiteWinRate:fp.blackWinRate;
+      out.push({ tag:'Colour imbalance', sev:Math.abs(gap),
+        problem:`You score ${wr}% with ${weak} but ${strong}% with the other colour — a ${Math.abs(gap)}-point gap.`,
+        fix:`Your ${weak} repertoire is leaking rating. Pick one solid ${weak} reply and learn it 8–10 moves deep instead of guessing each game.` });
+    }
+  }
+  if(fp.shortGames>=3 && fp.shortLossRate>=45){
+    out.push({ tag:'Opening preparation', sev:fp.shortLossRate,
+      problem:`${fp.shortLossRate}% of your short games (under 20 moves) are losses — you're getting hit early.`,
+      fix:`You're losing before middlegame plans matter. Drill the core ideas and common traps of your main openings so you reach move 15 on equal footing.` });
+  }
+  if(fp.longGames>=3 && fp.longLossRate>=50){
+    out.push({ tag:'Endgame technique', sev:fp.longLossRate,
+      problem:`You lose ${fp.longLossRate}% of long games (50+ moves) — advantages slip away late.`,
+      fix:`Convert won positions: king-and-pawn opposition, the Lucena and Philidor rook endings, and basic mates until they're automatic.` });
+  }
+  (ctx.rated||[]).filter(o=>o.total>=3 && o.winPct<=40).sort((a,b)=>a.winPct-b.winPct).slice(0,2).forEach(o=>{
+    out.push({ tag:'Opening leak', sev:62-o.winPct,
+      problem:`You score just ${o.winPct}% in the ${o.name} over ${o.total} games.`,
+      fix:`Review your losses in this line, find the move where it turns sour, and learn the right plan — or switch it for a system that suits you.` });
+  });
+  const tcs=[{n:'Rapid',r:fp.rapidWinRate,g:fp.rapidGames},{n:'Blitz',r:fp.blitzWinRate,g:fp.blitzGames},{n:'Bullet',r:fp.bulletWinRate,g:fp.bulletGames}].filter(t=>t.g>=5 && t.r!=null);
+  if(tcs.length>=2){
+    const worst=tcs.slice().sort((a,b)=>a.r-b.r)[0], best=tcs.slice().sort((a,b)=>b.r-a.r)[0];
+    if(best.r-worst.r>=12){
+      out.push({ tag:'Time management', sev:best.r-worst.r,
+        problem:`Your ${worst.n} win rate (${worst.r}%) is well below your ${best.n} (${best.r}%).`,
+        fix:(worst.n==='Bullet'||worst.n==='Blitz')?`Fast games are costing you rating on flags and one-move blunders. Play more ${best.n}, and in fast games take one breath to check for hanging pieces before moving.`:`Use your clock — in slower games, compare two candidate moves and double-check tactics before you commit.` });
+    }
+  }
+  out.sort((a,b)=>b.sev-a.sev);
+  return out;
+}
+
+function coachStrengths(ctx){
+  const fp = ctx.fp || {}, out = [];
+  if(fp.whiteGames>=5 && fp.blackGames>=5 && fp.whiteWinRate!=null && fp.blackWinRate!=null){
+    const best = fp.whiteWinRate>=fp.blackWinRate?{c:'White',r:fp.whiteWinRate}:{c:'Black',r:fp.blackWinRate};
+    if(best.r>=52) out.push({tag:'Strong colour', text:`You're reliable with ${best.c} (${best.r}% score) — steer games toward the structures you know there.`});
+  }
+  const styles=[{n:'attacking',r:fp.attackWinRate,t:fp.attackTotal},{n:'sharp tactical',r:fp.sharpWinRate,t:fp.sharpTotal},{n:'solid positional',r:fp.solidWinRate,t:fp.solidTotal},{n:'classical positional',r:fp.positionalWinRate,t:fp.positionalTotal}].filter(s=>s.t>=4 && s.r!=null).sort((a,b)=>b.r-a.r);
+  if(styles[0] && styles[0].r>=55) out.push({tag:'Natural style', text:`You're at your best in ${styles[0].n} positions (${styles[0].r}%) — pick openings that lead there.`});
+  const tcs=[{n:'Rapid',r:fp.rapidWinRate,g:fp.rapidGames},{n:'Blitz',r:fp.blitzWinRate,g:fp.blitzGames},{n:'Bullet',r:fp.bulletWinRate,g:fp.bulletGames}].filter(t=>t.g>=5 && t.r!=null).sort((a,b)=>b.r-a.r);
+  if(tcs[0] && tcs[0].r>=53) out.push({tag:'Best format', text:`${tcs[0].n} is your strongest format (${tcs[0].r}%) — it's where rating comes easiest.`});
+  (ctx.rated||[]).filter(o=>o.total>=3 && o.winPct>=60).sort((a,b)=>b.winPct-a.winPct).slice(0,2).forEach(o=>out.push({tag:'Reliable opening', text:`The ${o.name} works for you (${o.winPct}% over ${o.total} games). Deepen it — it's a rating engine.`}));
+  if(!out.length) out.push({tag:'Balanced', text:`No single area dominates yet — a sign of even, all-round play. Build an edge by specialising in one opening and one time control.`});
+  return out;
+}
+
+function coachTimeControlPage(fp){
+  const tcs=[{n:'Rapid',r:fp.rapidWinRate,g:fp.rapidGames},{n:'Blitz',r:fp.blitzWinRate,g:fp.blitzGames},{n:'Bullet',r:fp.bulletWinRate,g:fp.bulletGames}].filter(t=>t.g>=3 && t.r!=null);
+  if(!tcs.length) return `<p class="coach-note">Not enough games in any single format yet. Play a handful more rapid games and re-run — rapid gives the cleanest read on your real strength.</p>`;
+  tcs.sort((a,b)=>b.r-a.r);
+  const best=tcs[0], worst=tcs[tcs.length-1];
+  let body=`<div class="coach-card cc-good"><div class="coach-card-tag tg-good">Strongest · ${best.n}</div><div class="coach-card-fix">You score ${best.r}% in ${best.n}. This is where your rating climbs fastest — play it when you want to gain points.</div></div>`;
+  if(tcs.length>1 && best.r-worst.r>=10){
+    const advice=(worst.n==='Bullet'||worst.n==='Blitz')?`Fast games are dragging your rating down — you're likely losing on time or to one-move blunders. Before each move, take one breath and ask: is anything hanging? Then play more ${best.n} to build the pattern recognition fast chess rewards.`:`Slow down and spend your clock — in ${worst.n} you have the time, so compare candidate moves and check tactics before committing.`;
+    body+=`<div class="coach-card cc-weak"><div class="coach-card-tag tg-weak">Weakest · ${worst.n}</div><div class="coach-card-problem">Only ${worst.r}% in ${worst.n} — ${best.r-worst.r} points below your ${best.n}.</div><div class="coach-card-fix"><b>Study:</b> ${advice}</div></div>`;
+  }
+  return body;
+}
+
+function coachEndgamePage(fp){
+  const st=fp.endgameStats||{};
+  const types=Object.entries(st).filter(([k,v])=>v.games>=2).map(([k,v])=>({k,...v,wr:v.games?Math.round((v.wins+v.draws*0.5)/v.games*100):0}));
+  const intro=(fp.longGames>=3 && fp.longLossRate>=50)?`<p class="coach-verdict">You lose <strong>${fp.longLossRate}%</strong> of games that reach 50+ moves — points are slipping in the endgame.</p>`:`<p class="coach-note">Your long games hold up reasonably well. Sharpen the ending types below to win more of them.</p>`;
+  if(!types.length) return intro+`<p class="coach-note">Not enough endgames reached to pinpoint a type yet — re-run after more long games.</p>`;
+  types.sort((a,b)=>a.wr-b.wr);
+  const w=types[0], nm=COACH_EG_NAME[w.k]||'Endgames';
+  return intro+`<div class="coach-card cc-weak"><div class="coach-card-tag tg-weak">Study first · ${coachEsc(nm)}</div><div class="coach-card-problem">You score ${w.wr}% in ${coachEsc(nm.toLowerCase())} (${w.wins}–${w.draws}–${w.losses}).</div><div class="coach-card-fix"><b>What to study:</b> ${coachEsc(COACH_EG_TIP[w.k]||COACH_EG_TIP.other)}</div></div>`+(types[1]?`<div class="coach-card"><div class="coach-card-tag">Then · ${coachEsc(COACH_EG_NAME[types[1].k]||'Endgames')}</div><div class="coach-card-fix">${coachEsc(COACH_EG_TIP[types[1].k]||COACH_EG_TIP.other)}</div></div>`:'');
+}
+
+function coachOpeningPage(ctx){
+  const fp=ctx.fp||{};
+  const leaks=(ctx.rated||[]).filter(o=>o.total>=3 && o.winPct<=45).sort((a,b)=>a.winPct-b.winPct).slice(0,3);
+  const intro=(fp.shortGames>=3 && fp.shortLossRate>=45)?`<p class="coach-verdict">${fp.shortLossRate}% of your short games end in a loss — you're being outprepared in the opening.</p>`:`<p class="coach-note">You survive the opening well. The lines below are still where you score worst — fixing them is free rating.</p>`;
+  if(!leaks.length) return intro+`<p class="coach-note">No single opening is leaking badly. Deepen your two most-played lines to push your edge further.</p><button class="btn btn-outline coach-cta-btn" onclick="showSection('academy')">Study openings →</button>`;
+  return intro+leaks.map(o=>`<div class="coach-card cc-weak"><div class="coach-card-tag tg-weak">${coachEsc(o.name)}</div><div class="coach-card-problem">${o.winPct}% over ${o.total} games — one of your worst recurring openings.</div><div class="coach-card-fix"><b>What to do:</b> Open these games in Game Review, find the move where it goes wrong, and learn the right plan — or switch this line for one that fits your style.</div></div>`).join('')+`<button class="btn btn-outline coach-cta-btn" onclick="showSection('academy')">Study openings →</button>`;
+}
+
+function coachProgressPage(prev, ctx){
+  if(!prev || typeof prev.winPct!=='number') return `<p class="coach-verdict">This report is your <strong>baseline</strong>.</p><p class="coach-note">I've saved it on this device. Play 20–30 more games, run the analysis again, and this page will show exactly how your score and your weak spots have moved.</p>`;
+  const d=ctx.winPct-prev.winPct, arrow=d>0?'▲':(d<0?'▼':'■'), cls=d>0?'cc-good':(d<0?'cc-weak':''), when=prev.date?new Date(prev.date).toLocaleDateString():'last time';
+  return `<div class="coach-card ${cls}"><div class="coach-card-tag">Since ${coachEsc(when)}</div><div class="coach-verdict" style="margin:4px 0">${arrow} ${d>0?'+':''}${d}% score</div><div class="coach-card-fix">Last report: ${prev.winPct}% over ${prev.total} games${prev.topWeak?` · top leak was <b>${coachEsc(prev.topWeak)}</b>`:''}. ${d>0?"You're trending up — keep doing what's working.":(d<0?'A dip — check whether your top leak above is the cause.':'Holding steady — attack the weaknesses above to break through.')}</div></div>`;
+}
+
+function renderCoachingReport(out, ctx){
+  const fp=ctx.fp||{};
+  const weaknesses=coachWeaknesses(ctx), strengths=coachStrengths(ctx);
+  const rec=(ctx.totalW||0)+'–'+(ctx.totalD||0)+'–'+(ctx.totalL||0);
+  const key='gambit_perf_'+(ctx.platform||'cc')+'_'+String(ctx.username||'').toLowerCase();
+  let prev=null; try{ prev=JSON.parse(localStorage.getItem(key)||'null'); }catch(e){}
+  try{ localStorage.setItem(key, JSON.stringify({winPct:ctx.winPct,total:ctx.total,date:Date.now(),topWeak:(weaknesses[0]&&weaknesses[0].tag)||null})); }catch(e){}
+
+  const name=coachEsc(ctx.username||'Player');
+  const topStrength=strengths[0], topWeak=weaknesses[0];
+  const pages=[];
+
+  const verdict=`You're scoring <strong>${ctx.winPct}%</strong> across your last ${ctx.total} games`+(topStrength?`. Your edge: <strong>${coachEsc(topStrength.text.split(/[—.]/)[0].trim())}</strong>`:'')+(topWeak?`. The one thing holding your rating back right now is <strong>${coachEsc(topWeak.tag.toLowerCase())}</strong>.`:'.');
+  pages.push({eyebrow:'Coaching report', title:`${name}'s game`, body:`<p class="coach-verdict">${verdict}</p><div class="coach-recline"><span><b>${rec}</b><i>record</i></span><span><b>${ctx.winPct}%</b><i>score</i></span><span><b>${ctx.total}</b><i>games</i></span></div><p class="coach-note">Tap <b>Next</b> for your strengths, the patterns costing you rating, and an exact study plan for each — time control, endgames, and openings.</p>`});
+  pages.push({eyebrow:"What's working", title:'Your strengths', body:strengths.map(s=>`<div class="coach-card cc-good"><div class="coach-card-tag tg-good">${coachEsc(s.tag)}</div><div class="coach-card-fix">${coachEsc(s.text)}</div></div>`).join('')});
+  pages.push({eyebrow:'Rating leaks', title:'Biggest weaknesses', body:(weaknesses.length?weaknesses.slice(0,4).map((w,i)=>`<div class="coach-card cc-weak"><div class="coach-card-tag tg-weak">#${i+1} · ${coachEsc(w.tag)}</div><div class="coach-card-problem">${coachEsc(w.problem)}</div><div class="coach-card-fix"><b>Fix:</b> ${coachEsc(w.fix)}</div></div>`).join(''):`<div class="coach-card"><div class="coach-card-fix">No glaring leaks in this sample — nice. Grow your sample and re-run to surface subtler patterns.</div></div>`)});
+  pages.push({eyebrow:'Format', title:'Time control', body:coachTimeControlPage(fp)});
+  pages.push({eyebrow:'The long game', title:'Endgames', body:coachEndgamePage(fp)});
+  pages.push({eyebrow:'The first 15 moves', title:'Opening mistakes', body:coachOpeningPage(ctx)});
+  const plan=weaknesses.slice(0,3).map(w=>w.fix);
+  pages.push({eyebrow:'Do this next', title:'Your improvement plan', body:(plan.length?`<ol class="coach-plan">${plan.map((p,i)=>`<li><span class="coach-plan-when">${['This week','Next','Then'][i]||'Then'}</span>${coachEsc(p)}</li>`).join('')}</ol>`:`<p class="coach-note">You're well-rounded. Pick one opening to master 10 moves deep and play longer time controls to convert your edges.</p>`)+`<button class="btn btn-gold coach-cta-btn" onclick="showSection('review')">Open Game Review →</button>`});
+  pages.push({eyebrow:'Over time', title:'Progress tracking', body:coachProgressPage(prev, ctx)});
+
+  window._coachPages=pages; window._coachIdx=0;
+  window._coachShareText=`${ctx.username} — chess coaching report\n${rec} record · ${ctx.winPct}% over ${ctx.total} games\nStrength: ${topStrength?topStrength.text:'balanced play'}\nBiggest leak: ${topWeak?topWeak.tag+' — '+topWeak.problem:'none significant'}\n— made with Gambit Chess Academy`;
+  out.innerHTML=`<div class="coach-wrap"><div class="coach-topbar"><div class="coach-brandline">Personal coaching report</div><button class="coach-share-btn" onclick="coachShare()">↪ Share</button></div><div class="coach-stage" id="coach-stage"></div><div class="coach-nav"><button class="coach-navbtn" id="coach-back" onclick="coachNav(-1)">← Back</button><div class="coach-dots" id="coach-dots"></div><button class="coach-navbtn coach-next" id="coach-next" onclick="coachNav(1)">Next →</button></div></div>`;
+  coachShowPage(0);
+}
+
+function coachShowPage(i){
+  const pages=window._coachPages||[]; if(!pages.length) return;
+  i=Math.max(0,Math.min(pages.length-1,i)); window._coachIdx=i;
+  const p=pages[i], stage=document.getElementById('coach-stage');
+  if(stage) stage.innerHTML=`<div class="coach-page"><div class="coach-page-eyebrow">${coachEsc(p.eyebrow)} · ${i+1} of ${pages.length}</div><h2 class="coach-page-title">${coachEsc(p.title)}</h2><div class="coach-page-body">${p.body}</div></div>`;
+  const back=document.getElementById('coach-back'), next=document.getElementById('coach-next');
+  if(back) back.disabled=(i===0);
+  if(next) next.textContent=(i===pages.length-1)?'Done ✓':'Next →';
+  const dots=document.getElementById('coach-dots');
+  if(dots) dots.innerHTML=pages.map((_,j)=>`<button class="coach-dot ${j===i?'on':''}" onclick="coachGoto(${j})" aria-label="Page ${j+1}"></button>`).join('');
+}
+window.coachNav=function(d){ const pages=window._coachPages||[]; const ni=(window._coachIdx||0)+d; if(ni>=pages.length) return; coachShowPage(ni); };
+window.coachGoto=function(i){ coachShowPage(i); };
+window.coachShare=async function(){
+  const text=window._coachShareText||'My chess coaching report';
+  try{
+    if(navigator.share){ await navigator.share({title:'Chess coaching report', text}); return; }
+    await navigator.clipboard.writeText(text);
+    const b=document.querySelector('.coach-share-btn'); if(b){ const t=b.textContent; b.textContent='✓ Copied'; setTimeout(()=>{ if(b) b.textContent=t; },1600); }
+  }catch(e){}
+};
+
 function renderAnalysis(games, username, out){
   // Cache the games + user so the "Review here" buttons can load any game into Game Review
   perfGamesCache = games;
@@ -9525,6 +9730,10 @@ function renderAnalysis(games, username, out){
   // fp is at the OUTER scope of renderAnalysis so every nested template
   // (including the endgame recs section after the IIFE) can read it.
   const fp = computeStyleFingerprint(games, uname);
+
+  // Paginated personal coaching report (advice-first) replaces the raw-stats view.
+  renderCoachingReport(out, { username, total, totalW, totalD, totalL, winPct, rated, fp, platform: (typeof analysisPlatform !== 'undefined' ? analysisPlatform : 'cc') });
+  return;
 
   out.innerHTML = `
   <div class="page-wrap">
@@ -15161,12 +15370,12 @@ async function analyzeMistakeCandidates(idx, ex){
 
   const panel = document.getElementById(`we-candidates-${idx}`);
   if(!panel) return;
-  panel.innerHTML = '<div style="font-size:12px;color:var(--text3);font-style:italic;padding:8px">🔍 Asking Stockfish for the top candidate moves at depth 15…</div>';
+  panel.innerHTML = '<div style="font-size:12px;color:var(--text3);font-style:italic;padding:8px">🔍 Asking Stockfish for the top candidate moves at depth 20…</div>';
 
   let result;
   try {
     // Higher depth + multi-PV 4 to compare top 4 moves
-    result = await evalPosition(ex.fenBefore, 15, 4);
+    result = await evalPosition(ex.fenBefore, 20, 4);
   } catch(e){
     panel.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px">Engine analysis failed for this position.</div>';
     return;
@@ -15349,7 +15558,7 @@ async function analyzeMistakeWhy(idx, ex){
     let punishLine = null, planLine = null, punishEval = null, planEval = null;
     if(stateAfterPlayed){
       const fenAfterPlayed = stateToFEN(stateAfterPlayed);
-      const r1 = await evalPosition(fenAfterPlayed, 12, 1);
+      const r1 = await evalPosition(fenAfterPlayed, 18, 1);
       if(r1 && r1.pv){
         punishLine = uciSequenceToSAN(fenAfterPlayed, r1.pv, 5);
         punishEval = r1.score;
@@ -15357,7 +15566,7 @@ async function analyzeMistakeWhy(idx, ex){
     }
     if(stateAfterBest){
       const fenAfterBest = stateToFEN(stateAfterBest);
-      const r2 = await evalPosition(fenAfterBest, 12, 1);
+      const r2 = await evalPosition(fenAfterBest, 18, 1);
       if(r2 && r2.pv){
         planLine = uciSequenceToSAN(fenAfterBest, r2.pv, 5);
         planEval = r2.score;
@@ -25397,5 +25606,10 @@ window.ccSave = function(){
   document.addEventListener('click',scheduleArm,true);
 })();
 </script>
+<footer class="site-credit">
+  Chess pieces by Colin M.&nbsp;L. Burnett (“Cburnett”), licensed
+  <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;3.0</a>
+  · via <a href="https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces" target="_blank" rel="noopener">Wikimedia&nbsp;Commons</a>
+</footer>
 </body>
 </html>
