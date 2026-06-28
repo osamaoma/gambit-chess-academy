@@ -2676,6 +2676,101 @@ button.rep-node:hover{border-color:var(--gold); color:var(--gold); transform:tra
 .site-credit a{color:var(--text2); text-decoration:none; border-bottom:1px dotted var(--border3)}
 .site-credit a:hover{color:var(--gold)}
 
+/* ════════════════════════════════════════════════════════════════
+   COSMIC THEME — "Chess in Orbit"  (authoritative last layer)
+   Deep space · starlight cyan accent · living backdrop
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#070a18; --bg2:#0e1430; --bg3:#141b3c; --bg4:#1d2752;
+  --bg-elev-1:#0e1430; --bg-elev-2:#141b3c; --bg-elev-3:#1d2752; --bg-elev-4:#27336a;
+  --border:rgba(150,178,255,.10); --border2:rgba(150,178,255,.18); --border3:rgba(150,178,255,.28);
+  --text:#eaf0ff; --text2:#a8b4d8; --text3:#6f7ea8; --text-dim:#4c587e;
+  --gold:#5cc6ff; --gold2:#a6c2ff; --gold3:rgba(92,198,255,.14); --gold-glow:rgba(92,198,255,.40);
+  --green:#36d99b; --green2:#5ff0b6; --green3:#9bf0d2;
+  --red:#ff6b8a; --red2:#ff86a0; --red3:#ffb3c4;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.5);
+  --shadow:0 4px 18px rgba(0,0,0,.5);
+  --shadow-md:0 12px 36px rgba(0,0,0,.55);
+  --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+  --shadow-xl:0 32px 80px rgba(0,0,0,.66);
+  --shadow-glow:0 0 0 1px rgba(92,198,255,.30), 0 16px 50px rgba(92,198,255,.16);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+body{ background:#070a18 !important; color:var(--text) }
+body::before{ display:none !important }   /* drop the old brass grid/vignette */
+.nav,.section,.page-wrap,.acad-wrap,.explorer-layout{ position:relative; z-index:1 }
+
+/* ── NAV — floats over the cosmos ── */
+.nav{ background:rgba(8,11,26,.66) !important; -webkit-backdrop-filter:blur(14px) saturate(1.2); backdrop-filter:blur(14px) saturate(1.2); border-bottom:1px solid var(--border) !important; box-shadow:0 1px 0 rgba(92,198,255,.10), 0 10px 34px rgba(0,0,0,.4) }
+.nav-logo{ background:none !important; -webkit-text-fill-color:var(--text) !important; color:var(--text) !important; font-family:'Space Grotesk',sans-serif; font-weight:700; letter-spacing:.04em }
+.nav-logo small{ color:var(--gold) !important; -webkit-text-fill-color:var(--gold) }
+.nav-tab::after{ background:var(--gold) !important }
+.nav-tab.active{ color:var(--gold) }
+.version-badge{ color:var(--gold); border-color:rgba(92,198,255,.4); background:var(--gold3) }
+
+/* ── BUTTONS — cyan with a soft glow (gradient background is fine; no gradient TEXT) ── */
+.btn-gold{ background:linear-gradient(135deg,#6ccbff,#3a9bff) !important; color:#03132c !important; box-shadow:0 6px 22px rgba(92,198,255,.32) }
+.btn-gold:hover{ transform:translateY(-2px); box-shadow:0 12px 34px rgba(92,198,255,.5) }
+.btn-outline:hover{ border-color:var(--gold); color:var(--gold); box-shadow:0 8px 24px rgba(92,198,255,.18) }
+.cc-play-btn,.gai-send,.coach-next{ background:linear-gradient(135deg,#6ccbff,#3a9bff) !important; color:#03132c !important }
+
+/* ── CARDS / SURFACES — deep space panels, cyan-edge glow on hover ── */
+.acad-course-card,.var-card,.rt-weak,.profile-bar,.acad-rm-step,.acad-read,.idea-strip,.card,.cc-card,.coach-card,.trend-card,.gai-card{
+  background:rgba(14,20,48,.74) !important; border:1px solid var(--border) !important; backdrop-filter:blur(4px)
+}
+.acad-course-card:hover:not(.soon){ border-color:rgba(92,198,255,.5) !important; box-shadow:0 18px 50px rgba(0,0,0,.5), 0 0 28px rgba(92,198,255,.14) !important }
+.acad-course-card::before{ background:linear-gradient(135deg, rgba(92,198,255,.6), transparent 42%) !important }
+.acad-hero h1 em{ background:none !important; -webkit-text-fill-color:var(--gold) !important; color:var(--gold) !important }
+.acad-hero h1::after, .acad-cc-bar span, .acad-mastery-bar span{ background:linear-gradient(90deg,#6ccbff,#3a9bff) !important }
+input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; box-shadow:0 0 0 3px var(--gold3) !important }
+::-webkit-scrollbar-thumb{ background:rgba(92,198,255,.28) !important; background-clip:content-box !important }
+::-webkit-scrollbar-thumb:hover{ background:rgba(92,198,255,.5) !important; background-clip:content-box !important }
+:focus-visible{ outline:2px solid var(--gold) !important }
+
+/* ════ LIVING COSMOS BACKDROP ════ */
+#cosmos{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+  background:
+    radial-gradient(1200px 800px at 78% -12%, rgba(60,90,220,.20), transparent 60%),
+    radial-gradient(1000px 900px at 8% 108%, rgba(40,160,210,.16), transparent 58%),
+    radial-gradient(900px 700px at 92% 88%, rgba(150,90,255,.12), transparent 60%),
+    #070a18; }
+.cosmos-star{ position:absolute; border-radius:50%; background:#fff; opacity:.8 }
+.cosmos-moon{ position:absolute; top:8%; left:6%; width:84px; height:84px; border-radius:50%;
+  background:radial-gradient(circle at 36% 34%, #f4f6ff, #c3ccdf 55%, #8e97b4 100%);
+  box-shadow:0 0 50px rgba(190,205,255,.35), inset -10px -8px 22px rgba(20,28,60,.55); }
+.cosmos-moon::after{ content:''; position:absolute; inset:0; border-radius:50%;
+  background:radial-gradient(circle at 62% 30%, rgba(40,50,90,.5) 0 5px, transparent 6px),
+             radial-gradient(circle at 40% 62%, rgba(40,50,90,.4) 0 7px, transparent 8px),
+             radial-gradient(circle at 70% 68%, rgba(40,50,90,.35) 0 4px, transparent 5px); }
+.cosmos-earth{ position:absolute; right:-130px; bottom:-160px; width:420px; height:420px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #6fd0ff 0 18%, #2e7fe0 42%, #18408f 78%, #0b1f4d 100%);
+  box-shadow:0 0 90px rgba(70,150,255,.4), inset 26px 18px 60px rgba(0,8,30,.6); }
+.cosmos-earth::before{ content:''; position:absolute; inset:0; border-radius:50%;
+  background:radial-gradient(40px 26px at 40% 38%, rgba(80,220,150,.5), transparent 70%),
+             radial-gradient(60px 34px at 64% 60%, rgba(80,220,150,.42), transparent 72%),
+             radial-gradient(34px 22px at 30% 66%, rgba(90,230,160,.4), transparent 72%); mix-blend-mode:screen; }
+.cosmos-earth::after{ content:''; position:absolute; inset:-6px; border-radius:50%; box-shadow:inset 0 0 40px rgba(120,200,255,.5) }
+
+/* ════ ASTRONAUTS-PLAYING-CHESS HERO (signature) ════ */
+.space-hero{ position:relative; z-index:1; max-width:1100px; margin:18px auto 4px; padding:8px 24px 0; text-align:center }
+.space-hero-art{ width:min(440px,82vw); height:auto; display:block; margin:0 auto; filter:drop-shadow(0 18px 40px rgba(0,0,0,.5)) }
+.space-hero h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,5vw,52px); letter-spacing:-.02em; line-height:1.04; margin:6px 0 8px; color:var(--text); text-wrap:balance }
+.space-hero h1 b{ color:var(--gold); font-weight:700 }
+.space-hero p{ font-size:clamp(14px,1.6vw,17px); color:var(--text2); max-width:56ch; margin:0 auto; line-height:1.6; text-wrap:pretty }
+.space-hero-cta{ display:inline-flex; gap:10px; margin-top:16px; flex-wrap:wrap; justify-content:center }
+
+/* ════ MOTION — ease-out, reduced-motion gives a calm static scene ════ */
+@media (prefers-reduced-motion: no-preference){
+  @keyframes cosmos-twinkle{ 0%,100%{opacity:.25} 50%{opacity:.95} }
+  @keyframes cosmos-float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  @keyframes cosmos-drift{ 0%{transform:translateY(0)} 100%{transform:translateY(-22px)} }
+  @keyframes cosmos-spin{ to{ transform:rotate(360deg) } }
+  .cosmos-star{ animation:cosmos-twinkle var(--tw,4s) var(--ease) infinite; animation-delay:var(--td,0s) }
+  .cosmos-earth{ animation:cosmos-spin 140s linear infinite }
+  .cosmos-moon{ animation:cosmos-float 9s var(--ease) infinite }
+  .space-hero-art{ animation:cosmos-float 7s var(--ease) infinite }
+}
+
 </style>
 </head>
 <body>
@@ -2686,7 +2781,6 @@ button.rep-node:hover{border-color:var(--gold); color:var(--gold); transform:tra
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')">🛠️ Course Creator</button>
-    <button class="nav-tab" onclick="showSection('analysis')">📊 My Performance</button>
     <button class="nav-tab" onclick="showSection('review')">🔬 Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
@@ -2942,39 +3036,8 @@ button.rep-node:hover{border-color:var(--gold); color:var(--gold); transform:tra
 
 <div id="sec-analysis-PLACEHOLDER" style="display:none"></div>
 
-<div id="sec-analysis" class="section">
-  <div class="analysis-hero">
-    <h2>Opening <em style="color:var(--gold)">Performance</em> Analysis</h2>
-    <p>Connect your Chess.com or Lichess account to see exactly which openings you dominate and where your rating is bleeding points — with personalised study plans.</p>
-    <div class="platform-tabs">
-      <button class="ptab active" id="apt-cc" onclick="setAP('chesscom')">♔ Chess.com</button>
-      <button class="ptab" id="apt-li" onclick="setAP('lichess')">♞ Lichess</button>
-    </div>
-    <div class="input-row">
-      <input id="a-user" placeholder="Your username…" style="max-width:280px" onkeydown="if(event.key==='Enter')runAnalysis()">
-      <select id="a-count" style="max-width:130px">
-        <option value="30">Last 30 games</option>
-        <option value="50" selected>Last 50 games</option>
-        <option value="100">Last 100 games</option>
-      </select>
-      <select id="a-tc" style="max-width:120px">
-        <option value="all">All formats</option>
-        <option value="rapid">Rapid</option>
-        <option value="blitz">Blitz</option>
-        <option value="bullet">Bullet</option>
-      </select>
-      <button class="btn btn-gold" id="a-btn" onclick="runAnalysis()">Analyse →</button>
-    </div>
-    <div style="margin-top:8px;font-size:11px;color:var(--text3)">Uses public APIs — no login or API key needed</div>
-  </div>
-  <div class="page-wrap" id="a-output">
-    <div class="empty-state">
-      <div class="es-icon">📊</div>
-      <div class="es-text">Enter your username above to begin</div>
-      <div class="es-sub">Works with Chess.com and Lichess public profiles</div>
-    </div>
-  </div>
-</div>
+<!-- Performance section removed -->
+
 
 <!-- ══════════════ REVIEW ══════════════ -->
 <div id="sec-review" class="section">
@@ -11633,19 +11696,39 @@ function triggerEngineAnalysisR(state){
   evalPosition(fen, 14, 3).then(result => {
     if(myToken !== reviewAnalysisToken) return;
 
-    // Update live engine line WITH proper SAN conversion
+    // Update live engine line — each move is hoverable for a mini-board preview.
     const liveEl = document.getElementById('rv-live-eval');
     if(liveEl){
       const evalStr = result.isMate
         ? (result.mateIn > 0 ? `M${Math.abs(result.mateIn)}` : `-M${Math.abs(result.mateIn)}`)
         : (result.score > 0 ? '+' : '') + result.score.toFixed(2);
-      // Convert UCI PV to readable SAN
-      const pvSAN = result.pv ? uciSequenceToSAN(fen, result.pv, 6) : '';
-      liveEl.innerHTML = `<span style="color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-right:8px">Live engine:</span><span style="font-family:'DM Mono',monospace;color:var(--gold);font-weight:600;font-size:14px">${evalStr}</span>${pvSAN ? `<span style="margin-left:10px">${pvSAN}</span>` : ''}`;
+      let pvHtml = '';
+      try {
+        let st = parseFEN(fen);
+        const ms = (result.pv||'').trim().split(/\s+/).filter(Boolean).slice(0,8), toks = [];
+        for(const u of ms){
+          if(u.length < 4) break;
+          const from=u.slice(0,2),to=u.slice(2,4),promo=u.length>4?u[4].toUpperCase():null;
+          let san; try{ san=moveToSAN(st,from,to,promo); }catch(e){ break; } if(!san) break;
+          let ns; try{ ns=applyMove(st,{from,to,promotion:promo}); }catch(e){ break; }
+          toks.push({san, fen: stateToFEN(ns)}); st = ns;
+        }
+        pvHtml = toks.map(t=>`<span class="rv-pv-mv" data-fen="${encodeURIComponent(t.fen)}" onmouseenter="ccPvHover(this)" onmouseleave="ccPvHoverOut()">${coachEsc(t.san)}</span>`).join(' ');
+      } catch(e){ pvHtml = result.pv ? uciSequenceToSAN(fen, result.pv, 6) : ''; }
+      liveEl.innerHTML = `<span style="color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-right:8px">Live engine:</span><span style="font-family:'DM Mono',monospace;color:var(--gold);font-weight:600;font-size:14px">${evalStr}</span>${pvHtml ? `<span style="margin-left:10px">${pvHtml}</span>` : ''}`;
     }
 
-    // Also update the vertical eval bar with the live engine value
     updateEvalBar('eval-bar-black-r', 'eval-bar-score-r', result.score, result.isMate, result.mateIn);
+
+    // When exploring a branch, draw a BLUE arrow for the move you SHOULD play here now.
+    if(viewingBranch && result.bestMove && /^[a-h][1-8][a-h][1-8]/.test(result.bestMove)){
+      const ov = document.getElementById('arrow-overlay-r');
+      if(ov){
+        let svg = `<defs><marker id="rv-blue-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(56,132,255,.95)"/></marker></defs>`;
+        svg += arrowSVG(result.bestMove.slice(0,2), result.bestMove.slice(2,4), 'rgba(56,132,255,.88)', 9, 'rv-blue-arrow', boardFlippedState.get('board-r') === true);
+        ov.innerHTML = svg;
+      }
+    }
   });
 }
 
@@ -26088,5 +26171,63 @@ window.ccSave = function(){
   <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;3.0</a>
   · via <a href="https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces" target="_blank" rel="noopener">Wikimedia&nbsp;Commons</a>
 </footer>
+<script>
+/* Chess in Orbit — living cosmos backdrop + astronaut-chess hero (all original art) */
+(function(){
+  var ASTRO_SVG = '<svg class="space-hero-art" viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two astronauts playing chess in space">'
+    + '<defs>'
+    + '<radialGradient id="oz-visor" cx="38%" cy="34%" r="78%"><stop offset="0" stop-color="#1b4f8f"/><stop offset="55%" stop-color="#0a1730"/><stop offset="100%" stop-color="#060c1f"/></radialGradient>'
+    + '<linearGradient id="oz-suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f7ff"/><stop offset="1" stop-color="#c7d1ee"/></linearGradient>'
+    + '<linearGradient id="oz-board" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16245a"/><stop offset="1" stop-color="#0a1330"/></linearGradient>'
+    + '<g id="oz-astro">'
+    + '<rect x="62" y="100" width="50" height="62" rx="16" fill="#9aa7cf"/>'
+    + '<path d="M76 170 q-6 16 2 26" stroke="url(#oz-suit)" stroke-width="16" fill="none" stroke-linecap="round"/>'
+    + '<path d="M96 170 q6 16 -2 26" stroke="url(#oz-suit)" stroke-width="16" fill="none" stroke-linecap="round"/>'
+    + '<rect x="58" y="104" width="56" height="68" rx="26" fill="url(#oz-suit)" stroke="#aebbe0" stroke-width="2"/>'
+    + '<rect x="58" y="146" width="56" height="5" fill="#5cc6ff" opacity=".75"/>'
+    + '<rect x="74" y="120" width="24" height="15" rx="4" fill="#0a1730" stroke="rgba(92,198,255,.6)"/>'
+    + '<circle cx="80" cy="127.5" r="2" fill="#5cc6ff"/><circle cx="88" cy="127.5" r="2" fill="#36d99b"/>'
+    + '<path d="M108 124 Q142 132 152 154" stroke="url(#oz-suit)" stroke-width="15" fill="none" stroke-linecap="round"/>'
+    + '<circle cx="153" cy="156" r="9" fill="url(#oz-suit)" stroke="#aebbe0" stroke-width="2"/>'
+    + '<circle cx="86" cy="80" r="30" fill="url(#oz-suit)" stroke="#aebbe0" stroke-width="2.5"/>'
+    + '<ellipse cx="90" cy="82" rx="21" ry="22" fill="url(#oz-visor)"/>'
+    + '<path d="M78 72 q12 -9 24 -1" stroke="rgba(92,198,255,.85)" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    + '<circle cx="82" cy="75" r="2.2" fill="#fff"/>'
+    + '<line x1="86" y1="50" x2="86" y2="42" stroke="#aebbe0" stroke-width="2.5"/><circle cx="86" cy="40" r="3" fill="#5cc6ff"/>'
+    + '</g></defs>'
+    + '<g opacity=".96">'
+    + '<polygon points="230,126 326,168 230,210 134,168" fill="url(#oz-board)" stroke="rgba(92,198,255,.6)" stroke-width="2"/>'
+    + '<g stroke="rgba(150,178,255,.22)" stroke-width="1">'
+    + '<line x1="254" y1="136.5" x2="158" y2="178.5"/><line x1="278" y1="147" x2="182" y2="189"/><line x1="302" y1="157.5" x2="206" y2="199.5"/>'
+    + '<line x1="206" y1="136.5" x2="302" y2="178.5"/><line x1="182" y1="147" x2="278" y2="189"/><line x1="158" y1="157.5" x2="254" y2="199.5"/>'
+    + '</g>'
+    + '<ellipse cx="198" cy="171" rx="13" ry="4.5" fill="rgba(0,0,0,.35)"/><path d="M192 170 h12 l-2 -11 h-8 z" fill="#eef2ff"/><circle cx="198" cy="153" r="7" fill="#eef2ff" stroke="#b9c4e6"/>'
+    + '<ellipse cx="262" cy="173" rx="14" ry="5" fill="rgba(0,0,0,.35)"/><path d="M255 172 h14 l-2 -17 h-10 z" fill="#2b3566" stroke="#1a2348"/><circle cx="262" cy="149" r="8" fill="#2b3566" stroke="#1a2348"/><path d="M262 137 v-8 M258 133 h8" stroke="#5cc6ff" stroke-width="2.5" stroke-linecap="round"/>'
+    + '</g>'
+    + '<use href="#oz-astro"/><use href="#oz-astro" transform="translate(460,0) scale(-1,1)"/>'
+    + '</svg>';
+  function build(){
+    if(!document.getElementById('cosmos')){
+      var c=document.createElement('div'); c.id='cosmos';
+      var sky='';
+      for(var i=0;i<72;i++){
+        var s=(Math.random()*2+0.6).toFixed(2);
+        sky+='<span class="cosmos-star" style="left:'+(Math.random()*100).toFixed(2)+'%;top:'+(Math.random()*100).toFixed(2)+'%;width:'+s+'px;height:'+s+'px;--tw:'+(Math.random()*4+2.5).toFixed(2)+'s;--td:'+(Math.random()*5).toFixed(2)+'s"></span>';
+      }
+      c.innerHTML = sky + '<div class="cosmos-moon"></div><div class="cosmos-earth"></div>';
+      document.body.insertBefore(c, document.body.firstChild);
+    }
+    var sec=document.getElementById('sec-academy');
+    if(sec && !sec.querySelector('.space-hero')){
+      var hero=document.createElement('div'); hero.className='space-hero';
+      hero.innerHTML = ASTRO_SVG
+        + '<h1>Learn chess <b>among the stars</b></h1>'
+        + '<p>Master openings, drill your weak spots, and review your games — in a calm corner of the cosmos.</p>';
+      sec.insertBefore(hero, sec.firstChild);
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', build); else build();
+})();
+</script>
 </body>
 </html>
