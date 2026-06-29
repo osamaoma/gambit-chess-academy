@@ -2735,6 +2735,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
     radial-gradient(900px 700px at 92% 88%, rgba(150,90,255,.12), transparent 60%),
     #070a18; }
 .cosmos-star{ position:absolute; border-radius:50%; background:#fff; opacity:.8 }
+.cosmos-shoot{ position:absolute; top:-4%; left:68%; width:120px; height:2px; border-radius:2px; opacity:0; transform:rotate(34deg); background:linear-gradient(90deg, transparent, rgba(180,220,255,.95)); pointer-events:none }
 .cosmos-moon{ position:absolute; top:8%; left:6%; width:84px; height:84px; border-radius:50%;
   background:radial-gradient(circle at 36% 34%, #f4f6ff, #c3ccdf 55%, #8e97b4 100%);
   box-shadow:0 0 50px rgba(190,205,255,.35), inset -10px -8px 22px rgba(20,28,60,.55); }
@@ -2769,6 +2770,10 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
   .cosmos-earth{ animation:cosmos-spin 140s linear infinite }
   .cosmos-moon{ animation:cosmos-float 9s var(--ease) infinite }
   .space-hero-art{ animation:cosmos-float 7s var(--ease) infinite }
+  @keyframes oz-shoot{ 0%{opacity:0; transform:translate(0,0) rotate(34deg)} 3%{opacity:.95} 9%{opacity:0; transform:translate(-360px,470px) rotate(34deg)} 100%{opacity:0} }
+  .cosmos-shoot{ animation:oz-shoot 11s linear var(--sd,0s) infinite }
+  @keyframes oz-sec-in{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none} }
+  .section.active{ animation:oz-sec-in .42s cubic-bezier(.22,1,.36,1) both }
 }
 
 </style>
@@ -3784,6 +3789,10 @@ function renderBoardEl(boardId, ranksId, filesId, state, highlights = [], fromSq
       boardEl.appendChild(div);
     });
   });
+  // Smooth piece motion on EVERY board — slide the piece(s) that changed squares
+  // since this board's previous render (single moves / castling only; big jumps snap).
+  try{ if(boardEl._prevState && boardEl._prevState !== state) rvAnimatePieces(boardId, boardEl._prevState, state); }catch(e){}
+  boardEl._prevState = state;
   // user annotations (right-click arrows / highlights) on every board, persisting across re-renders
   if(typeof makeBoardAnnotatable === 'function'){
     makeBoardAnnotatable(boardId);
@@ -11401,8 +11410,6 @@ function renderReviewBoard(){
   document.querySelectorAll('#board-r .mc-badge').forEach(b => b.remove());
 
   renderBoardEl('board-r', 'board-ranks-r', 'board-files-r', displayState, [], null);
-  try{ rvAnimatePieces('board-r', window._rvPrevState, displayState); }catch(e){}
-  window._rvPrevState = displayState;
 
   if(displayedMove){
     document.querySelectorAll('#board-r .sq').forEach(sq => {
@@ -11890,7 +11897,7 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, analysis:2, review:3, quizzes:4};
+  const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, review:2, quizzes:3};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
@@ -26256,7 +26263,7 @@ window.ccSave = function(){
         var s=(Math.random()*2+0.6).toFixed(2);
         sky+='<span class="cosmos-star" style="left:'+(Math.random()*100).toFixed(2)+'%;top:'+(Math.random()*100).toFixed(2)+'%;width:'+s+'px;height:'+s+'px;--tw:'+(Math.random()*4+2.5).toFixed(2)+'s;--td:'+(Math.random()*5).toFixed(2)+'s"></span>';
       }
-      c.innerHTML = sky + '<div class="cosmos-moon"></div><div class="cosmos-earth"></div>';
+      c.innerHTML = sky + '<span class="cosmos-shoot" style="--sd:0s"></span><span class="cosmos-shoot" style="left:40%;--sd:6.5s"></span><div class="cosmos-moon"></div><div class="cosmos-earth"></div>';
       document.body.insertBefore(c, document.body.firstChild);
     }
     var sec=document.getElementById('sec-academy');
