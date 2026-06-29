@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gambit — Chess Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -2696,8 +2696,9 @@ button.rep-node:hover{border-color:var(--gold); color:var(--gold); transform:tra
   --shadow-glow:0 0 0 1px rgba(92,198,255,.30), 0 16px 50px rgba(92,198,255,.16);
   --ease:cubic-bezier(.22,1,.36,1);
 }
-body{ background:#070a18 !important; color:var(--text) }
+body{ background:#070a18 !important; color:var(--text); font-family:'Manrope','Inter',sans-serif }
 body::before{ display:none !important }   /* drop the old brass grid/vignette */
+h1,h2,h3,.nav-logo,.space-hero h1,.acad-hero h1,.acad-cc-name,.acad-course-title,.coach-page-title,.gai-name,.trend-now,.op-title{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif !important }
 .nav,.section,.page-wrap,.acad-wrap,.explorer-layout{ position:relative; z-index:1 }
 
 /* ── NAV — floats over the cosmos ── */
@@ -2736,6 +2737,9 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
     #070a18; }
 .cosmos-star{ position:absolute; border-radius:50%; background:#fff; opacity:.8 }
 .cosmos-shoot{ position:absolute; top:-4%; left:68%; width:120px; height:2px; border-radius:2px; opacity:0; transform:rotate(34deg); background:linear-gradient(90deg, transparent, rgba(180,220,255,.95)); pointer-events:none }
+.rv-pv-mv{ cursor:pointer; padding:1px 4px; border-radius:5px; transition:background .12s var(--ease), color .12s var(--ease) }
+.rv-pv-mv:hover{ background:var(--gold3); color:var(--gold) }
+#user-moves-r.visible{ margin-top:10px; padding-top:10px; border-top:1px solid var(--border) }
 .cosmos-moon{ position:absolute; top:8%; left:6%; width:84px; height:84px; border-radius:50%;
   background:radial-gradient(circle at 36% 34%, #f4f6ff, #c3ccdf 55%, #8e97b4 100%);
   box-shadow:0 0 50px rgba(190,205,255,.35), inset -10px -8px 22px rgba(20,28,60,.55); }
@@ -3101,7 +3105,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
             <button class="btn btn-outline btn-sm" onclick="rvPrev()">← Back</button>
             <button class="btn btn-outline btn-sm" onclick="rvNext()">Next →</button>
             <button class="btn btn-outline btn-sm" onclick="rvEnd()" title="Jump to the final position">End ⇥</button>
-            <button class="btn btn-gold btn-sm" onclick="rvSee()" title="Jump to your critical moments — blunders, mistakes, inaccuracies and misses">⚡ See key moments</button>
+            <button class="btn btn-gold btn-sm" onclick="rvSee()" title="Jump to the key moments — brilliancies, blunders, mistakes and misses">⚡ See key moments</button>
             <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
@@ -3110,14 +3114,14 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
             <span class="pm-text">Click any piece to explore alternative moves. Branch off the game to test ideas with live engine analysis.</span>
           </div>
           <div id="rv-live-eval" style="padding:8px 12px;background:var(--bg3);border-radius:5px;margin-bottom:6px;font-size:12px;min-height:20px"></div>
-          <div class="user-moves-list" id="user-moves-r"></div>
           <div class="move-detail-box" id="rv-detail">
             <div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>
           </div>
         </div>
-        <!-- Move list -->
+        <!-- Game move list + your exploration branch -->
         <div>
           <div class="move-list-panel" id="rv-movelist"></div>
+          <div class="user-moves-list" id="user-moves-r"></div>
         </div>
       </div>
     </div>
@@ -11760,9 +11764,10 @@ function triggerEngineAnalysisR(state){
           const from=u.slice(0,2),to=u.slice(2,4),promo=u.length>4?u[4].toUpperCase():null;
           let san; try{ san=moveToSAN(st,from,to,promo); }catch(e){ break; } if(!san) break;
           let ns; try{ ns=applyMove(st,{from,to,promotion:promo}); }catch(e){ break; }
-          toks.push({san, fen: stateToFEN(ns)}); st = ns;
+          toks.push({san, fen: stateToFEN(ns), uci:u}); st = ns;
         }
-        pvHtml = toks.map(t=>`<span class="rv-pv-mv" data-fen="${encodeURIComponent(t.fen)}" onmouseenter="ccPvHover(this)" onmouseleave="ccPvHoverOut()">${coachEsc(t.san)}</span>`).join(' ');
+        window._rvLivePv = { fen: fen, moves: toks.map(t=>t.uci) };
+        pvHtml = toks.map((t,ti)=>`<span class="rv-pv-mv" data-fen="${encodeURIComponent(t.fen)}" onmouseenter="ccPvHover(this)" onmouseleave="ccPvHoverOut()" onclick="rvPlayLive(${ti})" title="Play this line on the board">${coachEsc(t.san)}</span>`).join(' ');
       } catch(e){ pvHtml = result.pv ? uciSequenceToSAN(fen, result.pv, 6) : ''; }
       liveEl.innerHTML = `<span style="color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-right:8px">Live engine:</span><span style="font-family:'DM Mono',monospace;color:var(--gold);font-weight:600;font-size:14px">${evalStr}</span>${pvHtml ? `<span style="margin-left:10px">${pvHtml}</span>` : ''}`;
     }
@@ -11812,7 +11817,22 @@ window.rvEnd = function(){
 };
 // "See key moments" — skip the quiet moves and jump straight to the next
 // real mistake (blunder, mistake, inaccuracy or miss), wrapping around.
-const RV_CRITICAL = ['blunder','mistake','inaccuracy','miss'];
+// Click a move in the live-engine line → play that line up to it on the board (as an exploration branch).
+window.rvPlayLive = function(idx){
+  const pv = window._rvLivePv; if(!pv || !pv.moves || !pv.moves.length) return;
+  try{ if(window.ccPvHoverOut) ccPvHoverOut(); }catch(e){}
+  let st;
+  try{ st = parseFEN(pv.fen); }catch(e){ return; }
+  for(let k=0; k<=idx && k<pv.moves.length; k++){
+    const u = pv.moves[k]; if(!u || u.length < 4) break;
+    const from=u.slice(0,2), to=u.slice(2,4), promo=u.length>4?u[4].toUpperCase():null;
+    let san; try{ san=moveToSAN(st,from,to,promo); }catch(e){ break; } if(!san) break;
+    let ns; try{ ns=applyMove(st,{from,to,promotion:promo}); }catch(e){ break; }
+    onUserMoveR(from, to, ns, san);     // append to the exploration branch + re-render
+    st = ns;
+  }
+};
+const RV_CRITICAL = ['brilliant','blunder','mistake','miss'];
 window.rvSee = function(){
   const total = reviewHistory.length - 1;
   if(total < 1 || !moveAnnotations || !moveAnnotations.length) return;
