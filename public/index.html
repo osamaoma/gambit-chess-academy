@@ -11309,6 +11309,46 @@ window.playSuggestedMove = function(idx){
   renderReviewBoard();
 };
 
+// Smooth piece motion for Game Review — FLIP: after the new position renders,
+// slide only the piece(s) that actually changed squares from where they were.
+function rvDiffStates(oldS, newS){
+  if(!oldS || !newS || !oldS.board || !newS.board) return [];
+  const FILES2='abcdefgh', src=[], dst=[];
+  for(let r=1;r<=8;r++) for(let f=0;f<8;f++){
+    const sq=FILES2[f]+r, o=oldS.board[sq]||null, n=newS.board[sq]||null;
+    if(o && o!==n) src.push({sq,p:o});
+    if(n && n!==o) dst.push({sq,p:n});
+  }
+  const moves=[];
+  dst.forEach(d=>{ const i=src.findIndex(s=>s.p===d.p); if(i>=0){ moves.push({from:src[i].sq,to:d.sq}); src.splice(i,1); } });
+  return moves;
+}
+function rvAnimatePieces(boardId, oldS, newS){
+  try{
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const moves = rvDiffStates(oldS, newS);
+    if(!moves.length || moves.length > 3) return;   // single moves / castling only — not multi-move jumps
+    const boardEl = document.getElementById(boardId); if(!boardEl) return;
+    moves.forEach(function(m){
+      const fromSq = boardEl.querySelector('.sq[data-sq="'+m.from+'"]');
+      const toSq   = boardEl.querySelector('.sq[data-sq="'+m.to+'"]');
+      if(!fromSq || !toSq) return;
+      const piece = toSq.querySelector('.piece'); if(!piece) return;
+      const dx = fromSq.offsetLeft - toSq.offsetLeft, dy = fromSq.offsetTop - toSq.offsetTop;
+      if(!dx && !dy) return;
+      piece.style.transition='none';
+      piece.style.transform='translate('+dx+'px,'+dy+'px)';
+      piece.style.zIndex='6';
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        piece.style.transition='transform .24s cubic-bezier(.22,1,.36,1)';
+        piece.style.transform='translate(0,0)';
+        const done=function(){ piece.style.transition=''; piece.style.transform=''; piece.style.zIndex=''; piece.removeEventListener('transitionend', done); };
+        piece.addEventListener('transitionend', done);
+      }); });
+    });
+  }catch(e){}
+}
+
 function renderReviewBoard(){
   // Determine what to show — branch position or main game position
   let displayState, displayedMove = null, displayedAnn = null, displayedBestUCI = null,
@@ -11361,6 +11401,8 @@ function renderReviewBoard(){
   document.querySelectorAll('#board-r .mc-badge').forEach(b => b.remove());
 
   renderBoardEl('board-r', 'board-ranks-r', 'board-files-r', displayState, [], null);
+  try{ rvAnimatePieces('board-r', window._rvPrevState, displayState); }catch(e){}
+  window._rvPrevState = displayState;
 
   if(displayedMove){
     document.querySelectorAll('#board-r .sq').forEach(sq => {
