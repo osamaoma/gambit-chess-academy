@@ -2907,6 +2907,18 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .cap-pc svg{ width:16px; height:16px; display:block; }
 #sec-review .rv-cap-adv{ font-family:var(--ob-mono); font-weight:700; font-size:13px; color:var(--ob-brass-2); margin-left:3px; }
 
+/* ── Eval/Time toggle tabs on the graph ── */
+#sec-review .rv-eg-tabs{ display:flex; gap:5px; padding:0 0 6px; }
+#sec-review .rv-eg-tabs button{ font-family:var(--ob-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ob-tx3); background:transparent; border:1px solid var(--ob-line); border-radius:6px; padding:3px 10px; cursor:pointer; transition:color .2s var(--ease), background .2s var(--ease); }
+#sec-review .rv-eg-tabs button:hover{ color:var(--ob-tx); }
+#sec-review .rv-eg-tabs button.active{ color:#1a1206; background:linear-gradient(180deg,#e7b94f,#cf9433); border-color:transparent; font-weight:700; }
+
+/* ── Per-move time line in the coaching callout ── */
+#sec-review .mdb-time{ display:flex; align-items:center; gap:8px; margin:-2px 0 11px; font-family:var(--ob-mono); font-size:12px; }
+#sec-review .mdb-time-k{ font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--ob-tx3); border:1px solid var(--ob-line); border-radius:5px; padding:1px 6px; }
+#sec-review .mdb-time-spent{ color:var(--ob-brass-2); font-weight:600; }
+#sec-review .mdb-time-left{ color:var(--ob-tx3); }
+
 /* ── Eval-graph phase markers ── */
 #sec-review .rv-eg-phases{ display:flex; padding:0 1px 3px; }
 #sec-review .rv-eg-phases span{ text-align:center; font-family:var(--ob-mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--ob-tx3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-right:1px solid rgba(217,164,65,.14); }
@@ -10691,6 +10703,9 @@ async function loadReview(gameIdx){
   reviewHistory = buildHistory(moveSANs); // Analyse the full game
   reviewIdx = 0;
 
+  // Parse per-move clock data for the Time view (no-op if the PGN has no %clk)
+  try { rvParseClocks(game.pgn, headers); } catch(e){ reviewHasClocks = false; }
+
   // Stockfish analysis (using evaluated evals — real Stockfish WASM requires SharedArrayBuffer
   // which needs COOP headers not available in all embeddings)
   await analyseGame(game.white, game.black, reviewUser);
@@ -10701,6 +10716,10 @@ async function loadReview(gameIdx){
 
 // ════════ REAL STOCKFISH GAME ANALYSIS ════════
 let moveAnnotations = [];
+// Per-move clock data for the Time view (indexed by ply, 1-based)
+let reviewMoveTimes = [];   // seconds spent on each ply
+let reviewClocks = [];      // seconds remaining after each ply
+let reviewHasClocks = false;
 
 // Win-probability model (lichess/chess.com style): eval in pawns (mover's perspective) -> win %.
 // Classifying by win% drop avoids flagging harmless eval dips when already winning or losing.
@@ -10978,6 +10997,39 @@ function rvNonPawnMat(board){
   for(const sq in board){ const p = board[sq]; if(p && p[1] !== 'P' && p[1] !== 'K') m += (RV_PVAL[p[1]] || 0); }
   return m;
 }
+// Time formatting for the Time view + coaching callout
+function rvFmtSpent(s){
+  if(s == null) return '—';
+  if(s < 10) return (Math.round(s*10)/10) + 's';
+  if(s < 60) return Math.round(s) + 's';
+  const m = Math.floor(s/60), ss = Math.round(s%60);
+  return m + ':' + String(ss).padStart(2,'0');
+}
+function rvFmtClock(s){
+  if(s == null) return '';
+  const m = Math.floor(s/60), ss = Math.floor(s%60);
+  return m + ':' + String(ss).padStart(2,'0');
+}
+// Parse %clk clocks from the PGN into per-ply time-spent + remaining arrays.
+function rvParseClocks(pgn, headers){
+  reviewMoveTimes = []; reviewClocks = []; reviewHasClocks = false;
+  window._rvGraphMode = 'eval';
+  const clocks = (typeof extractMoveTimes === 'function') ? extractMoveTimes(pgn) : [];
+  const total = reviewHistory.length - 1;
+  if(!clocks.length || clocks.length < Math.max(2, Math.floor(total*0.5))) return;
+  let initial = 0, inc = 0;
+  const tc = (headers && headers.TimeControl) || '';
+  const tcm = String(tc).match(/^(\d+)(?:\+(\d+))?/);
+  if(tcm){ initial = +tcm[1]; inc = tcm[2] ? +tcm[2] : 0; }
+  for(let p = 1; p <= total; p++){
+    const cur = clocks[p-1];
+    reviewClocks[p] = (typeof cur === 'number') ? cur : null;
+    const prev = (p <= 2) ? (initial || null) : clocks[p-3];
+    reviewMoveTimes[p] = (typeof cur === 'number' && typeof prev === 'number')
+      ? Math.max(0, prev - cur + inc) : null;
+  }
+  reviewHasClocks = true;
+}
 // Captured-pieces + material-diff widget for the current position
 function rvRenderCaptures(state){
   const host = document.getElementById('rv-captures');
@@ -11056,18 +11108,51 @@ function renderEvalGraph(){
   bands.forEach((bd, i) => { if(i>0){ const x=(bd.a/total*W).toFixed(1);
     dividers += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" stroke="rgba(217,164,65,.3)" stroke-width="1" stroke-dasharray="2 3"/>'; } });
 
-  host.innerHTML = phaseStrip
+  // ── Active mode: Evaluation (default) or Time (only if clocks present) ──
+  const timeOn = (window._rvGraphMode === 'time' && reviewHasClocks);
+  const tabs = reviewHasClocks
+    ? '<div class="rv-eg-tabs">'
+      + '<button class="'+(timeOn?'':'active')+'" onclick="rvSetGraphMode(\'eval\')">Evaluation</button>'
+      + '<button class="'+(timeOn?'active':'')+'" onclick="rvSetGraphMode(\'time\')">Time</button>'
+      + '</div>'
+    : '';
+
+  let body;
+  if(timeOn){
+    let maxT = 0;
+    for(let i=1;i<=total;i++){ const t=reviewMoveTimes[i]; if(typeof t==='number' && t>maxT) maxT=t; }
+    if(maxT <= 0) maxT = 1;
+    const slot = W/total;
+    let bars = '';
+    for(let i=1;i<=total;i++){
+      const t = reviewMoveTimes[i];
+      if(typeof t !== 'number') continue;
+      const bh = Math.max(1, (t/maxT)*(H-8));
+      const bw = Math.max(1.2, slot*0.62);
+      const x  = ((i-0.5)/total*W - bw/2).toFixed(1);
+      const y  = (H - bh).toFixed(1);
+      const col = (i % 2 === 1) ? 'rgba(244,236,216,.85)' : 'rgba(184,140,72,.92)';
+      bars += '<rect x="'+x+'" y="'+y+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="1" fill="'+col+'"><title>Move '+i+': '+rvFmtSpent(t)+'</title></rect>';
+    }
+    body = '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(12,9,4,.55)"/>'
+      + dividers + bars
+      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>';
+  } else {
+    body = '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(244,236,216,.34)"/><stop offset="1" stop-color="rgba(244,236,216,.10)"/></linearGradient></defs>'
+      + '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(12,9,4,.55)"/>'
+      + '<path d="'+area+'" fill="url(#rvWhiteGrad)"/>'
+      + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="rgba(217,164,65,.18)" stroke-width="1"/>'
+      + dividers
+      + '<path d="'+line+'" fill="none" stroke="rgba(242,225,186,.6)" stroke-width="1.4"/>'
+      + dots
+      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>';
+  }
+
+  host.innerHTML = tabs + phaseStrip
     + '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:60px;display:block;cursor:pointer" onclick="rvGraphClick(event)">'
-    + '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(244,236,216,.34)"/><stop offset="1" stop-color="rgba(244,236,216,.10)"/></linearGradient></defs>'
-    + '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(12,9,4,.55)"/>'
-    + '<path d="'+area+'" fill="url(#rvWhiteGrad)"/>'
-    + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="rgba(217,164,65,.18)" stroke-width="1"/>'
-    + dividers
-    + '<path d="'+line+'" fill="none" stroke="rgba(242,225,186,.6)" stroke-width="1.4"/>'
-    + dots
-    + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>'
-    + '</svg>';
+    + body + '</svg>';
 }
+window.rvSetGraphMode = function(m){ window._rvGraphMode = m; try{ renderEvalGraph(); }catch(e){} };
 window.rvGraphClick = function(ev){
   const total = window._rvGraphTotal || 0; if(!total) return;
   const svg = ev.currentTarget, rect = svg.getBoundingClientRect();
@@ -11234,6 +11319,15 @@ window.selectReviewMove = function(idx){
       </div>
     </div>
   `;
+
+  // Time spent on this move + clock remaining (when the game carries clocks)
+  if(reviewHasClocks && reviewMoveTimes[idx] != null){
+    html += `<div class="mdb-time">
+      <span class="mdb-time-k">Time</span>
+      <span class="mdb-time-spent">${rvFmtSpent(reviewMoveTimes[idx])} spent</span>
+      ${reviewClocks[idx] != null ? `<span class="mdb-time-left">· ${rvFmtClock(reviewClocks[idx])} left</span>` : ''}
+    </div>`;
+  }
 
   // For sub-best moves, show the LEARNING PANEL
   const isSubBest = ['inaccuracy', 'mistake', 'blunder'].includes(ann.ann);
