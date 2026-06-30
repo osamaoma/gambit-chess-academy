@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gambit — Chess Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -20,14 +21,14 @@
   --ws:#ebd2a2;--bs:#ae7c53;
   --sq-yellow:#f6da5a;--sq-green:#5fb95f;--sq-green2:#2f9e44;
 }
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Satoshi',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
 
 /* ── NAV ── */
 .nav{display:flex;align-items:stretch;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:200;height:52px}
-.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:18px;color:var(--gold);padding:0 20px;border-right:1px solid var(--border);display:flex;align-items:center;gap:10px;white-space:nowrap;letter-spacing:.5px}
-.nav-logo small{color:var(--text3);font-size:10px;font-family:'Inter',sans-serif;font-weight:300;letter-spacing:1.5px;text-transform:uppercase}
+.nav-logo{font-family:'Clash Display',sans-serif;font-size:18px;color:var(--gold);padding:0 20px;border-right:1px solid var(--border);display:flex;align-items:center;gap:10px;white-space:nowrap;letter-spacing:.5px}
+.nav-logo small{color:var(--text3);font-size:10px;font-family:'Satoshi',sans-serif;font-weight:300;letter-spacing:1.5px;text-transform:uppercase}
 .nav-tabs{display:flex;flex:1;overflow-x:auto}
-.nav-tab{padding:0 18px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;font-family:'Inter',sans-serif;height:100%;display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap}
+.nav-tab{padding:0 18px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;font-family:'Satoshi',sans-serif;height:100%;display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap}
 .nav-tab:hover{color:var(--text);background:rgba(201,168,76,.05)}
 .nav-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 
@@ -37,10 +38,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .page-wrap{max-width:1100px;margin:0 auto;padding:24px}
 
 /* ── INPUTS ── */
-input,select{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:10px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
+input,select{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:10px 14px;color:var(--text);font-size:14px;font-family:'Satoshi',sans-serif;outline:none;transition:border .2s}
 input:focus,select:focus{border-color:var(--gold)}
 input::placeholder{color:var(--text3)}
-.btn{padding:10px 20px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn{padding:10px 20px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-family:'Satoshi',sans-serif;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
 .btn-gold{background:var(--gold);color:#000}
 .btn-gold:hover{background:var(--gold2)}
 .btn-gold:disabled{opacity:.5;cursor:not-allowed}
@@ -91,7 +92,7 @@ input::placeholder{color:var(--text3)}
 .tag-gambit{background:rgba(41,128,185,.2);color:var(--blue3)}
 
 .op-header{padding:24px 28px 0}
-.op-title{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin-bottom:2px}
+.op-title{font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;margin-bottom:2px}
 .op-eco{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);margin-bottom:10px}
 .op-desc{font-size:13px;color:var(--text2);line-height:1.65;max-width:580px;margin-bottom:20px}
 .op-body{display:grid;grid-template-columns:auto 1fr;gap:28px;padding:0 28px 28px;align-items:start}
@@ -121,14 +122,14 @@ input::placeholder{color:var(--text3)}
 
 /* ── ANALYSIS ── */
 .analysis-hero{background:var(--bg2);border-bottom:1px solid var(--border);padding:28px}
-.analysis-hero h2{font-family:'Space Grotesk',sans-serif;font-size:24px;margin-bottom:6px}
+.analysis-hero h2{font-family:'Clash Display',sans-serif;font-size:24px;margin-bottom:6px}
 .analysis-hero p{font-size:13px;color:var(--text2);margin-bottom:20px;max-width:520px;line-height:1.6}
 .input-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .input-row input{flex:1;min-width:180px}
 
 .profile-bar{display:flex;align-items:center;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:20px}
 .avatar{width:48px;height:48px;border-radius:50%;background:var(--bg4);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.p-name{font-family:'Space Grotesk',sans-serif;font-size:16px}
+.p-name{font-family:'Clash Display',sans-serif;font-size:16px}
 .p-meta{font-size:12px;color:var(--text2);margin-top:2px}
 .rating-row{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
 .rpill{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;background:var(--bg4);color:var(--text2);border:1px solid var(--border)}
@@ -232,12 +233,12 @@ input::placeholder{color:var(--text3)}
 
 /* ── MISC ── */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
-.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text2);font-size:13px;cursor:pointer;padding:0;background:none;border:none;font-family:'Inter',sans-serif;margin-bottom:16px;transition:color .15s}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text2);font-size:13px;cursor:pointer;padding:0;background:none;border:none;font-family:'Satoshi',sans-serif;margin-bottom:16px;transition:color .15s}
 .back-btn:hover{color:var(--gold)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .hero-banner{background:var(--bg2);border-bottom:1px solid var(--border);padding:32px 28px}
-.hero-banner h1{font-family:'Space Grotesk',sans-serif;font-size:28px;margin-bottom:6px}
+.hero-banner h1{font-family:'Clash Display',sans-serif;font-size:28px;margin-bottom:6px}
 .hero-banner h1 em{color:var(--gold);font-style:normal}
 .hero-stats{display:flex;gap:28px;margin-top:18px}
 .hs-n{font-family:'DM Mono',monospace;font-size:22px;color:var(--gold);font-weight:500}
@@ -253,19 +254,19 @@ input::placeholder{color:var(--text3)}
 
   /* ── QUIZZES ── */
   .quiz-hero{background:var(--bg2);border-bottom:1px solid var(--border);padding:28px}
-  .quiz-hero h2{font-family:'Space Grotesk',sans-serif;font-size:24px;margin-bottom:6px}
+  .quiz-hero h2{font-family:'Clash Display',sans-serif;font-size:24px;margin-bottom:6px}
   .quiz-hero p{font-size:13px;color:var(--text2);margin-bottom:18px;max-width:560px;line-height:1.6}
   .quiz-mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:20px}
   .quiz-mode-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:18px;cursor:pointer;transition:all .15s;text-align:left}
   .quiz-mode-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.4)}
   .qmc-icon{font-size:30px;margin-bottom:10px}
-  .qmc-title{font-family:'Space Grotesk',sans-serif;font-size:18px;margin-bottom:4px}
+  .qmc-title{font-family:'Clash Display',sans-serif;font-size:18px;margin-bottom:4px}
   .qmc-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px}
   .qmc-meta{font-size:11px;color:var(--gold);font-family:'DM Mono',monospace}
 
   .quiz-active{padding:24px;max-width:920px;margin:0 auto}
   .quiz-bar{display:flex;align-items:center;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:18px}
-  .qb-title{font-family:'Space Grotesk',sans-serif;font-size:16px}
+  .qb-title{font-family:'Clash Display',sans-serif;font-size:16px}
   .qb-progress{flex:1;text-align:right;font-size:12px;color:var(--text3)}
   .qb-progress strong{color:var(--gold);font-family:'DM Mono',monospace;font-size:14px}
   .qb-score{font-family:'DM Mono',monospace;font-size:14px;padding:4px 10px;border-radius:5px;background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.3)}
@@ -276,7 +277,7 @@ input::placeholder{color:var(--text3)}
   .qq-context{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;background:var(--bg3);padding:6px 10px;border-radius:5px;margin-bottom:12px;display:inline-block}
 
   .choice-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-  .choice-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:10px 14px;color:var(--text);font-size:13px;text-align:left;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+  .choice-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:10px 14px;color:var(--text);font-size:13px;text-align:left;cursor:pointer;transition:all .15s;font-family:'Satoshi',sans-serif}
   .choice-btn:hover:not(:disabled){background:var(--bg4);border-color:var(--border3)}
   .choice-btn.selected{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold)}
   .choice-btn.correct{background:rgba(45,106,79,.2);border-color:var(--green2);color:var(--green3)}
@@ -304,7 +305,7 @@ input::placeholder{color:var(--text3)}
 
   .quiz-result-screen{text-align:center;padding:40px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:8px}
   .qr-emoji{font-size:48px;margin-bottom:12px}
-  .qr-title{font-family:'Space Grotesk',sans-serif;font-size:24px;margin-bottom:6px}
+  .qr-title{font-family:'Clash Display',sans-serif;font-size:24px;margin-bottom:6px}
   .qr-score{font-family:'DM Mono',monospace;font-size:42px;color:var(--gold);margin:14px 0}
   .qr-message{font-size:13px;color:var(--text2);margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.6}
 
@@ -364,7 +365,7 @@ input::placeholder{color:var(--text3)}
   /* ── LEARNING PANEL (better-move recommendations) ── */
   .learn-panel{margin-top:14px;background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.35);border-radius:8px;padding:14px}
   .learn-header{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-  .learn-header::before{content:'💡';font-size:14px}
+  .learn-header::before{content:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>';font-size:14px}
   .learn-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
   .learn-card{background:var(--bg3);border-radius:6px;padding:10px 12px;border:1px solid var(--border)}
   .learn-card.user{border-color:rgba(220,80,80,.3)}
@@ -403,7 +404,7 @@ input::placeholder{color:var(--text3)}
   .opr-game-opponent{flex:1;font-weight:500;color:var(--text)}
   .opr-game-meta{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
   .opr-game-actions{display:flex;gap:6px}
-  .opr-game-btn{font-size:11px;padding:5px 10px;background:var(--bg4);border:1px solid var(--border2);border-radius:4px;color:var(--text);cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif;text-decoration:none;display:inline-block}
+  .opr-game-btn{font-size:11px;padding:5px 10px;background:var(--bg4);border:1px solid var(--border2);border-radius:4px;color:var(--text);cursor:pointer;transition:all .12s;font-family:'Satoshi',sans-serif;text-decoration:none;display:inline-block}
   .opr-game-btn:hover{background:var(--gold);color:var(--bg);border-color:var(--gold)}
   .opr-game-btn.primary{background:rgba(201,168,76,.12);border-color:var(--gold3);color:var(--gold)}
   .opr-game-btn.primary:hover{background:var(--gold);color:var(--bg)}
@@ -411,13 +412,13 @@ input::placeholder{color:var(--text3)}
 
 
   /* ── QUIZ OPENING PICKER ── */
-  .qz-search{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none}
+  .qz-search{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Satoshi',sans-serif;outline:none}
   .qz-search:focus{border-color:var(--gold)}
   .qz-opening-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:18px}
-  .qz-opening-card{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px 14px;cursor:pointer;text-align:left;transition:all .12s;font-family:'Inter',sans-serif;display:block}
+  .qz-opening-card{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px 14px;cursor:pointer;text-align:left;transition:all .12s;font-family:'Satoshi',sans-serif;display:block}
   .qz-opening-card:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 3px 12px rgba(0,0,0,.3)}
   .qz-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .qz-card-name{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--text);font-weight:500}
+  .qz-card-name{font-family:'Clash Display',sans-serif;font-size:14px;color:var(--text);font-weight:500}
   .qz-card-eco{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);background:rgba(201,168,76,.08);padding:1px 5px;border-radius:3px}
   .qz-card-bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden;margin-bottom:6px}
   .qz-card-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--green2));transition:width .3s}
@@ -450,7 +451,7 @@ input::placeholder{color:var(--text3)}
   .rec-card{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:5px;padding:12px 14px}
   .rec-card.weakness{border-left-color:var(--red2)}
   .rec-card.insight{border-left-color:var(--green2)}
-  .rec-title{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--text);margin-bottom:4px;font-weight:500}
+  .rec-title{font-family:'Clash Display',sans-serif;font-size:14px;color:var(--text);margin-bottom:4px;font-weight:500}
   .rec-reason{font-size:12px;color:var(--text2);line-height:1.5}
 
   /* ── DEEP ANALYSIS ── */
@@ -480,7 +481,7 @@ input::placeholder{color:var(--text3)}
 
 
   /* ── QUIZ FEEDBACK — instant, prominent ── */
-  .qz-result-banner{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:8px;margin-top:12px;font-family:'Inter',sans-serif;animation:qz-pop .2s ease-out}
+  .qz-result-banner{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:8px;margin-top:12px;font-family:'Satoshi',sans-serif;animation:qz-pop .2s ease-out}
   .qz-result-banner.correct{background:linear-gradient(135deg,rgba(45,106,79,.18),rgba(45,106,79,.06));border:1.5px solid rgba(212,175,55,.5)}
   .qz-result-banner.wrong{background:linear-gradient(135deg,rgba(139,26,26,.18),rgba(139,26,26,.06));border:1.5px solid rgba(224,112,112,.5)}
   .qzr-icon{font-size:30px;font-weight:bold;line-height:1;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
@@ -517,7 +518,7 @@ input::placeholder{color:var(--text3)}
 
   /* ── QUIZ CARD BUTTONS ── */
   .qz-card-buttons{display:flex;gap:6px;margin-top:8px;flex-direction:column}
-  .qz-card-btn{font-size:11px;padding:7px 10px;background:var(--bg4);border:1px solid var(--border2);border-radius:4px;color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;transition:all .12s;text-align:center}
+  .qz-card-btn{font-size:11px;padding:7px 10px;background:var(--bg4);border:1px solid var(--border2);border-radius:4px;color:var(--text);cursor:pointer;font-family:'Satoshi',sans-serif;transition:all .12s;text-align:center}
   .qz-card-btn:hover{background:var(--gold);color:var(--bg);border-color:var(--gold)}
   .qz-card-btn.primary{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold);font-weight:500}
   .qz-card-btn.primary:hover{background:var(--gold);color:var(--bg)}
@@ -532,23 +533,23 @@ input::placeholder{color:var(--text3)}
   .od-completion{margin-top:24px;padding:20px 22px;background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.04));border:1.5px solid rgba(201,168,76,.5);border-radius:8px;display:flex;align-items:flex-start;gap:16px;animation:qz-pop .25s ease-out}
   .od-comp-icon{font-size:36px;line-height:1;flex-shrink:0}
   .od-comp-content{flex:1}
-  .od-comp-title{font-size:16px;font-weight:600;color:var(--gold);font-family:'Inter',sans-serif;margin-bottom:4px}
+  .od-comp-title{font-size:16px;font-weight:600;color:var(--gold);font-family:'Satoshi',sans-serif;margin-bottom:4px}
   .od-comp-sub{font-size:13px;color:var(--text2);line-height:1.5}
 
 
   /* ── DEEP VARIATION NOTES ── */
-  .var-note{font-size:12.5px;color:var(--text2);margin-top:8px;padding:8px 10px;background:rgba(0,0,0,.18);border-left:2px solid var(--gold);border-radius:0 4px 4px 0;line-height:1.55;font-family:'Inter',sans-serif}
+  .var-note{font-size:12.5px;color:var(--text2);margin-top:8px;padding:8px 10px;background:rgba(0,0,0,.18);border-left:2px solid var(--gold);border-radius:0 4px 4px 0;line-height:1.55;font-family:'Satoshi',sans-serif}
   .var-note strong{color:var(--gold)}
   .var-note em{color:#d4af37;font-style:normal;font-weight:500}
 
 
   /* ════════════ LEARNING PATH (Duolingo-style) ════════════ */
   .op-view-tabs{display:flex;gap:4px;margin-top:16px;border-bottom:1px solid var(--border)}
-  .op-view-tab{background:none;border:none;padding:10px 18px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;font-family:'Inter',sans-serif;transition:all .15s}
+  .op-view-tab{background:none;border:none;padding:10px 18px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;font-family:'Satoshi',sans-serif;transition:all .15s}
   .op-view-tab:hover{color:var(--text)}
   .op-view-tab.active{color:var(--gold);border-bottom-color:var(--gold);font-weight:500}
 
-  .path-container{max-width:760px;margin:24px auto;padding:0 16px;font-family:'Inter',sans-serif}
+  .path-container{max-width:760px;margin:24px auto;padding:0 16px;font-family:'Satoshi',sans-serif}
   .path-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;gap:20px;flex-wrap:wrap}
   .path-title{font-size:24px;font-weight:600;color:var(--gold);letter-spacing:.3px;margin-bottom:6px}
   .path-subtitle{font-size:13px;color:var(--text2);line-height:1.5}
@@ -569,11 +570,11 @@ input::placeholder{color:var(--text3)}
   .path-node.visited:hover{border-color:#d4af37}
   .path-node-circle{width:34px;height:34px;border-radius:50%;background:var(--bg4);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:var(--text);flex-shrink:0;font-family:'DM Mono',monospace}
   .path-node.visited .path-node-circle{background:rgba(212,175,55,.2);border-color:#d4af37;color:#d4af37}
-  .path-node-circle.var{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold);font-family:'Inter',sans-serif}
+  .path-node-circle.var{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold);font-family:'Satoshi',sans-serif}
   .path-node.visited .path-node-circle.var{background:rgba(212,175,55,.2);border-color:#d4af37;color:#d4af37}
   .path-node-label{font-size:13px;color:var(--text);font-family:'DM Mono',monospace}
-  .path-node-label strong{font-family:'Inter',sans-serif;color:var(--text);font-weight:600;display:block;margin-bottom:2px}
-  .path-branch-meta{margin-top:3px;font-family:'Inter',sans-serif}
+  .path-node-label strong{font-family:'Satoshi',sans-serif;color:var(--text);font-weight:600;display:block;margin-bottom:2px}
+  .path-branch-meta{margin-top:3px;font-family:'Satoshi',sans-serif}
   .path-branch-meta .badge{font-size:10px}
   .path-node.variation{padding-right:18px;min-width:180px}
 
@@ -612,7 +613,7 @@ input::placeholder{color:var(--text3)}
 
 
   /* ════════════ CHESS.COM-STYLE ANNOTATED COMMENTARY ════════════ */
-  #od-commentary{margin-top:18px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:'Inter',sans-serif}
+  #od-commentary{margin-top:18px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:'Satoshi',sans-serif}
   .comm-header{padding:12px 16px;background:linear-gradient(180deg,rgba(201,168,76,.10),rgba(201,168,76,.02));border-bottom:1px solid var(--border)}
   .comm-title{font-size:14px;font-weight:600;color:var(--gold);margin-bottom:3px}
   .comm-meta{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace}
@@ -647,7 +648,7 @@ input::placeholder{color:var(--text3)}
   .weakness-rank{font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--gold);width:36px;flex-shrink:0}
   .weakness-card.top .weakness-rank{color:#e07070}
   .weakness-info{flex:1}
-  .weakness-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;font-family:'Inter',sans-serif}
+  .weakness-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;font-family:'Satoshi',sans-serif}
   .weakness-meta{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace}
   .weakness-action{font-size:18px;color:var(--gold);font-family:'DM Mono',monospace;align-self:center}
   .weakness-text{font-size:12.5px;color:var(--text2);line-height:1.55;margin-left:48px}
@@ -656,7 +657,7 @@ input::placeholder{color:var(--text3)}
 
   /* Detail panel */
   .weakness-detail{padding:18px 20px;background:var(--bg2);border:1.5px solid var(--gold);border-radius:10px;animation:qz-pop .25s ease-out}
-  .weakness-back-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:0;margin-bottom:12px;font-family:'Inter',sans-serif}
+  .weakness-back-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:0;margin-bottom:12px;font-family:'Satoshi',sans-serif}
   .weakness-back-btn:hover{color:var(--gold)}
   .weakness-detail-title{font-size:18px;font-weight:600;color:var(--gold);margin-bottom:6px}
   .weakness-detail-train{font-size:13px;color:var(--text2);line-height:1.6;padding:10px 14px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:0 5px 5px 0;margin:10px 0 6px}
@@ -665,7 +666,7 @@ input::placeholder{color:var(--text3)}
   /* Example card */
   .weakness-example{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px}
   .we-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;flex-wrap:wrap;gap:8px}
-  .we-game{font-size:13px;color:var(--text);font-family:'Inter',sans-serif}
+  .we-game{font-size:13px;color:var(--text);font-family:'Satoshi',sans-serif}
   .we-phase{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace}
   .we-move-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
   .we-played, .we-best{flex:1;text-align:center;padding:8px 10px;background:var(--bg4);border-radius:5px;border:1px solid var(--border)}
@@ -880,7 +881,7 @@ input::placeholder{color:var(--text3)}
 /* ── BASE ── */
 body{
   background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(21,184,166,.05) 0%, transparent 55%), var(--bg);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
   font-size: 14px;
   line-height: 1.55;
   letter-spacing: -0.005em;
@@ -919,7 +920,7 @@ body{
   box-shadow: var(--shadow-sm);
 }
 .nav-logo{
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 20px;
   font-weight: 500;
   color: var(--gold);
@@ -934,7 +935,7 @@ body{
 .nav-logo small{
   color: var(--text3);
   font-size: 10px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   font-weight: 400;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -966,7 +967,7 @@ body{
   color: var(--text2);
   border: none;
   background: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   height: 100%;
   display: flex;
   align-items: center;
@@ -1000,7 +1001,7 @@ body{
 }
 
 .section h2{
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 32px;
   font-weight: 500;
   letter-spacing: -0.5px;
@@ -1031,7 +1032,7 @@ input, select, textarea {
   padding: 11px 16px;
   color: var(--text);
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   outline: none;
   transition: all var(--t);
   width: 100%;
@@ -1050,7 +1051,7 @@ input:focus, select:focus, textarea:focus {
   border: none;
   cursor: pointer;
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   font-weight: 500;
   letter-spacing: 0.2px;
   transition: all var(--t);
@@ -1115,7 +1116,7 @@ input:focus, select:focus, textarea:focus {
   background: transparent;
   color: var(--text2);
   transition: all var(--t);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
 }
 .ptab:hover{ color: var(--text); }
 .ptab.active{
@@ -1223,7 +1224,7 @@ input:focus, select:focus, textarea:focus {
   transition: all var(--t);
 }
 .das-num{
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 28px;
   font-weight: 500;
   color: var(--text);
@@ -1313,7 +1314,7 @@ input:focus, select:focus, textarea:focus {
   border-bottom: 1px solid var(--border);
 }
 .comm-title{
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 16px;
   font-weight: 500;
   color: var(--gold);
@@ -1398,7 +1399,7 @@ input:focus, select:focus, textarea:focus {
   .qmp-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;animation:modal-in .25s ease-out}
   .qmp-modal{background:var(--bg-elev-1);border:1px solid var(--border2);border-radius:var(--r-lg);max-width:540px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl)}
   .qmp-header{padding:18px 22px;background:linear-gradient(180deg,var(--gold3),transparent);border-bottom:1px solid var(--border)}
-  .qmp-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:500;color:var(--gold);margin-bottom:4px}
+  .qmp-title{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:500;color:var(--gold);margin-bottom:4px}
   .qmp-subtitle{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace}
   .qmp-body{padding:18px 22px;display:flex;flex-direction:column;gap:10px}
   .qmp-mode-card{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;background:var(--bg-elev-2);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;text-align:left;font-family:inherit;color:var(--text);transition:all var(--t);width:100%}
@@ -1573,7 +1574,7 @@ input:focus, select:focus, textarea:focus {
   .learn-exit {
     background: none; border: 1px solid var(--border); color: var(--text2);
     padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px;
-    font-family: 'Inter', sans-serif; transition: all .15s; white-space: nowrap;
+    font-family: 'Satoshi', sans-serif; transition: all .15s; white-space: nowrap;
   }
   .learn-exit:hover { background: var(--bg3); color: var(--text); }
   .learn-progress-track {
@@ -1609,7 +1610,7 @@ input:focus, select:focus, textarea:focus {
   }
   .learn-explain {
     font-size: 17px; line-height: 1.65; color: var(--text); max-width: 460px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
   }
   .learn-explain strong { color: var(--gold); }
   .coach-options {
@@ -1634,7 +1635,7 @@ input:focus, select:focus, textarea:focus {
   /* ── Tree Explorer ── */
   #sec-tree { background: var(--bg1); }
   .tree-topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-  .tree-title { font-family: 'Space Grotesk', sans-serif; font-size: 22px; color: var(--gold); }
+  .tree-title { font-family: 'Clash Display', sans-serif; font-size: 22px; color: var(--gold); }
   .tree-stage {
     display: grid; grid-template-columns: auto 1fr; gap: 36px; align-items: start;
   }
@@ -1653,7 +1654,7 @@ input:focus, select:focus, textarea:focus {
   .tree-side-col { min-width: 0; }
   .tree-explain {
     font-size: 16px; line-height: 1.6; color: var(--text);
-    font-family: 'Inter', sans-serif; margin-bottom: 20px;
+    font-family: 'Satoshi', sans-serif; margin-bottom: 20px;
   }
   .tree-explain strong { color: var(--gold); }
   .tree-branch-label {
@@ -1687,7 +1688,7 @@ input:focus, select:focus, textarea:focus {
     margin-top: 16px; padding: 12px 20px;
     background: linear-gradient(135deg, var(--gold), #b8860b);
     color: #1a1a1a; font-weight: 700; border: none; border-radius: 10px;
-    cursor: pointer; font-size: 15px; font-family: 'Inter', sans-serif;
+    cursor: pointer; font-size: 15px; font-family: 'Satoshi', sans-serif;
   }
   .tree-explore-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
 
@@ -1698,12 +1699,12 @@ input:focus, select:focus, textarea:focus {
   .tmap-right { min-width: 0; }
   .tmap-explain {
     font-size: 15px; line-height: 1.6; color: var(--text);
-    font-family: 'Inter', sans-serif; margin-bottom: 14px;
+    font-family: 'Satoshi', sans-serif; margin-bottom: 14px;
     background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 8px;
     border-left: 3px solid var(--gold);
   }
   .tmap-explain strong { color: var(--gold); }
-  .tmap-explain .tmap-line-name { display:block; font-family:'Space Grotesk',sans-serif; font-size:17px; color:var(--gold); margin-bottom:4px; }
+  .tmap-explain .tmap-line-name { display:block; font-family:'Clash Display',sans-serif; font-size:17px; color:var(--gold); margin-bottom:4px; }
   .tmap-hint { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
   /* The scrollable map canvas */
   .tmap-canvas {
@@ -1738,7 +1739,7 @@ input:focus, select:focus, textarea:focus {
   }
   .tmap-node.is-current .tmap-node-move { fill: #fff; }
   .tmap-node-label {
-    font-family: 'Inter', sans-serif; font-size: 11px;
+    font-family: 'Satoshi', sans-serif; font-size: 11px;
     fill: var(--text2); dominant-baseline: middle;
   }
   .tmap-node-eco {
@@ -1747,8 +1748,8 @@ input:focus, select:focus, textarea:focus {
   }
   .tmap-edge { stroke: rgba(255,255,255,0.16); stroke-width: 1.6; fill: none; }
   .tmap-edge.on-path { stroke: rgba(212,175,55,0.6); stroke-width: 2.2; }
-  .tmap-leaf-flag { font-size: 9.5px; fill: #6ee7a8; font-family:'Inter',sans-serif; dominant-baseline: middle; }
-  .tmap-more-flag { font-size: 9.5px; fill: var(--text3); font-family:'Inter',sans-serif; dominant-baseline: middle; }
+  .tmap-leaf-flag { font-size: 9.5px; fill: #6ee7a8; font-family:'Satoshi',sans-serif; dominant-baseline: middle; }
+  .tmap-more-flag { font-size: 9.5px; fill: var(--text3); font-family:'Satoshi',sans-serif; dominant-baseline: middle; }
   /* Toolbar above the map */
   .tmap-toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
   .tmap-crumb-box {
@@ -1761,7 +1762,7 @@ input:focus, select:focus, textarea:focus {
   .tmap-depth-toggle { display:flex; gap:0; border:1px solid rgba(255,255,255,0.12); border-radius:7px; overflow:hidden; }
   .tmap-depth-toggle button {
     background: var(--bg2); color: var(--text2); border:none; padding:5px 11px;
-    font-size:12px; cursor:pointer; font-family:'Inter',sans-serif;
+    font-size:12px; cursor:pointer; font-family:'Satoshi',sans-serif;
   }
   .tmap-depth-toggle button.active { background: var(--gold); color:#1a1a1a; font-weight:700; }
   .tmap-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--text3); margin-top:10px; }
@@ -1788,7 +1789,7 @@ input:focus, select:focus, textarea:focus {
   }
   .learn-mastered-icon { font-size: 72px; margin-bottom: 16px; animation: pop .5s cubic-bezier(.2,1.4,.5,1); }
   @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
-  .learn-mastered-title { font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif; }
+  .learn-mastered-title { font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 10px; font-family: 'Clash Display', sans-serif; }
   .learn-mastered-sub { font-size: 15px; color: var(--text2); line-height: 1.6; margin-bottom: 28px; }
   .learn-mastered-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   /* Stage selector (fundamentals → variations) */
@@ -1821,7 +1822,7 @@ input:focus, select:focus, textarea:focus {
   .nop-card-top { display:flex; align-items:center; gap:10px; }
   .nop-eco { font-family:'DM Mono',monospace; font-size:11px; color:var(--text3);
     background:rgba(255,255,255,.05); padding:2px 7px; border-radius:6px; }
-  .nop-fam-name { font-family:'Space Grotesk',sans-serif; font-size:19px; color:var(--text); flex:1; }
+  .nop-fam-name { font-family:'Clash Display',sans-serif; font-size:19px; color:var(--text); flex:1; }
   .nop-varcount { font-size:12px; color:var(--gold); font-weight:600; }
   .nop-firstmoves { font-family:'DM Mono',monospace; font-size:12px; color:var(--text2); }
   .nop-card-foot { font-size:12px; color:var(--text3); }
@@ -1829,9 +1830,9 @@ input:focus, select:focus, textarea:focus {
 
   .nop-vlist-wrap { max-width:920px; margin:0 auto; }
   .nop-back { background:none;border:none;color:var(--gold);cursor:pointer;font-size:14px;
-    margin-bottom:16px;font-family:'Inter',sans-serif; padding:6px 0; }
+    margin-bottom:16px;font-family:'Satoshi',sans-serif; padding:6px 0; }
   .nop-back:hover { text-decoration:underline; }
-  .nop-vhead { font-family:'Space Grotesk',sans-serif; font-size:30px; margin-bottom:4px; }
+  .nop-vhead { font-family:'Clash Display',sans-serif; font-size:30px; margin-bottom:4px; }
   .nop-vhead em { color:var(--gold); font-style:italic; }
   .nop-vsub { color:var(--text2); font-size:14px; margin-bottom:20px; }
   .nop-vsearch { width:100%; max-width:480px; padding:11px 16px; border-radius:10px;
@@ -1849,14 +1850,14 @@ input:focus, select:focus, textarea:focus {
   .nop-var-depth { font-size:11px; color:var(--text3); margin-top:2px; }
   .nop-var-actions { display:flex; gap:8px; flex-shrink:0; }
   .nop-mini-btn { padding:7px 13px; border-radius:8px; font-size:13px; cursor:pointer;
-    font-family:'Inter',sans-serif; border:1px solid var(--border); background:var(--bg3); color:var(--text); }
+    font-family:'Satoshi',sans-serif; border:1px solid var(--border); background:var(--bg3); color:var(--text); }
   .nop-mini-btn.gold { background:linear-gradient(135deg,var(--gold),#b8860b); color:#1a1a1a; font-weight:700; border:none; }
   .nop-mini-btn:hover { filter:brightness(1.08); }
   .nop-var-mastered { color:#d4af37; font-size:16px; }
 
   .nlearn-wrap { max-width:1120px; margin:0 auto; }
   .nlearn-top { display:flex; align-items:center; gap:14px; margin-bottom:10px; flex-wrap:wrap; }
-  .nlearn-title { font-family:'Space Grotesk',sans-serif; font-size:22px; color:var(--text); flex:1; min-width:200px; }
+  .nlearn-title { font-family:'Clash Display',sans-serif; font-size:22px; color:var(--text); flex:1; min-width:200px; }
   .nlearn-title small { color:var(--gold); font-size:13px; font-family:'DM Mono',monospace; display:block; }
   .nlearn-mode-pill { font-size:11px; padding:3px 10px; border-radius:20px; font-family:'DM Mono',monospace; }
   .nlearn-mode-learn { background:rgba(212,175,55,.15); color:var(--gold); border:1px solid rgba(212,175,55,.4); }
@@ -1882,7 +1883,7 @@ input:focus, select:focus, textarea:focus {
   .nlearn-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
 
   .ndrill-pick { text-align:center; padding:40px 20px; }
-  .ndrill-pick h3 { font-family:'Space Grotesk',sans-serif; font-size:24px; margin-bottom:8px; }
+  .ndrill-pick h3 { font-family:'Clash Display',sans-serif; font-size:24px; margin-bottom:8px; }
   .ndrill-pick p { color:var(--text2); margin-bottom:24px; }
   .ndrill-side-row { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
   .ndrill-side-card { width:170px; padding:24px; border-radius:14px; cursor:pointer;
@@ -1911,7 +1912,7 @@ input:focus, select:focus, textarea:focus {
   /* rating-band selector */
   .nexp-bands { display:flex; gap:6px; flex-wrap:wrap; padding:10px 15px 4px; }
   .nexp-band { background:var(--bg3); border:1px solid var(--border); color:var(--text2);
-    padding:4px 11px; font-size:11px; border-radius:14px; cursor:pointer; font-family:'Inter',sans-serif; }
+    padding:4px 11px; font-size:11px; border-radius:14px; cursor:pointer; font-family:'Satoshi',sans-serif; }
   .nexp-band.active { background:var(--gold); color:#1a1a1a; font-weight:700; border-color:var(--gold); }
   /* token entry */
   .nexp-token { padding:16px 18px; font-size:13px; color:var(--text2); }
@@ -1932,7 +1933,7 @@ input:focus, select:focus, textarea:focus {
   /* Stockfish continuation */
   .nlearn-evalbar { height:472px; }
   .nl-engine-cta { margin-top:18px; padding:16px 18px; border:1px solid var(--border); border-radius:12px; background:rgba(90,180,110,.06); }
-  .nl-engine-cta-title { font-family:'Space Grotesk',sans-serif; font-size:17px; color:var(--text); margin-bottom:6px; }
+  .nl-engine-cta-title { font-family:'Clash Display',sans-serif; font-size:17px; color:var(--text); margin-bottom:6px; }
   .nl-engine-cta p { font-size:13px; color:var(--text2); line-height:1.6; margin:0 0 14px; }
   .nl-engine-panel { margin-top:18px; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
   .nl-engine-head { display:flex; align-items:center; gap:10px; padding:11px 15px; background:rgba(90,180,110,.08); }
@@ -1946,14 +1947,14 @@ input:focus, select:focus, textarea:focus {
   /* ═══════════ CLEAN OPENINGS GRID ═══════════ */
   .op-clean-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 60px; }
   .op-clean-hero { text-align: center; margin-bottom: 36px; }
-  .op-clean-hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: 40px; color: var(--text); margin-bottom: 12px; }
+  .op-clean-hero h1 { font-family: 'Clash Display', sans-serif; font-size: 40px; color: var(--text); margin-bottom: 12px; }
   .op-clean-hero h1 em { color: var(--gold); font-style: italic; }
   .op-clean-hero p { font-size: 15px; color: var(--text2); line-height: 1.6; max-width: 560px; margin: 0 auto 24px; }
   .op-clean-search { max-width: 520px; margin: 0 auto; }
   .op-clean-search input {
     width: 100%; padding: 14px 18px; font-size: 15px;
     background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
-    color: var(--text); font-family: 'Inter', sans-serif; outline: none; transition: border-color .15s;
+    color: var(--text); font-family: 'Satoshi', sans-serif; outline: none; transition: border-color .15s;
   }
   .op-clean-search input:focus { border-color: var(--gold); }
   .op-cat-label {
@@ -1984,7 +1985,7 @@ input:focus, select:focus, textarea:focus {
   .op-learn-btn {
     width: 100%; padding: 11px; background: var(--gold); color: #1a1a1a;
     border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer;
-    font-family: 'Inter', sans-serif; transition: all .15s;
+    font-family: 'Satoshi', sans-serif; transition: all .15s;
   }
   .op-learn-btn:hover { filter: brightness(1.08); }
   .op-mastered-pill {
@@ -2012,7 +2013,7 @@ input:focus, select:focus, textarea:focus {
     border-radius:14px; margin-bottom:14px; }
   .stc-emoji { font-size:72px; line-height:1; flex-shrink:0; }
   .stc-you { font-size:13px; color:var(--text3); }
-  .stc-name { font-family:'Space Grotesk',sans-serif; font-size:32px; color:var(--text); margin:2px 0; }
+  .stc-name { font-family:'Clash Display',sans-serif; font-size:32px; color:var(--text); margin:2px 0; }
   .stc-tag { font-size:14px; color:var(--gold); font-weight:600; margin-bottom:8px; }
   .stc-blurb { font-size:13px; color:var(--text2); line-height:1.55; }
   .stc-bars { background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
@@ -2032,7 +2033,7 @@ input:focus, select:focus, textarea:focus {
   /* ═══════════ OPENINGS LIBRARY v5 ═══════════ */
   .ol-loading,.ol-empty{padding:30px;text-align:center;color:var(--text3);font-size:14px}
   .ol-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
-  .ol-filter{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:20px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif}
+  .ol-filter{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:20px;font-size:13px;cursor:pointer;font-family:'Satoshi',sans-serif}
   .ol-filter.active{background:var(--gold);color:#1a1a1a;font-weight:700;border-color:var(--gold)}
   .ol-bucket-label{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin:26px 0 12px}
   .ol-grid-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
@@ -2045,7 +2046,7 @@ input:focus, select:focus, textarea:focus {
   .ol-style-positional{background:rgba(90,180,110,.15);color:#5aa0e6}
   .ol-style-gambit{background:rgba(230,150,70,.15);color:#e69646}
   .ol-style-solid{background:rgba(239,157,43,.15);color:#6ec882}
-  .ol-card-name{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--text)}
+  .ol-card-name{font-family:'Clash Display',sans-serif;font-size:20px;color:var(--text)}
   .ol-card-moves{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)}
   .ol-card-foot{font-size:12px;color:var(--text3)}
   .ol-varcount{color:var(--gold);font-weight:600}
@@ -2063,7 +2064,7 @@ input:focus, select:focus, textarea:focus {
   .ol-intro-wrap{max-width:1000px;margin:0 auto}
   .ol-intro-head{margin:8px 0 20px}
   .ol-intro-eco{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);margin-bottom:4px}
-  .ol-intro-title{font-family:'Space Grotesk',sans-serif;font-size:38px;color:var(--text);margin:0}
+  .ol-intro-title{font-family:'Clash Display',sans-serif;font-size:38px;color:var(--text);margin:0}
   .ol-intro-cols{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:start}
   @media (max-width:860px){.ol-intro-cols{grid-template-columns:1fr}}
   .ol-intro-section-label{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
@@ -2096,18 +2097,18 @@ input:focus, select:focus, textarea:focus {
   .ol-var-mastered{color:#d4af37}
   .ol-fam-section{margin-bottom:22px}
   .ol-fam-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 0 12px;border-bottom:1px solid rgba(201,168,76,.25);margin-bottom:10px}
-  .ol-fam-name{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--gold)}
+  .ol-fam-name{font-family:'Clash Display',sans-serif;font-size:20px;color:var(--gold)}
   .ol-fam-intro{font-size:13px;color:var(--text2);margin-top:3px;line-height:1.5;max-width:680px}
   .ol-fam-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);background:rgba(255,255,255,.05);padding:3px 9px;border-radius:10px;flex-shrink:0}
   .ol-plan-box{margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.12),var(--bg2));border:1.5px solid rgba(201,168,76,.4);border-radius:12px}
-  .ol-plan-title{font-family:'Space Grotesk',sans-serif;font-size:17px;color:var(--gold);margin-bottom:8px}
+  .ol-plan-title{font-family:'Clash Display',sans-serif;font-size:17px;color:var(--gold);margin-bottom:8px}
   .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
 
   /* ═══════════════ OPENING EXPLORER ═══════════════ */
   .expl-wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
   .expl-detect{text-align:center;margin-bottom:22px;min-height:78px}
   .expl-detect-eco{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.15em;color:var(--gold);opacity:.85}
-  .expl-detect-name{font-family:'Space Grotesk',sans-serif;font-size:30px;color:var(--text);line-height:1.15;transition:opacity .2s}
+  .expl-detect-name{font-family:'Clash Display',sans-serif;font-size:30px;color:var(--text);line-height:1.15;transition:opacity .2s}
   .expl-detect-var{font-size:15px;color:var(--text2);margin-top:2px;min-height:20px}
   .expl-main{display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:start}
   @media(max-width:900px){.expl-main{grid-template-columns:1fr;justify-items:center}}
@@ -2152,7 +2153,7 @@ input:focus, select:focus, textarea:focus {
   .expl-save-note.ok{color:#6ec882}.expl-save-note.warn{color:#e0a060}
   /* library */
   .expl-library{margin-top:26px;max-width:760px;margin-left:auto;margin-right:auto}
-  .expl-lib-head{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--gold);margin-bottom:12px}
+  .expl-lib-head{font-family:'Clash Display',sans-serif;font-size:20px;color:var(--gold);margin-bottom:12px}
   .expl-lib-row{display:flex;align-items:center;gap:14px;padding:13px 16px;margin-bottom:9px;background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:11px}
   .expl-lib-info{flex:1;min-width:0}
   .expl-lib-name{font-size:14px;color:var(--text);font-weight:600}
@@ -2163,7 +2164,7 @@ input:focus, select:focus, textarea:focus {
   .expl-lib-actions{display:flex;gap:6px;flex-shrink:0}
   /* training */
   .expl-train-top{display:flex;align-items:center;gap:16px;margin-bottom:10px}
-  .expl-train-title{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--text)}
+  .expl-train-title{font-family:'Clash Display',sans-serif;font-size:20px;color:var(--text)}
   .expl-train-stage{display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:start;margin-top:18px}
   @media(max-width:900px){.expl-train-stage{grid-template-columns:1fr;justify-items:center}}
   .expl-train-side{min-width:0;max-width:420px}
@@ -2173,7 +2174,7 @@ input:focus, select:focus, textarea:focus {
 
   /* ═══════════════ REPERTOIRE ═══════════════ */
   .rep-hero{text-align:center;max-width:680px;margin:10px auto 30px}
-  .rep-hero h1{font-family:'Space Grotesk',sans-serif;font-size:38px;color:var(--text);margin:0 0 8px}
+  .rep-hero h1{font-family:'Clash Display',sans-serif;font-size:38px;color:var(--text);margin:0 0 8px}
   .rep-hero h1 em{color:var(--gold);font-style:italic}
   .rep-hero p{font-size:15px;color:var(--text2);line-height:1.6;margin:0 0 20px}
   .rep-hero-actions{display:flex;gap:10px;justify-content:center}
@@ -2186,7 +2187,7 @@ input:focus, select:focus, textarea:focus {
   .rep-card-side.w{background:rgba(244,236,216,.12);color:#f4ecd8}
   .rep-card-side.b{background:rgba(80,80,90,.25);color:#cfcfd6}
   .rep-card-moves-n{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
-  .rep-card-name{font-family:'Space Grotesk',sans-serif;font-size:21px;color:var(--text)}
+  .rep-card-name{font-family:'Clash Display',sans-serif;font-size:21px;color:var(--text)}
   .rep-card-line{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .rep-card-meta{display:flex;gap:10px;min-height:16px}
   .rep-card-acc{font-size:11px;color:#6ec882}
@@ -2194,13 +2195,13 @@ input:focus, select:focus, textarea:focus {
   .rep-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
   /* workspace top bar */
   .expl-ws-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
-  .expl-ws-name{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif}
+  .expl-ws-name{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;font-family:'Satoshi',sans-serif}
   .expl-ws-name:focus{outline:none;border-color:var(--gold)}
   .expl-saved-tag{font-size:11px;color:#6ec882}
   /* train counter + results */
   .expl-train-counter{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);margin-bottom:10px}
   .rt-results{max-width:520px;margin:30px auto;text-align:center}
-  .rt-results-acc{font-family:'Space Grotesk',sans-serif;font-size:72px;line-height:1}
+  .rt-results-acc{font-family:'Clash Display',sans-serif;font-size:72px;line-height:1}
   .rt-results-acc.great{color:#6ec882}.rt-results-acc.ok{color:var(--gold)}.rt-results-acc.low{color:#e0706f}
   .rt-results-sub{font-size:13px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px}
   .rt-results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
@@ -2216,7 +2217,7 @@ input:focus, select:focus, textarea:focus {
   .acad-wrap{max-width:1140px;margin:0 auto;padding:20px 20px 70px}
   .acad-hero{text-align:center;max-width:720px;margin:14px auto 36px}
   .acad-hero-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--gold);border:1px solid rgba(201,168,76,.4);padding:5px 14px;border-radius:20px;margin-bottom:18px}
-  .acad-hero h1{font-family:'Space Grotesk',sans-serif;font-size:42px;color:var(--text);margin:0 0 12px;line-height:1.1}
+  .acad-hero h1{font-family:'Clash Display',sans-serif;font-size:42px;color:var(--text);margin:0 0 12px;line-height:1.1}
   .acad-hero h1 em{color:var(--gold);font-style:italic}
   .acad-hero p{font-size:16px;color:var(--text2);line-height:1.65}
   .acad-course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
@@ -2228,14 +2229,14 @@ input:focus, select:focus, textarea:focus {
   .acad-cc-eco{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);background:rgba(255,255,255,.05);padding:2px 8px;border-radius:6px}
   .acad-cc-taught{font-size:11px;font-weight:700;color:#6ec882;background:rgba(239,157,43,.12);padding:2px 10px;border-radius:10px}
   .acad-cc-pct{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold)}
-  .acad-cc-name{font-family:'Space Grotesk',sans-serif;font-size:24px;color:var(--text)}
+  .acad-cc-name{font-family:'Clash Display',sans-serif;font-size:24px;color:var(--text)}
   .acad-cc-blurb{font-size:13px;color:var(--text2);line-height:1.55;flex:1}
   .acad-cc-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
   .acad-cc-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#e0b84a);transition:width .4s}
   .acad-cc-cta{font-size:13px;color:var(--gold);font-weight:600}
   /* course top */
   .acad-course-top{display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
-  .acad-course-title{font-family:'Space Grotesk',sans-serif;font-size:26px;color:var(--text);flex:1}
+  .acad-course-title{font-family:'Clash Display',sans-serif;font-size:26px;color:var(--text);flex:1}
   .acad-course-title em{color:var(--gold);font-style:italic}
   .acad-course-stats{display:flex;gap:8px;flex-wrap:wrap}
   .acad-stat-pill{font-size:12px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);padding:5px 12px;border-radius:14px}
@@ -2264,17 +2265,17 @@ input:focus, select:focus, textarea:focus {
   .acad-lesson-wrap{max-width:1080px;margin:0 auto}
   .acad-read{max-width:720px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:34px 40px}
   .acad-read-icon{font-size:40px;text-align:center;margin-bottom:8px}
-  .acad-read h1{font-family:'Space Grotesk',sans-serif;font-size:30px;color:var(--text);text-align:center;margin:0 0 22px}
+  .acad-read h1{font-family:'Clash Display',sans-serif;font-size:30px;color:var(--text);text-align:center;margin:0 0 22px}
   .acad-read p{font-size:15.5px;line-height:1.72;color:var(--text2);margin:0 0 16px}
   .acad-read .btn{margin-top:14px}
   .acad-idea-block{margin-bottom:26px}
-  .acad-idea-block h3{font-family:'Space Grotesk',sans-serif;font-size:21px;color:var(--gold);margin:0 0 14px;border-bottom:1px solid rgba(201,168,76,.2);padding-bottom:8px}
+  .acad-idea-block h3{font-family:'Clash Display',sans-serif;font-size:21px;color:var(--gold);margin:0 0 14px;border-bottom:1px solid rgba(201,168,76,.2);padding-bottom:8px}
   .acad-idea{margin-bottom:14px}
   .acad-idea-h{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px}
   .acad-idea-t{font-size:14px;line-height:1.6;color:var(--text2)}
   /* interactive lesson */
   .acad-lesson-top{display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap}
-  .acad-lesson-title{font-family:'Space Grotesk',sans-serif;font-size:21px;color:var(--text);flex:1}
+  .acad-lesson-title{font-family:'Clash Display',sans-serif;font-size:21px;color:var(--text);flex:1}
   .acad-lesson-eco{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3)}
   .acad-lesson-stage{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;margin-top:16px}
   @media(max-width:900px){.acad-lesson-stage{grid-template-columns:1fr;justify-items:center}}
@@ -2285,7 +2286,7 @@ input:focus, select:focus, textarea:focus {
   .acad-lesson-text{font-size:15.5px;line-height:1.7;color:var(--text)}
   .acad-lesson-text strong{color:var(--gold)}
   .acad-plan{margin-top:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(201,168,76,.1),var(--bg2));border:1px solid rgba(201,168,76,.3);border-radius:12px;font-size:14px;line-height:1.6;color:var(--text2)}
-  .acad-plan-h{font-family:'Space Grotesk',sans-serif;font-size:15px;color:var(--gold);margin-bottom:6px}
+  .acad-plan-h{font-family:'Clash Display',sans-serif;font-size:15px;color:var(--gold);margin-bottom:6px}
   .acad-lesson-engine{margin-top:16px;font-family:'DM Mono',monospace;font-size:13px;color:var(--text2)}
   .acad-eng-think{color:var(--text3)}
   .acad-eng-label{color:var(--text3)}.acad-eng-val{color:var(--gold);font-weight:700}.acad-eng-best{color:var(--text3);margin-left:8px}
@@ -2294,9 +2295,9 @@ input:focus, select:focus, textarea:focus {
   /* done screens */
   .acad-done{max-width:520px;margin:40px auto;text-align:center}
   .acad-done-icon{font-size:56px;color:#6ec882}
-  .acad-done h2{font-family:'Space Grotesk',sans-serif;font-size:28px;color:var(--text);margin:8px 0}
+  .acad-done h2{font-family:'Clash Display',sans-serif;font-size:28px;color:var(--text);margin:8px 0}
   .acad-done p{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px}
-  .acad-taught-banner{background:linear-gradient(135deg,rgba(239,157,43,.18),rgba(201,168,76,.12));border:1.5px solid rgba(239,157,43,.4);border-radius:14px;padding:16px;font-family:'Space Grotesk',sans-serif;font-size:19px;color:#8fd9a8;margin-bottom:22px}
+  .acad-taught-banner{background:linear-gradient(135deg,rgba(239,157,43,.18),rgba(201,168,76,.12));border:1.5px solid rgba(239,157,43,.4);border-radius:14px;padding:16px;font-family:'Clash Display',sans-serif;font-size:19px;color:#8fd9a8;margin-bottom:22px}
   .acad-taught-fail{background:rgba(224,112,111,.1);border:1px solid rgba(224,112,111,.3);border-radius:12px;padding:14px;font-size:14px;color:#e0a0a0;margin-bottom:20px}
 
   /* ═══════════ CHESSLY-STYLE LEARN FLOW ═══════════ */
@@ -2317,7 +2318,7 @@ input:focus, select:focus, textarea:focus {
   .acad-learn-move{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px}
   .acad-opp-note{font-size:14px;color:var(--red);font-weight:600;margin-bottom:8px}
   .acad-learn-cta{margin-top:18px}
-  .acad-cta-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#fff;font-size:15px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-md);transition:all .14s;font-family:'Inter',sans-serif}
+  .acad-cta-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#fff;font-size:15px;font-weight:700;cursor:pointer;box-shadow:var(--shadow-md);transition:all .14s;font-family:'Satoshi',sans-serif}
   .acad-cta-btn:hover{background:var(--gold2);transform:translateY(-2px)}
   /* light-theme card surfaces for the lesson */
   .acad-lesson-side{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
@@ -2327,17 +2328,17 @@ input:focus, select:focus, textarea:focus {
 
   /* ═══════════════ COURSE CREATOR ═══════════════ */
   .cc-hero{text-align:center;max-width:680px;margin:14px auto 30px}
-  .cc-hero h1{font-family:'Space Grotesk',sans-serif;font-size:38px;color:var(--text);margin:0 0 10px}
+  .cc-hero h1{font-family:'Clash Display',sans-serif;font-size:38px;color:var(--text);margin:0 0 10px}
   .cc-hero h1 em{color:var(--gold);font-style:italic}
   .cc-hero p{font-size:15px;color:var(--text2);line-height:1.6;margin:0 0 22px}
   .cc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;max-width:900px;margin:30px auto 0}
   .cc-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px}
-  .cc-card-name{font-family:'Space Grotesk',sans-serif;font-size:19px;color:var(--text)}
+  .cc-card-name{font-family:'Clash Display',sans-serif;font-size:19px;color:var(--text)}
   .cc-card-meta{font-size:12px;color:var(--text3);margin:4px 0 12px}
   .cc-card-actions{display:flex;gap:6px}
   .cc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
   .cc-tool-icon{font-size:20px}
-  .cc-name-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:17px;font-family:'Space Grotesk',sans-serif}
+  .cc-name-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:17px;font-family:'Clash Display',sans-serif}
   .cc-name-input:focus{outline:none;border-color:var(--gold)}
   .cc-analysis-toggle{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:14px;color:var(--text2)}
   .cc-switch{position:relative;display:inline-block;width:42px;height:24px}
@@ -2358,11 +2359,11 @@ input:focus, select:focus, textarea:focus {
   .cc-aline-eval.pos{color:#1f9d63}.cc-aline-eval.neg{color:#e0556a}.cc-aline-eval.eq{color:var(--text2)}
   .cc-aline-moves{font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cc-movetree{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:14px;line-height:2;min-height:44px}
-  .cc-tree-empty{color:var(--text3);font-family:'Inter',sans-serif;font-size:13px}
+  .cc-tree-empty{color:var(--text3);font-family:'Satoshi',sans-serif;font-size:13px}
   .cc-tree-num{color:var(--text3);margin-right:4px}
   .cc-tree-mv{cursor:pointer;padding:1px 6px;border-radius:5px;margin-right:3px;color:var(--text)}
   .cc-tree-mv:hover{background:var(--gold3);color:var(--gold)}
-  .cc-note-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;resize:vertical;min-height:70px}
+  .cc-note-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'Satoshi',sans-serif;resize:vertical;min-height:70px}
   .cc-note-input:focus{outline:none;border-color:var(--gold)}
   .cc-explorer{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
   .cc-explorer-head{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text)}
@@ -2392,7 +2393,7 @@ input:focus, select:focus, textarea:focus {
   /* workflow */
   .cc-side-head{display:flex;justify-content:flex-end;margin-bottom:-4px}
   .cc-lines-count{font-size:12px;color:var(--gold);font-weight:600}
-  .cc-endline-btn{width:100%;padding:12px;border-radius:12px;border:1px solid var(--gold);background:var(--gold3);color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;transition:all .14s;font-family:'Inter',sans-serif}
+  .cc-endline-btn{width:100%;padding:12px;border-radius:12px;border:1px solid var(--gold);background:var(--gold3);color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;transition:all .14s;font-family:'Satoshi',sans-serif}
   .cc-endline-btn:hover{background:var(--gold);color:#fff}
   .cc-endline-btn.done{background:var(--green);border-color:var(--green);color:#fff}
   /* eval-colored move tree */
@@ -2445,7 +2446,7 @@ body{
     radial-gradient(900px 600px at -6% 14%, rgba(201,162,75,.045), transparent 55%),
     var(--bg) !important;
   color:var(--text);
-  font-family:'Inter',sans-serif;
+  font-family:'Satoshi',sans-serif;
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
 }
 /* faint 8×8 board-grid signature texture, fixed & masked */
@@ -2459,7 +2460,7 @@ body::before{
           mask-image:radial-gradient(circle at 50% -10%, #000, transparent 72%);
 }
 .nav,.section,.page-wrap,.acad-wrap,.explorer-layout{position:relative;z-index:1}
-h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-.012em}
+h1,h2,h3{font-family:'Clash Display',sans-serif;letter-spacing:-.012em}
 
 /* ── NAV ── */
 .nav{
@@ -2469,11 +2470,11 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-.012em}
   box-shadow:0 1px 0 rgba(201,162,75,.10), 0 10px 32px rgba(0,0,0,.30);
 }
 .nav-logo{
-  font-family:'Space Grotesk',sans-serif; font-weight:700; letter-spacing:.04em;
+  font-family:'Clash Display',sans-serif; font-weight:700; letter-spacing:.04em;
   background:var(--brass-grad); -webkit-background-clip:text; background-clip:text; color:transparent !important;
 }
 .nav-logo small{color:var(--text3) !important; -webkit-text-fill-color:var(--text3)}
-.nav-tab{position:relative; font-family:'Inter',sans-serif; font-weight:500; transition:color .25s var(--ease)}
+.nav-tab{position:relative; font-family:'Satoshi',sans-serif; font-weight:500; transition:color .25s var(--ease)}
 .nav-tab::after{content:''; position:absolute; left:14px; right:14px; bottom:0; height:2px; border-radius:2px; background:var(--brass-grad); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease)}
 .nav-tab:hover{color:var(--text); background:transparent}
 .nav-tab:hover::after{transform:scaleX(.55)}
@@ -2481,7 +2482,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-.012em}
 .nav-tab.active::after{transform:scaleX(1)}
 
 /* ── BUTTONS ── */
-.btn{font-family:'Inter',sans-serif; font-weight:600; border-radius:10px; transition:transform .18s var(--ease),box-shadow .25s var(--ease),background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease)}
+.btn{font-family:'Satoshi',sans-serif; font-weight:600; border-radius:10px; transition:transform .18s var(--ease),box-shadow .25s var(--ease),background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease)}
 .btn-gold{background:var(--brass-grad); color:#1c1505; box-shadow:0 6px 18px rgba(201,162,75,.20)}
 .btn-gold:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(201,162,75,.34)}
 .btn-gold:active{transform:translateY(0)}
@@ -2510,7 +2511,7 @@ input::placeholder{color:var(--text3)}
 /* ── HERO ── */
 .acad-hero{margin-top:36px}
 .acad-hero-badge{font-family:'DM Mono',monospace; letter-spacing:.24em; color:var(--gold) !important; border:1px solid rgba(201,162,75,.35) !important; background:var(--gold3); border-radius:20px}
-.acad-hero h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(34px,5vw,54px); letter-spacing:-.022em; line-height:1.04}
+.acad-hero h1{font-family:'Clash Display',sans-serif; font-weight:700; font-size:clamp(34px,5vw,54px); letter-spacing:-.022em; line-height:1.04}
 .acad-hero h1 em{font-style:normal; background:var(--brass-grad); -webkit-background-clip:text; background-clip:text; color:transparent}
 .acad-hero h1::after{content:''; display:block; width:84px; height:3px; margin:16px auto 0; border-radius:3px; background:var(--brass-grad)}
 .acad-hero p{font-size:clamp(15px,1.6vw,17px); color:var(--text2); max-width:60ch; margin-inline:auto; line-height:1.65}
@@ -2553,18 +2554,18 @@ input::placeholder{color:var(--text3)}
 .coach-wrap{max-width:680px; margin:8px auto 40px; padding:0 4px}
 .coach-topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
 .coach-brandline{font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--text3)}
-.coach-share-btn{background:var(--gold3); border:1px solid rgba(201,162,75,.35); color:var(--gold); font-family:'Inter',sans-serif; font-weight:600; font-size:12.5px; padding:7px 14px; border-radius:9px; cursor:pointer; transition:all .2s var(--ease)}
+.coach-share-btn{background:var(--gold3); border:1px solid rgba(201,162,75,.35); color:var(--gold); font-family:'Satoshi',sans-serif; font-weight:600; font-size:12.5px; padding:7px 14px; border-radius:9px; cursor:pointer; transition:all .2s var(--ease)}
 .coach-share-btn:hover{background:rgba(201,162,75,.18); transform:translateY(-1px)}
 .coach-stage{min-height:300px}
 @media (prefers-reduced-motion: no-preference){ .coach-page{animation:coach-in .4s var(--ease) both} @keyframes coach-in{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}} }
 .coach-page-eyebrow{font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold)}
-.coach-page-title{font-family:'Space Grotesk',sans-serif; font-size:clamp(26px,4vw,34px); font-weight:700; letter-spacing:-.02em; margin:6px 0 16px; color:var(--text)}
+.coach-page-title{font-family:'Clash Display',sans-serif; font-size:clamp(26px,4vw,34px); font-weight:700; letter-spacing:-.02em; margin:6px 0 16px; color:var(--text)}
 .coach-verdict{font-size:17px; line-height:1.55; color:var(--text); margin:0 0 16px}
 .coach-verdict strong{color:var(--gold)}
 .coach-note{font-size:13.5px; line-height:1.6; color:var(--text2); margin:14px 0 0}
 .coach-recline{display:flex; gap:10px; margin:4px 0 6px}
 .coach-recline span{flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center; display:flex; flex-direction:column; gap:2px}
-.coach-recline b{font-family:'Space Grotesk',sans-serif; font-size:20px; color:var(--gold)}
+.coach-recline b{font-family:'Clash Display',sans-serif; font-size:20px; color:var(--gold)}
 .coach-recline i{font-style:normal; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3)}
 .coach-card{background:var(--bg2); border:1px solid var(--border); border-left:3px solid var(--border2); border-radius:12px; padding:14px 16px; margin-bottom:10px}
 .coach-card.cc-good{border-left-color:#5bbf7a}
@@ -2580,7 +2581,7 @@ input::placeholder{color:var(--text3)}
 .coach-plan-when{display:block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:4px}
 .coach-cta-btn{margin-top:8px}
 .coach-nav{display:flex; align-items:center; justify-content:space-between; margin-top:18px; gap:12px}
-.coach-navbtn{background:var(--bg3); border:1px solid var(--border2); color:var(--text2); font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px; padding:10px 18px; border-radius:10px; cursor:pointer; transition:all .2s var(--ease)}
+.coach-navbtn{background:var(--bg3); border:1px solid var(--border2); color:var(--text2); font-family:'Satoshi',sans-serif; font-weight:600; font-size:13.5px; padding:10px 18px; border-radius:10px; cursor:pointer; transition:all .2s var(--ease)}
 .coach-navbtn:hover:not(:disabled){border-color:var(--gold); color:var(--gold); transform:translateY(-1px)}
 .coach-navbtn:disabled{opacity:.35; cursor:default}
 .coach-next{background:var(--brass-grad); color:#1c1505; border-color:transparent}
@@ -2618,7 +2619,7 @@ input::placeholder{color:var(--text3)}
 .gai-card{background:linear-gradient(180deg, rgba(201,162,75,.06), var(--bg2)); border:1px solid var(--border2); border-radius:16px; padding:16px; box-shadow:var(--shadow)}
 .gai-head{display:flex; align-items:center; gap:12px; margin-bottom:12px}
 .gai-avatar{width:42px; height:42px; border-radius:12px; background:var(--brass-grad); color:#1c1505; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; box-shadow:0 4px 14px rgba(201,162,75,.3)}
-.gai-name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; color:var(--text)}
+.gai-name{font-family:'Clash Display',sans-serif; font-weight:700; font-size:16px; color:var(--text)}
 .gai-status{font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; letter-spacing:.02em}
 .gai-log{display:flex; flex-direction:column; gap:9px; max-height:340px; overflow-y:auto; padding:6px 2px 4px}
 .gai-msg{font-size:14px; line-height:1.55; padding:10px 13px; border-radius:13px; max-width:90%}
@@ -2628,12 +2629,12 @@ input::placeholder{color:var(--text3)}
 .gai-user b{color:#1c1505}
 .gai-bot-name{display:block; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold); margin-bottom:3px; font-family:'DM Mono',monospace}
 .gai-chips{display:flex; flex-wrap:wrap; gap:7px; margin:12px 0}
-.gai-chip{background:var(--gold3); border:1px solid rgba(201,162,75,.3); color:var(--gold); font-size:12.5px; padding:7px 12px; border-radius:16px; cursor:pointer; font-family:'Inter',sans-serif; transition:all .18s var(--ease)}
+.gai-chip{background:var(--gold3); border:1px solid rgba(201,162,75,.3); color:var(--gold); font-size:12.5px; padding:7px 12px; border-radius:16px; cursor:pointer; font-family:'Satoshi',sans-serif; transition:all .18s var(--ease)}
 .gai-chip:hover{background:rgba(201,162,75,.18); transform:translateY(-1px)}
 .gai-inputrow{display:flex; gap:8px}
 .gai-input{flex:1; background:var(--bg3); border:1px solid var(--border2); border-radius:11px; padding:11px 14px; color:var(--text); font-size:14px}
 .gai-input:focus{border-color:var(--gold); outline:none; box-shadow:0 0 0 3px var(--gold3)}
-.gai-send{background:var(--brass-grad); color:#1c1505; border:none; border-radius:11px; padding:0 20px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Inter',sans-serif; transition:transform .15s var(--ease)}
+.gai-send{background:var(--brass-grad); color:#1c1505; border:none; border-radius:11px; padding:0 20px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Satoshi',sans-serif; transition:transform .15s var(--ease)}
 .gai-send:hover{transform:translateY(-1px)}
 /* ── Training plan ── */
 .plan-week{display:flex; flex-direction:column; gap:8px; margin-top:6px}
@@ -2644,7 +2645,7 @@ input::placeholder{color:var(--text3)}
 /* ── Trends ── */
 .trend-card{background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-bottom:10px}
 .trend-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:12px; gap:12px}
-.trend-now{font-family:'Space Grotesk',sans-serif; font-size:34px; font-weight:700; color:var(--gold); line-height:1}
+.trend-now{font-family:'Clash Display',sans-serif; font-size:34px; font-weight:700; color:var(--gold); line-height:1}
 .trend-sub{font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; font-family:'DM Mono',monospace}
 .trend-delta{font-family:'DM Mono',monospace; font-size:13px; font-weight:600; text-align:right}
 .trend-delta.up{color:#5bbf7a} .trend-delta.down{color:var(--red2)}
@@ -2655,7 +2656,7 @@ input::placeholder{color:var(--text3)}
 .trend-dot.td-w{background:#5bbf7a} .trend-dot.td-d{background:var(--text3)} .trend-dot.td-l{background:var(--red2)}
 /* ── What's bleeding your rating ── */
 .bleed-card{display:flex; gap:14px; background:var(--bg2); border:1px solid var(--border); border-left:3px solid var(--red2); border-radius:13px; padding:15px 16px; margin-bottom:10px}
-.bleed-rank{flex-shrink:0; font-family:'Space Grotesk',sans-serif; font-size:22px; font-weight:700; color:var(--red2); width:38px}
+.bleed-rank{flex-shrink:0; font-family:'Clash Display',sans-serif; font-size:22px; font-weight:700; color:var(--red2); width:38px}
 .bleed-prob{font-size:15px; color:var(--text); line-height:1.5; margin-bottom:8px}
 .bleed-fix{font-size:14px; color:var(--text2); line-height:1.6}
 .bleed-fix-h{display:inline-block; font-family:'DM Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#1c1505; background:var(--brass-grad); padding:2px 8px; border-radius:6px; margin-right:6px; vertical-align:middle}
@@ -2672,7 +2673,7 @@ button.rep-node:hover{border-color:var(--gold); color:var(--gold); transform:tra
 .rep-children > .rep-row::before{content:''; position:absolute; left:-18px; top:50%; width:18px; height:2px; background:var(--border2)}
 .rep-empty{color:var(--text3); font-size:13px; line-height:1.5; padding:8px 2px}
 /* site credit (Cburnett piece attribution) */
-.site-credit{text-align:center; font-size:11px; color:var(--text3); padding:22px 16px; border-top:1px solid var(--border); font-family:'Inter',sans-serif; position:relative; z-index:1}
+.site-credit{text-align:center; font-size:11px; color:var(--text3); padding:22px 16px; border-top:1px solid var(--border); font-family:'Satoshi',sans-serif; position:relative; z-index:1}
 .site-credit a{color:var(--text2); text-decoration:none; border-bottom:1px dotted var(--border3)}
 .site-credit a:hover{color:var(--gold)}
 
@@ -2696,14 +2697,14 @@ button.rep-node:hover{border-color:var(--gold); color:var(--gold); transform:tra
   --shadow-glow:0 0 0 1px rgba(212,175,55,.30), 0 16px 50px rgba(212,175,55,.16);
   --ease:cubic-bezier(.22,1,.36,1);
 }
-body{ background:#070a18 !important; color:var(--text); font-family:'Manrope','Inter',sans-serif }
+body{ background:#070a18 !important; color:var(--text); font-family:'Satoshi','Satoshi',sans-serif }
 body::before{ display:none !important }   /* drop the old brass grid/vignette */
-h1,h2,h3,.nav-logo,.space-hero h1,.acad-hero h1,.acad-cc-name,.acad-course-title,.coach-page-title,.gai-name,.trend-now,.op-title{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif !important }
+h1,h2,h3,.nav-logo,.space-hero h1,.acad-hero h1,.acad-cc-name,.acad-course-title,.coach-page-title,.gai-name,.trend-now,.op-title{ font-family:'Clash Display','Clash Display',sans-serif !important }
 .nav,.section,.page-wrap,.acad-wrap,.explorer-layout{ position:relative; z-index:1 }
 
 /* ── NAV — floats over the cosmos ── */
 .nav{ background:rgba(8,11,26,.66) !important; -webkit-backdrop-filter:blur(14px) saturate(1.2); backdrop-filter:blur(14px) saturate(1.2); border-bottom:1px solid var(--border) !important; box-shadow:0 1px 0 rgba(212,175,55,.10), 0 10px 34px rgba(0,0,0,.4) }
-.nav-logo{ background:none !important; -webkit-text-fill-color:var(--text) !important; color:var(--text) !important; font-family:'Space Grotesk',sans-serif; font-weight:700; letter-spacing:.04em }
+.nav-logo{ background:none !important; -webkit-text-fill-color:var(--text) !important; color:var(--text) !important; font-family:'Clash Display',sans-serif; font-weight:700; letter-spacing:.04em }
 .nav-logo small{ color:var(--gold) !important; -webkit-text-fill-color:var(--gold) }
 .nav-tab::after{ background:var(--gold) !important }
 .nav-tab.active{ color:var(--gold) }
@@ -2759,7 +2760,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 /* ════ ASTRONAUTS-PLAYING-CHESS HERO (signature) ════ */
 .space-hero{ position:relative; z-index:1; max-width:1100px; margin:18px auto 4px; padding:8px 24px 0; text-align:center }
 .space-hero-art{ width:min(440px,82vw); height:auto; display:block; margin:0 auto; filter:drop-shadow(0 18px 40px rgba(0,0,0,.5)) }
-.space-hero h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,5vw,52px); letter-spacing:-.02em; line-height:1.04; margin:6px 0 8px; color:var(--text); text-wrap:balance }
+.space-hero h1{ font-family:'Clash Display',sans-serif; font-weight:700; font-size:clamp(30px,5vw,52px); letter-spacing:-.02em; line-height:1.04; margin:6px 0 8px; color:var(--text); text-wrap:balance }
 .space-hero h1 b{ color:var(--gold); font-weight:700 }
 .space-hero p{ font-size:clamp(14px,1.6vw,17px); color:var(--text2); max-width:56ch; margin:0 auto; line-height:1.6; text-wrap:pretty }
 .space-hero-cta{ display:inline-flex; gap:10px; margin-top:16px; flex-wrap:wrap; justify-content:center }
@@ -2852,7 +2853,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
   border:1px solid var(--ob-line); border-radius:14px; padding:16px 16px 8px; margin-bottom:12px;
   box-shadow:0 16px 38px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,225,170,.06);
 }
-#sec-review .rvr-title{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif; font-size:15px; font-weight:700; letter-spacing:.01em; color:var(--ob-tx); display:flex; align-items:center; gap:9px; }
+#sec-review .rvr-title{ font-family:'Clash Display','Clash Display',sans-serif; font-size:15px; font-weight:700; letter-spacing:.01em; color:var(--ob-tx); display:flex; align-items:center; gap:9px; }
 #sec-review .rvr-title::before{ content:''; width:7px; height:7px; border-radius:2px; background:var(--ob-brass); box-shadow:0 0 10px var(--ob-brass); }
 #sec-review .rvr-elo{ display:flex; align-items:stretch; gap:10px; margin:13px 0 6px; }
 #sec-review .rvr-elo-cell{ flex:1; text-align:center; padding:11px 6px; background:rgba(217,164,65,.06); border:1px solid var(--ob-line); border-radius:11px; }
@@ -2889,7 +2890,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .mdb-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
 #sec-review .mdb-badge{ width:34px; height:34px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; font-family:var(--ob-mono); font-weight:800; font-size:15px; color:#1a1206; font-style:normal; box-shadow:0 3px 10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.3); flex:none; }
 #sec-review .mdb-head-main{ flex:1; min-width:0; }
-#sec-review .mdb-head-label{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif; font-size:18px; font-weight:700; line-height:1.1; }
+#sec-review .mdb-head-label{ font-family:'Clash Display','Clash Display',sans-serif; font-size:18px; font-weight:700; line-height:1.1; }
 #sec-review .mdb-head-move{ font-family:var(--ob-mono); font-size:13px; color:var(--ob-tx2); margin-top:1px; }
 #sec-review .mdb-head-eval{ text-align:right; flex:none; }
 #sec-review .mdb-eval-n{ font-family:var(--ob-mono); font-size:19px; font-weight:600; color:var(--ob-brass-2); font-variant-numeric:tabular-nums; }
@@ -2920,7 +2921,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .rv-avatar.b{ box-shadow:0 0 0 1.5px rgba(140,116,70,.75); }
 #sec-review .rv-avatar-i{ font-family:var(--ob-mono); font-weight:700; font-size:12px; color:var(--ob-brass-2); }
 #sec-review .rv-avatar img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0; transition:opacity .3s var(--ease); }
-#sec-review .rv-player-name{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif; font-weight:700; font-size:14px; color:var(--ob-tx); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:170px; }
+#sec-review .rv-player-name{ font-family:'Clash Display','Clash Display',sans-serif; font-weight:700; font-size:14px; color:var(--ob-tx); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:170px; }
 #sec-review .rv-player-elo{ font-family:var(--ob-mono); font-size:11px; color:var(--ob-tx3); }
 #sec-review .rv-player-caps{ display:inline-flex; align-items:center; min-height:16px; }
 #sec-review .rv-clock{ font-family:var(--ob-mono); font-size:18px; font-weight:600; color:var(--ob-tx); background:rgba(8,6,3,.6); border:1px solid var(--ob-line); border-radius:8px; padding:3px 12px; font-variant-numeric:tabular-nums; flex:none; letter-spacing:.02em; transition:color .25s var(--ease), border-color .25s var(--ease); }
@@ -2978,7 +2979,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
   --ease:cubic-bezier(.22,1,.36,1); --arrow:#ef9d2b;
 }
 html,body{ background:#0a0a0b !important; color:var(--text); }
-body{ font-family:'Inter','Manrope',sans-serif; }
+body{ font-family:'Satoshi','Satoshi',sans-serif; }
 /* kill the cosmic space backdrop — replace with a clean near-black field + faint top glow */
 #cosmos{ display:none !important; }
 body::before{
@@ -2990,7 +2991,7 @@ body::before{
 
 /* ── Display type: clean bold grotesque ── */
 h1,h2,h3,.nav-logo,.space-hero h1,.qz-hero h2,.quiz-hero h2{
-  font-family:'Outfit','Space Grotesk',sans-serif !important;
+  font-family:'Clash Display','Clash Display',sans-serif !important;
   letter-spacing:-.02em; font-weight:800;
 }
 
@@ -3012,7 +3013,7 @@ body{ padding-top:90px; }
 .nav-tabs{ display:flex; align-items:center; gap:2px; margin:0 !important; }
 .nav-tab{
   background:transparent !important; border:none !important;
-  color:var(--text2) !important; font-family:'Inter',sans-serif !important; font-weight:500 !important;
+  color:var(--text2) !important; font-family:'Satoshi',sans-serif !important; font-weight:500 !important;
   font-size:13.5px !important; padding:8px 15px !important; border-radius:999px !important;
   transition:color .2s var(--ease), background .2s var(--ease); white-space:nowrap; cursor:pointer;
 }
@@ -3048,7 +3049,7 @@ body{ padding-top:90px; }
 /* ── Cinematic monochrome hero (Opening Academy) ── */
 .chess-hero{ position:relative; max-width:1080px; margin:6px auto 0; padding:30px 24px 0; text-align:center; }
 .chess-hero-king{ width:48px; height:48px; margin:0 auto 16px; display:block; filter:drop-shadow(0 6px 18px rgba(212,175,55,.45)); animation:chKing 1s var(--ease) both; }
-.chess-hero h1{ font-family:'Outfit',sans-serif !important; font-weight:800 !important; font-size:clamp(38px,7vw,84px); line-height:1.02; letter-spacing:-.035em; color:#fff !important; margin:0; text-wrap:balance; }
+.chess-hero h1{ font-family:'Clash Display',sans-serif !important; font-weight:800 !important; font-size:clamp(38px,7vw,84px); line-height:1.02; letter-spacing:-.035em; color:#fff !important; margin:0; text-wrap:balance; }
 .chess-hero h1 .ch-gold{ color:var(--gold) !important; }
 .chess-hero p{ font-size:clamp(15px,1.7vw,18px); color:var(--text2); max-width:62ch; margin:18px auto 0; line-height:1.6; text-wrap:pretty; }
 .chess-hero-cta{ display:inline-flex; align-items:center; gap:12px; margin-top:26px; flex-wrap:wrap; justify-content:center; }
@@ -3089,17 +3090,61 @@ body{ padding-top:90px; }
 #sec-review .btn-gold{ background:#fff !important; color:#0a0a0b !important; box-shadow:0 6px 20px rgba(0,0,0,.45) !important; }
 #sec-review .btn-gold:hover{ background:#ececef !important; }
 
+/* ════════════ PREMIUM ICONS + ALIVE MOTION ════════════ */
+.ic{ display:inline-flex; align-items:center; justify-content:center; width:1.06em; height:1.06em; vertical-align:-0.16em; flex:none; line-height:0; }
+.ic svg{ width:100%; height:100%; display:block; }
+.ic-logo{ width:1.4em; height:1.4em; vertical-align:-0.3em; }
+.btn .ic, .nav-tab .ic{ margin-right:.1em; }
+
+@media (prefers-reduced-motion: no-preference){
+  /* card hover lift */
+  .acad-course-card, .opr-game-item, .qz-opening-card, .da-stat-card, .acad-cc-card,
+  .cc-mode-card, .quiz-mode-card, .lsc-card, .stage-card, .train-mode, .mode-card, .opening-card{
+    transition: transform .22s var(--ease), box-shadow .22s var(--ease), border-color .22s var(--ease);
+  }
+  .acad-course-card:hover, .opr-game-item:hover, .qz-opening-card:hover, .da-stat-card:hover,
+  .acad-cc-card:hover, .cc-mode-card:hover, .quiz-mode-card:hover, .lsc-card:hover,
+  .stage-card:hover, .train-mode:hover, .mode-card:hover, .opening-card:hover{
+    transform: translateY(-3px); box-shadow:0 16px 40px rgba(0,0,0,.5); border-color: var(--gold);
+  }
+  /* icon micro-interactions */
+  .ic{ transition: transform .2s var(--ease); }
+  .nav-tab:hover .ic{ transform: scale(1.14) rotate(-5deg); }
+  .btn:hover .ic{ transform: translateX(2px); }
+  /* ambient gold pulse on the brand mark */
+  .ic-logo svg{ animation: gbGlow 3.6s ease-in-out infinite; transform-origin:center; }
+  @keyframes gbGlow{ 0%,100%{ filter:drop-shadow(0 2px 8px rgba(212,175,55,.4)) } 50%{ filter:drop-shadow(0 4px 18px rgba(212,175,55,.75)) } }
+  /* buttons subtle press depth */
+  .btn:active{ transform: translateY(1px); }
+}
+
+/* ════════════ PREMIUM REPERTOIRE / TREE VISUALIZATION ════════════ */
+.rep-node{ border-radius:9px !important; box-shadow:0 2px 8px rgba(0,0,0,.32); }
+.rep-node.rep-cur{ box-shadow:0 4px 18px rgba(212,175,55,.42); }
+.cc-tree-mv.cur{ box-shadow:0 0 0 1px var(--gold), 0 2px 10px rgba(212,175,55,.3); }
+@media (prefers-reduced-motion: no-preference){
+  .rep-node{ animation: repPop .42s var(--ease) both; }
+  @keyframes repPop{ from{ opacity:0; transform:translateY(7px) scale(.95) } to{ opacity:1; transform:none } }
+  .tmap-node{ animation: tmapIn .5s var(--ease) both; }
+  @keyframes tmapIn{ from{ opacity:0 } to{ opacity:1 } }
+  .tmap-node.is-current .tmap-node-rect{ filter: drop-shadow(0 0 6px rgba(212,175,55,.65)); }
+  .tmap-edge.on-path{ stroke-dasharray: 6 5; animation: tmapFlow 1.3s linear infinite; }
+  @keyframes tmapFlow{ to{ stroke-dashoffset:-22 } }
+  .path-node-circle{ transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+  .path-node:hover .path-node-circle{ transform: scale(1.08); box-shadow:0 4px 14px rgba(212,175,55,.35); }
+}
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo">♟ Gambit <small>Chess Academy</small> <span class="version-badge">v8.6 BOARD</span></div>
+  <div class="nav-logo"><span class="ic ic-logo"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span> Gambit <small>Chess Academy</small> <span class="version-badge">v8.6 BOARD</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showSection('academy')">🎓 Opening Academy</button>
-    <button class="nav-tab" onclick="showSection('creator')">🛠️ Course Creator</button>
-    <button class="nav-tab" onclick="showSection('review')">🔬 Game Review</button>
+    <button class="nav-tab active" onclick="showSection('academy')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Opening Academy</button>
+    <button class="nav-tab" onclick="showSection('creator')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span> Course Creator</button>
+    <button class="nav-tab" onclick="showSection('review')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span> Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
 </nav>
@@ -3183,8 +3228,8 @@ body{ padding-top:90px; }
           </div>
 
           <div class="expl-actions">
-            <button class="btn btn-gold" onclick="explSave()" id="expl-save-btn">💾 Save</button>
-            <button class="nop-mini-btn" onclick="explReviewFromWorkspace()" id="expl-review-btn" style="display:none">👁 Review</button>
+            <button class="btn btn-gold" onclick="explSave()" id="expl-save-btn"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg></span> Save</button>
+            <button class="nop-mini-btn" onclick="explReviewFromWorkspace()" id="expl-review-btn" style="display:none"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg></span> Review</button>
           </div>
           <div class="expl-save-note" id="expl-save-note"></div>
         </div>
@@ -3199,7 +3244,7 @@ body{ padding-top:90px; }
     <div class="expl-ws-top">
       <button class="nop-back" onclick="explBackHome()" style="margin:0">← Repertoire</button>
       <div class="expl-train-title" id="rev-title"></div>
-      <button class="nop-mini-btn" onclick="revContinueExploring()">✏️ Continue &amp; save new ideas</button>
+      <button class="nop-mini-btn" onclick="revContinueExploring()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 6.81a1 1 0 0 0-3.98-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></svg></span> Continue &amp; save new ideas</button>
     </div>
     <div class="expl-detect" id="rev-detect" style="min-height:50px">
       <div class="expl-detect-name" id="rev-name" style="font-size:22px"></div>
@@ -3273,14 +3318,14 @@ body{ padding-top:90px; }
         <h1>Chess <em>Openings</em> Library</h1>
         <p>A curated set of deep, real opening lines — every move explained, the most popular replies shown at each step, plus drills to lock it in.</p>
         <div class="op-clean-search">
-          <input id="ol-search" placeholder="🔍  Search openings, variations, ideas (e.g. Sicilian, fianchetto, attack)…" oninput="olSearch(this.value)" autocomplete="off">
+          <input id="ol-search" placeholder="Search openings, variations, ideas (e.g. Sicilian, fianchetto, attack)…" oninput="olSearch(this.value)" autocomplete="off">
         </div>
         <div class="ol-filters" id="ol-filters">
           <button class="ol-filter active" data-f="all" onclick="olSetFilter('all')">All</button>
-          <button class="ol-filter" data-f="aggressive" onclick="olSetFilter('aggressive')">⚔️ Aggressive</button>
+          <button class="ol-filter" data-f="aggressive" onclick="olSetFilter('aggressive')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span> Aggressive</button>
           <button class="ol-filter" data-f="positional" onclick="olSetFilter('positional')">♟ Positional</button>
-          <button class="ol-filter" data-f="gambit" onclick="olSetFilter('gambit')">🔥 Gambit</button>
-          <button class="ol-filter" data-f="solid" onclick="olSetFilter('solid')">🛡 Solid</button>
+          <button class="ol-filter" data-f="gambit" onclick="olSetFilter('gambit')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span> Gambit</button>
+          <button class="ol-filter" data-f="solid" onclick="olSetFilter('solid')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span> Solid</button>
         </div>
       </div>
       <div id="ol-grid"></div>
@@ -3361,7 +3406,7 @@ body{ padding-top:90px; }
 <div id="sec-review" class="section">
   <div class="page-wrap">
     <div id="rv-input">
-      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:22px;margin-bottom:6px">Stockfish <em style="color:var(--gold)">Game Review</em></h2>
+      <h2 style="font-family:'Clash Display',sans-serif;font-size:22px;margin-bottom:6px">Stockfish <em style="color:var(--gold)">Game Review</em></h2>
       <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">Load your game history, pick a game, and get full Stockfish-powered move-by-move analysis with brilliant moves, mistakes, and best alternatives.</p>
       <div class="card" style="max-width:540px;margin-bottom:20px">
         <div class="platform-tabs">
@@ -3386,7 +3431,7 @@ body{ padding-top:90px; }
         <div>
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
             <div>
-              <div id="rv-players" style="font-family:'Space Grotesk',sans-serif;font-size:17px"></div>
+              <div id="rv-players" style="font-family:'Clash Display',sans-serif;font-size:17px"></div>
               <div id="rv-opening" style="font-size:12px;color:var(--text2);margin-top:2px"></div>
             </div>
             <div id="rv-result" style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--gold)"></div>
@@ -3416,7 +3461,7 @@ body{ padding-top:90px; }
             <button class="btn btn-outline btn-sm" onclick="rvPrev()">← Back</button>
             <button class="btn btn-outline btn-sm" onclick="rvNext()">Next →</button>
             <button class="btn btn-outline btn-sm" onclick="rvEnd()" title="Jump to the final position">End ⇥</button>
-            <button class="btn btn-gold btn-sm" onclick="rvSee()" title="Jump to the key moments — brilliancies, blunders, mistakes and misses">⚡ See key moments</button>
+            <button class="btn btn-gold btn-sm" onclick="rvSee()" title="Jump to the key moments — brilliancies, blunders, mistakes and misses"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></span> See key moments</button>
             <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
@@ -3450,7 +3495,7 @@ body{ padding-top:90px; }
       <h2>Opening Theory <em style="color:var(--gold);font-style:normal">Trainer</em></h2>
       <p>Pick an opening below to drill its theory. You'll get positions from all the main variations — keep playing until you've internalised the moves. Your progress is saved per opening.</p>
       <div style="margin-top:18px">
-        <input type="text" class="qz-search" id="qz-search" placeholder="🔍  Search openings (e.g. Sicilian, Ruy, King's Indian)…" oninput="filterQuizOpenings()" autocomplete="off">
+        <input type="text" class="qz-search" id="qz-search" placeholder="Search openings (e.g. Sicilian, Ruy, King's Indian)…" oninput="filterQuizOpenings()" autocomplete="off">
       </div>
       <div id="qz-opening-grid" class="qz-opening-grid"></div>
     </div>
@@ -3477,7 +3522,7 @@ body{ padding-top:90px; }
             </div>
             <div class="board-files" id="board-files-q"></div>
           </div>
-          <div id="qq-turn-banner" style="margin-top:10px;padding:8px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:5px;text-align:center;font-size:13px;color:var(--text);font-family:'Inter',sans-serif"></div>
+          <div id="qq-turn-banner" style="margin-top:10px;padding:8px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:5px;text-align:center;font-size:13px;color:var(--text);font-family:'Satoshi',sans-serif"></div>
           <div style="margin-top:8px;text-align:center"><button class="btn btn-outline btn-sm" onclick="flipBoard('board-q')" title="Flip board">⇅ Flip board</button></div>
         </div>
 
@@ -3502,7 +3547,7 @@ body{ padding-top:90px; }
   <div id="quiz-result" style="display:none">
     <div class="quiz-active">
       <div class="quiz-result-screen">
-        <div class="qr-emoji" id="qr-emoji">🎯</div>
+        <div class="qr-emoji" id="qr-emoji"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div>
         <div class="qr-title" id="qr-title">Session complete</div>
         <div class="qr-score"><span id="qr-correct">0</span> / <span id="qr-total">0</span></div>
         <div class="qr-message" id="qr-message"></div>
@@ -8986,7 +9031,7 @@ window.loadOpening = function(id){
   // Hide quiz-actions in header (kept for backwards compat but no longer used in this UI)
   const quizActions = document.getElementById('od-quiz-actions');
   if(quizActions){
-    quizActions.innerHTML = `<button class="btn btn-gold" onclick="startLearnOpening('${id}')">🎓 Learn this opening</button>`;
+    quizActions.innerHTML = `<button class="btn btn-gold" onclick="startLearnOpening('${id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Learn this opening</button>`;
   }
   // Hide the completion banner initially — it will appear when user finishes moves
   const completionEl = document.getElementById('od-completion');
@@ -9074,7 +9119,7 @@ function updateCompletionBanner(){
     html_btns += `<button class="btn btn-gold btn-sm" onclick="launchOpeningQuiz('${id}','variations')">▶ Drill ${varCount} variation${varCount===1?'':'s'} (move-by-move)</button>`;
   }
   if(hasBank){
-    html_btns += `<button class="btn btn-outline btn-sm" onclick="launchOpeningQuiz('${id}','single')">🎯 Quiz ${bankSize} positions — all variations mixed</button>`;
+    html_btns += `<button class="btn btn-outline btn-sm" onclick="launchOpeningQuiz('${id}','single')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Quiz ${bankSize} positions — all variations mixed</button>`;
   }
   if(!hasBank && !hasVar){
     html_btns = `<span style="font-size:12px;color:var(--text3)">No quiz available for this opening yet.</span>`;
@@ -9514,7 +9559,7 @@ window.runAnalysis = async function(){
     }
     renderAnalysis(games, username, out);
   } catch(e){
-    out.innerHTML = `<div class="page-wrap"><div class="error-box">⚠️ Error: ${e.message}</div></div>`;
+    out.innerHTML = `<div class="page-wrap"><div class="error-box">⚠ Error: ${e.message}</div></div>`;
   }
   btn.disabled = false;
 };
@@ -9884,7 +9929,7 @@ function renderEndgameRecs(stats){
   };
 
   let html_out = `<div class="endgame-recs" style="margin-top:24px">
-    <div class="rec-section-title" style="font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">📐 Endgames to Study</div>`;
+    <div class="rec-section-title" style="font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/></svg></span> Endgames to Study</div>`;
 
   types.slice(0, 5).forEach(([key, s]) => {
     const wr = s.games > 0 ? Math.round((s.wins + s.draws * 0.5) / s.games * 100) : 0;
@@ -10576,14 +10621,14 @@ function renderAnalysis(games, username, out){
     ${(function(){
       const { recs, topStyle } = buildRecommendations(fp, Object.keys(opStats));
       const styleRows = [
-        ['Aggressive openings', fp.attackWinRate, fp.attackTotal, '⚔'],
-        ['Sharp tactical', fp.sharpWinRate, fp.sharpTotal, '⚡'],
-        ['Solid positional', fp.solidWinRate, fp.solidTotal, '🛡'],
+        ['Aggressive openings', fp.attackWinRate, fp.attackTotal, '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>'],
+        ['Sharp tactical', fp.sharpWinRate, fp.sharpTotal, '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></span>'],
+        ['Solid positional', fp.solidWinRate, fp.solidTotal, '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>'],
         ['Classical positional', fp.positionalWinRate, fp.positionalTotal, '♔'],
       ].filter(r => r[1] !== null);
 
       return `
-      <div class="section-label">Style Fingerprint 🎨</div>
+      <div class="section-label">Style Fingerprint <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/></svg></span></div>
       <div class="style-card">
         ${topStyle ? `<div class="style-banner">Your strongest style: <strong>${topStyle}</strong></div>` : ''}
         <div class="style-grid">
@@ -10607,7 +10652,7 @@ function renderAnalysis(games, username, out){
       </div>
 
       ${recs.length > 0 ? `
-      <div class="section-label" style="margin-top:20px">Recommendations for you 💡</div>
+      <div class="section-label" style="margin-top:20px">Recommendations for you <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span></div>
       <div class="rec-grid">
         ${recs.map(r => `
           <div class="rec-card ${r.category}">
@@ -10616,7 +10661,7 @@ function renderAnalysis(games, username, out){
           </div>`).join('')}
       </div>` : ''}
 
-      <div class="section-label" style="margin-top:20px">Deep Analysis 🔬</div>
+      <div class="section-label" style="margin-top:20px">Deep Analysis <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span></div>
       <div class="deep-analysis-card">
         <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6">
           Run Stockfish over every game move-by-move to find your most common mistakes, blunders, and missed tactics.
@@ -10646,11 +10691,11 @@ function renderAnalysis(games, username, out){
         ${renderPerfGameList(o.games)}
       </div>`).join('')}
 
-    <div class="section-label" style="margin-top:20px">Openings to improve ⚠️</div>
+    <div class="section-label" style="margin-top:20px">Openings to improve ⚠</div>
     ${weak.length === 0 ? '<p style="font-size:13px;color:var(--text3);margin-bottom:16px">Good news — no obvious weak openings in your repertoire!</p>' :
       weak.map((o, i) => `
       <div class="op-perf-row" onclick="toggleOpeningGames('weak-${i}')" id="row-weak-${i}">
-        <div class="opr-signal">${o.winPct < 35 ? '❌' : '⚠️'}</div>
+        <div class="opr-signal">${o.winPct < 35 ? '❌' : '⚠'}</div>
         <div class="opr-name">${o.name} <span style="font-size:11px;color:var(--text3)">${o.eco}</span></div>
         <div class="opr-bar-wrap">
           <div class="opr-bar"><div class="opr-fill fill-${o.winPct < 35 ? 'r' : 'y'}" style="width:${o.winPct}%"></div></div>
@@ -10669,12 +10714,12 @@ function renderAnalysis(games, username, out){
     ${weak.slice(0,3).map(o => `
     <div class="improve-card">
       <div class="ic-top">
-        <div class="ic-icon">🎯</div>
+        <div class="ic-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div>
         <div class="ic-title">${o.name} — needs work</div>
         <div class="ic-stat" style="color:${o.winPct < 35 ? 'var(--red3)' : 'var(--inaccuracy)'}">${o.winPct}%</div>
       </div>
       <div class="ic-desc">You've played the <strong>${o.name}</strong> ${o.total} times with a ${o.winPct}% win rate (${o.w} wins, ${o.d} draws, ${o.l} losses). This is significantly below your average win rate of ${winPct}%. Key areas to study: move order, key middlegame plans, and common tactical patterns.</div>
-      <div class="ic-tip">💡 Go to the Opening Explorer and study the main line and key variations for the ${o.name}. Focus on the strategic ideas — not just memorising moves.</div>
+      <div class="ic-tip"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span> Go to the Opening Explorer and study the main line and key variations for the ${o.name}. Focus on the strategic ideas — not just memorising moves.</div>
       <div style="margin-top:10px;display:flex;gap:8px">
         <button class="btn btn-outline btn-sm" onclick="goStudy('${o.name}')">Open in Explorer ↗</button>
         <button class="btn btn-outline btn-sm" onclick="goReview('${o.name}')">Review a game with this opening ↗</button>
@@ -10920,7 +10965,7 @@ async function analyseGame(white, black, username){
   const detailEl = document.getElementById('rv-detail');
   detailEl.innerHTML = `
     <div style="text-align:center;padding:20px">
-      <div style="font-size:13px;color:var(--text2);margin-bottom:12px">🔬 Stockfish 18 analysing ${total} positions…</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span> Stockfish 18 analysing ${total} positions…</div>
       <div style="background:var(--bg4);border-radius:4px;height:6px;overflow:hidden;max-width:300px;margin:0 auto">
         <div id="sf-progress" style="height:100%;background:var(--gold);border-radius:4px;width:0%;transition:width .3s"></div>
       </div>
@@ -11482,7 +11527,7 @@ function renderMoveList(){
   // Chess.com-style icons + badge classes for every classification
   const annSym = {
     brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
-    book:'📖', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'
+    book:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'
   };
   const annClass = {
     brilliant:'ann-brill', great:'ann-great', best:'ann-best', excellent:'ann-excel',
@@ -11699,7 +11744,7 @@ window.selectReviewMove = function(idx){
           const lessonEl = document.getElementById(lessonId);
           if(!lessonEl) return;
           const heuristicHTML = lessonEl.innerHTML;
-          lessonEl.insertAdjacentHTML('afterbegin', '<div style="font-size:12px;color:#7bb4e0;font-style:italic;margin-bottom:8px">🤖 Asking Claude to analyse this position…</div>');
+          lessonEl.insertAdjacentHTML('afterbegin', '<div style="font-size:12px;color:#7bb4e0;font-style:italic;margin-bottom:8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> Asking Claude to analyse this position…</div>');
           const ctx = {
             fen: ann.fenBefore,
             played: ann.san || mv.san,
@@ -12129,7 +12174,7 @@ function renderReviewBoard(){
     // Badge on destination square
     if(displayedAnn && displayedMove.to){
       const sym = {brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
-                   book:'📖', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'}[displayedAnn];
+                   book:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'}[displayedAnn];
       const cls = {brilliant:'mcb-brill', great:'mcb-great', best:'mcb-best', excellent:'mcb-excel',
                    good:'mcb-good', book:'mcb-book', inaccuracy:'mcb-inacc',
                    mistake:'mcb-mist', blunder:'mcb-blun', miss:'mcb-miss'}[displayedAnn];
@@ -12200,7 +12245,7 @@ function drawMoveClassificationBadge(idx){
   if(!ann || !mv || !mv.to) return;
   const sym = {
     brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
-    book:'📖', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'
+    book:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'
   }[ann.ann];
   if(!sym) return;
   const cls = {
@@ -12378,7 +12423,7 @@ function renderUserVariationPanel(){
   };
 
   const sym = {brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
-               book:'📖', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'};
+               book:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'};
   const cls = {brilliant:'mcb-brill', great:'mcb-great', best:'mcb-best', excellent:'mcb-excel',
                good:'mcb-good', book:'mcb-book', inaccuracy:'mcb-inacc',
                mistake:'mcb-mist', blunder:'mcb-blun', miss:'mcb-miss'};
@@ -15733,19 +15778,19 @@ function showQuizResult(complete){
 
   let emoji, title, msg;
   if(complete && masteredCount === bank.length){
-    emoji = '🏆'; title = `${quizOpeningName} mastered!`;
+    emoji = '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>'; title = `${quizOpeningName} mastered!`;
     msg = "You've correctly answered every question in this opening's training bank. You can keep doing review sessions to maintain your knowledge, or pick another opening to study.";
   } else if(pct === 100 && total >= 5){
-    emoji = '🌟'; title = 'Strong session!';
+    emoji = '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.94 14.32a1 1 0 0 0-.66-.66l-6.5-1.93a.5.5 0 0 1 0-.96l6.5-1.93a1 1 0 0 0 .66-.66l1.93-6.5a.5.5 0 0 1 .96 0l1.93 6.5a1 1 0 0 0 .66.66l6.5 1.93a.5.5 0 0 1 0 .96l-6.5 1.93a1 1 0 0 0-.66.66l-1.93 6.5a.5.5 0 0 1-.96 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg></span>'; title = 'Strong session!';
     msg = `You went ${correct}-for-${correct} in this session. Keep training to master all ${bank.length} positions in the ${quizOpeningName}.`;
   } else if(pct >= 70){
-    emoji = '👍'; title = 'Good session';
+    emoji = '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg></span>'; title = 'Good session';
     msg = `You correctly answered ${correct} of ${total} positions. Currently ${masteredCount}/${bank.length} mastered in the ${quizOpeningName}.`;
   } else if(pct >= 40){
-    emoji = '📚'; title = 'Keep training';
+    emoji = '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span>'; title = 'Keep training';
     msg = `${correct}/${total} this session. Mistakes are how you learn — each wrong answer is a position you now understand better.`;
   } else {
-    emoji = '💪'; title = 'Slow and steady';
+    emoji = '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>'; title = 'Slow and steady';
     msg = `${correct}/${total} this session. The ${quizOpeningName} is rich — study its main lines in the Openings tab, then come back here to test yourself.`;
   }
   document.getElementById('qr-emoji').textContent = emoji;
@@ -15844,7 +15889,7 @@ window.runDeepAnalysis = async function(){
   const button = document.getElementById('run-deep-btn');
   const resultEl = document.getElementById('deep-analysis-result');
   button.disabled = true;
-  button.textContent = '⏳ Running deep analysis on last 50 games... please keep this tab open';
+  button.textContent = '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg></span> Running deep analysis on last 50 games... please keep this tab open';
 
   // Reset state
   lastAnalysisMistakes = [];
@@ -16070,7 +16115,7 @@ window.runDeepAnalysis = async function(){
       <div class="da-stat-card"><div class="das-num">${accuracy}%</div><div class="das-label">Accuracy</div></div>
     </div>
 
-    <div class="section-label" style="margin:14px 0 8px">🎯 Top Weaknesses</div>
+    <div class="section-label" style="margin:14px 0 8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Top Weaknesses</div>
     <div class="weaknesses-list">
       ${weaknesses.length === 0
         ? `<div style="font-size:13px;color:var(--text3);padding:10px">Great session! No major weakness patterns detected — keep playing and reviewing.</div>`
@@ -16092,7 +16137,7 @@ window.runDeepAnalysis = async function(){
     </div>
 
     ${opRows.length > 0 ? `
-    <div class="section-label" style="margin:14px 0 8px">📚 Mistakes by Opening</div>
+    <div class="section-label" style="margin:14px 0 8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span> Mistakes by Opening</div>
     <div class="da-mistake-list">
       ${opRows.map(o => `
         <div class="da-mistake-row">
@@ -16678,7 +16723,7 @@ async function analyzeMistakeCandidates(idx, ex){
 
   const panel = document.getElementById(`we-candidates-${idx}`);
   if(!panel) return;
-  panel.innerHTML = '<div style="font-size:12px;color:var(--text3);font-style:italic;padding:8px">🔍 Asking Stockfish for the top candidate moves at depth 20…</div>';
+  panel.innerHTML = '<div style="font-size:12px;color:var(--text3);font-style:italic;padding:8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span> Asking Stockfish for the top candidate moves at depth 20…</div>';
 
   let result;
   try {
@@ -16714,7 +16759,7 @@ async function analyzeMistakeCandidates(idx, ex){
   const bestScore = top[0].score;
 
   let html = '<div class="candidates-panel">';
-  html += `<div class="candidates-header">🔎 Stockfish considered <strong>${top.length}</strong> candidate moves at depth ${result.depth || 15}:</div>`;
+  html += `<div class="candidates-header"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span> Stockfish considered <strong>${top.length}</strong> candidate moves at depth ${result.depth || 15}:</div>`;
   html += '<div class="candidates-list">';
 
   for(let i = 0; i < top.length; i++){
@@ -16860,7 +16905,7 @@ async function analyzeMistakeWhy(idx, ex){
 
     // Mark loading
     const whyEl = document.getElementById(`we-why-${idx}`);
-    if(whyEl) whyEl.innerHTML = '<div style="font-size:12px;color:var(--text3);font-style:italic">🔍 Analysing why…</div>';
+    if(whyEl) whyEl.innerHTML = '<div style="font-size:12px;color:var(--text3);font-style:italic"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span> Analysing why…</div>';
 
     // Run Stockfish on each resulting position (depth 12, multipv=1)
     let punishLine = null, planLine = null, punishEval = null, planEval = null;
@@ -16910,7 +16955,7 @@ async function analyzeMistakeWhy(idx, ex){
     whyEl.innerHTML = whyHTML;
     // If an AI key is configured, replace with the LLM explanation
     if(typeof getAIKey === 'function' && getAIKey()){
-      whyEl.insertAdjacentHTML('afterbegin', '<div style="font-size:12px;color:#7bb4e0;font-style:italic;margin-bottom:8px">🤖 Asking Claude to analyse this position…</div>');
+      whyEl.insertAdjacentHTML('afterbegin', '<div style="font-size:12px;color:#7bb4e0;font-style:italic;margin-bottom:8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> Asking Claude to analyse this position…</div>');
       try {
         const ctx = {
           fen: ex.fenBefore,
@@ -17037,12 +17082,12 @@ function renderWeaknessExample(ex, idx){
             </div>
             <div class="we-loss">−${ex.loss.toFixed(1)}</div>
           </div>
-          ${timeContext ? `<div class="we-time">⏱ ${timeContext}</div>` : ''}
+          ${timeContext ? `<div class="we-time"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg></span> ${timeContext}</div>` : ''}
           <div class="we-explain">${explanation}</div>
-          <div class="we-why" id="we-why-${idx}"><div style="font-size:12px;color:var(--text3);font-style:italic">🔍 Analysing why…</div></div>
+          <div class="we-why" id="we-why-${idx}"><div style="font-size:12px;color:var(--text3);font-style:italic"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span> Analysing why…</div></div>
           <div class="we-candidates" id="we-candidates-${idx}"></div>
           <div class="we-actions">
-            <button class="btn btn-outline btn-sm" onclick="openWeaknessGame(${ex.gameIdx}, ${ex.ply})">📜 See the full game (optional)</button>
+            <button class="btn btn-outline btn-sm" onclick="openWeaknessGame(${ex.gameIdx}, ${ex.ply})"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg></span> See the full game (optional)</button>
           </div>
         </div>
       </div>
@@ -17414,7 +17459,7 @@ function showVariationComplete(){
   document.getElementById('quiz-mastered').textContent = varCompleted;
   document.getElementById('qq-feedback').innerHTML = `
     <div class="qz-result-banner correct">
-      <div class="qzr-icon">🏆</div>
+      <div class="qzr-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span></div>
       <div class="qzr-text">
         <div class="qzr-label">Variation complete</div>
         <div class="qzr-move">${varCurrentLine.name}</div>
@@ -17438,7 +17483,7 @@ window.nextVariation = function(){
 function showAllVariationsComplete(){
   document.getElementById('quiz-active').style.display = 'none';
   document.getElementById('quiz-result').style.display = 'block';
-  document.getElementById('qr-emoji').textContent = '🏆';
+  document.getElementById('qr-emoji').textContent = '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>';
   document.getElementById('qr-title').textContent = 'All variations mastered!';
   document.getElementById('qr-correct').textContent = varCompleted;
   document.getElementById('qr-total').textContent = QUIZ_VARIATIONS[varCurrentOpening].length;
@@ -17503,7 +17548,7 @@ window.renderOpeningPath = function(){
     <div class="path-progress">
       <div class="path-progress-label">${visited.size} nodes studied</div>
       ${mastery.mastered
-        ? `<div class="path-mastery-badge">⭐ Mastered</div>`
+        ? `<div class="path-mastery-badge"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.3a.6.6 0 0 1 1 0l2.6 5.2a.6.6 0 0 0 .45.33l5.8.84a.6.6 0 0 1 .33 1l-4.2 4.1a.6.6 0 0 0-.17.53l1 5.76a.6.6 0 0 1-.87.63l-5.18-2.72a.6.6 0 0 0-.56 0L7.32 22.5a.6.6 0 0 1-.87-.63l1-5.76a.6.6 0 0 0-.17-.53l-4.2-4.1a.6.6 0 0 1 .33-1l5.8-.84a.6.6 0 0 0 .45-.33z"/></svg></span> Mastered</div>`
         : `<div class="path-progress-bar"><div class="path-progress-fill" style="width:${Math.min(100, visited.size * 8)}%"></div></div>`
       }
     </div>
@@ -17565,7 +17610,7 @@ window.renderOpeningPath = function(){
     <div class="path-fork-line"></div>
   </div>`;
   html += `<div class="path-quiz-node ${mastery.quizPassed ? 'passed' : ''} ${!allVisited && !mastery.quizPassed ? 'locked' : ''}">
-    <div class="path-quiz-icon">${mastery.mastered ? '⭐' : (mastery.quizPassed ? '🏆' : '🎯')}</div>
+    <div class="path-quiz-icon">${mastery.mastered ? '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.3a.6.6 0 0 1 1 0l2.6 5.2a.6.6 0 0 0 .45.33l5.8.84a.6.6 0 0 1 .33 1l-4.2 4.1a.6.6 0 0 0-.17.53l1 5.76a.6.6 0 0 1-.87.63l-5.18-2.72a.6.6 0 0 0-.56 0L7.32 22.5a.6.6 0 0 1-.87-.63l1-5.76a.6.6 0 0 0-.17-.53l-4.2-4.1a.6.6 0 0 1 .33-1l5.8-.84a.6.6 0 0 0 .45-.33z"/></svg></span>' : (mastery.quizPassed ? '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>' : '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>')}</div>
     <div class="path-quiz-content">
       <div class="path-quiz-title">${mastery.mastered ? 'Mastered!' : (mastery.quizPassed ? 'Quiz Passed' : 'Final Test')}</div>
       <div class="path-quiz-sub">${mastery.mastered
@@ -17580,7 +17625,7 @@ window.renderOpeningPath = function(){
               ? `<button class="btn btn-gold btn-sm" onclick="launchPathQuiz('${oCurrentId}','variations')">▶ Drill variations</button>`
               : ''}
             ${openingHasBank(oCurrentId)
-              ? `<button class="btn btn-outline btn-sm" onclick="launchPathQuiz('${oCurrentId}','single')">🎯 Card quiz (mixed)</button>`
+              ? `<button class="btn btn-outline btn-sm" onclick="launchPathQuiz('${oCurrentId}','single')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Card quiz (mixed)</button>`
               : ''}
           </div>`
         : `<div style="margin-top:10px;font-size:12px;color:var(--text3)">No quiz available for this opening yet.</div>`}
@@ -17861,7 +17906,7 @@ window.openAICoachDialog = function(){
   wrap.className = 'ai-modal-backdrop';
   wrap.innerHTML = `
     <div class="ai-modal">
-      <div class="ai-modal-header">🤖 AI Coach Setup</div>
+      <div class="ai-modal-header"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> AI Coach Setup</div>
       <div class="ai-modal-body">
         <p>The AI Coach uses Anthropic's Claude to generate <strong>real plain-English explanations</strong> of your chess mistakes — analysing the actual position rather than using templates.</p>
         <p style="margin-top:10px">Your API key is stored only in your browser's localStorage and sent only to your local server, which proxies it to Anthropic. The key is never logged or shared.</p>
@@ -17909,7 +17954,7 @@ function updateAICoachBadge(){
   const el = document.getElementById('ai-coach-badge');
   if(!el) return;
   const hasKey = !!getAIKey();
-  el.textContent = hasKey ? '🤖 AI Coach ✓' : '🤖 Setup AI Coach';
+  el.textContent = hasKey ? '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> AI Coach ✓' : '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> Setup AI Coach';
   el.className = hasKey ? 'ai-badge active' : 'ai-badge';
 }
 
@@ -17993,7 +18038,7 @@ window.generateAIOrHeuristic = async function(ctx, fallbackHTML){
   }
   try {
     const aiText = await fetchAIExplanation(ctx);
-    return `<div class="ai-explanation"><div class="ai-explanation-header">🤖 AI Coach (Claude)</div><div class="ai-explanation-body">${formatAIText(aiText)}</div></div>`;
+    return `<div class="ai-explanation"><div class="ai-explanation-header"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> AI Coach (Claude)</div><div class="ai-explanation-body">${formatAIText(aiText)}</div></div>`;
   } catch(e){
     console.warn('AI explanation failed:', e);
     return `<div class="ai-error">⚠ AI Coach error: ${e.message}. Falling back to heuristic explanation.</div>${fallbackHTML}`;
@@ -19582,7 +19627,7 @@ window.showQuizModePicker = function(openingId, openingName){
       <div class="qmp-body">
         <!-- MODE A: MIXED -->
         <button class="qmp-mode-card" onclick="pickedQuizMode('${openingId}', ${JSON.stringify(openingName).replace(/"/g, '&quot;')}, 'mixed')">
-          <div class="qmp-mode-icon">🎴</div>
+          <div class="qmp-mode-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.94 14.32a1 1 0 0 0-.66-.66l-6.5-1.93a.5.5 0 0 1 0-.96l6.5-1.93a1 1 0 0 0 .66-.66l1.93-6.5a.5.5 0 0 1 .96 0l1.93 6.5a1 1 0 0 0 .66.66l6.5 1.93a.5.5 0 0 1 0 .96l-6.5 1.93a1 1 0 0 0-.66.66l-1.93 6.5a.5.5 0 0 1-.96 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg></span></div>
           <div class="qmp-mode-info">
             <div class="qmp-mode-name">Mixed</div>
             <div class="qmp-mode-desc">All variations shuffled together — like flash cards from the whole opening</div>
@@ -19592,7 +19637,7 @@ window.showQuizModePicker = function(openingId, openingName){
 
         <!-- MODE B: BY VARIATION -->
         <button class="qmp-mode-card" onclick="showVariationPicker('${openingId}', ${JSON.stringify(openingName).replace(/"/g, '&quot;')})">
-          <div class="qmp-mode-icon">🎯</div>
+          <div class="qmp-mode-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div>
           <div class="qmp-mode-info">
             <div class="qmp-mode-name">By variation</div>
             <div class="qmp-mode-desc">Drill a specific variation — focused practice on one line</div>
@@ -19603,7 +19648,7 @@ window.showQuizModePicker = function(openingId, openingName){
         ${hasVariationDrill ? `
         <!-- MODE C: MULTI-MOVE DRILL (if available) -->
         <button class="qmp-mode-card" onclick="pickedQuizMode('${openingId}', ${JSON.stringify(openingName).replace(/"/g, '&quot;')}, 'variations')">
-          <div class="qmp-mode-icon">⚔️</div>
+          <div class="qmp-mode-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span></div>
           <div class="qmp-mode-info">
             <div class="qmp-mode-name">Variation drill (move-by-move)</div>
             <div class="qmp-mode-desc">Play through the full variation move-by-move against an auto-replying opponent</div>
@@ -21851,11 +21896,11 @@ function renderStagePicker(openingId, detail){
   const mastered = getLearnMasteredSet(openingId);
   let html_out = `<div class="learn-stage-pick">
     <button class="learn-exit" onclick="exitLearn()" style="margin-bottom:20px">← Back to openings</button>
-    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:28px;color:var(--text);margin-bottom:6px">${detail.title}</h1>
+    <h1 style="font-family:'Clash Display',sans-serif;font-size:28px;color:var(--text);margin-bottom:6px">${detail.title}</h1>
     <p style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:24px">${detail.desc || ''}</p>
     <div class="section-label">Start here</div>
     <div class="learn-stage-card ${mastered.has('fundamentals') ? 'done' : ''}" onclick="learnFundamentals('${openingId}')">
-      <div class="learn-stage-icon">📚</div>
+      <div class="learn-stage-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span></div>
       <div class="learn-stage-info">
         <div class="learn-stage-name">Fundamentals & Main Ideas</div>
         <div class="learn-stage-meta">The main line, key plans, and what both sides are trying to do</div>
@@ -21864,7 +21909,7 @@ function renderStagePicker(openingId, detail){
     </div>
     ${(typeof OPENING_TREES !== 'undefined' && (OPENING_TREES[openingId] || OPENING_TREES[openingId.replace('-','_')])) ? `
     <button class="tree-explore-btn" onclick="openTreeExplorer('${openingId}')">
-      🗺️ Open the branch map — see every line as a visual map next to the board
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.1 5.5a2 2 0 0 0 1.8 0l3.66-1.83A1 1 0 0 1 21 4.6v12.8a1 1 0 0 1-.55.9l-4.55 2.27a2 2 0 0 1-1.8 0l-4.2-2.1a2 2 0 0 0-1.8 0l-3.66 1.83A1 1 0 0 1 3 19.4V6.6a1 1 0 0 1 .55-.9l4.55-2.27a2 2 0 0 1 1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/></svg></span> Open the branch map — see every line as a visual map next to the board
     </button>` : ''}`;
 
   if(detail.lines && detail.lines.length > 0){
@@ -21872,7 +21917,7 @@ function renderStagePicker(openingId, detail){
     detail.lines.forEach((line, i) => {
       const key = 'var-' + i;
       html_out += `<div class="learn-stage-card ${mastered.has(key) ? 'done' : ''}" onclick="learnVariation('${openingId}', ${i})">
-        <div class="learn-stage-icon">${mastered.has(key) ? '🏆' : '♟'}</div>
+        <div class="learn-stage-icon">${mastered.has(key) ? '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>' : '♟'}</div>
         <div class="learn-stage-info">
           <div class="learn-stage-name">${line.name}</div>
           <div class="learn-stage-meta">${line.bl || 'Variation'} · ${lineToSanList(line.moves).length} moves</div>
@@ -22363,7 +22408,7 @@ function renderTreeExplorer(){
     `<div class="tmap-hint">${moverIsWhite ? 'White' : 'Black'} to move — click any node to walk the board there. Each column is one move deeper.</div>`;
 
   const endNote = atEnd
-    ? `<div class="tree-branch-end" style="margin-bottom:14px">🏁 End of the book here — this is as deep as the database theory goes for this line. Time to think for yourself!</div>`
+    ? `<div class="tree-branch-end" style="margin-bottom:14px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span> End of the book here — this is as deep as the database theory goes for this line. Time to think for yourself!</div>`
     : '';
 
   const lineName = layout.rootName ? `<span class="tmap-line-name">${escapeHtmlTM(layout.rootName)}</span>` : '';
@@ -22541,7 +22586,7 @@ window.learnVariation = function(openingId, varIdx){
     const inVar = i >= (fullSans.length - varSans.length);
     const base = coachExplain(san, i, fullSans, detail, true, yourSideV);
     if(inVar && i === fullSans.length - 1){
-      return base + ` <div class="coach-complete"><em>🏁 That's the ${line.name} in full — you've got the whole line down.</em></div>`;
+      return base + ` <div class="coach-complete"><em><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span> That's the ${line.name} in full — you've got the whole line down.</em></div>`;
     }
     return base;
   });
@@ -22699,7 +22744,7 @@ function showMasteredScreen(){
   const canDrill = learnState.isVariation && hasDrillData;
   stage.innerHTML = `
     <div class="learn-mastered" style="grid-column:1/-1">
-      <div class="learn-mastered-icon">🏆</div>
+      <div class="learn-mastered-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span></div>
       <div class="learn-mastered-title">Mastered!</div>
       <div class="learn-mastered-sub">
         You\'ve learned <strong style="color:var(--gold)">${learnState.lessonName}</strong>${detail ? ' of the ' + detail.title : ''}.
@@ -22802,7 +22847,7 @@ function renderOpeningCards(){
           <span class="op-learn-tag tag-${item.tag}">${item.tag}</span>
         </div>
         <div class="op-learn-desc">${shortDesc}</div>
-        <button class="op-learn-btn" onclick="startLearnOpening('${item.id}')">🎓 Learn this opening</button>
+        <button class="op-learn-btn" onclick="startLearnOpening('${item.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Learn this opening</button>
         ${masteredCount > 0 ? `<div class="op-mastered-pill">✓ ${masteredCount} mastered</div>` : ''}
       </div>`;
     });
@@ -22997,8 +23042,8 @@ function nopRenderVariationRows(filter){
         <div class="nop-var-depth">${v.s.length} ply${v.tp < v.s.length ? ` · ${v.tp} book + continuation` : ''}</div>
       </div>
       <div class="nop-var-actions">
-        <button class="nop-mini-btn gold" onclick="nlearnStart(${famIdx}, ${idx}, 'learn')">📖 Learn</button>
-        <button class="nop-mini-btn" onclick="nlearnStart(${famIdx}, ${idx}, 'drill')">🎯 Drill</button>
+        <button class="nop-mini-btn gold" onclick="nlearnStart(${famIdx}, ${idx}, 'learn')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span> Learn</button>
+        <button class="nop-mini-btn" onclick="nlearnStart(${famIdx}, ${idx}, 'drill')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Drill</button>
       </div>
     </div>`;
   });
@@ -23434,18 +23479,18 @@ function nlearnDrillComplete(){
 
   host.innerHTML = `
     <div class="ndrill-pick">
-      <div class="ndrill-side-icon">${perfect?'🏆':'✓'}</div>
+      <div class="ndrill-side-icon">${perfect?'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>':'✓'}</div>
       <h3>${perfect ? 'Mastered!' : 'Line complete'}</h3>
       <p>${perfect
         ? 'You recalled the entire line without a single slip. This variation is now marked as mastered.'
         : `You made it through with ${mistakes} ${mistakes===1?'slip':'slips'}. Run it again clean to mark it mastered.`}</p>
       <div class="ndrill-side-row">
         <div class="ndrill-side-card" onclick="nlearnRenderDrillPicker()">
-          <div class="ndrill-side-icon">🔁</div>
+          <div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div>
           <div class="ndrill-side-label">Drill again</div>
         </div>
         <div class="ndrill-side-card" onclick="nlearnStart(${nlearn.famIdx}, ${nlearn.varIdx}, 'learn')">
-          <div class="ndrill-side-icon">📖</div>
+          <div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span></div>
           <div class="ndrill-side-label">Review (Learn)</div>
         </div>
       </div>
@@ -23485,7 +23530,7 @@ function nlearnRenderEngineHost(){
   } else if(atEnd){
     host.innerHTML = `
       <div class="nl-engine-cta">
-        <div class="nl-engine-cta-title">🏁 End of the line</div>
+        <div class="nl-engine-cta-title"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span> End of the line</div>
         <p>Want to keep going? Turn on the engine to explore further — Stockfish 18 Lite will suggest moves with <span style="color:#5aa0e6;font-weight:600">blue arrows</span> and a live eval bar.</p>
         <button class="btn btn-gold" onclick="nlearnStartEngine()">♟ Continue with Stockfish →</button>
       </div>`;
@@ -23734,7 +23779,7 @@ function perfRenderTimeAnalysis(){
   if(!host) return;
   const withTime = perfMoves.filter(m => typeof m.timeUsed === 'number' && m.timeUsed >= 0);
   if(withTime.length < 8){
-    host.innerHTML = `<div class="section-label" style="margin:14px 0 8px">⏱ Time-Usage Patterns</div>
+    host.innerHTML = `<div class="section-label" style="margin:14px 0 8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg></span> Time-Usage Patterns</div>
       <div class="weakness-card"><div class="weakness-text">Not enough clock data in these games to analyse time usage. This works best with online games that record move times (most Lichess/Chess.com rapid & blitz games do).</div></div>`;
     return;
   }
@@ -23809,7 +23854,7 @@ function perfRenderTimeAnalysis(){
   const maxPhaseAvg = Math.max(byPhase.opening.avg, byPhase.middlegame.avg, byPhase.endgame.avg, 1);
 
   host.innerHTML = `
-    <div class="section-label" style="margin:14px 0 8px">⏱ Time-Usage Patterns — why your rating bleeds</div>
+    <div class="section-label" style="margin:14px 0 8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg></span> Time-Usage Patterns — why your rating bleeds</div>
     <div class="perf-time-grid">
       <div class="perf-stat"><div class="perf-stat-num">${avg.toFixed(1)}s</div><div class="perf-stat-label">avg / move</div></div>
       <div class="perf-stat"><div class="perf-stat-num">${fastPct}%</div><div class="perf-stat-label">moves under 5s</div></div>
@@ -23857,25 +23902,25 @@ function avgLoss(arr){
 //   risk        — willingness to enter chaos/unbalanced positions
 //   technique   — endgame/grinding precision
 const STYLE_LEGENDS = [
-  { name:'Garry Kasparov',     emoji:'🔥', tag:'Relentless attacker', v:{aggression:95, tactics:90, activity:92, risk:80, technique:78},
+  { name:'Garry Kasparov',     emoji:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>', tag:'Relentless attacker', v:{aggression:95, tactics:90, activity:92, risk:80, technique:78},
     blurb:'Dynamic, aggressive, deep preparation and a love of the initiative.' },
   { name:'Mikhail Tal',        emoji:'🌋', tag:'The Magician', v:{aggression:99, tactics:98, activity:88, risk:99, technique:55},
     blurb:'Wild sacrifices and chaos — drags opponents into the calculation jungle.' },
-  { name:'Bobby Fischer',      emoji:'⚡', tag:'Precise force', v:{aggression:80, tactics:85, activity:82, risk:55, technique:92},
+  { name:'Bobby Fischer',      emoji:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></span>', tag:'Precise force', v:{aggression:80, tactics:85, activity:82, risk:55, technique:92},
     blurb:'Crystal-clear aggression backed by flawless technique.' },
   { name:'Magnus Carlsen',     emoji:'🐍', tag:'The Grinder', v:{aggression:62, tactics:70, activity:78, risk:48, technique:99},
     blurb:'Squeezes tiny edges for hours; unmatched endgame technique and pressure.' },
   { name:'Anatoly Karpov',     emoji:'🕸', tag:'The Boa Constrictor', v:{aggression:40, tactics:55, activity:60, risk:25, technique:95},
     blurb:'Positional python — restricts your pieces and slowly squeezes.' },
-  { name:'Tigran Petrosian',   emoji:'🛡', tag:'The Fortress', v:{aggression:25, tactics:45, activity:42, risk:15, technique:90},
+  { name:'Tigran Petrosian',   emoji:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>', tag:'The Fortress', v:{aggression:25, tactics:45, activity:42, risk:15, technique:90},
     blurb:'Prophylaxis and defence — nothing happens until you are completely safe.' },
-  { name:'José Raúl Capablanca',emoji:'💎', tag:'Effortless clarity', v:{aggression:45, tactics:55, activity:65, risk:30, technique:97},
+  { name:'José Raúl Capablanca',emoji:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg></span>', tag:'Effortless clarity', v:{aggression:45, tactics:55, activity:65, risk:30, technique:97},
     blurb:'Simple, clean, intuitive — wins endgames that look dead equal.' },
-  { name:'Hikaru Nakamura',    emoji:'⚙️', tag:'Speed tactician', v:{aggression:78, tactics:88, activity:85, risk:70, technique:84},
+  { name:'Hikaru Nakamura',    emoji:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span>', tag:'Speed tactician', v:{aggression:78, tactics:88, activity:85, risk:70, technique:84},
     blurb:'Tactical sharpness and lightning calculation, thrives in complications.' },
   { name:'Paul Morphy',        emoji:'🎩', tag:'Romantic attacker', v:{aggression:90, tactics:88, activity:95, risk:75, technique:70},
     blurb:'Rapid development and open-position attacks — punishes slow play.' },
-  { name:'Vladimir Kramnik',   emoji:'🏛', tag:'Strategic rock', v:{aggression:50, tactics:60, activity:62, risk:30, technique:93},
+  { name:'Vladimir Kramnik',   emoji:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v18"/><path d="M13 9h5a2 2 0 0 1 2 2v11"/><path d="M2 22h20"/><path d="M7 6h.01"/><path d="M7 10h.01"/><path d="M7 14h.01"/></svg></span>', tag:'Strategic rock', v:{aggression:50, tactics:60, activity:62, risk:30, technique:93},
     blurb:'Deep strategy and airtight preparation; neutralises then outplays.' },
 ];
 
@@ -23925,7 +23970,7 @@ function perfRenderStyleTwin(username){
   if(!host) return;
   const vec = perfComputeStyleVector();
   if(!vec || vec.raw.moves < 15){
-    host.innerHTML = `<div class="section-label" style="margin:14px 0 8px">🎭 Your Style Twin</div>
+    host.innerHTML = `<div class="section-label" style="margin:14px 0 8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.94 14.32a1 1 0 0 0-.66-.66l-6.5-1.93a.5.5 0 0 1 0-.96l6.5-1.93a1 1 0 0 0 .66-.66l1.93-6.5a.5.5 0 0 1 .96 0l1.93 6.5a1 1 0 0 0 .66.66l6.5 1.93a.5.5 0 0 1 0 .96l-6.5 1.93a1 1 0 0 0-.66.66l-1.93 6.5a.5.5 0 0 1-.96 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg></span> Your Style Twin</div>
       <div class="weakness-card"><div class="weakness-text">Need a few more analysed games to fingerprint your style. Run the deep analysis on more games.</div></div>`;
     return;
   }
@@ -23948,7 +23993,7 @@ function perfRenderStyleTwin(username){
   ];
 
   host.innerHTML = `
-    <div class="section-label" style="margin:14px 0 8px">🎭 Your Style Twin</div>
+    <div class="section-label" style="margin:14px 0 8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.94 14.32a1 1 0 0 0-.66-.66l-6.5-1.93a.5.5 0 0 1 0-.96l6.5-1.93a1 1 0 0 0 .66-.66l1.93-6.5a.5.5 0 0 1 .96 0l1.93 6.5a1 1 0 0 0 .66.66l6.5 1.93a.5.5 0 0 1 0 .96l-6.5 1.93a1 1 0 0 0-.66.66l-1.93 6.5a.5.5 0 0 1-.96 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg></span> Your Style Twin</div>
     <div class="style-twin-card" id="style-twin-card">
       <div class="stc-emoji">${top.L.emoji}</div>
       <div class="stc-main">
@@ -24117,7 +24162,7 @@ let OL = null;            // full dataset
 let OL_POS = null;        // positions map (top-3 per position)
 let olFilter = 'all';
 
-const OL_STYLE_LABEL = { aggressive:'⚔️ Aggressive', positional:'♟ Positional', gambit:'🔥 Gambit', solid:'🛡 Solid' };
+const OL_STYLE_LABEL = { aggressive:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span> Aggressive', positional:'♟ Positional', gambit:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span> Gambit', solid:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span> Solid' };
 const OL_BUCKET_LABEL = { e4:'1.e4', d4:'1.d4', c4:'1.c4 English', Nf3:'1.Nf3 Réti', other:'Other' };
 
 async function olInit(){
@@ -24259,7 +24304,7 @@ window.olSearch = function(q){
     html += `<div class="ol-empty">No matches. Try an opening name (Sicilian), a variation (Najdorf), an idea (fianchetto), or moves (e4 c5).</div>`;
   } else {
     html += top.map(r => {
-      const icon = r.type==='opening'?'📖':(r.type==='idea'?'💡':'↳');
+      const icon = r.type==='opening'?'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>':(r.type==='idea'?'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>':'↳');
       const action = r.vIdx!=null ? `olStartLearn(${r.opIdx},${r.vIdx})` : `olOpenIntro(${r.opIdx})`;
       return `<div class="ol-sr-row" onclick="${action}">
         <span class="ol-sr-icon">${icon}</span>
@@ -24314,9 +24359,9 @@ window.olOpenIntro = function(opIdx){
         </div>
       </div>
       <div class="ol-intro-cta">
-        <button class="btn btn-gold" onclick="olShowVariations(${opIdx})">📚 See all ${op.v.length} variations →</button>
-        <button class="nop-mini-btn" onclick="olStartLearn(${opIdx},${op.v.indexOf(base)})">📖 Learn the main line</button>
-        <button class="nop-mini-btn" onclick="olStartMixedDrill(${opIdx})">🎯 Mixed drill (all variations)</button>
+        <button class="btn btn-gold" onclick="olShowVariations(${opIdx})"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span> See all ${op.v.length} variations →</button>
+        <button class="nop-mini-btn" onclick="olStartLearn(${opIdx},${op.v.indexOf(base)})"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span> Learn the main line</button>
+        <button class="nop-mini-btn" onclick="olStartMixedDrill(${opIdx})"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Mixed drill (all variations)</button>
       </div>
     </div>`;
 
@@ -24466,8 +24511,8 @@ function olRenderVarRows(opIdx, q){
         <div class="ol-var-moves">${olEsc(olFmtMoves(v.s,12))}</div>
       </div>
       <div class="ol-var-actions">
-        <button class="nop-mini-btn gold" onclick="olStartLearn(${opIdx},${vIdx})">📖 Learn</button>
-        <button class="nop-mini-btn" onclick="olStartDrill(${opIdx},${vIdx})">🎯 Drill</button>
+        <button class="nop-mini-btn gold" onclick="olStartLearn(${opIdx},${vIdx})"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span> Learn</button>
+        <button class="nop-mini-btn" onclick="olStartDrill(${opIdx},${vIdx})"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Drill</button>
       </div>
     </div>`;
   }
@@ -24505,8 +24550,8 @@ function olRenderVarRows(opIdx, q){
       <div class="nop-vhead"><em>${olEsc(op.f)}</em> variations</div>
       <div class="nop-vsub">${op.v.length} variations${op.families?` in ${op.families.length} families`:''} · ECO ${op.eco} · ${OL_STYLE_LABEL[op.style]||op.style}</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-        <input class="nop-vsearch" style="margin:0;flex:1" placeholder="🔍 Filter variations…" oninput="olVarFilter(this.value)" autocomplete="off" value="${olEsc(q)}">
-        <button class="btn btn-gold btn-sm" onclick="olStartMixedDrill(${opIdx})">🎯 Mixed drill (all)</button>
+        <input class="nop-vsearch" style="margin:0;flex:1" placeholder="Filter variations…" oninput="olVarFilter(this.value)" autocomplete="off" value="${olEsc(q)}">
+        <button class="btn btn-gold btn-sm" onclick="olStartMixedDrill(${opIdx})"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Mixed drill (all)</button>
       </div>
       <div id="ol-var-rows">${body || '<div class="ol-empty">No variations match.</div>'}</div>
     </div>`;
@@ -24655,7 +24700,7 @@ function olRenderLearnStep(){
   const atEnd = idx >= olearn.sans.length;
   const planHtml = (atEnd && olearn.v && olearn.v.plan)
     ? `<div class="ol-plan-box">
-         <div class="ol-plan-title">🧭 How to proceed — your plans &amp; ideas</div>
+         <div class="ol-plan-title"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.8 5.41a2 2 0 0 1-1.27 1.27L7.76 16.24l1.8-5.41a2 2 0 0 1 1.27-1.27z"/><circle cx="12" cy="12" r="10"/></svg></span> How to proceed — your plans &amp; ideas</div>
          <div class="ol-plan-text">${olEsc(olearn.v.plan)}</div>
        </div>`
     : '';
@@ -24910,14 +24955,14 @@ function olDrillNextOrDone(){
   olSetProgress(1,1);
   host.innerHTML = `
     <div class="ndrill-pick">
-      <div class="ndrill-side-icon">${perfect?'🏆':'✓'}</div>
+      <div class="ndrill-side-icon">${perfect?'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>':'✓'}</div>
       <h3>${perfect?'Perfect!':'Drill complete'}</h3>
       <p>${perfect
         ? (oldrill.mode==='single' ? 'Flawless recall — this variation is marked mastered.' : 'Flawless recall across all variations!')
         : `Completed with ${oldrill.mistakes} slip${oldrill.mistakes===1?'':'s'}. Run it again clean to master it.`}</p>
       <div class="ndrill-side-row">
-        <div class="ndrill-side-card" onclick="olRenderDrillPicker()"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Drill again</div></div>
-        <div class="ndrill-side-card" onclick="olShowVariations(${oldrill.opIdx})"><div class="ndrill-side-icon">📚</div><div class="ndrill-side-label">Variations</div></div>
+        <div class="ndrill-side-card" onclick="olRenderDrillPicker()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Drill again</div></div>
+        <div class="ndrill-side-card" onclick="olShowVariations(${oldrill.opIdx})"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span></div><div class="ndrill-side-label">Variations</div></div>
       </div>
     </div>`;
 }
@@ -25260,7 +25305,7 @@ function repRenderGrid(){
     const moves = repCountNodes(op.root);
     const main = repFmtMoves(repMainLine(op), 8);
     const acc = op.bestAccuracy!=null ? `<span class="rep-card-acc">best ${op.bestAccuracy}%</span>` : '';
-    const streak = op.streak ? `<span class="rep-card-streak">🔥 ${op.streak}</span>` : '';
+    const streak = op.streak ? `<span class="rep-card-streak"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span> ${op.streak}</span>` : '';
     return `<div class="rep-card">
       <div class="rep-card-top">
         <span class="rep-card-side ${op.side==='w'?'w':'b'}">${op.side==='w'?'♔ White':'♚ Black'}</span>
@@ -25270,10 +25315,10 @@ function repRenderGrid(){
       <div class="rep-card-line">${repEsc(main||'(empty)')}</div>
       <div class="rep-card-meta">${acc}${streak}</div>
       <div class="rep-card-actions">
-        <button class="nop-mini-btn gold" onclick="repReview('${op.id}')">👁 Review</button>
-        <button class="nop-mini-btn" onclick="repTrain('${op.id}')">🎯 Train</button>
-        <button class="nop-mini-btn" onclick="repEdit('${op.id}')">✏️ Edit</button>
-        <button class="nop-mini-btn" onclick="repDelete('${op.id}')">🗑</button>
+        <button class="nop-mini-btn gold" onclick="repReview('${op.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg></span> Review</button>
+        <button class="nop-mini-btn" onclick="repTrain('${op.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Train</button>
+        <button class="nop-mini-btn" onclick="repEdit('${op.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 6.81a1 1 0 0 0-3.98-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></svg></span> Edit</button>
+        <button class="nop-mini-btn" onclick="repDelete('${op.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></span></button>
       </div>
     </div>`;
   }).join('') + `</div>`;
@@ -25589,12 +25634,12 @@ function rtrainResults(){
         <div class="rt-stat"><div class="rt-stat-n" style="color:#6ec882">${rtrain.correct}</div><div class="rt-stat-l">Correct</div></div>
         <div class="rt-stat"><div class="rt-stat-n" style="color:#e0706f">${rtrain.incorrect}</div><div class="rt-stat-l">Incorrect</div></div>
         <div class="rt-stat"><div class="rt-stat-n">${total}</div><div class="rt-stat-l">Total tested</div></div>
-        <div class="rt-stat"><div class="rt-stat-n" style="color:var(--gold)">🔥 ${streak}</div><div class="rt-stat-l">Streak</div></div>
+        <div class="rt-stat"><div class="rt-stat-n" style="color:var(--gold)"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span> ${streak}</div><div class="rt-stat-l">Streak</div></div>
       </div>
-      ${weak.length ? `<div class="rt-weak"><div class="rt-weak-title">Weakest positions</div>${weak.map(w=>`<div class="rt-weak-row">${w}</div>`).join('')}</div>` : `<div class="rt-perfect">🏆 Flawless — every saved move recalled correctly!</div>`}
+      ${weak.length ? `<div class="rt-weak"><div class="rt-weak-title">Weakest positions</div>${weak.map(w=>`<div class="rt-weak-row">${w}</div>`).join('')}</div>` : `<div class="rt-perfect"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span> Flawless — every saved move recalled correctly!</div>`}
       <div class="ndrill-side-row" style="margin-top:18px">
-        <div class="ndrill-side-card" onclick="repTrain('${rtrain.op.id}')"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Train again</div></div>
-        <div class="ndrill-side-card" onclick="explBackHome()"><div class="ndrill-side-icon">📁</div><div class="ndrill-side-label">Repertoire</div></div>
+        <div class="ndrill-side-card" onclick="repTrain('${rtrain.op.id}')"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Train again</div></div>
+        <div class="ndrill-side-card" onclick="explBackHome()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span></div><div class="ndrill-side-label">Repertoire</div></div>
       </div>
     </div>`;
 }
@@ -25726,10 +25771,10 @@ function acadRenderRoadmap(){
       <button class="nop-back" onclick="acadBackHome()" style="margin:0">← All courses</button>
       <div class="acad-course-title"><em>${acadEsc(ACAD.name)}</em> Course</div>
       <div class="acad-course-stats">
-        <span class="acad-stat-pill">📖 ${acadLinesDiscovered()}/${acadTotalLines()} lines learned</span>
+        <span class="acad-stat-pill"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span> ${acadLinesDiscovered()}/${acadTotalLines()} lines learned</span>
         <span class="acad-stat-pill">${pct}% mastered</span>
-        ${p.streak?`<span class="acad-stat-pill">🔥 ${p.streak} day${p.streak===1?'':'s'}</span>`:''}
-        ${dueCount?`<span class="acad-stat-pill due" onclick="acadStartReview()">⏰ ${dueCount} due for review</span>`:''}
+        ${p.streak?`<span class="acad-stat-pill"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span> ${p.streak} day${p.streak===1?'':'s'}</span>`:''}
+        ${dueCount?`<span class="acad-stat-pill due" onclick="acadStartReview()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/></svg></span> ${dueCount} due for review</span>`:''}
       </div>
     </div>
 
@@ -25744,7 +25789,7 @@ function acadRenderRoadmap(){
         const acc = (st.bestAcc!=null) ? `<span class="acad-rm-acc">${st.bestAcc}%</span>` : '';
         const conn = i < ACAD.roadmap.length-1 ? `<div class="acad-rm-connector ${done?'done':''}"></div>` : '';
         return `<div class="acad-rm-step ${cls}" ${unlocked?`onclick="acadStartStep('${s.id}')"`:''}>
-            <div class="acad-rm-icon">${done?'✓':(unlocked?s.icon:'🔒')}</div>
+            <div class="acad-rm-icon">${done?'✓':(unlocked?s.icon:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>')}</div>
             <div class="acad-rm-info">
               <div class="acad-rm-title">${acadEsc(s.title)} ${acc}</div>
               <div class="acad-rm-sub">${acadEsc(s.sub)}</div>
@@ -25791,7 +25836,7 @@ function acadShowIntro(){
     <div class="acad-lesson-wrap">
       <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0 0 16px">← Roadmap</button>
       <div class="acad-read">
-        <div class="acad-read-icon">🏁</div>
+        <div class="acad-read-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span></div>
         <h1>${acadEsc(intro.title)}</h1>
         ${intro.body.map(p=>`<p>${acadEsc(p)}</p>`).join('')}
         <button class="btn btn-gold" onclick="acadCompleteReading('intro')">Got it — continue →</button>
@@ -25806,7 +25851,7 @@ function acadShowIdeas(){
     <div class="acad-lesson-wrap">
       <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0 0 16px">← Roadmap</button>
       <div class="acad-read">
-        <div class="acad-read-icon">📘</div>
+        <div class="acad-read-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span></div>
         <h1>Opening Ideas</h1>
         ${sec(ACAD.ideas)}
         ${sec(ACAD.structures)}
@@ -25836,7 +25881,7 @@ function acadStartLesson(step){
       <div class="acad-learn-head">
         <button class="acad-learn-back" onclick="acadRenderRoadmap()">←</button>
         <div class="acad-learn-titles">
-          <div class="acad-learn-chapter">📖 LEARN <span>${acadEsc(L.family)}</span></div>
+          <div class="acad-learn-chapter"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span> LEARN <span>${acadEsc(L.family)}</span></div>
           <div class="acad-learn-sub">${acadEsc(L.name)} · ${acadEsc(L.eco||'')}</div>
         </div>
       </div>
@@ -25900,7 +25945,7 @@ function acadLessonStep(){
     // end of line: show the plan + finish button, engine eval, no blue arrow
     text.innerHTML = `<div class="acad-learn-move">✓ End of the ${acadEsc(alesson.L.name)}</div>`;
     if(alesson.L.plan){
-      text.innerHTML += `<div class="acad-plan"><div class="acad-plan-h">🧭 How to proceed from here</div>${acadEsc(alesson.L.plan)}</div>`;
+      text.innerHTML += `<div class="acad-plan"><div class="acad-plan-h"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.8 5.41a2 2 0 0 1-1.27 1.27L7.76 16.24l1.8-5.41a2 2 0 0 1 1.27-1.27z"/><circle cx="12" cy="12" r="10"/></svg></span> How to proceed from here</div>${acadEsc(alesson.L.plan)}</div>`;
     }
     if(viewing) viewing.style.display='none';
     cta.innerHTML = `<button class="acad-cta-btn" onclick="acadFinishLesson()">✓ Mark lesson complete</button>`;
@@ -25969,8 +26014,8 @@ function acadFinishLesson(){
     <h2>Lesson complete</h2>
     <p>You've learned the <strong>${acadEsc(alesson.L.family)} — ${acadEsc(alesson.L.name)}</strong>. Next up: drill it into memory so you can recall it in a real game.</p>
     <div class="ndrill-side-row">
-      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon">🗺️</div><div class="ndrill-side-label">Roadmap</div></div>
-      <div class="ndrill-side-card" onclick="acadStartLesson(alesson.step)"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Replay</div></div>
+      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.1 5.5a2 2 0 0 0 1.8 0l3.66-1.83A1 1 0 0 1 21 4.6v12.8a1 1 0 0 1-.55.9l-4.55 2.27a2 2 0 0 1-1.8 0l-4.2-2.1a2 2 0 0 0-1.8 0l-3.66 1.83A1 1 0 0 1 3 19.4V6.6a1 1 0 0 1 .55-.9l4.55-2.27a2 2 0 0 1 1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/></svg></span></div><div class="ndrill-side-label">Roadmap</div></div>
+      <div class="ndrill-side-card" onclick="acadStartLesson(alesson.step)"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Replay</div></div>
     </div>
   </div></div>`;
 }
@@ -25990,7 +26035,7 @@ function acadDrillRender(title){
     <div class="acad-lesson-wrap">
       <div class="acad-lesson-top">
         <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0">← Roadmap</button>
-        <div class="acad-lesson-title">🧠 Drill: ${acadEsc(title)}</div>
+        <div class="acad-lesson-title"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.142 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.142 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg></span> Drill: ${acadEsc(title)}</div>
       </div>
       <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="ad-prog"></div></div>
       <div class="acad-lesson-stage">
@@ -26078,12 +26123,12 @@ function acadDrillComplete(){
   const host=document.getElementById('acad-course');
   const perfect=adrill.mistakes===0;
   host.innerHTML = `<div class="acad-lesson-wrap"><div class="acad-done">
-    <div class="acad-done-icon">${perfect?'🏆':'✓'}</div>
+    <div class="acad-done-icon">${perfect?'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>':'✓'}</div>
     <h2>${perfect?'Perfect drill!':'Drill complete'}</h2>
     <p>${acc}% accuracy${perfect?' — flawless recall. This line is locked in.':` — ${adrill.mistakes} slip${adrill.mistakes===1?'':'s'}. Run it again to sharpen it.`}</p>
     <div class="ndrill-side-row">
-      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon">🗺️</div><div class="ndrill-side-label">Roadmap</div></div>
-      <div class="ndrill-side-card" onclick="acadStartDrill(adrill.step)"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Drill again</div></div>
+      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.1 5.5a2 2 0 0 0 1.8 0l3.66-1.83A1 1 0 0 1 21 4.6v12.8a1 1 0 0 1-.55.9l-4.55 2.27a2 2 0 0 1-1.8 0l-4.2-2.1a2 2 0 0 0-1.8 0l-3.66 1.83A1 1 0 0 1 3 19.4V6.6a1 1 0 0 1 .55-.9l4.55-2.27a2 2 0 0 1 1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/></svg></span></div><div class="ndrill-side-label">Roadmap</div></div>
+      <div class="ndrill-side-card" onclick="acadStartDrill(adrill.step)"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Drill again</div></div>
     </div>
   </div></div>`;
 }
@@ -26130,7 +26175,7 @@ function acadMixedStep(){
       <div class="acad-lesson-wrap">
         <div class="acad-lesson-top">
           <button class="nop-back" onclick="acadRenderRoadmap()" style="margin:0">← Roadmap</button>
-          <div class="acad-lesson-title">🎯 Mixed Training</div>
+          <div class="acad-lesson-title"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Mixed Training</div>
         </div>
         <div class="nlearn-progress-track"><div class="nlearn-progress-fill" id="am-prog"></div></div>
         <div class="acad-lesson-stage">
@@ -26235,12 +26280,12 @@ function acadShowResults(title, acc, correct, wrong, total, wrongList, retryFn, 
       <div class="rt-stat"><div class="rt-stat-n" style="color:#6ec882">${correct}</div><div class="rt-stat-l">Correct</div></div>
       <div class="rt-stat"><div class="rt-stat-n" style="color:#e0706f">${wrong}</div><div class="rt-stat-l">Incorrect</div></div>
       <div class="rt-stat"><div class="rt-stat-n">${total}</div><div class="rt-stat-l">Tested</div></div>
-      <div class="rt-stat"><div class="rt-stat-n" style="color:var(--gold)">🔥 ${p.streak||0}</div><div class="rt-stat-l">Streak</div></div>
+      <div class="rt-stat"><div class="rt-stat-n" style="color:var(--gold)"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span> ${p.streak||0}</div><div class="rt-stat-l">Streak</div></div>
     </div>
-    ${weak.length?`<div class="rt-weak"><div class="rt-weak-title">Weakest positions (review these)</div>${weak.map(w=>`<div class="rt-weak-row">${w}</div>`).join('')}</div>`:`<div class="rt-perfect">🏆 Flawless — every position recalled!</div>`}
+    ${weak.length?`<div class="rt-weak"><div class="rt-weak-title">Weakest positions (review these)</div>${weak.map(w=>`<div class="rt-weak-row">${w}</div>`).join('')}</div>`:`<div class="rt-perfect"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span> Flawless — every position recalled!</div>`}
     <div class="ndrill-side-row" style="margin-top:18px">
-      <div class="ndrill-side-card" onclick="window._acadRetry&&window._acadRetry()"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Try again</div></div>
-      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon">🗺️</div><div class="ndrill-side-label">Roadmap</div></div>
+      <div class="ndrill-side-card" onclick="window._acadRetry&&window._acadRetry()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Try again</div></div>
+      <div class="ndrill-side-card" onclick="acadRenderRoadmap()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.1 5.5a2 2 0 0 0 1.8 0l3.66-1.83A1 1 0 0 1 21 4.6v12.8a1 1 0 0 1-.55.9l-4.55 2.27a2 2 0 0 1-1.8 0l-4.2-2.1a2 2 0 0 0-1.8 0l-3.66 1.83A1 1 0 0 1 3 19.4V6.6a1 1 0 0 1 .55-.9l4.55-2.27a2 2 0 0 1 1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/></svg></span></div><div class="ndrill-side-label">Roadmap</div></div>
     </div>
   </div></div>`;
   window.scrollTo(0,0);
@@ -26347,8 +26392,8 @@ function ccRenderGrid(){
         <div class="cc-card-name">${ccEsc(c.name||'Untitled Course')}</div>
         <div class="cc-card-meta">${moves} move${moves===1?'':'s'} saved${c.notesCount?` · ${c.notesCount} notes`:''}</div>
         <div class="cc-card-actions">
-          <button class="nop-mini-btn gold" onclick="ccEditCourse('${c.id}')">✏️ Open</button>
-          <button class="nop-mini-btn" onclick="ccDeleteCourse('${c.id}')">🗑</button>
+          <button class="nop-mini-btn gold" onclick="ccEditCourse('${c.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 6.81a1 1 0 0 0-3.98-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></svg></span> Open</button>
+          <button class="nop-mini-btn" onclick="ccDeleteCourse('${c.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></span></button>
         </div>
       </div>`;
     }).join('')}</div>`:''}`;
@@ -26374,7 +26419,7 @@ function ccOpenWorkspace(){
   ws.innerHTML = `
     <div class="cc-top">
       <button class="acad-learn-back" onclick="ccBackHome()">←</button>
-      <span class="cc-tool-icon">🛠️</span>
+      <span class="cc-tool-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span></span>
       <input id="cc-name" class="cc-name-input" value="${ccEsc(CC.name)}" oninput="CC.name=this.value" placeholder="Course name…">
       <button class="nop-mini-btn gold" onclick="ccSave()">☁ Save</button>
     </div>
@@ -26413,7 +26458,7 @@ function ccOpenWorkspace(){
         </div>
         <div class="cc-analysis-lines" id="cc-analysis-lines"></div>
         <div class="cc-movetree" id="cc-movetree"></div>
-        <button class="cc-endline-btn" id="cc-endline-btn" onclick="ccEndLine()">🏁 End line &amp; add to course</button>
+        <button class="cc-endline-btn" id="cc-endline-btn" onclick="ccEndLine()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span> End line &amp; add to course</button>
         <textarea id="cc-note" class="cc-note-input" placeholder="Add a note for this position…" oninput="ccSaveNote(this.value)"></textarea>
       </div>
     </div>`;
@@ -26905,8 +26950,8 @@ function ccTrainResults(){
       <div class="rt-stat"><div class="rt-stat-n">${total}</div><div class="rt-stat-l">Tested</div></div>
     </div>
     <div class="ndrill-side-row" style="margin-top:18px">
-      <div class="ndrill-side-card" onclick="ccPlayCourse()"><div class="ndrill-side-icon">🔁</div><div class="ndrill-side-label">Play again</div></div>
-      <div class="ndrill-side-card" onclick="ccExitTrain()"><div class="ndrill-side-icon">🛠️</div><div class="ndrill-side-label">Back to editor</div></div>
+      <div class="ndrill-side-card" onclick="ccPlayCourse()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Play again</div></div>
+      <div class="ndrill-side-card" onclick="ccExitTrain()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span></div><div class="ndrill-side-label">Back to editor</div></div>
     </div>
   </div></div>`;
 }
