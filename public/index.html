@@ -2915,6 +2915,11 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .rv-player-dot{ width:11px; height:11px; border-radius:50%; flex:none; box-shadow:0 0 0 1px rgba(217,164,65,.35); }
 #sec-review .rv-player-dot.w{ background:#f3ead6; }
 #sec-review .rv-player-dot.b{ background:#15110a; }
+#sec-review .rv-avatar{ position:relative; width:28px; height:28px; border-radius:50%; flex:none; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#3a2f1c,#221a0e); }
+#sec-review .rv-avatar.w{ box-shadow:0 0 0 1.5px rgba(243,234,214,.7); }
+#sec-review .rv-avatar.b{ box-shadow:0 0 0 1.5px rgba(140,116,70,.75); }
+#sec-review .rv-avatar-i{ font-family:var(--ob-mono); font-weight:700; font-size:12px; color:var(--ob-brass-2); }
+#sec-review .rv-avatar img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; opacity:0; transition:opacity .3s var(--ease); }
 #sec-review .rv-player-name{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif; font-weight:700; font-size:14px; color:var(--ob-tx); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:170px; }
 #sec-review .rv-player-elo{ font-family:var(--ob-mono); font-size:11px; color:var(--ob-tx3); }
 #sec-review .rv-player-caps{ display:inline-flex; align-items:center; min-height:16px; }
@@ -2933,6 +2938,10 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .mdb-time-k{ font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--ob-tx3); border:1px solid var(--ob-line); border-radius:5px; padding:1px 6px; }
 #sec-review .mdb-time-spent{ color:var(--ob-brass-2); font-weight:600; }
 #sec-review .mdb-time-left{ color:var(--ob-tx3); }
+
+/* ── Time-mode caption (avg + longest think) ── */
+#sec-review .rv-eg-cap{ font-family:var(--ob-mono); font-size:10.5px; color:var(--ob-tx3); padding:6px 2px 1px; letter-spacing:.02em; }
+#sec-review .rv-eg-cap b{ color:var(--ob-brass-2); font-weight:600; }
 
 /* ── Eval-graph phase markers ── */
 #sec-review .rv-eg-phases{ display:flex; padding:0 1px 3px; }
@@ -10724,8 +10733,10 @@ async function loadReview(gameIdx){
     white: game.white || headers.White || 'White',
     black: game.black || headers.Black || 'Black',
     whiteElo: headers.WhiteElo || game.whiteElo || '',
-    blackElo: headers.BlackElo || game.blackElo || ''
+    blackElo: headers.BlackElo || game.blackElo || '',
+    whiteAvatar: '', blackAvatar: ''
   };
+  try { rvFetchAvatars(); } catch(e){}   // async profile pictures (chess.com)
 
   // Parse per-move clock data for the Time view (no-op if the PGN has no %clk)
   try { rvParseClocks(game.pgn, headers); } catch(e){ reviewHasClocks = false; }
@@ -10745,7 +10756,7 @@ let reviewMoveTimes = [];   // seconds spent on each ply
 let reviewClocks = [];      // seconds remaining after each ply
 let reviewHasClocks = false;
 let reviewInitial = 0;      // starting clock (seconds) from TimeControl
-let reviewMeta = { white:'', black:'', whiteElo:'', blackElo:'' };
+let reviewMeta = { white:'', black:'', whiteElo:'', blackElo:'', whiteAvatar:'', blackAvatar:'' };
 
 // Win-probability model (lichess/chess.com style): eval in pawns (mover's perspective) -> win %.
 // Classifying by win% drop avoids flagging harmless eval dips when already winning or losing.
@@ -11115,14 +11126,17 @@ function rvRenderPlayers(state){
   const panel = color => {
     const name = color === 'w' ? reviewMeta.white : reviewMeta.black;
     const elo  = color === 'w' ? reviewMeta.whiteElo : reviewMeta.blackElo;
+    const av   = color === 'w' ? reviewMeta.whiteAvatar : reviewMeta.blackAvatar;
     const caps = color === 'w' ? whiteCapd : blackCapd;
     const adv  = color === 'w' ? (diff > 0 ? diff : 0) : (diff < 0 ? -diff : 0);
     const clk  = inBranch ? null : rvClockForColor(color, reviewIdx);
     const clkCls = clk == null ? '' : (clk < 10 ? ' crit' : (clk < 30 ? ' low' : ''));
+    const initial = ((name || '?').trim().charAt(0) || '?').toUpperCase();
+    const avatar = `<span class="rv-avatar ${color}">${av ? `<img src="${av}" alt="" onload="this.style.opacity=1" onerror="this.remove()">` : ''}<span class="rv-avatar-i">${initial}</span></span>`;
     return `
       <div class="rv-player-info">
         <div class="rv-player-id">
-          <span class="rv-player-dot ${color}"></span>
+          ${avatar}
           <span class="rv-player-name">${name || '—'}</span>
           ${elo ? `<span class="rv-player-elo">${elo}</span>` : ''}
         </div>
@@ -11132,6 +11146,27 @@ function rvRenderPlayers(state){
   };
   top.innerHTML = panel(flipped ? 'w' : 'b');
   bot.innerHTML = panel(flipped ? 'b' : 'w');
+}
+// Fetch player profile pictures from the chess.com public API (lichess has no
+// public avatar URL, so those fall back to an initial disc). Fire-and-forget.
+async function rvFetchAvatars(){
+  if(reviewPlatform !== 'chesscom') return;
+  const w = reviewMeta.white, b = reviewMeta.black;
+  const get = async u => {
+    if(!u) return '';
+    try{
+      const r = await fetch('https://api.chess.com/pub/player/' + encodeURIComponent(String(u).toLowerCase()));
+      if(!r.ok) return '';
+      const j = await r.json();
+      return (j && j.avatar) ? j.avatar : '';
+    }catch(e){ return ''; }
+  };
+  const [wa, ba] = await Promise.all([get(w), get(b)]);
+  // Only apply if the user hasn't switched to a different game meanwhile
+  if(reviewMeta.white === w && reviewMeta.black === b){
+    reviewMeta.whiteAvatar = wa; reviewMeta.blackAvatar = ba;
+    if((wa || ba) && typeof renderReviewBoard === 'function') renderReviewBoard();
+  }
 }
 function renderEvalGraph(){
   const host = document.getElementById('rv-evalgraph');
@@ -11183,6 +11218,19 @@ function renderEvalGraph(){
   bands.forEach((bd, i) => { if(i>0){ const x=(bd.a/total*W).toFixed(1);
     dividers += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" stroke="rgba(217,164,65,.3)" stroke-width="1" stroke-dasharray="2 3"/>'; } });
 
+  // ── Time-trouble band: red ticks at the bottom where a side dropped under 10s ──
+  let ttMarks = '';
+  if(reviewHasClocks){
+    const tw = Math.max(1.4, (W/total)*0.5);
+    for(let i=1;i<=total;i++){
+      const c = reviewClocks[i];
+      if(typeof c === 'number' && c < 10){
+        const x = (i/total*W - tw/2).toFixed(1);
+        ttMarks += '<rect x="'+x+'" y="'+(H-3.5)+'" width="'+tw.toFixed(1)+'" height="3.5" fill="rgba(255,90,80,.92)"><title>Move '+i+': time trouble ('+rvFmtClock(c)+')</title></rect>';
+      }
+    }
+  }
+
   // ── Active mode: Evaluation (default) or Time (only if clocks present) ──
   const timeOn = (window._rvGraphMode === 'time' && reviewHasClocks);
   const tabs = reviewHasClocks
@@ -11210,7 +11258,7 @@ function renderEvalGraph(){
       bars += '<rect x="'+x+'" y="'+y+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="1" fill="'+col+'"><title>Move '+i+': '+rvFmtSpent(t)+'</title></rect>';
     }
     body = '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(12,9,4,.55)"/>'
-      + dividers + bars
+      + dividers + bars + ttMarks
       + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>';
   } else {
     body = '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(244,236,216,.34)"/><stop offset="1" stop-color="rgba(244,236,216,.10)"/></linearGradient></defs>'
@@ -11219,13 +11267,21 @@ function renderEvalGraph(){
       + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="rgba(217,164,65,.18)" stroke-width="1"/>'
       + dividers
       + '<path d="'+line+'" fill="none" stroke="rgba(242,225,186,.6)" stroke-width="1.4"/>'
-      + dots
+      + dots + ttMarks
       + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>';
+  }
+
+  // Time-mode caption: average time per move + the longest think
+  let timeCap = '';
+  if(timeOn){
+    let sum=0, n=0, mxT=0, mxI=0;
+    for(let i=1;i<=total;i++){ const t=reviewMoveTimes[i]; if(typeof t==='number'){ sum+=t; n++; if(t>mxT){ mxT=t; mxI=i; } } }
+    if(n) timeCap = '<div class="rv-eg-cap">Avg <b>'+rvFmtSpent(sum/n)+'</b>/move · Longest think <b>'+rvFmtSpent(mxT)+'</b> (move '+mxI+')</div>';
   }
 
   host.innerHTML = tabs + phaseStrip
     + '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:60px;display:block;cursor:pointer" onclick="rvGraphClick(event)">'
-    + body + '</svg>';
+    + body + '</svg>' + timeCap;
 }
 window.rvSetGraphMode = function(m){ window._rvGraphMode = m; try{ renderEvalGraph(); }catch(e){} };
 window.rvGraphClick = function(ev){
@@ -11238,7 +11294,7 @@ window.rvGraphClick = function(ev){
   renderReviewBoard();
   document.querySelectorAll('.move-cell, .branch-move').forEach(el => el.classList.remove('cur'));
   const cell = document.getElementById('mc-'+reviewIdx);
-  if(cell){ cell.classList.add('cur'); cell.scrollIntoView({block:'nearest'}); }
+  if(cell){ cell.classList.add('cur'); rvScrollMove(cell); }
 };
 function rvEvalMarker(){
   const m = document.getElementById('rv-eval-marker');
@@ -11343,7 +11399,7 @@ window.selectReviewMove = function(idx){
   document.querySelectorAll('.move-cell, .branch-move').forEach(el => el.classList.remove('cur'));
   document.getElementById(`mc-${idx}`)?.classList.add('cur');
   document.getElementById(`bmc-${idx}`)?.classList.add('cur');
-  (document.getElementById(`mc-${idx}`) || document.getElementById(`bmc-${idx}`))?.scrollIntoView({block:'nearest'});
+  rvScrollMove(document.getElementById(`mc-${idx}`) || document.getElementById(`bmc-${idx}`));
 
   // ALWAYS clear the detail panel first, so old data never lingers on stale-click errors
   const detail = document.getElementById('rv-detail');
@@ -12294,12 +12350,27 @@ function triggerEngineAnalysisR(state){
   });
 }
 
+// Scroll a move cell into view WITHIN its own scroll container only —
+// never the page/window (fixes the page jumping on arrow-key navigation).
+function rvScrollMove(el){
+  if(!el) return;
+  let cont = el.parentElement;
+  while(cont && cont !== document.body){
+    const oy = getComputedStyle(cont).overflowY;
+    if((oy === 'auto' || oy === 'scroll') && cont.scrollHeight > cont.clientHeight) break;
+    cont = cont.parentElement;
+  }
+  if(!cont || cont === document.body) return;
+  const cr = cont.getBoundingClientRect(), er = el.getBoundingClientRect();
+  if(er.top < cr.top) cont.scrollTop -= (cr.top - er.top) + 6;
+  else if(er.bottom > cr.bottom) cont.scrollTop += (er.bottom - cr.bottom) + 6;
+}
 window.rvNext = function(){
   if(viewingBranch && branchState){
     if(branchPly < branchState.moves.length){ branchPly++; renderReviewBoard(); }
   } else if(reviewIdx < reviewHistory.length - 1){
     reviewIdx++; renderReviewBoard();
-    document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
+    rvScrollMove(document.getElementById(`mc-${reviewIdx}`));
   }
 };
 window.rvPrev = function(){
@@ -12320,7 +12391,7 @@ window.rvEnd = function(){
     renderReviewBoard();
   } else if(reviewHistory.length > 1){
     reviewIdx = reviewHistory.length - 1; renderReviewBoard();
-    document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
+    rvScrollMove(document.getElementById(`mc-${reviewIdx}`));
   }
 };
 // "See key moments" — skip the quiet moves and jump straight to the next
