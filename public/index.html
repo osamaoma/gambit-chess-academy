@@ -2907,6 +2907,21 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .cap-pc svg{ width:16px; height:16px; display:block; }
 #sec-review .rv-cap-adv{ font-family:var(--ob-mono); font-weight:700; font-size:13px; color:var(--ob-brass-2); margin-left:3px; }
 
+/* ── Player panels flanking the board (name + captures + live clock) ── */
+#sec-review .rv-player{ display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:36px; padding:6px 11px; margin:5px 0; background:linear-gradient(180deg, rgba(26,21,13,.72), rgba(18,15,9,.74)); border:1px solid var(--ob-line); border-radius:11px; box-shadow:inset 0 1px 0 rgba(255,225,170,.04); }
+#sec-review .rv-player:empty{ display:none; }
+#sec-review .rv-player-info{ display:flex; align-items:center; gap:14px; min-width:0; flex-wrap:wrap; }
+#sec-review .rv-player-id{ display:flex; align-items:center; gap:7px; }
+#sec-review .rv-player-dot{ width:11px; height:11px; border-radius:50%; flex:none; box-shadow:0 0 0 1px rgba(217,164,65,.35); }
+#sec-review .rv-player-dot.w{ background:#f3ead6; }
+#sec-review .rv-player-dot.b{ background:#15110a; }
+#sec-review .rv-player-name{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif; font-weight:700; font-size:14px; color:var(--ob-tx); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:170px; }
+#sec-review .rv-player-elo{ font-family:var(--ob-mono); font-size:11px; color:var(--ob-tx3); }
+#sec-review .rv-player-caps{ display:inline-flex; align-items:center; min-height:16px; }
+#sec-review .rv-clock{ font-family:var(--ob-mono); font-size:18px; font-weight:600; color:var(--ob-tx); background:rgba(8,6,3,.6); border:1px solid var(--ob-line); border-radius:8px; padding:3px 12px; font-variant-numeric:tabular-nums; flex:none; letter-spacing:.02em; transition:color .25s var(--ease), border-color .25s var(--ease); }
+#sec-review .rv-clock.low{ color:#e6b450; border-color:rgba(230,180,80,.5); }
+#sec-review .rv-clock.crit{ color:#ff6b5e; border-color:rgba(255,107,94,.6); background:rgba(60,12,8,.5); }
+
 /* ── Eval/Time toggle tabs on the graph ── */
 #sec-review .rv-eg-tabs{ display:flex; gap:5px; padding:0 0 6px; }
 #sec-review .rv-eg-tabs button{ font-family:var(--ob-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ob-tx3); background:transparent; border:1px solid var(--ob-line); border-radius:6px; padding:3px 10px; cursor:pointer; transition:color .2s var(--ease), background .2s var(--ease); }
@@ -3241,10 +3256,10 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
             </div>
             <div id="rv-result" style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--gold)"></div>
           </div>
-          <div id="rv-captures" class="rv-caps"></div>
           <div class="sum-grid" id="rv-summary"></div>
           <div class="acc-wrap" id="rv-acc"></div>
-          <div class="board-with-eval" style="margin-top:8px">
+          <div id="rv-player-top" class="rv-player"></div>
+          <div class="board-with-eval" style="margin-top:6px">
             <!-- Vertical eval bar (matches Openings tab) -->
             <div class="eval-bar-vertical" id="eval-bar-r">
               <div class="eval-bar-black" id="eval-bar-black-r" style="height:50%"></div>
@@ -3260,6 +3275,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
               <div class="board-files" id="board-files-r"></div>
             </div>
           </div>
+          <div id="rv-player-bot" class="rv-player"></div>
           <div class="board-controls">
             <button class="btn btn-outline btn-sm" onclick="rvStart()" title="Back to the start position">⟲ Restart</button>
             <button class="btn btn-outline btn-sm" onclick="rvPrev()">← Back</button>
@@ -10703,6 +10719,14 @@ async function loadReview(gameIdx){
   reviewHistory = buildHistory(moveSANs); // Analyse the full game
   reviewIdx = 0;
 
+  // Player identity for the board-flanking panels
+  reviewMeta = {
+    white: game.white || headers.White || 'White',
+    black: game.black || headers.Black || 'Black',
+    whiteElo: headers.WhiteElo || game.whiteElo || '',
+    blackElo: headers.BlackElo || game.blackElo || ''
+  };
+
   // Parse per-move clock data for the Time view (no-op if the PGN has no %clk)
   try { rvParseClocks(game.pgn, headers); } catch(e){ reviewHasClocks = false; }
 
@@ -10720,6 +10744,8 @@ let moveAnnotations = [];
 let reviewMoveTimes = [];   // seconds spent on each ply
 let reviewClocks = [];      // seconds remaining after each ply
 let reviewHasClocks = false;
+let reviewInitial = 0;      // starting clock (seconds) from TimeControl
+let reviewMeta = { white:'', black:'', whiteElo:'', blackElo:'' };
 
 // Win-probability model (lichess/chess.com style): eval in pawns (mover's perspective) -> win %.
 // Classifying by win% drop avoids flagging harmless eval dips when already winning or losing.
@@ -11021,6 +11047,7 @@ function rvParseClocks(pgn, headers){
   const tc = (headers && headers.TimeControl) || '';
   const tcm = String(tc).match(/^(\d+)(?:\+(\d+))?/);
   if(tcm){ initial = +tcm[1]; inc = tcm[2] ? +tcm[2] : 0; }
+  reviewInitial = initial;
   for(let p = 1; p <= total; p++){
     const cur = clocks[p-1];
     reviewClocks[p] = (typeof cur === 'number') ? cur : null;
@@ -11057,6 +11084,54 @@ function rvRenderCaptures(state){
       <span class="rv-cap-pcs">${blackCapd}</span>
       ${diff < 0 ? `<span class="rv-cap-adv">+${-diff}</span>` : ''}
     </div>`;
+}
+// Remaining clock for a colour at the current main-game ply
+function rvClockForColor(color, plyIdx){
+  if(!reviewHasClocks) return null;
+  let p = plyIdx || 0;
+  if(color === 'w'){ if(p % 2 === 0) p -= 1; } else { if(p % 2 === 1) p -= 1; }
+  if(p < 1) return reviewInitial || null;     // side hasn't moved yet → starting time
+  const c = reviewClocks[p];
+  return (typeof c === 'number') ? c : (reviewInitial || null);
+}
+// Player panels flanking the board: name + rating + captured pieces + live clock
+function rvRenderPlayers(state){
+  const top = document.getElementById('rv-player-top');
+  const bot = document.getElementById('rv-player-bot');
+  if(!top || !bot) return;
+  const flipped = (typeof isBoardFlipped === 'function') ? isBoardFlipped('board-r') : false;
+  let whiteCapd = '', blackCapd = '', wMat = 0, bMat = 0;
+  if(state && state.board){
+    const wc = rvCountPieces(state.board, 'w'), bc = rvCountPieces(state.board, 'b');
+    ['Q','R','B','N','P'].forEach(t => {
+      const blackMissing = RV_START[t] - bc[t], whiteMissing = RV_START[t] - wc[t];
+      for(let k=0;k<blackMissing;k++) whiteCapd += `<span class="cap-pc">${PIECE_SYMBOLS['b'+t]}</span>`;
+      for(let k=0;k<whiteMissing;k++) blackCapd += `<span class="cap-pc">${PIECE_SYMBOLS['w'+t]}</span>`;
+      wMat += wc[t]*RV_PVAL[t]; bMat += bc[t]*RV_PVAL[t];
+    });
+  }
+  const diff = wMat - bMat;
+  const inBranch = (typeof viewingBranch !== 'undefined' && viewingBranch);
+  const panel = color => {
+    const name = color === 'w' ? reviewMeta.white : reviewMeta.black;
+    const elo  = color === 'w' ? reviewMeta.whiteElo : reviewMeta.blackElo;
+    const caps = color === 'w' ? whiteCapd : blackCapd;
+    const adv  = color === 'w' ? (diff > 0 ? diff : 0) : (diff < 0 ? -diff : 0);
+    const clk  = inBranch ? null : rvClockForColor(color, reviewIdx);
+    const clkCls = clk == null ? '' : (clk < 10 ? ' crit' : (clk < 30 ? ' low' : ''));
+    return `
+      <div class="rv-player-info">
+        <div class="rv-player-id">
+          <span class="rv-player-dot ${color}"></span>
+          <span class="rv-player-name">${name || '—'}</span>
+          ${elo ? `<span class="rv-player-elo">${elo}</span>` : ''}
+        </div>
+        <div class="rv-player-caps">${caps}${adv > 0 ? `<span class="rv-cap-adv">+${adv}</span>` : ''}</div>
+      </div>
+      ${clk != null ? `<div class="rv-clock${clkCls}">${rvFmtClock(clk)}</div>` : ''}`;
+  };
+  top.innerHTML = panel(flipped ? 'w' : 'b');
+  bot.innerHTML = panel(flipped ? 'b' : 'w');
 }
 function renderEvalGraph(){
   const host = document.getElementById('rv-evalgraph');
@@ -11846,7 +11921,7 @@ function renderReviewBoard(){
 
   renderBoardEl('board-r', 'board-ranks-r', 'board-files-r', displayState, [], null);
   try{ rvEvalMarker(); }catch(e){}
-  try{ rvRenderCaptures(displayState); }catch(e){}
+  try{ rvRenderPlayers(displayState); }catch(e){}
 
   if(displayedMove){
     document.querySelectorAll('#board-r .sq').forEach(sq => {
