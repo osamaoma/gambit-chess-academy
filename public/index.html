@@ -2798,6 +2798,135 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
   .cosmos-bigstar{ animation:cosmos-twinkle var(--tw,5s) var(--ease) infinite; animation-delay:var(--td,0s) }
 }
 
+/* Evaluation graph — move-by-move eval timeline under the board */
+.rv-evalgraph{
+  margin:8px 0; border:1px solid var(--border); border-radius:8px; overflow:hidden;
+  background:linear-gradient(180deg, rgba(12,16,34,.65), rgba(8,11,26,.55));
+  box-shadow:inset 0 0 0 1px rgba(92,198,255,.06), 0 6px 18px rgba(0,0,0,.28);
+  position:relative;
+}
+.rv-evalgraph svg{ transition:opacity .3s var(--ease) }
+.rv-evalgraph #rv-eval-marker{ filter:drop-shadow(0 0 4px rgba(92,198,255,.7)) }
+
+/* ════════════════════════════════════════════════════════════════
+   BRASS OBSERVATORY — Game Review premium skin (scoped to #sec-review)
+   Warm brass-on-near-black over the space backdrop. Brown board stays.
+   ════════════════════════════════════════════════════════════════ */
+#sec-review{
+  --ob-brass:#d9a441; --ob-brass-2:#f2d18a;
+  --ob-panel:rgba(24,20,13,.82); --ob-panel-2:rgba(33,27,17,.9);
+  --ob-line:rgba(217,164,65,.18); --ob-tx:#efe7d4; --ob-tx2:#bcb097; --ob-tx3:#8c8268;
+  --ob-mono:'DM Mono','Fira Code',ui-monospace,monospace;
+  /* brass-ify every gold accent inside the review screen */
+  --gold:#d9a441; --gold2:#f2d18a; --gold3:rgba(217,164,65,.14); --gold-glow:rgba(217,164,65,.34);
+  position:relative;
+}
+#sec-review .btn-gold{ background:linear-gradient(135deg,#e7b94f,#cf9433) !important; color:#241704 !important; box-shadow:0 6px 20px rgba(217,164,65,.3) !important; }
+#sec-review .btn-gold:hover{ filter:brightness(1.07); }
+#sec-review .back-btn{ color:var(--ob-brass-2); }
+/* warm vignette that only paints while the review screen is on-screen */
+#sec-review::before{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(58% 46% at 28% 16%, rgba(217,164,65,.11), transparent 60%),
+    radial-gradient(72% 62% at 82% 92%, rgba(150,86,28,.10), transparent 66%);
+}
+
+/* ── Accuracy header (two big dials above the board) ── */
+#sec-review .acc-wrap{
+  display:flex; align-items:center; justify-content:center; gap:22px;
+  background:linear-gradient(180deg, var(--ob-panel-2), var(--ob-panel));
+  border:1px solid var(--ob-line); border-radius:14px; padding:13px 22px; margin:2px 0 10px;
+  box-shadow:0 12px 30px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,225,170,.06);
+}
+#sec-review .rv-accp{ flex:1; text-align:center; }
+#sec-review .rv-accp-cap{ font-size:11px; letter-spacing:.05em; color:var(--ob-tx3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#sec-review .rv-accp-num{ font-family:var(--ob-mono); font-size:40px; font-weight:600; line-height:1.02; color:var(--ob-brass-2); font-variant-numeric:tabular-nums; text-shadow:0 0 20px rgba(217,164,65,.35); }
+#sec-review .rv-accp-num span{ font-size:18px; color:var(--ob-tx2); margin-left:1px; text-shadow:none; }
+#sec-review .rv-accp-sub{ font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ob-tx3); margin-top:1px; }
+#sec-review .rv-acc-vs{ font-family:var(--ob-mono); font-size:12px; letter-spacing:.12em; color:var(--ob-tx3); flex:none; }
+
+/* ── Classification report card ── */
+#sec-review .rv-report{
+  background:linear-gradient(180deg, var(--ob-panel-2), var(--ob-panel));
+  border:1px solid var(--ob-line); border-radius:14px; padding:16px 16px 8px; margin-bottom:12px;
+  box-shadow:0 16px 38px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,225,170,.06);
+}
+#sec-review .rvr-title{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif; font-size:15px; font-weight:700; letter-spacing:.01em; color:var(--ob-tx); display:flex; align-items:center; gap:9px; }
+#sec-review .rvr-title::before{ content:''; width:7px; height:7px; border-radius:2px; background:var(--ob-brass); box-shadow:0 0 10px var(--ob-brass); }
+#sec-review .rvr-elo{ display:flex; align-items:stretch; gap:10px; margin:13px 0 6px; }
+#sec-review .rvr-elo-cell{ flex:1; text-align:center; padding:11px 6px; background:rgba(217,164,65,.06); border:1px solid var(--ob-line); border-radius:11px; }
+#sec-review .rvr-elo-n{ font-family:var(--ob-mono); font-size:25px; font-weight:600; color:var(--ob-brass-2); font-variant-numeric:tabular-nums; text-shadow:0 0 14px rgba(217,164,65,.28); }
+#sec-review .rvr-elo-l{ font-size:9px; letter-spacing:.09em; text-transform:uppercase; color:var(--ob-tx3); margin-top:3px; }
+#sec-review .rvr-elo-div{ width:1px; background:var(--ob-line); }
+#sec-review .rvr-table{ margin-top:8px; }
+#sec-review .rvr-head{ display:grid; grid-template-columns:1fr 40px 40px; padding:6px 4px; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ob-tx3); border-bottom:1px solid var(--ob-line); }
+#sec-review .rvr-head span:not(:first-child){ text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#sec-review .rvr-row{ display:grid; grid-template-columns:1fr 40px 40px; align-items:center; padding:6.5px 4px; border-bottom:1px solid rgba(217,164,65,.06); font-size:13px; color:var(--ob-tx); }
+#sec-review .rvr-row:last-child{ border-bottom:none; }
+#sec-review .rvr-cat{ display:flex; align-items:center; gap:10px; }
+#sec-review .rvr-ico{ width:21px; height:21px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#1a1206; font-style:normal; font-family:var(--ob-mono); box-shadow:0 2px 6px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25); flex:none; }
+#sec-review .rvr-n{ text-align:center; font-family:var(--ob-mono); font-variant-numeric:tabular-nums; font-weight:600; color:var(--ob-tx); }
+#sec-review .rvr-n.z{ color:var(--ob-tx3); opacity:.45; font-weight:400; }
+
+/* ── Premium eval bar beside the board ── */
+#sec-review .eval-bar-vertical{ width:16px; border-radius:8px; overflow:hidden; background:linear-gradient(180deg,#f5ecd7,#e6dabf); box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(217,164,65,.3); }
+#sec-review .eval-bar-black{ background:linear-gradient(180deg,#1b160c,#070503); transition:height .5s var(--ease); }
+#sec-review .eval-bar-score{ font-family:var(--ob-mono); font-size:10px; font-weight:600; }
+
+/* ── Warm panels (move list, detail, branch, live-eval, play bar) ── */
+#sec-review .move-list-panel, #sec-review .move-detail-box, #sec-review .user-moves-list,
+#sec-review #rv-live-eval, #sec-review .play-mode-bar{
+  background:linear-gradient(180deg, rgba(26,21,13,.7), rgba(18,15,9,.72)) !important;
+  border:1px solid var(--ob-line) !important;
+}
+#sec-review .move-cell:hover{ background:rgba(217,164,65,.1); }
+#sec-review .move-cell.cur{ background:rgba(217,164,65,.18); box-shadow:inset 0 0 0 1px var(--ob-line); }
+#sec-review .eval-chip{ font-family:var(--ob-mono); }
+#sec-review .pm-label{ color:var(--ob-brass-2); }
+
+/* ── Per-move coaching callout header ── */
+#sec-review .mdb-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+#sec-review .mdb-badge{ width:34px; height:34px; border-radius:9px; display:inline-flex; align-items:center; justify-content:center; font-family:var(--ob-mono); font-weight:800; font-size:15px; color:#1a1206; font-style:normal; box-shadow:0 3px 10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.3); flex:none; }
+#sec-review .mdb-head-main{ flex:1; min-width:0; }
+#sec-review .mdb-head-label{ font-family:'Bricolage Grotesque','Space Grotesk',sans-serif; font-size:18px; font-weight:700; line-height:1.1; }
+#sec-review .mdb-head-move{ font-family:var(--ob-mono); font-size:13px; color:var(--ob-tx2); margin-top:1px; }
+#sec-review .mdb-head-eval{ text-align:right; flex:none; }
+#sec-review .mdb-eval-n{ font-family:var(--ob-mono); font-size:19px; font-weight:600; color:var(--ob-brass-2); font-variant-numeric:tabular-nums; }
+#sec-review .mdb-eval-l{ font-size:9.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--ob-tx3); }
+#sec-review .learn-panel{ background:rgba(217,164,65,.05) !important; border:1px solid var(--ob-line) !important; }
+#sec-review .learn-card{ background:rgba(20,16,10,.6) !important; border-color:var(--ob-line) !important; }
+#sec-review .learn-header, #sec-review .mdb-best-h{ color:var(--ob-brass-2) !important; }
+
+/* ── Captured pieces + material diff ── */
+#sec-review .rv-caps{ display:flex; gap:20px; flex-wrap:wrap; align-items:center; margin:2px 0 9px; min-height:22px; }
+#sec-review .rv-cap-side{ display:flex; align-items:center; gap:7px; }
+#sec-review .rv-cap-name{ font-family:var(--ob-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ob-tx3); }
+#sec-review .rv-cap-pcs{ display:inline-flex; align-items:center; min-height:16px; }
+#sec-review .cap-pc{ width:16px; height:16px; display:inline-block; margin-right:-3px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.45)); }
+#sec-review .cap-pc svg{ width:16px; height:16px; display:block; }
+#sec-review .rv-cap-adv{ font-family:var(--ob-mono); font-weight:700; font-size:13px; color:var(--ob-brass-2); margin-left:3px; }
+
+/* ── Eval-graph phase markers ── */
+#sec-review .rv-eg-phases{ display:flex; padding:0 1px 3px; }
+#sec-review .rv-eg-phases span{ text-align:center; font-family:var(--ob-mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--ob-tx3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-right:1px solid rgba(217,164,65,.14); }
+#sec-review .rv-eg-phases span:last-child{ border-right:none; }
+
+/* board glow shifts warm in the observatory */
+#sec-review .chess-board{ box-shadow:0 18px 50px rgba(0,0,0,.55), 0 0 52px rgba(217,164,65,.16); }
+#sec-review #arrow-overlay-r{ filter:drop-shadow(0 0 5px rgba(242,209,138,.55)); }
+#sec-review .rv-evalgraph{ box-shadow:inset 0 0 0 1px rgba(217,164,65,.07), 0 6px 18px rgba(0,0,0,.32); }
+#sec-review .rv-evalgraph #rv-eval-marker{ filter:drop-shadow(0 0 4px rgba(242,209,138,.8)) !important; }
+
+/* ── Alive motion (respects reduced-motion) ── */
+@media (prefers-reduced-motion: no-preference){
+  #sec-review .rv-report, #sec-review .acc-wrap{ animation:obIn .55s var(--ease) both; }
+  #sec-review .rvr-row{ animation:obRow .42s var(--ease) both; animation-delay:calc(var(--ri,0)*38ms + .12s); }
+  #sec-review .rvr-elo-cell{ animation:obIn .5s var(--ease) both; animation-delay:.1s; }
+  @keyframes obIn{ from{opacity:0; transform:translateY(10px) scale(.99)} to{opacity:1; transform:none} }
+  @keyframes obRow{ from{opacity:0; transform:translateX(-7px)} to{opacity:1; transform:none} }
+}
+
 </style>
 </head>
 <body>
@@ -3100,6 +3229,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
             </div>
             <div id="rv-result" style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--gold)"></div>
           </div>
+          <div id="rv-captures" class="rv-caps"></div>
           <div class="sum-grid" id="rv-summary"></div>
           <div class="acc-wrap" id="rv-acc"></div>
           <div class="board-with-eval" style="margin-top:8px">
@@ -3127,6 +3257,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
             <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
+          <div class="rv-evalgraph" id="rv-evalgraph" style="display:none"></div>
           <div class="play-mode-bar" style="margin-bottom:6px">
             <span class="pm-label">Play mode</span>
             <span class="pm-text">Click any piece to explore alternative moves. Branch off the game to test ideas with live engine analysis.</span>
@@ -3136,8 +3267,9 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
             <div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>
           </div>
         </div>
-        <!-- Game move list + your exploration branch -->
+        <!-- Game Review report + move list + your exploration branch -->
         <div>
+          <div class="rv-report" id="rv-report"></div>
           <div class="move-list-panel" id="rv-movelist"></div>
           <div class="user-moves-list" id="user-moves-r"></div>
         </div>
@@ -10771,32 +10903,211 @@ async function analyseGame(white, black, username){
   const wAcc = accOf(wMoves);
   const bAcc = accOf(bMoves);
 
-  const greatN  = moveAnnotations.filter(m => m.ann === 'great').length;
-  const bestN   = moveAnnotations.filter(m => m.ann === 'best').length;
-  const inaccN  = moveAnnotations.filter(m => m.ann === 'inaccuracy').length;
-  const missN   = moveAnnotations.filter(m => m.ann === 'miss').length;
+  // ─── Per-side classification breakdown (chess.com-style report) ───
+  const RV_CATS = ['brilliant','great','best','excellent','good','book','inaccuracy','mistake','miss','blunder'];
+  const RV_CAT_LAB = {brilliant:'Brilliant',great:'Great',best:'Best',excellent:'Excellent',good:'Good',book:'Book',inaccuracy:'Inaccuracy',mistake:'Mistake',miss:'Miss',blunder:'Blunder'};
+  const RV_CAT_GLY = {brilliant:'!!',great:'!',best:'★',excellent:'✓',good:'✓',book:'B',inaccuracy:'?!',mistake:'?',miss:'×',blunder:'??'};
+  const RV_CAT_COL = {brilliant:'#34c6a8',great:'#6aa6ff',best:'#7bbf6a',excellent:'#9ccc65',good:'#b9c08f',book:'#c79a5b',inaccuracy:'#e6b450',mistake:'#e08a3c',miss:'#d06b7a',blunder:'#e0524e'};
+  const cntOf = (arr, a) => arr.filter(m => m.ann === a).length;
+  const estElo = acc => Math.max(250, Math.min(2850, Math.round(250 + Math.pow(Math.max(0, acc)/100, 2.2) * 2600)));
+  const wElo = estElo(wAcc), bElo = estElo(bAcc);
+  const shortName = s => { s = String(s || ''); return s.length > 11 ? s.slice(0,10) + '…' : s; };
 
-  document.getElementById('rv-summary').innerHTML = `
-    <div class="sum-box sb-brilliant"><div class="sum-n">${brilliant}</div><div class="sum-l">Brilliant</div></div>
-    <div class="sum-box sb-brilliant" style="border-left-color:#5b89e5"><div class="sum-n">${greatN}</div><div class="sum-l">Great</div></div>
-    <div class="sum-box sb-brilliant" style="border-left-color:#7ec577"><div class="sum-n">${bestN}</div><div class="sum-l">Best</div></div>
-    <div class="sum-box sb-mistake" style="border-left-color:#e8c662"><div class="sum-n">${inaccN}</div><div class="sum-l">Inaccuracy</div></div>
-    <div class="sum-box sb-mistake"><div class="sum-n">${mistakes}</div><div class="sum-l">Mistakes</div></div>
-    <div class="sum-box sb-blunder"><div class="sum-n">${blunders}</div><div class="sum-l">Blunders</div></div>
-    ${missN > 0 ? `<div class="sum-box" style="border-left:3px solid #b85a8f"><div class="sum-n">${missN}</div><div class="sum-l">Miss</div></div>` : ''}
-    <div class="sum-box sb-acc"><div class="sum-n">${accuracy}%</div><div class="sum-l">Accuracy</div></div>`;
-
-  document.getElementById('rv-acc').innerHTML = `
-    <div class="acc-row">
-      <div class="acc-label"><span>${white}</span><span>${wAcc}%</span></div>
-      <div class="acc-track"><div class="acc-fill" style="width:${wAcc}%;background:var(--text)"></div></div>
+  // Accuracy header — two big dials above the board
+  const accEl = document.getElementById('rv-acc');
+  if(accEl) accEl.innerHTML = `
+    <div class="rv-accp">
+      <div class="rv-accp-cap">White · ${shortName(white)}</div>
+      <div class="rv-accp-num" data-countup="${wAcc}">0<span>%</span></div>
+      <div class="rv-accp-sub">Accuracy</div>
     </div>
-    <div class="acc-row">
-      <div class="acc-label"><span>${black}</span><span>${bAcc}%</span></div>
-      <div class="acc-track"><div class="acc-fill" style="width:${bAcc}%;background:var(--bs)"></div></div>
+    <div class="rv-acc-vs">vs</div>
+    <div class="rv-accp">
+      <div class="rv-accp-cap">Black · ${shortName(black)}</div>
+      <div class="rv-accp-num" data-countup="${bAcc}">0<span>%</span></div>
+      <div class="rv-accp-sub">Accuracy</div>
     </div>`;
 
+  // Classification report card — right column, above the move list
+  const sumEl = document.getElementById('rv-summary');
+  if(sumEl){ sumEl.innerHTML = ''; sumEl.style.display = 'none'; }
+  const repRows = RV_CATS.map((c, i) => {
+    const wc = cntOf(wMoves, c), bc = cntOf(bMoves, c), col = RV_CAT_COL[c];
+    return `<div class="rvr-row" data-cat="${c}" style="--ri:${i}">
+        <span class="rvr-cat"><i class="rvr-ico" style="background:${col}">${RV_CAT_GLY[c]}</i>${RV_CAT_LAB[c]}</span>
+        <span class="rvr-n${wc ? '' : ' z'}"${wc ? ` style="color:${col}"` : ''}>${wc}</span>
+        <span class="rvr-n${bc ? '' : ' z'}"${bc ? ` style="color:${col}"` : ''}>${bc}</span>
+      </div>`;
+  }).join('');
+  const repEl = document.getElementById('rv-report');
+  if(repEl) repEl.innerHTML = `
+    <div class="rvr-title">Game Review</div>
+    <div class="rvr-elo">
+      <div class="rvr-elo-cell"><div class="rvr-elo-n" data-countup="${wElo}">0</div><div class="rvr-elo-l">White · est. rating</div></div>
+      <div class="rvr-elo-div"></div>
+      <div class="rvr-elo-cell"><div class="rvr-elo-n" data-countup="${bElo}">0</div><div class="rvr-elo-l">Black · est. rating</div></div>
+    </div>
+    <div class="rvr-table">
+      <div class="rvr-head"><span>Move type</span><span title="${white}">${shortName(white)}</span><span title="${black}">${shortName(black)}</span></div>
+      ${repRows}
+    </div>`;
+
+  try{ rvAnimateReport(); }catch(e){}
+
   detailEl.innerHTML = `<div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>`;
+}
+
+// ─────────────── Evaluation graph (move-by-move eval timeline) ───────────────
+// Original cosmic-style data viz: white-advantage silhouette + per-move
+// classification dots + a current-move marker, clickable to jump anywhere.
+const RV_GRAPH_COL = {
+  brilliant:'#34c6a8', great:'#6aa6ff', best:'#7bbf6a', excellent:'#9ccc65',
+  good:'#b9c08f', book:'#c79a5b', inaccuracy:'#e6b450', mistake:'#e08a3c',
+  miss:'#d06b7a', blunder:'#e0524e'
+};
+// Material helpers (shared by the phase markers + captured-pieces widget)
+const RV_START = {P:8, N:2, B:2, R:2, Q:1, K:1};
+const RV_PVAL  = {P:1, N:3, B:3, R:5, Q:9, K:0};
+function rvCountPieces(board, color){
+  const c = {P:0, N:0, B:0, R:0, Q:0, K:0};
+  for(const sq in board){ const p = board[sq]; if(p && p[0] === color && c[p[1]] !== undefined) c[p[1]]++; }
+  return c;
+}
+function rvNonPawnMat(board){
+  let m = 0;
+  for(const sq in board){ const p = board[sq]; if(p && p[1] !== 'P' && p[1] !== 'K') m += (RV_PVAL[p[1]] || 0); }
+  return m;
+}
+// Captured-pieces + material-diff widget for the current position
+function rvRenderCaptures(state){
+  const host = document.getElementById('rv-captures');
+  if(!host) return;
+  if(!state || !state.board){ host.innerHTML = ''; return; }
+  const wc = rvCountPieces(state.board, 'w'), bc = rvCountPieces(state.board, 'b');
+  const order = ['Q','R','B','N','P'];
+  let whiteCapd = '', blackCapd = '', wMat = 0, bMat = 0;
+  order.forEach(t => {
+    const blackMissing = RV_START[t] - bc[t];   // pieces White captured
+    const whiteMissing = RV_START[t] - wc[t];   // pieces Black captured
+    for(let k=0;k<blackMissing;k++) whiteCapd += `<span class="cap-pc">${PIECE_SYMBOLS['b'+t]}</span>`;
+    for(let k=0;k<whiteMissing;k++) blackCapd += `<span class="cap-pc">${PIECE_SYMBOLS['w'+t]}</span>`;
+  });
+  ['P','N','B','R','Q'].forEach(t => { wMat += wc[t]*RV_PVAL[t]; bMat += bc[t]*RV_PVAL[t]; });
+  const diff = wMat - bMat;
+  host.innerHTML = `
+    <div class="rv-cap-side">
+      <span class="rv-cap-name">White</span>
+      <span class="rv-cap-pcs">${whiteCapd}</span>
+      ${diff > 0 ? `<span class="rv-cap-adv">+${diff}</span>` : ''}
+    </div>
+    <div class="rv-cap-side">
+      <span class="rv-cap-name">Black</span>
+      <span class="rv-cap-pcs">${blackCapd}</span>
+      ${diff < 0 ? `<span class="rv-cap-adv">+${-diff}</span>` : ''}
+    </div>`;
+}
+function renderEvalGraph(){
+  const host = document.getElementById('rv-evalgraph');
+  if(!host) return;
+  const total = (reviewHistory ? reviewHistory.length : 0) - 1;
+  if(total < 1 || !moveAnnotations || !moveAnnotations.length){ host.innerHTML=''; host.style.display='none'; return; }
+  host.style.display='block';
+  window._rvGraphTotal = total;
+  const W = 1000, H = 64, cy = H/2;
+  function evAt(i){
+    if(i <= 0) return 0;
+    const m = moveAnnotations[i-1];
+    if(!m) return 0;
+    if(m.isMate) return (m.mateIn > 0 ? 14 : -14);
+    return (typeof m.evalAfter === 'number') ? m.evalAfter : (parseFloat(m.eval) || 0);
+  }
+  // Soft-clamp eval to a vertical position (−∞..∞ → padded band).
+  function yAt(e){ const f = e / (Math.abs(e) + 3.2); return (cy - f*(cy-4)).toFixed(1); }
+  const pts = [];
+  for(let i=0;i<=total;i++){ pts.push((i/total*W).toFixed(1) + ',' + yAt(evAt(i))); }
+  const area = 'M 0,' + H + ' L ' + pts.join(' L ') + ' L ' + W + ',' + H + ' Z';
+  const line = 'M ' + pts.join(' L ');
+  let dots = '';
+  for(let i=1;i<=total;i++){
+    const a = moveAnnotations[i-1] && moveAnnotations[i-1].ann;
+    const c = a && RV_GRAPH_COL[a];
+    if(!c) continue;
+    const big = (a==='brilliant'||a==='blunder'||a==='mistake'||a==='miss');
+    dots += '<circle cx="'+(i/total*W).toFixed(1)+'" cy="'+(H-4)+'" r="'+(big?3:2)+'" fill="'+c+'"'+(big?' stroke="rgba(7,10,24,.9)" stroke-width="0.6"':'')+'/>';
+  }
+  const mx = (Math.max(0, reviewIdx||0)/total*W).toFixed(1);
+
+  // ── Phase markers: opening / middlegame / endgame (from on-board material) ──
+  let endStart = total + 1;
+  for(let i=0;i<=total;i++){
+    const st = reviewHistory[i] && reviewHistory[i].state;
+    if(st && st.board && rvNonPawnMat(st.board) <= 20){ endStart = i; break; }
+  }
+  let openEnd = Math.min(20, total, endStart);   // ~move 10, but never past the endgame
+  if(openEnd < 2) openEnd = Math.min(total, endStart);
+  const bands = [];
+  if(openEnd > 0) bands.push({label:'Opening', a:0, b:openEnd});
+  const midEnd = Math.min(endStart, total);
+  if(midEnd > openEnd) bands.push({label:'Middlegame', a:openEnd, b:midEnd});
+  if(endStart <= total) bands.push({label:'Endgame', a:endStart, b:total});
+  const phaseStrip = '<div class="rv-eg-phases">' + bands.map(bd =>
+      '<span style="flex:'+Math.max(1, bd.b-bd.a)+'">'+bd.label+'</span>').join('') + '</div>';
+  let dividers = '';
+  bands.forEach((bd, i) => { if(i>0){ const x=(bd.a/total*W).toFixed(1);
+    dividers += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" stroke="rgba(217,164,65,.3)" stroke-width="1" stroke-dasharray="2 3"/>'; } });
+
+  host.innerHTML = phaseStrip
+    + '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:60px;display:block;cursor:pointer" onclick="rvGraphClick(event)">'
+    + '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(244,236,216,.34)"/><stop offset="1" stop-color="rgba(244,236,216,.10)"/></linearGradient></defs>'
+    + '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(12,9,4,.55)"/>'
+    + '<path d="'+area+'" fill="url(#rvWhiteGrad)"/>'
+    + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="rgba(217,164,65,.18)" stroke-width="1"/>'
+    + dividers
+    + '<path d="'+line+'" fill="none" stroke="rgba(242,225,186,.6)" stroke-width="1.4"/>'
+    + dots
+    + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>'
+    + '</svg>';
+}
+window.rvGraphClick = function(ev){
+  const total = window._rvGraphTotal || 0; if(!total) return;
+  const svg = ev.currentTarget, rect = svg.getBoundingClientRect();
+  let ply = Math.round((ev.clientX - rect.left)/rect.width * total);
+  ply = Math.max(0, Math.min(total, ply));
+  try{ if(typeof viewingBranch !== 'undefined') viewingBranch = false; }catch(e){}
+  reviewIdx = ply;
+  renderReviewBoard();
+  document.querySelectorAll('.move-cell, .branch-move').forEach(el => el.classList.remove('cur'));
+  const cell = document.getElementById('mc-'+reviewIdx);
+  if(cell){ cell.classList.add('cur'); cell.scrollIntoView({block:'nearest'}); }
+};
+function rvEvalMarker(){
+  const m = document.getElementById('rv-eval-marker');
+  const total = window._rvGraphTotal || 0;
+  if(!m || !total) return;
+  const x = (Math.max(0, (typeof reviewIdx==='number'?reviewIdx:0))/total*1000).toFixed(1);
+  m.setAttribute('x1', x); m.setAttribute('x2', x);
+}
+
+// Count-up animation for accuracy / estimated-rating numbers in the report.
+// Preserves any trailing <span> (e.g. the "%") by only mutating the leading text node.
+function rvAnimateReport(){
+  const root = document.getElementById('rv-output'); if(!root) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  root.querySelectorAll('[data-countup]').forEach(el => {
+    const target = parseFloat(el.getAttribute('data-countup')) || 0;
+    // ensure a leading text node we can mutate without clobbering a child <span>
+    if(!el.childNodes[0] || el.childNodes[0].nodeType !== 3){
+      el.insertBefore(document.createTextNode('0'), el.firstChild);
+    }
+    if(reduce){ el.childNodes[0].nodeValue = target; return; }
+    const dur = 900, t0 = performance.now();
+    (function step(now){
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.childNodes[0].nodeValue = Math.round(target * e);
+      if(p < 1) requestAnimationFrame(step);
+    })(performance.now());
+  });
 }
 
 function renderMoveList(){
@@ -10853,6 +11164,7 @@ function renderMoveList(){
     ml.appendChild(row);
 
   }
+  try{ renderEvalGraph(); }catch(e){}
 }
 
 // When user clicks a GAME move (not a branch move) — restore game line if needed, then jump
@@ -10890,8 +11202,11 @@ window.selectReviewMove = function(idx){
   // on the current position (the one AFTER the user's move). The user can then click
   // "Show better move" to step back and see the recommendation in its proper context.
   drawReviewArrows(ann, idx);
-  const annLabels = {brilliant:'✦ Brilliant!', best:'✓ Best move', good:'○ Good move', inaccuracy:'⚠ Inaccuracy', mistake:'✗ Mistake', blunder:'✗✗ Blunder'};
-  const annCols = {brilliant:'var(--brilliant)',best:'var(--green3)',good:'var(--text)',inaccuracy:'var(--inaccuracy)',mistake:'var(--mistake)',blunder:'var(--blunder)'};
+  // Full 10-category coaching header — matches the report badges (chess.com format)
+  const RVD_LAB = {brilliant:'Brilliant',great:'Great',best:'Best move',excellent:'Excellent',good:'Good',book:'Book move',inaccuracy:'Inaccuracy',mistake:'Mistake',miss:'Miss',blunder:'Blunder'};
+  const RVD_GLY = {brilliant:'!!',great:'!',best:'★',excellent:'✓',good:'✓',book:'B',inaccuracy:'?!',mistake:'?',miss:'×',blunder:'??'};
+  const RVD_COL = {brilliant:'#34c6a8',great:'#6aa6ff',best:'#7bbf6a',excellent:'#9ccc65',good:'#b9c08f',book:'#c79a5b',inaccuracy:'#e6b450',mistake:'#e08a3c',miss:'#d06b7a',blunder:'#e0524e'};
+  const _ac = RVD_COL[ann.ann] || '#b9c08f';
   const evalNum = parseFloat(ann.eval);
   const evalPct = Math.min(90, Math.max(10, 50 + evalNum * 5));
 
@@ -10903,17 +11218,21 @@ window.selectReviewMove = function(idx){
   const isWhiteMove = idx % 2 === 1;
   const moveNum = Math.ceil(idx / 2);
   const moveStr = `${moveNum}${isWhiteMove ? '.' : '...'} ${mv?.san || ''}`;
+  const evalDisplay = ann.isMate ? `${(ann.mateIn||0) >= 0 ? '+' : '−'}M${Math.abs(ann.mateIn||0)}` : `${ann.eval}`;
 
-  // Build the basic detail header
+  // Build the chess.com-style coaching header
   let html = `
-    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px">
-      <div style="font-size:28px;line-height:1;color:${annCols[ann.ann]}">${annLabels[ann.ann]}</div>
-      <div style="margin-left:auto;text-align:right">
-        <div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--gold)">${evalNum > 0 ? '+' : ''}${ann.eval}</div>
-        <div style="font-size:11px;color:var(--text3)">Engine eval</div>
+    <div class="mdb-head">
+      <i class="mdb-badge" style="background:${_ac}">${RVD_GLY[ann.ann] || '•'}</i>
+      <div class="mdb-head-main">
+        <div class="mdb-head-label" style="color:${_ac}">${RVD_LAB[ann.ann] || 'Move'}</div>
+        <div class="mdb-head-move">${moveStr}</div>
+      </div>
+      <div class="mdb-head-eval">
+        <div class="mdb-eval-n">${evalDisplay}</div>
+        <div class="mdb-eval-l">Engine eval</div>
       </div>
     </div>
-    <div class="mdb-move">${moveStr}</div>
   `;
 
   // For sub-best moves, show the LEARNING PANEL
@@ -11432,6 +11751,8 @@ function renderReviewBoard(){
   document.querySelectorAll('#board-r .mc-badge').forEach(b => b.remove());
 
   renderBoardEl('board-r', 'board-ranks-r', 'board-files-r', displayState, [], null);
+  try{ rvEvalMarker(); }catch(e){}
+  try{ rvRenderCaptures(displayState); }catch(e){}
 
   if(displayedMove){
     document.querySelectorAll('#board-r .sq').forEach(sq => {
