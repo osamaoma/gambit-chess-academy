@@ -3205,6 +3205,55 @@ body{ padding-top:90px; }
 .nav-acc-name{ font-family:'Satoshi',sans-serif; font-size:13px; font-weight:700; color:var(--gold); }
 @media(max-width:760px){ .nav-account{ display:none } }
 
+/* ════════════ PREMIUM REPERTOIRE MAP (Course Creator) ════════════ */
+#cc-repviz.cc-repviz{
+  position:relative; margin-top:16px; padding:0; overflow:hidden;
+  background:linear-gradient(180deg, rgba(24,24,28,.9), rgba(14,14,17,.94));
+  border:1px solid rgba(255,255,255,.09); border-radius:16px;
+  box-shadow:0 18px 46px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.04);
+}
+#cc-repviz .rep-label{
+  display:flex; align-items:center; gap:9px; padding:13px 18px 12px; margin:0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  font-family:'DM Mono',monospace; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--text2);
+}
+#cc-repviz .rep-label::before{ content:''; width:7px; height:7px; border-radius:2px; background:var(--gold); box-shadow:0 0 10px var(--gold); flex:none; }
+/* contained scroll viewport — fits the screen, scrolls inside its own frame */
+#cc-repviz .rep-tree{
+  max-height:min(300px, 42vh); overflow:auto; padding:20px 26px; scroll-behavior:smooth; overscroll-behavior:contain;
+}
+#cc-repviz .rep-tree::-webkit-scrollbar{ height:9px; width:9px; }
+#cc-repviz .rep-tree::-webkit-scrollbar-thumb{ background:rgba(212,175,55,.35); border-radius:9px; border:2px solid transparent; background-clip:padding-box; }
+#cc-repviz .rep-tree::-webkit-scrollbar-thumb:hover{ background:rgba(212,175,55,.6); background-clip:padding-box; }
+#cc-repviz .rep-tree::-webkit-scrollbar-track{ background:transparent; }
+#cc-repviz .rep-tree{ scrollbar-color:rgba(212,175,55,.4) transparent; scrollbar-width:thin; }
+/* right/left fade masks to signal horizontal scroll (below the header) */
+#cc-repviz::after{ content:''; position:absolute; top:43px; right:0; bottom:0; width:44px; background:linear-gradient(90deg,transparent,rgba(14,14,17,.95)); pointer-events:none; z-index:2; }
+#cc-repviz::before{ content:''; position:absolute; top:43px; left:0; bottom:0; width:22px; background:linear-gradient(90deg,rgba(14,14,17,.9),transparent); pointer-events:none; z-index:2; }
+/* nodes */
+#cc-repviz .rep-row{ align-items:center; gap:0; }
+#cc-repviz .rep-node{
+  position:relative; z-index:1; background:linear-gradient(180deg,#20201f,#161615); border:1px solid rgba(255,255,255,.1);
+  border-radius:10px; padding:6px 13px; margin:2px; font-family:'DM Mono',monospace; font-weight:600; font-size:12.5px;
+  color:var(--text); white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,.35);
+  transition:transform .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease), color .18s var(--ease);
+}
+#cc-repviz button.rep-node:hover{ transform:translateY(-2px); border-color:var(--gold); color:var(--gold2); box-shadow:0 9px 22px rgba(212,175,55,.3); }
+#cc-repviz .rep-node.rep-root{ background:rgba(212,175,55,.14); border-color:rgba(212,175,55,.42); color:var(--gold2); }
+#cc-repviz .rep-node.rep-cur{ background:linear-gradient(180deg,#ecca5e,#cf9f33); border-color:transparent; color:#161206; box-shadow:0 6px 20px rgba(212,175,55,.45); }
+/* connectors — soft gold branch lines */
+#cc-repviz .rep-children{ display:flex; flex-direction:column; gap:11px; padding-left:24px; border-left:none; position:relative; margin-left:12px; }
+#cc-repviz .rep-children::before{ content:''; position:absolute; left:0; top:15px; bottom:15px; width:1.5px; background:linear-gradient(180deg,rgba(212,175,55,.45),rgba(255,255,255,.08)); }
+#cc-repviz .rep-children > .rep-row::before{ content:''; position:absolute; left:-24px; top:50%; width:24px; height:1.5px; background:rgba(212,175,55,.32); }
+#cc-repviz .rep-empty{ color:var(--text2); font-size:13px; line-height:1.6; padding:24px 26px; max-width:520px; }
+/* alive motion */
+@media (prefers-reduced-motion: no-preference){
+  #cc-repviz .rep-node{ animation:ccRepIn .42s var(--ease) both; }
+  @keyframes ccRepIn{ from{ opacity:0; transform:translateY(5px) scale(.92) } to{ opacity:1; transform:none } }
+  #cc-repviz .rep-node.rep-cur{ animation:ccRepIn .42s var(--ease) both, ccCurPulse 2.6s ease-in-out .5s infinite; }
+  @keyframes ccCurPulse{ 0%,100%{ box-shadow:0 6px 20px rgba(212,175,55,.42) } 50%{ box-shadow:0 6px 30px rgba(212,175,55,.72) } }
+}
+
 </style>
 </head>
 <body>
@@ -25849,7 +25898,6 @@ function acadCoursePct(courseId){
 
 // ═══════════════ COURSE VIEW (roadmap) ═══════════════
 async function acadOpenCourse(courseId){
-  if(!window.gambitGate('Create a free account to start this course.', function(){ acadOpenCourse(courseId); })) return;
   const meta = ACAD_COURSES.find(c=>c.id===courseId);
   if(!meta || !meta.ready) return;
   // load course data
