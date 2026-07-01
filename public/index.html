@@ -3390,6 +3390,14 @@ body{ padding-top:90px; }
 .ol-rcard-lines{ font-family:'DM Mono',monospace; font-size:11px; color:var(--text3); flex:none; white-space:nowrap; }
 .ol-rcard-cta{ align-self:flex-start; display:inline-flex; align-items:center; gap:7px; margin-top:3px; background:none; border:none; padding:3px 0; color:var(--gold2); font-family:'Satoshi',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:gap .18s var(--ease), color .18s var(--ease); }
 .ol-rcard-cta:hover{ gap:11px; color:var(--gold); }
+.ol-rcard-cta.due{ color:var(--gold); }
+.ol-due-badge{ display:inline-flex; align-items:center; font-family:'DM Mono',monospace; font-size:10.5px; font-weight:600; color:#0a0a0b; background:linear-gradient(180deg,#e8c75a,#c2912b); border-radius:999px; padding:2px 9px; white-space:nowrap; flex:none; box-shadow:0 3px 10px rgba(212,175,55,.3); }
+.ol-toolbar-stats{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.ol-review-pill{ display:inline-flex; align-items:center; gap:8px; background:rgba(212,175,55,.12); border:1px solid rgba(212,175,55,.4); color:var(--gold2); border-radius:999px; padding:6px 14px; font-family:'Satoshi',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:background .18s var(--ease), transform .18s var(--ease); }
+.ol-review-pill:hover{ background:rgba(212,175,55,.2); transform:translateY(-1px); }
+.ol-review-dot{ width:7px; height:7px; border-radius:50%; background:var(--gold); flex:none; box-shadow:0 0 8px var(--gold); }
+.ol-review-clear{ font-family:'DM Mono',monospace; font-size:12px; color:var(--text3); }
+@media (prefers-reduced-motion: no-preference){ .ol-review-dot{ animation:olDot 1.8s ease-in-out infinite; } @keyframes olDot{ 0%,100%{ opacity:1 } 50%{ opacity:.4 } } }
 @media (prefers-reduced-motion: no-preference){
   .ol-rcard{ animation:olCardIn .45s var(--ease) both; }
   @keyframes olCardIn{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
@@ -24536,8 +24544,30 @@ async function olInit(){
 function olMasteryGet(){ try { return JSON.parse(localStorage.getItem('gambit_ol_mastery')) || {}; } catch(e){ return {}; } }
 function olMasterySet(m){ try { localStorage.setItem('gambit_ol_mastery', JSON.stringify(m)); } catch(e){} }
 function olVarId(op, vIdx){ return `${op.f}#${vIdx}`; }
-function olMarkMastered(id){ const m = olMasteryGet(); m[id] = Date.now(); olMasterySet(m); }
-function olIsMastered(id){ return !!olMasteryGet()[id]; }
+const OL_DAY = 86400000;
+// Normalise a stored entry (old format was a bare timestamp number)
+function olEntry(id){
+  const raw = olMasteryGet()[id];
+  if(raw == null) return null;
+  if(typeof raw === 'number') return { m: raw, due: 0, iv: 1, reps: 1 }; // legacy → due now
+  return raw;
+}
+function olIsMastered(id){ return olEntry(id) != null; }
+function olIsDue(id){ const e = olEntry(id); return !!e && (e.due||0) <= Date.now(); }
+// Called on a correct learn/review — grow the interval (spaced repetition)
+function olMarkMastered(id){
+  const all = olMasteryGet();
+  const prev = olEntry(id);
+  const reps = (prev ? (prev.reps||0) : 0) + 1;
+  const iv = reps <= 1 ? 1 : Math.max(1, Math.round((prev && prev.iv || 1) * 2.3));
+  all[id] = { m: Date.now(), due: Date.now() + iv * OL_DAY, iv, reps };
+  olMasterySet(all);
+}
+function olDueCount(op){ let n = 0; op.v.forEach((v,i)=>{ if(olIsDue(olVarId(op,i))) n++; }); return n; }
+function olLearnedCount(op){ let n = 0; op.v.forEach((v,i)=>{ if(olIsMastered(olVarId(op,i))) n++; }); return n; }
+function olTotalDue(){ let n = 0; (OL||[]).forEach(op=>{ n += olDueCount(op); }); return n; }
+function olFirstDueIdx(op){ for(let i=0;i<op.v.length;i++){ if(olIsDue(olVarId(op,i))) return i; } return -1; }
+function olFirstUnlearnedIdx(op){ for(let i=0;i<op.v.length;i++){ if(!olIsMastered(olVarId(op,i))) return i; } return -1; }
 
 function olEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -24578,9 +24608,16 @@ function olRenderGrid(){
     const opIdx = OL.indexOf(op);
     const base = op.v.reduce((a,b)=> b.tp<a.tp?b:a, op.v[0]);
     const baseIdx = op.v.indexOf(base);
-    const mastered = op.v.filter((v,i)=>olIsMastered(olVarId(op,i))).length;
-    const pct = op.v.length ? Math.round(mastered/op.v.length*100) : 0;
+    const learned = olLearnedCount(op);
+    const due = olDueCount(op);
+    const pct = op.v.length ? Math.round(learned/op.v.length*100) : 0;
     const desc = op.desc || op.blurb || ('The ' + op.f + ' — ' + olFmtMoves(base.s, 6) + '.');
+    let ctaLabel, ctaIdx;
+    if(due > 0){ ctaLabel = 'Review ' + due + ' line' + (due===1?'':'s'); ctaIdx = olFirstDueIdx(op); }
+    else if(learned === 0){ ctaLabel = 'Try the first line'; ctaIdx = baseIdx; }
+    else if(learned < op.v.length){ ctaLabel = 'Continue learning'; ctaIdx = olFirstUnlearnedIdx(op); }
+    else { ctaLabel = 'Practice again'; ctaIdx = baseIdx; }
+    if(ctaIdx < 0) ctaIdx = baseIdx;
     return `<article class="ol-rcard" onclick="olOpenIntro(${opIdx})">
       <div class="ol-rcard-board"><div class="chess-board ol-thumb-board" id="olthumb-${opIdx}"></div></div>
       <div class="ol-rcard-body">
@@ -24588,16 +24625,23 @@ function olRenderGrid(){
         <p class="ol-rcard-desc">${olEsc(desc)}</p>
         <div class="ol-rcard-prog">
           <div class="ol-rcard-bar"><span style="width:${pct}%"></span></div>
-          <span class="ol-rcard-lines">${op.v.length} line${op.v.length===1?'':'s'}${mastered?' · '+mastered+' learned':''}</span>
+          <span class="ol-rcard-lines">${op.v.length} lines${learned?' · '+learned+' learned':''}</span>
+          ${due>0?`<span class="ol-due-badge">${due} due</span>`:''}
         </div>
-        <button class="ol-rcard-cta" onclick="event.stopPropagation();olStartLearn(${opIdx},${baseIdx})">Try the first line ${ARROW}</button>
+        <button class="ol-rcard-cta${due>0?' due':''}" onclick="event.stopPropagation();olStartLearn(${opIdx},${ctaIdx})">${olEsc(ctaLabel)} ${ARROW}</button>
       </div>
     </article>`;
   }).join('');
 
+  const totalDue = olTotalDue();
   host.innerHTML = `
     <div class="ol-toolbar">
-      <span class="ol-toolbar-stat">${masteredVars}/${totalVars} lines learned</span>
+      <div class="ol-toolbar-stats">
+        <span class="ol-toolbar-stat">${masteredVars}/${totalVars} lines learned</span>
+        ${totalDue>0
+          ? `<button class="ol-review-pill" onclick="olReviewDue()"><span class="ol-review-dot"></span>${totalDue} due for review</button>`
+          : (masteredVars>0 ? '<span class="ol-review-clear">All reviews done</span>' : '')}
+      </div>
       <div class="ol-toolbar-actions">
         <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${PEN}</span> Create a Course</button>
         <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${GLOBE}</span> Community Courses</button>
@@ -24620,6 +24664,11 @@ function olRenderGrid(){
     }catch(e){}
   });
 }
+// Jump straight into the first line that's due for review (spaced repetition)
+window.olReviewDue = function(){
+  if(!OL) return;
+  for(const op of OL){ const i = olFirstDueIdx(op); if(i >= 0){ olStartLearn(OL.indexOf(op), i); return; } }
+};
 
 // ═══════════════ SMART SEARCH ═══════════════
 // Searches opening names, variation names, ECO, ideas/keywords, and move sequences.
