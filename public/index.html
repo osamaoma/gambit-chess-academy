@@ -3338,7 +3338,7 @@ body{ padding-top:90px; }
 
 /* ════════════ COURSE CREATOR — FIT-TO-SCREEN WORKSPACE ════════════ */
 /* Board scales with viewport height so board + controls + side + map fit one screen */
-#cc-board{ --ccsq: clamp(34px, 4.9vh, 52px); }
+#cc-board{ --ccsq: clamp(44px, 6.8vh, 66px); }   /* map removed -> board reclaims the space */
 #cc-board .sq{ width:var(--ccsq); height:var(--ccsq); }
 #cc-workspace #cc-evalbar{ height:auto; align-self:stretch; }
 #cc-workspace .cc-top{ margin-bottom:8px; }
@@ -3346,18 +3346,18 @@ body{ padding-top:90px; }
 /* map spans full width below board + side (moved out of the board column) */
 #cc-workspace .cc-stage{
   grid-template-columns:auto minmax(0,1fr);
-  grid-template-areas:"board side" "map map";
-  gap:14px 26px; align-items:start;
+  grid-template-areas:"board side";
+  gap:14px 28px; align-items:start;
 }
 #cc-workspace .cc-board-col{ grid-area:board; }
-#cc-workspace .cc-side{ grid-area:side; max-width:none; display:flex; flex-direction:column; max-height:min(460px, 46vh); }
-#cc-workspace #cc-repviz{ grid-area:map; margin-top:2px; }
+#cc-workspace .cc-side{ grid-area:side; max-width:none; display:flex; flex-direction:column; max-height:min(560px, 60vh); }
+#cc-workspace #cc-repviz{ display:none; }   /* visualisation removed for now */
 /* the move tree takes the scroll so the side panel height stays capped */
 #cc-workspace .cc-movetree{ flex:1 1 auto; min-height:56px; overflow:auto; }
 #cc-workspace .cc-analysis-lines{ max-height:24vh; overflow:auto; }
 #cc-repviz .rep-tree{ max-height:min(160px, 19vh); }
 @media(max-width:900px){
-  #cc-workspace .cc-stage{ grid-template-columns:1fr; grid-template-areas:"board" "side" "map"; justify-items:stretch; }
+  #cc-workspace .cc-stage{ grid-template-columns:1fr; grid-template-areas:"board" "side"; justify-items:stretch; }
   #cc-workspace .cc-board-col{ justify-self:center; }
   #cc-workspace .cc-side{ max-height:none; }
 }
@@ -3398,6 +3398,28 @@ body{ padding-top:90px; }
 .ol-review-dot{ width:7px; height:7px; border-radius:50%; background:var(--gold); flex:none; box-shadow:0 0 8px var(--gold); }
 .ol-review-clear{ font-family:'DM Mono',monospace; font-size:12px; color:var(--text3); }
 @media (prefers-reduced-motion: no-preference){ .ol-review-dot{ animation:olDot 1.8s ease-in-out infinite; } @keyframes olDot{ 0%,100%{ opacity:1 } 50%{ opacity:.4 } } }
+
+/* ════════════ BRAND LOGO — badged king mark ════════════ */
+.gb-mark{ width:34px; height:34px; flex:none; display:block; border-radius:11px; filter:drop-shadow(0 3px 9px rgba(212,175,55,.38)); }
+.nav-logo{ display:flex !important; align-items:center; gap:11px; }
+.nav-logo .gb-word{ display:inline-flex; align-items:baseline; gap:8px; font-family:'Clash Display',sans-serif !important; font-weight:700; font-size:19px; letter-spacing:-0.015em; color:#fff; line-height:1; }
+.nav-logo .gb-word small{ font-family:'DM Mono',monospace !important; font-weight:500; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); opacity:.9; }
+.lp-logo .gb-mark{ width:30px; height:30px; }
+.sw-mark{ width:auto; height:auto; }
+.sw-mark .gb-mark{ width:50px; height:50px; }
+@media (prefers-reduced-motion: no-preference){
+  .nav-logo .gb-mark, .lp-logo .gb-mark{ animation:gbPulse 3.8s ease-in-out infinite; }
+  @keyframes gbPulse{ 0%,100%{ filter:drop-shadow(0 3px 9px rgba(212,175,55,.35)) } 50%{ filter:drop-shadow(0 4px 15px rgba(212,175,55,.62)) } }
+}
+@media(max-width:680px){
+  .nav-logo .gb-word small{ display:none; }
+  .nav-logo .gb-word{ font-size:17px; }
+  .nav-logo{ gap:9px; }
+}
+@media(max-width:430px){
+  .nav-logo .gb-word{ display:none; }
+  .gb-mark{ width:32px; height:32px; }
+}
 @media (prefers-reduced-motion: no-preference){
   .ol-rcard{ animation:olCardIn .45s var(--ease) both; }
   @keyframes olCardIn{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
@@ -3415,7 +3437,7 @@ body{ padding-top:90px; }
 <!-- ══════════════ LANDING (SEO entry) ══════════════ -->
 <div id="landing">
   <header class="lp-nav">
-    <a class="lp-logo" href="#" onclick="enterApp();return false;"><span class="lp-logo-k"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span> Gambit</a>
+    <a class="lp-logo" href="#" onclick="enterApp();return false;"><svg class="gb-mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="gbGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d489"/><stop offset=".55" stop-color="#dcae4c"/><stop offset="1" stop-color="#bd8a2f"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13.5" fill="url(#gbGrad2)"/><rect x="2.75" y="2.75" width="42.5" height="42.5" rx="12.75" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="1.1"/><g fill="#1a1408" transform="translate(24 25) scale(.6) translate(-24 -24)"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></g></svg> Gambit</a>
     <nav class="lp-nav-actions">
       <button type="button" class="lp-login" onclick="gambitGate('Sign in to save your progress.')">Log in</button>
       <button type="button" class="lp-start-sm" onclick="enterApp()">Start Your Journey</button>
@@ -3454,7 +3476,7 @@ body{ padding-top:90px; }
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
-  <div class="nav-logo"><span class="ic ic-logo"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span> Gambit <small>Chess Academy</small> <span class="version-badge">v8.6 BOARD</span></div>
+  <div class="nav-logo"><svg class="gb-mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="gbGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d489"/><stop offset=".55" stop-color="#dcae4c"/><stop offset="1" stop-color="#bd8a2f"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13.5" fill="url(#gbGrad)"/><rect x="2.75" y="2.75" width="42.5" height="42.5" rx="12.75" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="1.1"/><g fill="#1a1408" transform="translate(24 25) scale(.6) translate(-24 -24)"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></g></svg><span class="gb-word">Gambit<small>Chess Academy</small></span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span> Course Creator</button>
@@ -24594,12 +24616,14 @@ function olRenderGrid(){
   if(host) host.style.display = '';
   if(!host || !OL) return;
 
-  let ops = OL.slice();
+  // Focused rollout: only the Italian Game is published for now, built to full
+  // quality. More openings ship one at a time, same structure, as they're finished.
+  let ops = OL.filter(o => /italian/i.test(o.f));
   if(olFilter !== 'all') ops = ops.filter(o => o.style === olFilter);
 
-  // overall progress (ChessReps-style "X/Y lines learned")
-  const totalVars = OL.reduce((s,o)=>s+o.v.length,0);
-  const masteredVars = OL.reduce((s,o)=>s + o.v.filter((v,i)=>olIsMastered(olVarId(o,i))).length, 0);
+  // progress across the published opening(s)
+  const totalVars = ops.reduce((s,o)=>s+o.v.length,0);
+  const masteredVars = ops.reduce((s,o)=>s + o.v.filter((v,i)=>olIsMastered(olVarId(o,i))).length, 0);
   const PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>';
   const GLOBE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
   const ARROW='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
@@ -24633,7 +24657,7 @@ function olRenderGrid(){
     </article>`;
   }).join('');
 
-  const totalDue = olTotalDue();
+  const totalDue = ops.reduce((s,o)=>s+olDueCount(o),0);
   host.innerHTML = `
     <div class="ol-toolbar">
       <div class="ol-toolbar-stats">
@@ -24644,7 +24668,6 @@ function olRenderGrid(){
       </div>
       <div class="ol-toolbar-actions">
         <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${PEN}</span> Create a Course</button>
-        <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${GLOBE}</span> Community Courses</button>
       </div>
     </div>
     <div class="ol-rgrid">${cards || '<div class="ol-empty">No openings match this filter.</div>'}</div>`;
@@ -27531,7 +27554,7 @@ window.ccSave = function(){
 <div id="signup-wall" class="sw-backdrop" role="dialog" aria-modal="true" aria-labelledby="sw-title">
   <div class="sw-card">
     <button class="sw-close" type="button" onclick="gambitCloseWall()" aria-label="Close">✕</button>
-    <span class="sw-mark"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span>
+    <span class="sw-mark"><svg class="gb-mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="gbGrad3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d489"/><stop offset=".55" stop-color="#dcae4c"/><stop offset="1" stop-color="#bd8a2f"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13.5" fill="url(#gbGrad3)"/><rect x="2.75" y="2.75" width="42.5" height="42.5" rx="12.75" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="1.1"/><g fill="#1a1408" transform="translate(24 25) scale(.6) translate(-24 -24)"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></g></svg></span>
     <h2 id="sw-title">Create your free account</h2>
     <p class="sw-reason" id="sw-reason">Save your progress and pick up right where you left off.</p>
     <form class="sw-form" onsubmit="return gambitSignup(event)">
