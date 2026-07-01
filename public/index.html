@@ -3336,6 +3336,32 @@ body{ padding-top:90px; }
 }
 @media(max-width:560px){ .lp-login{ display:none } .lp-nav{ padding-left:16px } }
 
+/* ════════════ COURSE CREATOR — FIT-TO-SCREEN WORKSPACE ════════════ */
+/* Board scales with viewport height so board + controls + side + map fit one screen */
+#cc-board{ --ccsq: clamp(34px, 4.9vh, 52px); }
+#cc-board .sq{ width:var(--ccsq); height:var(--ccsq); }
+#cc-workspace #cc-evalbar{ height:auto; align-self:stretch; }
+#cc-workspace .cc-top{ margin-bottom:8px; }
+#cc-workspace .cc-analysis-toggle{ margin:6px 0 10px; }
+/* map spans full width below board + side (moved out of the board column) */
+#cc-workspace .cc-stage{
+  grid-template-columns:auto minmax(0,1fr);
+  grid-template-areas:"board side" "map map";
+  gap:14px 26px; align-items:start;
+}
+#cc-workspace .cc-board-col{ grid-area:board; }
+#cc-workspace .cc-side{ grid-area:side; max-width:none; display:flex; flex-direction:column; max-height:min(460px, 46vh); }
+#cc-workspace #cc-repviz{ grid-area:map; margin-top:2px; }
+/* the move tree takes the scroll so the side panel height stays capped */
+#cc-workspace .cc-movetree{ flex:1 1 auto; min-height:56px; overflow:auto; }
+#cc-workspace .cc-analysis-lines{ max-height:24vh; overflow:auto; }
+#cc-repviz .rep-tree{ max-height:min(160px, 19vh); }
+@media(max-width:900px){
+  #cc-workspace .cc-stage{ grid-template-columns:1fr; grid-template-areas:"board" "side" "map"; justify-items:stretch; }
+  #cc-workspace .cc-board-col{ justify-self:center; }
+  #cc-workspace .cc-side{ max-height:none; }
+}
+
 </style>
 </head>
 <body>
@@ -26828,7 +26854,6 @@ function ccOpenWorkspace(){
           <button class="btn btn-outline btn-sm" onclick="ccFlip()">⇅ Flip</button>
           <button class="btn btn-outline btn-sm" onclick="ccReset()">⟲ Reset</button>
         </div>
-        <div class="cc-repviz" id="cc-repviz"></div>
       </div>
       <div class="cc-side">
         <div class="cc-side-head">
@@ -26841,6 +26866,7 @@ function ccOpenWorkspace(){
         <button class="cc-endline-btn" id="cc-endline-btn" onclick="ccEndLine()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span> End line &amp; add to course</button>
         <textarea id="cc-note" class="cc-note-input" placeholder="Add a note for this position…" oninput="ccSaveNote(this.value)"></textarea>
       </div>
+      <div class="cc-repviz" id="cc-repviz"></div>
     </div>`;
   if(CC.flipped){ try{ if(!isBoardFlipped('cc-board')) flipBoard('cc-board'); }catch(e){} }
   CC.visualOn = true;                  // repertoire map is always on now (no toggle)
