@@ -3298,9 +3298,87 @@ body{ padding-top:90px; }
   .cc-setup-board-col{ order:-1; }
 }
 
+/* ════════════ LANDING PAGE ════════════ */
+#landing{ position:fixed; inset:0; z-index:900; background:#0a0a0b; overflow:hidden; display:flex; flex-direction:column; opacity:1; transition:opacity .55s var(--ease); }
+#landing.gone{ opacity:0; pointer-events:none; }
+.lp-nav{ position:relative; z-index:3; display:flex; align-items:center; justify-content:space-between; gap:16px; margin:22px auto 0; padding:9px 12px 9px 22px; width:min(1080px, calc(100% - 40px)); background:rgba(20,20,24,.72); border:1px solid rgba(255,255,255,.08); border-radius:999px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+.lp-logo{ display:flex; align-items:center; gap:9px; font-family:'Clash Display',sans-serif; font-weight:700; font-size:18px; color:#fff; text-decoration:none; }
+.lp-logo-k{ display:inline-flex; width:24px; height:24px; }
+.lp-logo-k svg{ width:100%; height:100%; filter:drop-shadow(0 2px 6px rgba(212,175,55,.5)); }
+.lp-nav-actions{ display:flex; align-items:center; gap:10px; }
+.lp-login{ background:none; border:1px solid rgba(255,255,255,.2); color:#fff; border-radius:999px; padding:9px 18px; font-family:'Satoshi',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:border-color .2s var(--ease), background .2s var(--ease); }
+.lp-login:hover{ border-color:#fff; background:rgba(255,255,255,.06); }
+.lp-start-sm{ background:#fff; border:none; color:#0a0a0b; border-radius:999px; padding:10px 20px; font-family:'Satoshi',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:transform .2s var(--ease); }
+.lp-start-sm:hover{ transform:translateY(-1px); }
+.lp-hero{ position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:36px 24px 0; max-width:900px; margin:0 auto; }
+.lp-king{ display:inline-flex; width:54px; height:54px; margin-bottom:2px; }
+.lp-king svg{ width:100%; height:100%; }
+.lp-title{ font-family:'Clash Display',sans-serif; font-weight:700; font-size:clamp(2.6rem, 7vw, 5.2rem); line-height:1.03; letter-spacing:-0.035em; color:#fff; text-wrap:balance; }
+.lp-em{ color:var(--gold); }
+.lp-sub{ margin:20px auto 0; max-width:560px; font-family:'Satoshi',sans-serif; font-size:clamp(15px, 2vw, 18px); line-height:1.6; color:#b4b4bb; text-wrap:pretty; }
+.lp-cta-row{ display:flex; align-items:center; gap:12px; margin-top:32px; }
+.lp-cta{ background:#fff; border:none; color:#0a0a0b; border-radius:999px; padding:15px 30px; font-family:'Clash Display',sans-serif; font-size:16px; font-weight:600; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,.4); transition:transform .2s var(--ease), box-shadow .2s var(--ease); }
+.lp-cta:hover{ transform:translateY(-2px); box-shadow:0 16px 40px rgba(255,255,255,.14); }
+.lp-cta-arrow{ display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:999px; background:none; border:1px solid rgba(255,255,255,.25); color:#fff; cursor:pointer; transition:border-color .2s var(--ease), transform .2s var(--ease); }
+.lp-cta-arrow:hover{ border-color:#fff; transform:translateX(3px); }
+.lp-cta-arrow svg{ width:20px; height:20px; }
+.lp-floor{ position:absolute; left:50%; bottom:-4vh; width:230%; height:56vh; transform:translateX(-50%) perspective(500px) rotateX(65deg); transform-origin:bottom center; background-image:conic-gradient(from 90deg at 50% 50%, #1c1c1c 25%, #0d0d0d 0 50%, #1c1c1c 0 75%, #0d0d0d 0); background-size:82px 82px; -webkit-mask-image:radial-gradient(125% 92% at 50% 100%, #000 18%, transparent 74%); mask-image:radial-gradient(125% 92% at 50% 100%, #000 18%, transparent 74%); opacity:.5; z-index:0; }
+.lp-vignette{ position:absolute; inset:0; z-index:1; pointer-events:none; background:radial-gradient(90% 60% at 50% 40%, transparent, rgba(10,10,11,.55) 80%), linear-gradient(180deg, transparent 52%, #0a0a0b); }
+@media (prefers-reduced-motion: no-preference){
+  #landing .lp-king{ animation:lpKing 1s var(--ease) both, gbGlow 3.6s ease-in-out 1.2s infinite; }
+  #landing .lp-title{ animation:lpUp .8s var(--ease) .1s both; }
+  #landing .lp-sub{ animation:lpUp .8s var(--ease) .24s both; }
+  #landing .lp-cta-row{ animation:lpUp .8s var(--ease) .36s both; }
+  #landing .lp-floor{ animation:lpFloor 1.3s var(--ease) both; }
+  @keyframes lpKing{ from{opacity:0; transform:translateY(-14px) scale(.8)} to{opacity:1; transform:none} }
+  @keyframes lpUp{ from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:none} }
+  @keyframes lpFloor{ from{opacity:0} to{opacity:.5} }
+}
+@media(max-width:560px){ .lp-login{ display:none } .lp-nav{ padding-left:16px } }
+
 </style>
 </head>
 <body>
+
+<!-- ══════════════ LANDING (SEO entry) ══════════════ -->
+<div id="landing">
+  <header class="lp-nav">
+    <a class="lp-logo" href="#" onclick="enterApp();return false;"><span class="lp-logo-k"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span> Gambit</a>
+    <nav class="lp-nav-actions">
+      <button type="button" class="lp-login" onclick="gambitGate('Sign in to save your progress.')">Log in</button>
+      <button type="button" class="lp-start-sm" onclick="enterApp()">Start Your Journey</button>
+    </nav>
+  </header>
+  <main class="lp-hero">
+    <span class="lp-king"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span>
+    <h1 class="lp-title">Learn chess with<br><span class="lp-em">confidence</span> &amp; strategy.</h1>
+    <p class="lp-sub">Structured opening lessons, deep Stockfish game review, and a course builder — for beginners, improvers, and future competitors.</p>
+    <div class="lp-cta-row">
+      <button type="button" class="lp-cta" onclick="enterApp()">Start your journey</button>
+      <button type="button" class="lp-cta-arrow" onclick="enterApp()" aria-label="Enter the academy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+    </div>
+  </main>
+  <div class="lp-floor" aria-hidden="true"></div>
+  <div class="lp-vignette" aria-hidden="true"></div>
+</div>
+<script>
+(function(){
+  window.enterApp = function(){
+    var lp=document.getElementById('landing'); if(!lp) return;
+    lp.classList.add('gone'); document.body.style.overflow='';
+    try{ sessionStorage.setItem('gambit_entered','1'); }catch(e){}
+    setTimeout(function(){ lp.style.display='none'; }, 600);
+  };
+  function initLanding(){
+    var lp=document.getElementById('landing'); if(!lp) return;
+    var deep = location.hash && /academy|creator|review/i.test(location.hash);
+    var entered=false; try{ entered=sessionStorage.getItem('gambit_entered')==='1'; }catch(e){}
+    if(deep || entered){ lp.style.display='none'; }
+    else { document.body.style.overflow='hidden'; }
+  }
+  if(document.readyState!=='loading') initLanding(); else document.addEventListener('DOMContentLoaded', initLanding);
+})();
+</script>
 
 <!-- ══════════════ NAV ══════════════ -->
 <nav class="nav">
