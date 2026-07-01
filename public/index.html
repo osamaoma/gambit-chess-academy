@@ -3362,6 +3362,44 @@ body{ padding-top:90px; }
   #cc-workspace .cc-side{ max-height:none; }
 }
 
+/* ════════════ VISUALISATIONS HIDDEN (per request, for now) ════════════ */
+#cc-repviz{ display:none !important; }
+.tmap-canvas{ display:none !important; }
+
+/* ════════════ OPENINGS LIBRARY — ChessReps-style cards ════════════ */
+.ol-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin:4px 0 20px; flex-wrap:wrap; }
+.ol-toolbar-stat{ font-family:'DM Mono',monospace; font-size:13px; color:var(--text2); }
+.ol-toolbar-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+.ol-toolbar-btn{ display:inline-flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:11px; padding:9px 16px; font-family:'Satoshi',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer; transition:border-color .18s var(--ease), color .18s var(--ease), transform .18s var(--ease); }
+.ol-toolbar-btn:hover{ border-color:var(--gold); color:var(--gold); transform:translateY(-1px); }
+.ol-toolbar-btn .ic{ width:17px; height:17px; }
+.ol-rgrid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(410px, 1fr)); gap:18px; }
+.ol-rcard{ position:relative; display:grid; grid-template-columns:auto minmax(0,1fr); gap:18px; align-items:center; background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:16px; cursor:pointer; transition:transform .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease); }
+.ol-rcard:hover{ transform:translateY(-3px); border-color:var(--gold); box-shadow:0 16px 42px rgba(0,0,0,.46); }
+.ol-thumb-board{ width:132px !important; height:132px !important; border-radius:9px; box-shadow:0 6px 18px rgba(0,0,0,.42); border:1px solid rgba(0,0,0,.5); overflow:hidden; }
+.ol-thumb-board .sq{ width:16.5px !important; height:16.5px !important; }
+.ol-thumb-board .piece{ filter:none !important; }
+.ol-rcard-body{ min-width:0; display:flex; flex-direction:column; gap:8px; }
+.ol-rcard-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.ol-rcard-name{ font-family:'Clash Display',sans-serif; font-size:19px; font-weight:700; color:var(--text); letter-spacing:-0.01em; }
+.ol-rcard-eco{ font-family:'DM Mono',monospace; font-size:11px; color:var(--text3); flex:none; }
+.ol-rcard-desc{ font-size:13px; color:var(--text2); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.ol-rcard-prog{ display:flex; align-items:center; gap:12px; margin-top:2px; }
+.ol-rcard-bar{ flex:1; height:5px; background:var(--bg4); border-radius:5px; overflow:hidden; }
+.ol-rcard-bar span{ display:block; height:100%; background:linear-gradient(90deg,#e8c75a,#c2912b); border-radius:5px; transition:width .6s var(--ease); }
+.ol-rcard-lines{ font-family:'DM Mono',monospace; font-size:11px; color:var(--text3); flex:none; white-space:nowrap; }
+.ol-rcard-cta{ align-self:flex-start; display:inline-flex; align-items:center; gap:7px; margin-top:3px; background:none; border:none; padding:3px 0; color:var(--gold2); font-family:'Satoshi',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:gap .18s var(--ease), color .18s var(--ease); }
+.ol-rcard-cta:hover{ gap:11px; color:var(--gold); }
+@media (prefers-reduced-motion: no-preference){
+  .ol-rcard{ animation:olCardIn .45s var(--ease) both; }
+  @keyframes olCardIn{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
+}
+@media(max-width:520px){
+  .ol-rgrid{ grid-template-columns:1fr; }
+  .ol-rcard{ grid-template-columns:1fr; justify-items:center; text-align:center; }
+  .ol-rcard-head, .ol-rcard-prog{ justify-content:center; }
+}
+
 </style>
 </head>
 <body>
@@ -3410,7 +3448,7 @@ body{ padding-top:90px; }
 <nav class="nav">
   <div class="nav-logo"><span class="ic ic-logo"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span> Gambit <small>Chess Academy</small> <span class="version-badge">v8.6 BOARD</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showSection('academy')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Opening Academy</button>
+    <button class="nav-tab active" onclick="showSection('openings')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span> Course Creator</button>
     <button class="nav-tab" onclick="showSection('review')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span> Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
@@ -3571,7 +3609,7 @@ body{ padding-top:90px; }
 
 <!-- legacy hidden containers (orphaned, not in nav) -->
 <!-- ══════════════ OPENING ACADEMY ══════════════ -->
-<div id="sec-academy" class="section active">
+<div id="sec-academy" class="section">
   <div class="acad-wrap">
     <div id="acad-home"></div>
     <div id="acad-course" style="display:none"></div>
@@ -3591,7 +3629,7 @@ body{ padding-top:90px; }
   </div>
 </div>
 
-<div id="sec-openings" class="section">
+<div id="sec-openings" class="section active">
   <div class="op-clean-wrap">
     <div id="ol-home">
       <div class="op-clean-hero">
@@ -12978,6 +13016,8 @@ window.showSection = function(id){
   document.getElementById('sec-' + id).classList.add('active');
   const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, review:2, quizzes:3};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
+  // Openings library loads lazily on first visit (ChessReps-style grid)
+  if(id === 'openings'){ try{ if(!OL){ olInit(); } else { olRenderGrid(); } }catch(e){ console.warn('ol lazy init', e); } }
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
     // Show the home picker, not any active quiz
@@ -23193,10 +23233,10 @@ window.filterOpCards = function(q){
 
 // Defer init so the static HTML/CSS renders first - the page should NEVER appear blank
 function safeInit(){
-  try {
-    acadInit();
-    try { ccInit(); } catch(e){ console.warn("cc init", e); }
-  } catch(e){ console.error('explorer init failed:', e); }
+  // Each init is independent — one failing must never abort the others.
+  try { acadInit(); } catch(e){ console.error('acad init failed:', e); }
+  try { olInit(); }   catch(e){ console.error('ol init failed:', e); }   // openings library (ChessReps-style grid)
+  try { ccInit(); }   catch(e){ console.error('cc init failed:', e); }
   try {
     initStockfish().catch(err => console.warn('Engine init failed (analysis will be unavailable):', err));
   } catch(e){ console.warn('initStockfish threw:', e); }
@@ -23208,10 +23248,13 @@ function safeInit(){
 
 // Run init after current frame so the browser paints the nav and basic layout first.
 // Without this defer, a slow init could let the user think the page is frozen.
+let _gbInited = false;
+function _gbRunInit(){ if(_gbInited) return; _gbInited = true; safeInit(); }
+function _gbScheduleInit(){ requestAnimationFrame(_gbRunInit); setTimeout(_gbRunInit, 60); }  // rAF for paint-first; setTimeout is a fallback for headless/background tabs where rAF may not fire
 if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(safeInit));
+  document.addEventListener('DOMContentLoaded', _gbScheduleInit);
 } else {
-  requestAnimationFrame(safeInit);
+  _gbScheduleInit();
 }
 
 // ==== NEW OPENINGS MODULE (inserted) ====
@@ -24524,32 +24567,58 @@ function olRenderGrid(){
   let ops = OL.slice();
   if(olFilter !== 'all') ops = ops.filter(o => o.style === olFilter);
 
-  // group by first-move bucket
-  const order = ['e4','d4','c4','Nf3','other'];
-  let html = '';
-  for(const bk of order){
-    const group = ops.filter(o => o.bk === bk);
-    if(!group.length) continue;
-    html += `<div class="ol-bucket-label">${OL_BUCKET_LABEL[bk]||bk} Openings</div><div class="ol-grid-inner">`;
-    for(const op of group){
-      const opIdx = OL.indexOf(op);
-      const base = op.v.reduce((a,b)=> b.tp<a.tp?b:a, op.v[0]);
-      const firstMoves = olFmtMoves(base.s, 6);
-      const mastered = op.v.filter((v,i)=>olIsMastered(olVarId(op,i))).length;
-      html += `<div class="ol-card" onclick="olOpenIntro(${opIdx})">
-        <div class="ol-card-top">
-          <span class="ol-eco">${olEsc(op.eco)}</span>
-          <span class="ol-style-pill ol-style-${op.style}">${OL_STYLE_LABEL[op.style]||op.style}</span>
+  // overall progress (ChessReps-style "X/Y lines learned")
+  const totalVars = OL.reduce((s,o)=>s+o.v.length,0);
+  const masteredVars = OL.reduce((s,o)=>s + o.v.filter((v,i)=>olIsMastered(olVarId(o,i))).length, 0);
+  const PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>';
+  const GLOBE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+  const ARROW='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+
+  const cards = ops.map(op => {
+    const opIdx = OL.indexOf(op);
+    const base = op.v.reduce((a,b)=> b.tp<a.tp?b:a, op.v[0]);
+    const baseIdx = op.v.indexOf(base);
+    const mastered = op.v.filter((v,i)=>olIsMastered(olVarId(op,i))).length;
+    const pct = op.v.length ? Math.round(mastered/op.v.length*100) : 0;
+    const desc = op.desc || op.blurb || ('The ' + op.f + ' — ' + olFmtMoves(base.s, 6) + '.');
+    return `<article class="ol-rcard" onclick="olOpenIntro(${opIdx})">
+      <div class="ol-rcard-board"><div class="chess-board ol-thumb-board" id="olthumb-${opIdx}"></div></div>
+      <div class="ol-rcard-body">
+        <div class="ol-rcard-head"><h3 class="ol-rcard-name">${olEsc(op.f)}</h3><span class="ol-rcard-eco">${olEsc(op.eco)}</span></div>
+        <p class="ol-rcard-desc">${olEsc(desc)}</p>
+        <div class="ol-rcard-prog">
+          <div class="ol-rcard-bar"><span style="width:${pct}%"></span></div>
+          <span class="ol-rcard-lines">${op.v.length} line${op.v.length===1?'':'s'}${mastered?' · '+mastered+' learned':''}</span>
         </div>
-        <div class="ol-card-name">${olEsc(op.f)}</div>
-        <div class="ol-card-moves">${olEsc(firstMoves)}</div>
-        <div class="ol-card-foot"><span class="ol-varcount">${op.v.length} variations</span>${mastered?`<span class="ol-mastered"> · ✓ ${mastered} mastered</span>`:''}</div>
-      </div>`;
-    }
-    html += `</div>`;
-  }
-  if(!html) html = '<div class="ol-empty">No openings match this filter.</div>';
-  host.innerHTML = html;
+        <button class="ol-rcard-cta" onclick="event.stopPropagation();olStartLearn(${opIdx},${baseIdx})">Try the first line ${ARROW}</button>
+      </div>
+    </article>`;
+  }).join('');
+
+  host.innerHTML = `
+    <div class="ol-toolbar">
+      <span class="ol-toolbar-stat">${masteredVars}/${totalVars} lines learned</span>
+      <div class="ol-toolbar-actions">
+        <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${PEN}</span> Create a Course</button>
+        <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${GLOBE}</span> Community Courses</button>
+      </div>
+    </div>
+    <div class="ol-rgrid">${cards || '<div class="ol-empty">No openings match this filter.</div>'}</div>`;
+
+  // render the mini board thumbnails (position after the opening's first moves)
+  ops.forEach(op => {
+    const opIdx = OL.indexOf(op);
+    const el = document.getElementById('olthumb-'+opIdx);
+    if(!el) return;
+    try{
+      const base = op.v.reduce((a,b)=> b.tp<a.tp?b:a, op.v[0]);
+      const raw = base.s;
+      const sans = (Array.isArray(raw) ? raw : String(raw).split(/[\s,]+/)).filter(t => t && !/^\d+\.+$/.test(t)).slice(0, 8);
+      const hist = buildHistory(sans);
+      const state = hist[hist.length-1].state;
+      renderBoardEl('olthumb-'+opIdx, '', '', state, [], null);
+    }catch(e){}
+  });
 }
 
 // ═══════════════ SMART SEARCH ═══════════════
