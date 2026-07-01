@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gambit — Chess Academy</title>
+<title>Gambit Chess Academy — Learn Openings, Review Games & Build Courses</title>
+<meta name="description" content="Learn chess with confidence and strategy. Structured opening lessons, Stockfish-powered game review, and a course builder — free for beginners, improvers, and future competitors.">
+<meta name="keywords" content="chess academy, learn chess, chess openings, game review, stockfish analysis, chess course builder, chess repertoire, opening trainer">
+<meta name="theme-color" content="#0a0a0b">
+<link rel="canonical" href="https://gambit-chess-academy.onrender.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gambit Chess Academy — Learn Chess with Confidence & Strategy">
+<meta property="og:description" content="Structured opening lessons, deep Stockfish game review, and a course builder — for beginners, improvers, and future competitors.">
+<meta property="og:url" content="https://gambit-chess-academy.onrender.com/">
+<meta property="og:site_name" content="Gambit Chess Academy">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gambit Chess Academy — Learn Chess with Confidence & Strategy">
+<meta name="twitter:description" content="Structured opening lessons, deep Stockfish game review, and a course builder.">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"EducationalOrganization","name":"Gambit Chess Academy","url":"https://gambit-chess-academy.onrender.com/","description":"Learn chess openings, review your games with Stockfish, and build your own courses.","sameAs":[],"offers":{"@type":"Offer","price":"0","priceCurrency":"USD","category":"Free chess lessons"}}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -3164,6 +3179,32 @@ body{ padding-top:90px; }
   .btn-gold:hover::after{ transform:translateX(120%); }
 }
 
+/* ════════════ SIGN-UP WALL ════════════ */
+.sw-backdrop{ position:fixed; inset:0; z-index:1000; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(5,5,7,.72); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+.sw-backdrop.open{ display:flex; animation:swFade .25s var(--ease); }
+@keyframes swFade{ from{opacity:0} to{opacity:1} }
+.sw-card{ position:relative; width:100%; max-width:420px; background:linear-gradient(180deg,#16161a,#0f0f12); border:1px solid rgba(255,255,255,.1); border-radius:20px; padding:34px 30px 24px; text-align:center; box-shadow:0 30px 80px rgba(0,0,0,.6); }
+.sw-backdrop.open .sw-card{ animation:swPop .35s var(--ease); }
+@keyframes swPop{ from{opacity:0; transform:translateY(14px) scale(.97)} to{opacity:1; transform:none} }
+.sw-close{ position:absolute; top:14px; right:16px; background:none; border:none; color:var(--text3); font-size:17px; cursor:pointer; line-height:1; transition:color .2s var(--ease); }
+.sw-close:hover{ color:var(--text); }
+.sw-mark{ display:inline-flex; width:46px; height:46px; margin-bottom:4px; filter:drop-shadow(0 4px 14px rgba(212,175,55,.5)); }
+.sw-mark svg{ width:100%; height:100%; }
+.sw-card h2{ font-family:'Clash Display',sans-serif; font-size:23px; font-weight:700; color:var(--text); margin:4px 0 6px; letter-spacing:-0.02em; }
+.sw-reason{ font-size:13.5px; color:var(--text2); line-height:1.55; margin:0 auto 20px; max-width:300px; }
+.sw-form{ display:flex; flex-direction:column; gap:10px; }
+.sw-form input{ width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:11px; padding:12px 14px; color:var(--text); font-family:'Satoshi',sans-serif; font-size:14px; transition:border-color .2s var(--ease), box-shadow .2s var(--ease); }
+.sw-form input:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,175,55,.18); }
+.sw-form input::placeholder{ color:var(--text3); }
+.sw-submit{ width:100%; margin-top:4px; justify-content:center; }
+.sw-fine{ font-size:11px; color:var(--text3); margin:14px 0 0; }
+/* nav account control */
+.nav-account{ display:flex; align-items:center; gap:8px; }
+.nav-acc-in, .nav-acc-out{ background:none; border:1px solid var(--border2); color:var(--text); border-radius:999px; padding:6px 14px; font-family:'Satoshi',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:border-color .2s var(--ease), color .2s var(--ease); }
+.nav-acc-in:hover, .nav-acc-out:hover{ border-color:var(--gold); color:var(--gold); }
+.nav-acc-name{ font-family:'Satoshi',sans-serif; font-size:13px; font-weight:700; color:var(--gold); }
+@media(max-width:760px){ .nav-account{ display:none } }
+
 </style>
 </head>
 <body>
@@ -3177,6 +3218,7 @@ body{ padding-top:90px; }
     <button class="nav-tab" onclick="showSection('review')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span> Game Review</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
+  <div id="nav-account" class="nav-account"></div>
 </nav>
 
 <!-- Ad slot: top leaderboard (AdSense-ready placeholder) -->
@@ -4220,7 +4262,7 @@ function renderBoardEl(boardId, ranksId, filesId, state, highlights = [], fromSq
 // (lichess/chess.com style). Works on any board element by id.
 // ════════════════════════════════════════════════════════
 const boardAnnotations = new Map();   // boardId -> { arrows:[{from,to,color}], squares:{sq:color} }
-const ANNOT_DEFAULT = 'rgba(21,163,90,.8)';   // green (like lichess default)
+const ANNOT_DEFAULT = 'rgba(239,157,43,.85)';   // orange (matches the theme)
 function annotState(boardId){ if(!boardAnnotations.has(boardId)) boardAnnotations.set(boardId,{arrows:[],squares:{}}); return boardAnnotations.get(boardId); }
 
 function makeBoardAnnotatable(boardId){
@@ -12237,7 +12279,7 @@ function renderReviewBoard(){
         if(destSq){
           const badge = document.createElement('div');
           badge.className = `mc-badge ${cls}`;
-          badge.textContent = sym;
+          badge.innerHTML = sym;
           badge.title = displayedAnn.charAt(0).toUpperCase() + displayedAnn.slice(1);
           destSq.appendChild(badge);
         }
@@ -12312,7 +12354,7 @@ function drawMoveClassificationBadge(idx){
   if(!destSq) return;
   const badge = document.createElement('div');
   badge.className = `mc-badge ${cls}`;
-  badge.textContent = sym;
+  badge.innerHTML = sym;
   badge.title = ann.ann.charAt(0).toUpperCase() + ann.ann.slice(1);
   destSq.appendChild(badge);
 }
@@ -23155,6 +23197,7 @@ let nlearn = {
 };
 
 window.nlearnStart = function(famIdx, varIdx, mode){
+  if(mode === 'learn' && !window.gambitGate('Create a free account to start learning openings.', function(){ nlearnStart(famIdx, varIdx, mode); })) return;
   const fam = NOP_DATA[famIdx];
   if(!fam) return;
   const v = fam.v[varIdx];
@@ -24664,6 +24707,7 @@ function olBuildStates(sans){
 }
 
 window.olStartLearn = function(opIdx, vIdx){
+  if(!window.gambitGate('Create a free account to start learning this opening.', function(){ olStartLearn(opIdx, vIdx); })) return;
   const op = OL[opIdx]; if(!op) return;
   const v = op.v[vIdx]; if(!v) return;
   const built = olBuildStates(v.s);
@@ -25440,6 +25484,7 @@ window.repEdit = function(id){
 
 // SAVE: merge the current board's move path into the opening's tree
 window.explSave = function(){
+  if(!window.gambitGate('Create a free account to save your repertoire.', function(){ explSave(); })) return;
   if(expl.sans.length < 1){ explNote('Play at least one move before saving.', false); return; }
   const reps = repLoad();
   const nameInput = document.getElementById('expl-ws-name');
@@ -25804,6 +25849,7 @@ function acadCoursePct(courseId){
 
 // ═══════════════ COURSE VIEW (roadmap) ═══════════════
 async function acadOpenCourse(courseId){
+  if(!window.gambitGate('Create a free account to start this course.', function(){ acadOpenCourse(courseId); })) return;
   const meta = ACAD_COURSES.find(c=>c.id===courseId);
   if(!meta || !meta.ready) return;
   // load course data
@@ -26494,8 +26540,6 @@ function ccOpenWorkspace(){
     <div class="cc-analysis-toggle">
       <label class="cc-switch"><input type="checkbox" id="cc-analysis-cb" ${CC.analysisOn?'checked':''} onchange="ccToggleAnalysis(this.checked)"><span class="cc-slider"></span></label>
       <span>Analysis</span>
-      <label class="cc-switch" style="margin-left:20px"><input type="checkbox" id="cc-visual-cb" ${CC.visualOn?'checked':''} onchange="ccToggleVisual(this.checked)"><span class="cc-slider"></span></label>
-      <span>Repertoire</span>
       <span class="cc-eval-inline" id="cc-eval-inline"></span>
     </div>
     <div class="cc-stage">
@@ -26516,7 +26560,7 @@ function ccOpenWorkspace(){
           <button class="btn btn-outline btn-sm" onclick="ccFlip()">⇅ Flip</button>
           <button class="btn btn-outline btn-sm" onclick="ccReset()">⟲ Reset</button>
         </div>
-        <div class="cc-repviz" id="cc-repviz" style="display:none"></div>
+        <div class="cc-repviz" id="cc-repviz"></div>
       </div>
       <div class="cc-side">
         <div class="cc-side-head">
@@ -26531,7 +26575,9 @@ function ccOpenWorkspace(){
       </div>
     </div>`;
   if(CC.flipped){ try{ if(!isBoardFlipped('cc-board')) flipBoard('cc-board'); }catch(e){} }
+  CC.visualOn = true;                  // repertoire map is always on now (no toggle)
   ccRender();
+  try{ ccRenderRepViz(); }catch(e){}
   ccUpdateLinesCount();
   window.scrollTo(0,0);
 }
@@ -27027,6 +27073,7 @@ window.ccExitTrain = function(){ ccTrain=null; ccOpenWorkspace(); };
 
 // ── save ──
 window.ccSave = function(){
+  if(!window.gambitGate('Create a free account to save your course.', function(){ ccSave(); })) return;
   const courses=ccLoad();
   let c;
   if(CC.courseId){ c=courses.find(x=>x.id===CC.courseId); }
@@ -27068,6 +27115,65 @@ window.ccSave = function(){
   document.addEventListener('click',scheduleArm,true);
 })();
 </script>
+<!-- ══════════════ SIGN-UP WALL ══════════════ -->
+<div id="signup-wall" class="sw-backdrop" role="dialog" aria-modal="true" aria-labelledby="sw-title">
+  <div class="sw-card">
+    <button class="sw-close" type="button" onclick="gambitCloseWall()" aria-label="Close">✕</button>
+    <span class="sw-mark"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span>
+    <h2 id="sw-title">Create your free account</h2>
+    <p class="sw-reason" id="sw-reason">Save your progress and pick up right where you left off.</p>
+    <form class="sw-form" onsubmit="return gambitSignup(event)">
+      <input id="sw-name" type="text" placeholder="Name" autocomplete="name" required>
+      <input id="sw-email" type="email" placeholder="Email" autocomplete="email" required>
+      <button type="submit" class="btn btn-gold sw-submit">Create free account</button>
+    </form>
+    <p class="sw-fine">Free forever · no card · your progress saves to this browser.</p>
+  </div>
+</div>
+<script>
+(function(){
+  function has(){ try { return !!localStorage.getItem('gambit_account'); } catch(e){ return false; } }
+  var pending = null;
+  window.gambitHasAccount = has;
+  window.gambitGate = function(reason, retry){
+    if(has()) return true;
+    pending = (typeof retry === 'function') ? retry : null;
+    var r = document.getElementById('sw-reason'); if(r && reason) r.textContent = reason;
+    var w = document.getElementById('signup-wall');
+    if(w){ w.classList.add('open'); document.body.style.overflow = 'hidden';
+      var f = document.getElementById('sw-name'); if(f) setTimeout(function(){ try{ f.focus(); }catch(e){} }, 70); }
+    return false;
+  };
+  window.gambitCloseWall = function(){
+    var w = document.getElementById('signup-wall'); if(w) w.classList.remove('open');
+    document.body.style.overflow = ''; pending = null;
+  };
+  window.gambitSignup = function(ev){
+    if(ev && ev.preventDefault) ev.preventDefault();
+    var name = (document.getElementById('sw-name')||{}).value || '';
+    var email = (document.getElementById('sw-email')||{}).value || '';
+    if(!email){ return false; }
+    try { localStorage.setItem('gambit_account', JSON.stringify({ name:(name||'Player').trim(), email:email.trim(), at:Date.now() })); } catch(e){}
+    var w = document.getElementById('signup-wall'); if(w) w.classList.remove('open');
+    document.body.style.overflow = ''; reflect();
+    var fn = pending; pending = null;
+    if(typeof fn === 'function'){ setTimeout(function(){ try{ fn(); }catch(e){} }, 30); }
+    return false;
+  };
+  window.gambitSignOut = function(){ try { localStorage.removeItem('gambit_account'); } catch(e){} reflect(); };
+  function reflect(){
+    var acc = null; try { acc = JSON.parse(localStorage.getItem('gambit_account')||'null'); } catch(e){}
+    var el = document.getElementById('nav-account'); if(!el) return;
+    el.innerHTML = acc
+      ? '<span class="nav-acc-name" title="' + (acc.email||'') + '">' + (acc.name||'Account') + '</span><button class="nav-acc-out" type="button" onclick="gambitSignOut()">Sign out</button>'
+      : '<button class="nav-acc-in" type="button" onclick="gambitGate(&quot;Create your free account to save progress.&quot;)">Sign in</button>';
+  }
+  document.addEventListener('click', function(e){ var w=document.getElementById('signup-wall'); if(w && w.classList.contains('open') && e.target===w) window.gambitCloseWall(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ var w=document.getElementById('signup-wall'); if(w && w.classList.contains('open')) window.gambitCloseWall(); } });
+  if(document.readyState!=='loading') reflect(); else document.addEventListener('DOMContentLoaded', reflect);
+})();
+</script>
+
 <!-- Ad slot: footer (AdSense-ready placeholder) -->
 <div class="ad-slot ad-footer" role="complementary" aria-label="Advertisement">
   <span class="ad-label">Advertisement</span>
