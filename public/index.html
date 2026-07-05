@@ -24551,7 +24551,7 @@ async function olInit(){
   const grid = document.getElementById('ol-grid');
   if(grid) grid.innerHTML = '<div class="ol-loading">Loading openings…</div>';
   try {
-    const res = await fetch('/openings_v5.json', { cache:'force-cache' });
+    const res = await fetch('/openings_v5.json?v=6', { cache:'force-cache' });   // bump ?v= when the openings data changes
     const data = await res.json();
     OL = data.openings || [];
     OL_POS = data.positions || {};
