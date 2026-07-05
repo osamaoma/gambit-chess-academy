@@ -2111,10 +2111,14 @@ input:focus, select:focus, textarea:focus {
   .ol-var-actions{display:flex;gap:8px;flex-shrink:0}
   .ol-var-mastered{color:#d4af37}
   .ol-fam-section{margin-bottom:22px}
-  .ol-fam-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 0 12px;border-bottom:1px solid rgba(201,168,76,.25);margin-bottom:10px}
+  .ol-fam-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:10px 0 12px;border-bottom:1px solid rgba(201,168,76,.25);margin-bottom:10px}
   .ol-fam-name{font-family:'Clash Display',sans-serif;font-size:20px;color:var(--gold)}
   .ol-fam-intro{font-size:13px;color:var(--text2);margin-top:3px;line-height:1.5;max-width:680px}
   .ol-fam-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);background:rgba(255,255,255,.05);padding:3px 9px;border-radius:10px;flex-shrink:0}
+  .ol-fam-count.done{color:var(--gold);background:rgba(212,175,55,.12)}
+  .ol-fam-side{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .ol-fam-bar{width:56px;height:3px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
+  .ol-fam-bar i{display:block;height:100%;background:var(--gold);border-radius:2px;transition:width .3s var(--ease)}
   .ol-plan-box{margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.12),var(--bg2));border:1.5px solid rgba(201,168,76,.4);border-radius:12px}
   .ol-plan-title{font-family:'Clash Display',sans-serif;font-size:17px;color:var(--gold);margin-bottom:8px}
   .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
@@ -24551,7 +24555,7 @@ async function olInit(){
   const grid = document.getElementById('ol-grid');
   if(grid) grid.innerHTML = '<div class="ol-loading">Loading openings…</div>';
   try {
-    const res = await fetch('/openings_v5.json?v=7', { cache:'force-cache' });   // bump ?v= when the openings data changes
+    const res = await fetch('/openings_v5.json?v=9', { cache:'force-cache' });   // bump ?v= when the openings data changes
     const data = await res.json();
     OL = data.openings || [];
     OL_POS = data.positions || {};
@@ -24971,13 +24975,12 @@ function olRenderVarRows(opIdx, q){
   if(op.families && op.families.length){
     // grouped by family — each family is a section with its own drill
     op.families.forEach((fam, fi) => {
-      const rowsInFam = op.v
-        .map((v, vIdx) => ({v, vIdx}))
-        .filter(x => x.v.fi === fi)
-        .map(x => rowHTML(x.v, x.vIdx))
-        .filter(Boolean);
+      const inFam = op.v.map((v, vIdx) => ({v, vIdx})).filter(x => x.v.fi === fi);
+      const rowsInFam = inFam.map(x => rowHTML(x.v, x.vIdx)).filter(Boolean);
       if(!rowsInFam.length) return;
-      const firstVar = op.v.find(v => v.fi === fi);
+      const learned = inFam.filter(x => mastery[olVarId(op, x.vIdx)]).length;
+      const total = inFam.length;
+      const pct = total ? Math.round(100 * learned / total) : 0;
       const intro = OL_FAMILY_INTRO[fam.name] || '';
       body += `<div class="ol-fam-section">
         <div class="ol-fam-header">
@@ -24985,7 +24988,11 @@ function olRenderVarRows(opIdx, q){
             <div class="ol-fam-name">${olEsc(fam.name)}</div>
             ${intro?`<div class="ol-fam-intro">${intro}</div>`:''}
           </div>
-          <span class="ol-fam-count">${rowsInFam.length}</span>
+          <div class="ol-fam-side">
+            <span class="ol-fam-count${learned===total?' done':''}">${learned}/${total} learned</span>
+            <span class="ol-fam-bar" aria-hidden="true"><i style="width:${pct}%"></i></span>
+            <button class="nop-mini-btn" onclick="olStartMixedDrill(${opIdx},${fi})" title="Drill this chapter"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Drill</button>
+          </div>
         </div>
         ${rowsInFam.join('')}
       </div>`;
@@ -25012,10 +25019,17 @@ const OL_FAMILY_INTRO = {
   'Giuoco Piano':"The 'Quiet Game' — c3 and d4 build a classic big centre. Principled, sound, and packs a punch once it opens up.",
   'Giuoco Pianissimo':"The 'Very Quiet Game' — the slow d3 squeeze the world's best players actually use today. Patience is the weapon.",
   'Evans Gambit':"4.b4!? — chuck a pawn at the bishop, rip open the centre, and attack like it's 1850. Romance with teeth.",
-  'Two Knights Defense':"Black plays 3...Nf6 and invites chaos — the Fried Liver, the Traxler, the Max Lange. Buckle up.",
-  'Quiet Lines':"For when you (or your opponent) want a calm, solid, no-drama Italian. The Hungarian Defense lives here.",
-  'Scotch Gambit':"3.d4!? early — White cracks the centre open and offers a pawn (or two) for a roaring lead in development.",
+  'Two Knights Defense':"Black plays 3...Nf6 and invites chaos — the Fried Liver, the Traxler, the Ulvestad. Buckle up, or sidestep with the quiet 4.d3.",
+  'Quiet Lines':"Black's sidesteps, calm and otherwise — the Hungarian, the Paris, ...h6, ...g6, and the infamous Blackburne Shilling trap.",
+  'Scotch Gambit':"3.d4!? early — White cracks the centre open for a roaring lead in development. The mighty Max Lange Attack lives here.",
   'Other Gambits & Fun':"Gloriously dubious surprise weapons — the Jerome Gambit and friends. Terrible theory, unbeatable vibes.",
+  // Ruy López chapters
+  'Closed Ruy López':"The great labyrinth — ...Be7 and the slow build. Chigorin, Breyer, Zaitsev: the lines world championships are made of.",
+  'Berlin Defence':"The Wall that dethroned Kasparov — and the modern d3 systems that politely walk around it.",
+  'Exchange Variation':"Fischer's grind: trade on c6, wreck the pawns, and win the endgame from move four.",
+  'Marshall Attack':"Black sacrifices a pawn for a ferocious attack — learn the defense cold, or dodge it entirely with 8.a4 / 8.h3.",
+  'Open Variation':"5...Nxe4 — Black grabs the pawn and fights for activity. Sharp, concrete, and full of famous traps like the Dilworth.",
+  'Third-Move Alternatives':"Everything else Black can try on move three — the Schliemann, Bird's, the Steinitz defenses, and friends.",
 };
 // ═══════════════ LEARN VIEW ═══════════════
 // Walk the variation move by move. At every position show the top-3 popular
@@ -25224,16 +25238,18 @@ window.olStartDrill = function(opIdx, vIdx){
   olEnterDrill(`${op.f} — ${v.b?'Main Line':(v.n||'')}`);
 };
 
-window.olStartMixedDrill = function(opIdx){
+window.olStartMixedDrill = function(opIdx, fi){
   const op = OL[opIdx];
-  // pick up to 8 representative variations (base + a spread)
+  // pick up to 8 representative variations (base + a spread); fi scopes to one family/chapter
   const picks = [];
-  op.v.forEach((v,vIdx)=>{ if(v.b || picks.length<8) picks.push(vIdx); });
+  op.v.forEach((v,vIdx)=>{ if(fi!=null && v.fi!==fi) return; if(v.b || picks.length<8) picks.push(vIdx); });
   const chosen = picks.slice(0,8);
   const queue = chosen.map(vIdx => { const built = olBuildStates(op.v[vIdx].s); return { vIdx, sans:built.sans, states:built.states }; })
     .filter(x => x.sans.length >= 2);
+  if(!queue.length) return;
   oldrill = { op, opIdx, mode:'mixed', queue, qi:0, sans:queue[0].sans, states:queue[0].states, idx:0, side:null, mistakes:0 };
-  olEnterDrill(`${op.f} — Mixed drill (${queue.length} variations)`);
+  const famName = (fi!=null && op.families && op.families[fi]) ? op.families[fi].name : null;
+  olEnterDrill(`${op.f} — ${famName ? famName + ' drill' : 'Mixed drill'} (${queue.length} variations)`);
 };
 
 function olEnterDrill(title){
