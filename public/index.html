@@ -24551,7 +24551,7 @@ async function olInit(){
   const grid = document.getElementById('ol-grid');
   if(grid) grid.innerHTML = '<div class="ol-loading">Loading openings…</div>';
   try {
-    const res = await fetch('/openings_v5.json?v=6', { cache:'force-cache' });   // bump ?v= when the openings data changes
+    const res = await fetch('/openings_v5.json?v=7', { cache:'force-cache' });   // bump ?v= when the openings data changes
     const data = await res.json();
     OL = data.openings || [];
     OL_POS = data.positions || {};
@@ -24618,7 +24618,7 @@ function olRenderGrid(){
 
   // Focused rollout: only the Italian Game is published for now, built to full
   // quality. More openings ship one at a time, same structure, as they're finished.
-  let ops = OL.filter(o => /italian/i.test(o.f));
+  let ops = OL.filter(o => /italian|ruy|spanish/i.test(o.f));
   if(olFilter !== 'all') ops = ops.filter(o => o.style === olFilter);
 
   // progress across the published opening(s)
