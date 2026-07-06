@@ -2206,6 +2206,30 @@ input:focus, select:focus, textarea:focus {
   .ol-fin-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(126,191,106,.12);border:1px solid rgba(126,191,106,.45);color:#8fce7d;font:800 10px Satoshi,sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:7px;flex-shrink:0}
   .ol-finished-note{background:rgba(126,191,106,.1);border:1px solid rgba(126,191,106,.35);border-radius:10px;padding:10px 14px;font-size:13px;color:#a5d998;margin-bottom:10px;line-height:1.5}
   .ol-finished-note strong{color:#c8eebc}
+
+  /* ════════ REPERTOIRE BUILDER: stats table + intro + nav ════════ */
+  .cc-engine-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:2px 7px;letter-spacing:.02em}
+  .cc-intro-input{margin-top:8px;min-height:56px}
+  .cc-stats{margin-top:10px;border:1px solid rgba(255,255,255,.08);border-radius:11px;overflow:hidden}
+  .cc-stats-head{display:grid;grid-template-columns:56px 44px 62px 1fr;gap:8px;padding:7px 12px;font:600 11px Satoshi,sans-serif;color:var(--text3);border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03)}
+  .cc-stat-row{display:grid;grid-template-columns:56px 44px 62px 1fr;gap:8px;align-items:center;padding:6px 12px;font-size:12.5px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+  .cc-stat-row:hover{background:rgba(212,175,55,.07)}
+  .cc-st-mv{font-family:'DM Mono',monospace;font-weight:700;color:var(--text)}
+  .cc-st-pct{color:var(--text2)}
+  .cc-st-n{color:var(--text3);font-family:'DM Mono',monospace;font-size:11.5px}
+  .cc-st-bar{display:flex;height:16px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.06);font:700 9.5px 'DM Mono',monospace}
+  .cc-st-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;overflow:hidden;white-space:nowrap}
+  .cc-st-bar i.w{background:#e8e6e1;color:#222}
+  .cc-st-bar i.d{background:#7a7670}
+  .cc-st-bar i.b{background:#2e2c29;color:#cfccc6}
+  .cc-st-bar i.pop{background:linear-gradient(90deg,#bd8a2f,#dcae4c);border-radius:4px}
+  .cc-st-nowr{color:var(--text3);font-size:11px;padding-left:4px}
+  .cc-stats-empty{padding:14px 12px;font-size:12px;color:var(--text3)}
+  .cc-stats-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-top:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)}
+  .cc-common-toggle{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text2)}
+  .cc-nav-arrows{display:inline-flex;gap:6px}
+  .cc-nav-arrows button{width:34px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--text2);font-size:18px;line-height:1;cursor:pointer;transition:all .15s}
+  .cc-nav-arrows button:hover{border-color:var(--gold);color:var(--gold)}
   .ol-plan-box{margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.12),var(--bg2));border:1.5px solid rgba(201,168,76,.4);border-radius:12px}
   .ol-plan-title{font-family:'Clash Display',sans-serif;font-size:17px;color:var(--gold);margin-bottom:8px}
   .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
@@ -3572,7 +3596,7 @@ body{ padding-top:90px; }
   <div class="nav-logo"><svg class="gb-mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="gbGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d489"/><stop offset=".55" stop-color="#dcae4c"/><stop offset="1" stop-color="#bd8a2f"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13.5" fill="url(#gbGrad)"/><rect x="2.75" y="2.75" width="42.5" height="42.5" rx="12.75" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="1.1"/><g fill="#1a1408" transform="translate(24 25) scale(.6) translate(-24 -24)"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></g></svg><span class="gb-word">Gambit<small>Chess Academy</small></span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('openings')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Opening Academy</button>
-    <button class="nav-tab" onclick="showSection('creator')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span> Course Creator</button>
+    <button class="nav-tab" onclick="showSection('creator')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span> Repertoire</button>
     <button class="nav-tab" onclick="showSection('review')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span> Game Review</button>
     <button class="nav-tab" onclick="showSection('coach')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span> Coach</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
@@ -24802,7 +24826,7 @@ function olRenderGrid(){
       </div>
       <div class="ol-toolbar-actions">
         <button class="ol-toolbar-btn gold" onclick="olOpenPractice()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Practice</button>
-        <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${PEN}</span> Create a Course</button>
+        <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${PEN}</span> Repertoire</button>
       </div>
     </div>
     <div class="ol-rgrid">${cards || '<div class="ol-empty">No openings match this filter.</div>'}</div>`;
@@ -27212,9 +27236,9 @@ function ccRenderGrid(){
   const courses = ccLoad();
   host.innerHTML = `
     <div class="cc-hero">
-      <div class="acad-hero-badge">COURSE CREATOR</div>
-      <h1>Build your <em>own</em> course</h1>
-      <p>Explore any opening on a full analysis board with engine evaluation and real master-game stats. Play moves to build your repertoire tree, add your own notes, and save it as a course you can review and train.</p>
+      <div class="acad-hero-badge">REPERTOIRE</div>
+      <h1>Build your <em>own</em> repertoire</h1>
+      <p>Explore any opening on a full analysis board with Stockfish 18 Lite evaluation and real game stats. Play moves to build your repertoire tree, add your own notes, and save it as a course you can review and train.</p>
       <button class="acad-cta-btn" style="max-width:260px;margin:0 auto" onclick="ccNewCourse()">+ New Course</button>
     </div>
     ${courses.length?`<div class="cc-grid">${courses.map(c=>{
@@ -27351,6 +27375,7 @@ function ccOpenWorkspace(){
     <div class="cc-analysis-toggle">
       <label class="cc-switch"><input type="checkbox" id="cc-analysis-cb" ${CC.analysisOn?'checked':''} onchange="ccToggleAnalysis(this.checked)"><span class="cc-slider"></span></label>
       <span>Analysis</span>
+      <span class="cc-engine-tag">Stockfish 18 Lite</span>
       <span class="cc-eval-inline" id="cc-eval-inline"></span>
     </div>
     <div class="cc-stage">
@@ -27382,6 +27407,21 @@ function ccOpenWorkspace(){
         <div class="cc-movetree" id="cc-movetree"></div>
         <button class="cc-endline-btn" id="cc-endline-btn" onclick="ccEndLine()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span> End line &amp; add to course</button>
         <textarea id="cc-note" class="cc-note-input" placeholder="Add a note for this position…" oninput="ccSaveNote(this.value)"></textarea>
+        <textarea id="cc-intro" class="cc-note-input cc-intro-input" placeholder="Course introduction…" oninput="CC.description=this.value">${ccEsc(CC.description||'')}</textarea>
+        <div class="cc-stats" id="cc-stats">
+          <div class="cc-stats-head"><span>Move</span><span>%</span><span>Games</span><span class="cc-st-wr">Winrate</span></div>
+          <div id="cc-stats-rows"><div class="cc-stats-empty">Loading move stats…</div></div>
+          <div class="cc-stats-foot">
+            <span class="cc-common-toggle">
+              <label class="cc-switch"><input type="checkbox" id="cc-common-cb" ${CC.commonOnly?'checked':''} onchange="ccToggleCommon(this.checked)"><span class="cc-slider"></span></label>
+              <span>Common Moves</span>
+            </span>
+            <span class="cc-nav-arrows">
+              <button type="button" title="Back one move" onclick="ccNavBack()">‹</button>
+              <button type="button" title="Forward along the line" onclick="ccNavFwd()">›</button>
+            </span>
+          </div>
+        </div>
       </div>
       <div class="cc-repviz" id="cc-repviz"></div>
     </div>`;
@@ -27447,7 +27487,85 @@ function ccRender(){
   const note=document.getElementById('cc-note'); if(note) note.value = CC.notes[ccFenKey()]||'';
   if(CC.analysisOn){ ccRunEngine(); }
   else { document.getElementById('cc-analysis-lines').innerHTML='<div class="cc-explorer-off">Turn on Analysis to see the engine evaluation.</div>'; clearArrows('cc-arrows'); }
+  ccRenderStats();
 }
+
+// ── move stats table: popularity from explorer_stats.json + live winrates from
+//    the Lichess opening explorer (cached per position; falls back to offline data) ──
+let CC_STATS = null;
+const CC_EX_CACHE = {};
+async function ccLoadStats(){
+  if(CC_STATS) return CC_STATS;
+  try { CC_STATS = (await (await fetch('/explorer_stats.json',{cache:'force-cache'})).json()).positions || {}; }
+  catch(e){ CC_STATS = {}; }
+  return CC_STATS;
+}
+window.ccToggleCommon = function(on){ CC.commonOnly = on; ccRenderStats(); };
+
+async function ccRenderStats(){
+  const host = document.getElementById('cc-stats-rows'); if(!host) return;
+  const token = ++CC.explorerToken;
+  const key = CC.uci.join(',');
+  const stats = await ccLoadStats();
+  if(token !== CC.explorerToken) return;
+  const offline = (stats[key] && stats[key].moves) || [];
+
+  // live winrates via the server's token-authenticated Lichess explorer proxy
+  // (/api/explorer, active when LICHESS_TOKEN is set) — cached per position
+  if(CC.explorerMode === null){
+    try { CC.explorerMode = ((await (await fetch('/api/status')).json()).explorer === 'live') ? 'live' : 'offline'; }
+    catch(e){ CC.explorerMode = 'offline'; }
+    if(token !== CC.explorerToken) return;
+  }
+  let live = CC_EX_CACHE[key];
+  if(live === undefined && CC.explorerMode === 'live'){
+    try {
+      let fen; try { fen = stateToFEN(ccCurrentState()); } catch(e){ fen = null; }
+      const r = fen ? await fetch('/api/explorer?fen=' + encodeURIComponent(fen)) : null;
+      live = (r && r.ok) ? await r.json() : null;
+    } catch(e){ live = null; }
+    CC_EX_CACHE[key] = live;
+    if(token !== CC.explorerToken) return;
+  }
+
+  // merge: prefer live explorer rows (they carry winrates); fall back to baked stats
+  let rows;
+  if(live && live.moves && live.moves.length){
+    const total = live.moves.reduce((s,m)=>s+m.white+m.draws+m.black,0) || 1;
+    rows = live.moves.map(m => {
+      const n = m.white + m.draws + m.black;
+      return { uci:m.uci, san:m.san, n, pct:Math.round(100*n/total), w:Math.round(100*m.white/n), d:Math.round(100*m.draws/n), b:Math.round(100*m.black/n) };
+    });
+  } else {
+    const total = offline.reduce((s,m)=>s+m.n,0) || 1;
+    rows = offline.map(m => ({ uci:m.u, san:m.san, n:m.n, pct:Math.round(100*m.n/total), w:null, d:null, b:null }));
+  }
+  if(CC.commonOnly) rows = rows.filter(r => r.pct >= 2).slice(0, 8);
+  else rows = rows.slice(0, 15);
+
+  const fmtN = n => n >= 1e9 ? (n/1e9).toFixed(1)+'b' : n >= 1e6 ? (n/1e6).toFixed(1)+'m' : n >= 1e3 ? (n/1e3).toFixed(1)+'k' : String(n);
+  host.innerHTML = rows.length ? rows.map(r => `
+    <div class="cc-stat-row" onclick="ccPlayUci('${r.uci}')" title="Play ${ccEsc(r.san)}">
+      <span class="cc-st-mv">${ccEsc(r.san)}</span>
+      <span class="cc-st-pct">${r.pct}%</span>
+      <span class="cc-st-n">${fmtN(r.n)}</span>
+      <span class="cc-st-bar" title="${r.w != null ? `White wins ${r.w}% · draws ${r.d}% · Black wins ${r.b}%` : 'Popularity (live winrates need LICHESS_TOKEN on the server)'}">${r.w != null
+        ? `<i class="w" style="width:${r.w}%">${r.w>=12?r.w+'%':''}</i><i class="d" style="width:${r.d}%"></i><i class="b" style="width:${r.b}%">${r.b>=12?r.b+'%':''}</i>`
+        : `<i class="pop" style="width:${Math.max(3,r.pct)}%"></i>`}</span>
+    </div>`).join('') : '<div class="cc-stats-empty">No games from this position in the database.</div>';
+}
+
+// click a stats row (or step forward) → play that move on the board through the normal flow
+window.ccPlayUci = function(u){
+  const st = ccCurrentState();
+  const from = u.slice(0,2), to = u.slice(2,4), promo = u.length > 4 ? u[4].toUpperCase() : null;
+  let san; try { san = moveToSAN(st, from, to, promo); } catch(e){ return; }
+  if(!san) return;
+  let ns; try { ns = applyMove(st, { from, to, promotion: promo }); } catch(e){ return; }
+  ccOnMove(from, to, ns, san);
+};
+window.ccNavBack = function(){ if(CC.sans.length) ccGoto(CC.sans.length - 1); };
+window.ccNavFwd = function(){ const kid = (CC.node.children||[])[0]; if(kid) window.ccPlayUci(kid.uci); };
 
 function ccOnMove(from,to,newState,san){
   CC.states.push(newState); CC.sans.push(san);
