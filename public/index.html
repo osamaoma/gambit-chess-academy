@@ -2209,7 +2209,6 @@ input:focus, select:focus, textarea:focus {
 
   /* ════════ REPERTOIRE BUILDER: stats table + intro + nav ════════ */
   .cc-engine-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:2px 7px;letter-spacing:.02em}
-  .cc-intro-input{margin-top:8px;min-height:56px}
   .cc-stats{margin-top:10px;border:1px solid rgba(255,255,255,.08);border-radius:11px;overflow:hidden}
   .cc-stats-head{display:grid;grid-template-columns:56px 44px 62px 1fr;gap:8px;padding:7px 12px;font:600 11px Satoshi,sans-serif;color:var(--text3);border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03)}
   .cc-stat-row{display:grid;grid-template-columns:56px 44px 62px 1fr;gap:8px;align-items:center;padding:6px 12px;font-size:12.5px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
@@ -3451,30 +3450,47 @@ body{ padding-top:90px; }
 }
 @media(max-width:560px){ .lp-login{ display:none } .lp-nav{ padding-left:16px } }
 
-/* ════════════ COURSE CREATOR — FIT-TO-SCREEN WORKSPACE ════════════ */
-/* Board scales with viewport height so board + controls + side + map fit one screen */
-#cc-board{ --ccsq: clamp(44px, 6.8vh, 66px); }   /* map removed -> board reclaims the space */
+/* ════════════ REPERTOIRE — FIT-TO-SCREEN WORKSPACE (ChessReps layout) ════════════ */
+/* One square-size variable drives BOTH columns: the board reads it for its squares,
+   the side panel reads it to lock its height to the board's, so the two columns
+   always bottom-align and nothing spills below the fold. */
+#cc-workspace{ --ccsq: clamp(44px, 6.8vh, 66px); }
 #cc-board .sq{ width:var(--ccsq); height:var(--ccsq); }
 #cc-workspace #cc-evalbar{ height:auto; align-self:stretch; }
 #cc-workspace .cc-top{ margin-bottom:8px; }
 #cc-workspace .cc-analysis-toggle{ margin:6px 0 10px; }
-/* map spans full width below board + side (moved out of the board column) */
 #cc-workspace .cc-stage{
   grid-template-columns:auto minmax(0,1fr);
   grid-template-areas:"board side";
   gap:14px 28px; align-items:start;
 }
 #cc-workspace .cc-board-col{ grid-area:board; }
-#cc-workspace .cc-side{ grid-area:side; max-width:none; display:flex; flex-direction:column; max-height:min(560px, 60vh); }
+/* side = one contained card, height locked to the board column (8 squares + coords + controls) */
+#cc-workspace .cc-side{
+  grid-area:side; max-width:none; display:flex; flex-direction:column; gap:10px;
+  height:calc(var(--ccsq)*8 + 66px); min-height:420px;
+  background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:14px;
+}
+#cc-workspace .cc-side-head{ flex-shrink:0 }
+/* inner boxes sit on the card, so they get a quieter surface than the card itself */
+#cc-workspace .cc-analysis-lines, #cc-workspace .cc-movetree, #cc-workspace .cc-note-input, #cc-workspace .cc-stats{ background:rgba(255,255,255,.03); border-color:rgba(255,255,255,.08) }
+#cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:118px; overflow:auto }
+/* the move list is the flexible middle — it absorbs spare height and scrolls */
+#cc-workspace .cc-movetree{ flex:1 1 auto; min-height:40px; overflow:auto }
+#cc-workspace .cc-endline-btn{ flex-shrink:0; padding:9px 12px; font-size:13px; border-radius:10px }
+#cc-workspace .cc-note-input{ flex-shrink:0; min-height:52px; max-height:76px; resize:none }
+/* stats pinned at the bottom of the card, rows scroll if long */
+#cc-workspace .cc-stats{ flex-shrink:0; margin-top:0 }
+#cc-workspace #cc-stats-rows{ max-height:150px; overflow:auto }
+#cc-workspace .cc-nav-arrows button{ width:42px; height:34px; font-size:20px }
 #cc-workspace #cc-repviz{ display:none; }   /* visualisation removed for now */
-/* the move tree takes the scroll so the side panel height stays capped */
-#cc-workspace .cc-movetree{ flex:1 1 auto; min-height:56px; overflow:auto; }
-#cc-workspace .cc-analysis-lines{ max-height:24vh; overflow:auto; }
 #cc-repviz .rep-tree{ max-height:min(160px, 19vh); }
 @media(max-width:900px){
   #cc-workspace .cc-stage{ grid-template-columns:1fr; grid-template-areas:"board" "side"; justify-items:stretch; }
   #cc-workspace .cc-board-col{ justify-self:center; }
-  #cc-workspace .cc-side{ max-height:none; }
+  #cc-workspace .cc-side{ height:auto; min-height:0; }
+  #cc-workspace .cc-movetree{ min-height:88px; }
+  #cc-workspace #cc-stats-rows{ max-height:none; }
 }
 
 /* ════════════ VISUALISATIONS HIDDEN (per request, for now) ════════════ */
@@ -27406,8 +27422,7 @@ function ccOpenWorkspace(){
         <div class="cc-analysis-lines" id="cc-analysis-lines"></div>
         <div class="cc-movetree" id="cc-movetree"></div>
         <button class="cc-endline-btn" id="cc-endline-btn" onclick="ccEndLine()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></span> End line &amp; add to course</button>
-        <textarea id="cc-note" class="cc-note-input" placeholder="Add a note for this position…" oninput="ccSaveNote(this.value)"></textarea>
-        <textarea id="cc-intro" class="cc-note-input cc-intro-input" placeholder="Course introduction…" oninput="CC.description=this.value">${ccEsc(CC.description||'')}</textarea>
+        <textarea id="cc-note" class="cc-note-input" placeholder="Course introduction…" oninput="ccNoteInput(this.value)"></textarea>
         <div class="cc-stats" id="cc-stats">
           <div class="cc-stats-head"><span>Move</span><span>%</span><span>Games</span><span class="cc-st-wr">Winrate</span></div>
           <div id="cc-stats-rows"><div class="cc-stats-empty">Loading move stats…</div></div>
@@ -27483,8 +27498,12 @@ function ccRender(){
   makeBoardInteractive('cc-board', state, ccOnMove);
   ccRenderMoveTree();
   const _rv=document.getElementById('cc-repviz'); if(_rv){ _rv.style.display = CC.visualOn?'block':'none'; if(CC.visualOn) ccRenderRepViz(); }
-  // load note for this position
-  const note=document.getElementById('cc-note'); if(note) note.value = CC.notes[ccFenKey()]||'';
+  // one textarea, two jobs: course intro at the start position, per-position note after a move
+  const note=document.getElementById('cc-note');
+  if(note){
+    if(CC.uci.length === 0){ note.placeholder='Course introduction…'; note.value = CC.description||''; }
+    else { note.placeholder='Explain what move the player should make next…'; note.value = CC.notes[ccFenKey()]||''; }
+  }
   if(CC.analysisOn){ ccRunEngine(); }
   else { document.getElementById('cc-analysis-lines').innerHTML='<div class="cc-explorer-off">Turn on Analysis to see the engine evaluation.</div>'; clearArrows('cc-arrows'); }
   ccRenderStats();
@@ -27615,6 +27634,7 @@ window.ccGoto = function(ply){
     let node=CC.tree; for(const u of CC.uci){ node=node.children.find(c=>c.uci===u)||node; } CC.node=node; ccRender(); }
 };
 window.ccSaveNote = function(v){ const k=ccFenKey(); if(v.trim()) CC.notes[k]=v; else delete CC.notes[k]; };
+window.ccNoteInput = function(v){ if(CC.uci.length === 0){ CC.description = v; } else { ccSaveNote(v); } };
 
 // ── engine multi-line analysis ──
 async function ccRunEngine(){
