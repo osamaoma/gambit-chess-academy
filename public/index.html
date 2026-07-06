@@ -21,7 +21,8 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600;1,700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -3578,30 +3579,196 @@ body{ padding-top:90px; }
   .ol-rcard-head, .ol-rcard-prog{ justify-content:center; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   THE ANALYST'S BROADSHEET — editorial redesign (browse surfaces)
+   Light porcelain + ink + tournament green. Applied to: landing, nav,
+   Opening Academy. Study tools keep the dark instrument surface.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  --font-display:'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-ui:'Manrope', system-ui, -apple-system, sans-serif;
+  --font-mono:'DM Mono', ui-monospace, 'SF Mono', monospace;
+  --paper:#EDEDE8; --paper-2:#E6E6DF; --paper-3:#DEDED5;
+  --ink:#17181A; --ink-2:#55564F; --ink-3:#8B8C83;
+  --rule:#D7D6CC; --rule-2:#C6C5B8;
+  --green:#1C4E3A; --green-2:#2E7D5B; --green-ink:#123829;
+  --walnut:#6B4E3A; --bs-cream:#E8DFC8; --bs-board-dark:#9C7A54;
+}
+
+/* ── shared editorial primitives ── */
+.bs-eyebrow{ font-family:var(--font-mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--green-2); }
+.bs-rule{ height:1px; background:var(--rule); border:0; }
+
+/* ── decorative board diagram (landing hero asset) ── */
+.bsboard{ --bsq:clamp(30px,5.4vw,52px); display:inline-grid; grid-template-columns:auto repeat(8,var(--bsq)); grid-template-rows:repeat(8,var(--bsq)) auto; background:#20211d; padding:12px; border-radius:6px; box-shadow:0 30px 70px -30px rgba(23,24,26,.55), 0 2px 0 rgba(23,24,26,.06); }
+.bsboard .bsq{ width:var(--bsq); height:var(--bsq); display:flex; align-items:center; justify-content:center; font-size:calc(var(--bsq)*.82); line-height:1; }
+.bsboard .bsq.l{ background:var(--bs-cream); }
+.bsboard .bsq.d{ background:var(--bs-board-dark); }
+.bsboard .bsq.w{ color:#F6F0E2; text-shadow:0 1px 1px rgba(0,0,0,.28); }
+.bsboard .bsq.b{ color:#211C16; text-shadow:0 1px 0 rgba(255,255,255,.12); }
+.bsboard .bscoord{ display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:10px; color:#8f8a7d; }
+.bsboard .bscoord.r{ width:16px; }
+.bsboard .bscoord.f{ height:16px; }
+
+/* ═══════════ LANDING — editorial broadsheet ═══════════ */
+#landing{ background:var(--paper) !important; color:var(--ink); }
+#landing .lp-floor, #landing .lp-vignette{ display:none !important; }
+.bslp-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; width:min(1240px, calc(100% - 72px)); margin:0 auto; padding:26px 0 0; }
+.bslp-brand{ display:flex; align-items:baseline; gap:10px; text-decoration:none; }
+.bslp-brand b{ font-family:var(--font-display); font-weight:800; font-size:23px; color:var(--ink); letter-spacing:-.01em; }
+.bslp-brand span{ font-family:var(--font-mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-3); }
+.bslp-actions{ display:flex; align-items:center; gap:8px; }
+.bslp-login{ background:none; border:0; color:var(--ink-2); font-family:var(--font-ui); font-size:14px; font-weight:600; padding:10px 14px; cursor:pointer; transition:color .18s var(--ease); }
+.bslp-login:hover{ color:var(--ink); }
+.bslp-start{ background:var(--green); border:0; color:#F3F1E9; font-family:var(--font-ui); font-size:14px; font-weight:700; border-radius:8px; padding:11px 20px; cursor:pointer; transition:background .18s var(--ease), transform .18s var(--ease); }
+.bslp-start:hover{ background:var(--green-ink); transform:translateY(-1px); }
+.bslp-hero{ width:min(1240px, calc(100% - 72px)); margin:0 auto; flex:1; display:grid; grid-template-columns:1.02fr .98fr; align-items:center; gap:clamp(32px,5vw,80px); padding:12px 0 40px; }
+.bslp-copy{ max-width:36ch; }
+.bslp-kicker{ display:inline-flex; align-items:center; gap:10px; margin-bottom:22px; }
+.bslp-kicker::before{ content:''; width:26px; height:1px; background:var(--green-2); }
+.bslp-title{ font-family:var(--font-display); font-weight:800; font-size:clamp(2.7rem,5.4vw,4.7rem); line-height:1.02; letter-spacing:-.02em; color:var(--ink); }
+.bslp-title em{ font-style:italic; color:var(--green); }
+.bslp-sub{ margin-top:24px; max-width:44ch; font-family:var(--font-ui); font-size:clamp(15px,1.15vw,17px); line-height:1.62; color:var(--ink-2); }
+.bslp-ctas{ display:flex; align-items:center; gap:20px; margin-top:34px; }
+.bslp-cta{ display:inline-flex; align-items:center; gap:10px; background:var(--green); border:0; color:#F3F1E9; font-family:var(--font-ui); font-size:16px; font-weight:700; border-radius:9px; padding:15px 26px; cursor:pointer; box-shadow:0 16px 34px -16px rgba(28,78,58,.7); transition:background .2s var(--ease), transform .2s var(--ease); }
+.bslp-cta:hover{ background:var(--green-ink); transform:translateY(-2px); }
+.bslp-cta svg{ width:18px; height:18px; transition:transform .2s var(--ease); }
+.bslp-cta:hover svg{ transform:translateX(3px); }
+.bslp-link{ background:none; border:0; color:var(--ink); font-family:var(--font-ui); font-size:15px; font-weight:600; cursor:pointer; padding:6px 0; border-bottom:1.5px solid var(--ink); transition:color .18s var(--ease), border-color .18s var(--ease); }
+.bslp-link:hover{ color:var(--green); border-color:var(--green); }
+.bslp-asset{ justify-self:center; display:flex; flex-direction:column; align-items:center; gap:14px; }
+.bslp-caption{ font-family:var(--font-mono); font-size:12px; color:var(--ink-3); letter-spacing:.02em; }
+.bslp-caption b{ color:var(--ink-2); font-weight:500; }
+@media(max-width:880px){
+  .bslp-top{ width:calc(100% - 40px); }
+  .bslp-hero{ width:calc(100% - 40px); grid-template-columns:1fr; gap:28px; padding-top:8px; text-align:left; }
+  .bslp-copy{ max-width:none; }
+  .bslp-asset{ order:-1; }
+  .bsboard{ --bsq:clamp(28px,8.4vw,44px); }
+}
+@media (prefers-reduced-motion: no-preference){
+  #landing .bslp-kicker{ animation:bsUp .7s var(--ease) .05s both; }
+  #landing .bslp-title{ animation:bsUp .8s var(--ease) .12s both; }
+  #landing .bslp-sub{ animation:bsUp .8s var(--ease) .22s both; }
+  #landing .bslp-ctas{ animation:bsUp .8s var(--ease) .32s both; }
+  #landing .bslp-asset{ animation:bsFade 1s var(--ease) .3s both; }
+  @keyframes bsUp{ from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none} }
+  @keyframes bsFade{ from{opacity:0; transform:translateY(10px) scale(.985)} to{opacity:1; transform:none} }
+}
+
+/* ═══════════ NAV — full-width broadsheet masthead (replaces the floating glass pill) ═══════════ */
+nav.nav{ position:sticky !important; top:0 !important; left:auto; right:auto; width:100% !important; max-width:none !important; margin:0 !important; padding:0 22px 0 0 !important; border-radius:0 !important; background:var(--paper) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; border:0 !important; border-bottom:1px solid var(--rule) !important; box-shadow:none !important; height:60px; }
+body{ padding-top:0 !important; }
+.nav-logo{ border-right:1px solid var(--rule) !important; }
+.nav .gb-mark{ filter:saturate(0) brightness(.28) !important; animation:none !important; border-radius:9px; }
+.nav-logo .gb-word{ font-family:var(--font-display) !important; font-weight:800 !important; color:var(--ink) !important; font-size:20px !important; }
+.nav-logo .gb-word small{ font-family:var(--font-mono) !important; color:var(--ink-3) !important; letter-spacing:.14em; }
+.nav-tab{ font-family:var(--font-ui) !important; font-size:13.5px; font-weight:600; color:var(--ink-2) !important; border-bottom-width:2px; }
+.nav-tab:hover{ color:var(--ink) !important; background:rgba(28,78,58,.05) !important; }
+.nav-tab.active{ color:var(--green) !important; border-bottom-color:var(--green) !important; }
+.nav-tab .ic svg{ stroke-width:1.9; }
+
+/* ═══════════ OPENING ACADEMY — broadsheet catalogue ═══════════ */
+#sec-openings{ background:var(--paper); }
+#sec-openings .op-clean-wrap{ max-width:1180px; padding:52px 36px 90px; }
+#sec-openings .op-clean-hero{ text-align:left; margin-bottom:16px; }
+#sec-openings .op-clean-hero h1{ font-family:var(--font-display); font-weight:800; font-size:clamp(2.4rem,4.6vw,3.9rem); line-height:1.03; letter-spacing:-.02em; color:var(--ink); margin:0; max-width:20ch; }
+#sec-openings .op-clean-hero h1 em{ font-style:italic; color:var(--green); }
+#sec-openings .op-clean-hero p{ margin:18px 0 30px; max-width:56ch; font-family:var(--font-ui); font-size:16px; line-height:1.6; color:var(--ink-2); }
+#sec-openings .op-clean-search{ max-width:none; margin:0; }
+#sec-openings .op-clean-search input{ width:min(560px,100%); background:transparent; border:0; border-bottom:1.5px solid var(--rule-2); border-radius:0; padding:12px 2px; font-family:var(--font-ui); font-size:16px; color:var(--ink); }
+#sec-openings .op-clean-search input::placeholder{ color:var(--ink-3); }
+#sec-openings .op-clean-search input:focus{ border-bottom-color:var(--green); }
+/* filters as editorial text tabs */
+#sec-openings .ol-filters{ display:flex; gap:6px; flex-wrap:wrap; margin-top:22px; border-bottom:1px solid var(--rule); padding-bottom:0; }
+#sec-openings .ol-filter{ background:none; border:0; border-bottom:2px solid transparent; margin-bottom:-1px; color:var(--ink-3); font-family:var(--font-ui); font-size:13.5px; font-weight:600; padding:8px 12px; cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition:color .16s var(--ease), border-color .16s var(--ease); }
+#sec-openings .ol-filter .ic{ width:15px; height:15px; }
+#sec-openings .ol-filter:hover{ color:var(--ink); }
+#sec-openings .ol-filter.active{ color:var(--green); border-bottom-color:var(--green); }
+/* coach banner */
+#sec-openings .pc-banner{ display:flex; align-items:center; justify-content:space-between; gap:20px; background:var(--paper-2); border:1px solid var(--rule); border-left:3px solid var(--green); border-radius:12px; padding:16px 20px; margin:26px 0 4px; }
+#sec-openings .pc-banner .cb-txt{ font-family:var(--font-ui); font-size:14px; line-height:1.5; color:var(--ink-2); }
+#sec-openings .pc-banner .cb-txt b{ color:var(--ink); font-weight:700; }
+#sec-openings .pc-banner .btn-gold{ background:var(--green); color:#F3F1E9; border:0; border-radius:8px; font-family:var(--font-ui); font-weight:700; white-space:nowrap; }
+#sec-openings .pc-banner .btn-gold:hover{ background:var(--green-ink); }
+/* toolbar */
+#sec-openings .ol-toolbar{ margin:32px 0 22px; padding-bottom:0; border:0; }
+#sec-openings .ol-toolbar-stat{ font-family:var(--font-mono); font-size:13px; color:var(--ink-2); }
+#sec-openings .ol-review-pill{ background:rgba(46,125,91,.1); border:1px solid rgba(46,125,91,.4); color:var(--green); }
+#sec-openings .ol-review-pill:hover{ background:rgba(46,125,91,.16); }
+#sec-openings .ol-review-dot{ background:var(--green-2); box-shadow:0 0 8px var(--green-2); }
+#sec-openings .ol-review-clear{ font-family:var(--font-mono); color:var(--ink-3); }
+#sec-openings .ol-toolbar-btn{ background:var(--paper); border:1px solid var(--rule-2); color:var(--ink); font-family:var(--font-ui); border-radius:9px; }
+#sec-openings .ol-toolbar-btn:hover{ border-color:var(--green); color:var(--green); }
+#sec-openings .ol-toolbar-btn.gold{ background:var(--green); color:#F3F1E9; border-color:transparent; }
+#sec-openings .ol-toolbar-btn.gold:hover{ filter:none; background:var(--green-ink); color:#F3F1E9; }
+/* the catalogue: single-column stacked plates */
+#sec-openings .ol-rgrid{ display:flex; flex-direction:column; gap:0; }
+#sec-openings .ol-rcard{ display:grid; grid-template-columns:auto 128px minmax(0,1fr); align-items:center; gap:30px; background:transparent; border:0; border-top:1px solid var(--rule); border-radius:0; padding:30px 8px; box-shadow:none; }
+#sec-openings .ol-rcard:last-child{ border-bottom:1px solid var(--rule); }
+#sec-openings .ol-rcard:hover{ transform:none; border-color:var(--rule); box-shadow:none; background:var(--paper-2); }
+#sec-openings .ol-rcard-idx{ font-family:var(--font-display); font-weight:600; font-size:44px; line-height:1; color:var(--rule-2); font-variant-numeric:tabular-nums; align-self:start; transition:color .2s var(--ease); }
+#sec-openings .ol-rcard:hover .ol-rcard-idx{ color:var(--green-2); }
+#sec-openings .ol-rcard-board{ display:flex; }
+#sec-openings .ol-thumb-board{ width:128px !important; height:128px !important; border-radius:5px; border:1px solid var(--rule-2); box-shadow:0 14px 30px -14px rgba(23,24,26,.5); transition:transform .25s var(--ease); }
+#sec-openings .ol-rcard:hover .ol-thumb-board{ transform:scale(1.03); }
+#sec-openings .ol-rcard-body{ gap:10px; }
+#sec-openings .ol-rcard-name{ font-family:var(--font-display); font-weight:700; font-size:26px; letter-spacing:-.01em; color:var(--ink); }
+#sec-openings .ol-rcard-eco{ font-family:var(--font-mono); font-size:12px; color:var(--ink-3); }
+#sec-openings .ol-rcard-desc{ font-family:var(--font-ui); font-size:14.5px; line-height:1.55; color:var(--ink-2); max-width:64ch; }
+#sec-openings .ol-rcard-bar{ background:var(--paper-3); height:4px; }
+#sec-openings .ol-rcard-bar span{ background:var(--green-2); }
+#sec-openings .ol-rcard-lines{ font-family:var(--font-mono); font-size:11.5px; color:var(--ink-3); }
+#sec-openings .ol-rcard-cta{ color:var(--green); font-family:var(--font-ui); font-weight:700; }
+#sec-openings .ol-rcard-cta:hover{ color:var(--green-ink); }
+#sec-openings .ol-rcard-cta.due{ color:var(--green); }
+#sec-openings .ol-due-badge{ background:var(--green); color:#F3F1E9; box-shadow:none; font-family:var(--font-mono); }
+#sec-openings .ol-fin-badge{ background:rgba(46,125,91,.12); border:1px solid rgba(46,125,91,.4); color:var(--green); font-family:var(--font-mono); }
+#sec-openings .ol-rec{ background:rgba(28,78,58,.1); border:1px solid rgba(28,78,58,.35); color:var(--green); }
+#sec-openings .ol-empty{ font-family:var(--font-ui); color:var(--ink-3); padding:40px 0; }
+@media(max-width:640px){
+  #sec-openings .op-clean-wrap{ padding:36px 20px 70px; }
+  #sec-openings .ol-rcard{ grid-template-columns:auto 1fr; gap:18px 16px; }
+  #sec-openings .ol-rcard-idx{ font-size:32px; }
+  #sec-openings .ol-rcard-board{ grid-column:1 / -1; }
+}
+/* override the legacy `h1,h2,h3{font-family:Clash !important}` rules on redesigned headings */
+#landing .bslp-title, #landing .bslp-brand b, #landing .bslp-caption,
+#sec-openings .op-clean-hero h1, #sec-openings .ol-rcard-name, #sec-openings .ol-rcard-idx,
+.nav-logo .gb-word{ font-family:var(--font-display) !important; }
+#landing .bslp-brand span, #landing .bslp-kicker,
+.nav-logo .gb-word small{ font-family:var(--font-mono) !important; }
+#landing .bslp-sub, #landing .bslp-cta, #landing .bslp-link, #landing .bslp-login, #landing .bslp-start,
+#sec-openings .op-clean-hero p, #sec-openings .ol-rcard-desc{ font-family:var(--font-ui) !important; }
+
 </style>
 </head>
 <body>
 
 <!-- ══════════════ LANDING (SEO entry) ══════════════ -->
 <div id="landing">
-  <header class="lp-nav">
-    <a class="lp-logo" href="#" onclick="enterApp();return false;"><svg class="gb-mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="gbGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2d489"/><stop offset=".55" stop-color="#dcae4c"/><stop offset="1" stop-color="#bd8a2f"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="13.5" fill="url(#gbGrad2)"/><rect x="2.75" y="2.75" width="42.5" height="42.5" rx="12.75" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="1.1"/><g fill="#1a1408" transform="translate(24 25) scale(.6) translate(-24 -24)"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></g></svg> Gambit</a>
-    <nav class="lp-nav-actions">
-      <button type="button" class="lp-login" onclick="gambitGate('Sign in to save your progress.')">Log in</button>
-      <button type="button" class="lp-start-sm" onclick="enterApp()">Start Your Journey</button>
+  <header class="bslp-top">
+    <a class="bslp-brand" href="#" onclick="enterApp();return false;"><b>Gambit</b><span>Chess Academy</span></a>
+    <nav class="bslp-actions">
+      <button type="button" class="bslp-login" onclick="gambitGate('Sign in to save your progress.')">Log in</button>
+      <button type="button" class="bslp-start" onclick="enterApp()">Enter the academy</button>
     </nav>
   </header>
-  <main class="lp-hero">
-    <span class="lp-king"><svg viewBox="0 0 48 48" fill="#d4af37" aria-hidden="true"><rect x="22" y="4" width="4" height="11" rx="1"/><rect x="18.5" y="7" width="11" height="4" rx="1"/><path d="M24 15c6 0 11 4 11 11 0 7-5 12-11 14-6-2-11-7-11-14 0-7 5-11 11-11z"/><path d="M12 41c0-5 5-8 12-8s12 3 12 8v1.5H12z"/></svg></span>
-    <h1 class="lp-title">Learn chess with<br><span class="lp-em">confidence</span> &amp; strategy.</h1>
-    <p class="lp-sub">Structured opening lessons, deep Stockfish game review, and a course builder — for beginners, improvers, and future competitors.</p>
-    <div class="lp-cta-row">
-      <button type="button" class="lp-cta" onclick="enterApp()">Start your journey</button>
-      <button type="button" class="lp-cta-arrow" onclick="enterApp()" aria-label="Enter the academy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+  <main class="bslp-hero">
+    <div class="bslp-copy">
+      <span class="bslp-kicker bs-eyebrow">Opening theory, explained</span>
+      <h1 class="bslp-title">Play the opening like you <em>wrote the book</em>.</h1>
+      <p class="bslp-sub">Deeply annotated opening lines, honest Stockfish game review, and a repertoire builder. Understand every move instead of memorizing it.</p>
+      <div class="bslp-ctas">
+        <button type="button" class="bslp-cta" onclick="enterApp()">Enter the academy <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+        <button type="button" class="bslp-link" onclick="sessionStorage.setItem('gambit_entered','1');location.hash='review';enterApp()">Review a game</button>
+      </div>
+    </div>
+    <div class="bslp-asset">
+      <div class="bsboard" id="bslp-board" aria-label="Italian Game, after 3...Bc5"></div>
+      <div class="bslp-caption"><b>Italian Game</b> · 1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5</div>
     </div>
   </main>
-  <div class="lp-floor" aria-hidden="true"></div>
-  <div class="lp-vignette" aria-hidden="true"></div>
 </div>
 <script>
 (function(){
@@ -3611,8 +3778,27 @@ body{ padding-top:90px; }
     try{ sessionStorage.setItem('gambit_entered','1'); }catch(e){}
     setTimeout(function(){ lp.style.display='none'; }, 600);
   };
+  function renderLandingBoard(){
+    var host=document.getElementById('bslp-board'); if(!host) return;
+    var fen='r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R';
+    var glyph={k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+    var rows=fen.split('/'), html='';
+    for(var r=0;r<8;r++){
+      html+='<div class="bscoord r">'+(8-r)+'</div>';
+      var row=rows[r], f=0;
+      for(var i=0;i<row.length;i++){
+        var ch=row[i];
+        if(/\d/.test(ch)){ for(var z=0;z<+ch;z++){ html+='<div class="bsq '+(((f+r)%2===0)?'l':'d')+'"></div>'; f++; } }
+        else{ var side=(ch===ch.toUpperCase())?'w':'b'; html+='<div class="bsq '+(((f+r)%2===0)?'l':'d')+' '+side+'">'+glyph[ch.toLowerCase()]+'</div>'; f++; }
+      }
+    }
+    html+='<div class="bscoord"></div>';
+    'abcdefgh'.split('').forEach(function(c){ html+='<div class="bscoord f">'+c+'</div>'; });
+    host.innerHTML=html;
+  }
   function initLanding(){
     var lp=document.getElementById('landing'); if(!lp) return;
+    renderLandingBoard();
     var deep = location.hash && /academy|creator|review/i.test(location.hash);
     var entered=false; try{ entered=sessionStorage.getItem('gambit_entered')==='1'; }catch(e){}
     if(deep || entered){ lp.style.display='none'; }
@@ -3812,8 +3998,8 @@ body{ padding-top:90px; }
   <div class="op-clean-wrap">
     <div id="ol-home">
       <div class="op-clean-hero">
-        <h1>Chess <em>Openings</em> Library</h1>
-        <p>A curated set of deep, real opening lines — every move explained, the most popular replies shown at each step, plus drills to lock it in.</p>
+        <h1>The <em>Openings</em> Library</h1>
+        <p>A short shelf of deeply annotated lines. Every move carries a plain-English idea, the popular replies sit one click away, and drills lock the whole repertoire into memory.</p>
         <div class="op-clean-search">
           <input id="ol-search" placeholder="Search openings, variations, ideas (e.g. Sicilian, fianchetto, attack)…" oninput="olSearch(this.value)" autocomplete="off">
         </div>
@@ -24809,7 +24995,7 @@ function olRenderGrid(){
   const GLOBE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
   const ARROW='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 
-  const cards = ops.map(op => {
+  const cards = ops.map((op, cardI) => {
     const opIdx = OL.indexOf(op);
     const base = op.v.reduce((a,b)=> b.tp<a.tp?b:a, op.v[0]);
     const baseIdx = op.v.indexOf(base);
@@ -24827,6 +25013,7 @@ function olRenderGrid(){
     const opFin = olOpeningFinished(op);
     const finCount = olFinishedCount(op);
     return `<article class="ol-rcard" onclick="olOpenIntro(${opIdx})">
+      <div class="ol-rcard-idx">${String(cardI+1).padStart(2,'0')}</div>
       <div class="ol-rcard-board"><div class="chess-board ol-thumb-board" id="olthumb-${opIdx}"></div></div>
       <div class="ol-rcard-body">
         <div class="ol-rcard-head"><h3 class="ol-rcard-name">${olEsc(op.f)}</h3>${opFin?'<span class="ol-fin-badge" title="You played every variation of this opening to the end">✓ Finished</span>':''}${isRec?'<span class="ol-rec" title="Recommended for you by your Coach analysis">★ Recommended</span>':''}<span class="ol-rcard-eco">${olEsc(op.eco)}</span></div>
