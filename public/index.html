@@ -2174,6 +2174,31 @@ input:focus, select:focus, textarea:focus {
   .pc-toast .ct-x{position:absolute;top:6px;right:10px;color:var(--text3);cursor:pointer;font-size:14px}
   @keyframes pcToastIn{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
   @media(prefers-reduced-motion:reduce){.pc-toast{animation:none}}
+
+  /* ════════ PRACTICE HUB (drill modes) ════════ */
+  .olp-mode-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px;max-width:720px;margin-left:auto;margin-right:auto}
+  .olp-mode-card{background:var(--bg2,#141416);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:18px 14px;cursor:pointer;text-align:center;transition:border-color .18s var(--ease),transform .18s var(--ease)}
+  .olp-mode-card:hover{border-color:rgba(212,175,55,.55);transform:translateY(-2px)}
+  .olp-mode-card.sel{border-color:rgba(212,175,55,.55)}
+  .olp-mode-icon{font-size:26px;margin-bottom:8px}
+  .olp-mode-name{font-family:'Clash Display',sans-serif;font-size:15px;margin-bottom:6px}
+  .olp-mode-blurb{font-size:12px;color:var(--text2);line-height:1.5}
+  .olp-scope{max-width:460px;margin:14px auto 0;text-align:left}
+  .olp-op-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:14px;color:var(--text2)}
+  .olp-op-row:hover{background:rgba(255,255,255,.04)}
+  .olp-op-row input{accent-color:var(--gold);width:15px;height:15px;flex-shrink:0}
+  .olp-op-row em{font-style:normal;color:var(--text3);font-size:12px}
+  .olp-op-row.olp-all{border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;color:var(--text)}
+  .olp-hud{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+  .olp-timer{font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);background:rgba(212,175,55,.09);border:1px solid rgba(212,175,55,.3);border-radius:10px;padding:3px 14px}
+  .olp-timer.low{color:#e0524e;border-color:rgba(224,82,78,.5);background:rgba(224,82,78,.1)}
+  .olp-score{font-size:13px;color:var(--text2)}
+  .olp-score b{font-family:'DM Mono',monospace;font-size:18px;color:var(--text)}
+  .olp-line-label{font-size:12px;color:var(--gold);margin-bottom:8px;font-weight:600}
+  .olp-hint{margin-top:10px;background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.22);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6;color:var(--text)}
+  .olp-hint-tag{display:inline-block;background:var(--gold);color:#191307;font:800 10px Satoshi,sans-serif;letter-spacing:.05em;padding:2px 7px;border-radius:6px;margin-right:6px;vertical-align:1px}
+  .olp-final-score{font-family:'DM Mono',monospace;font-size:44px;font-weight:700;color:var(--gold);margin:10px 0 2px}
+  .olp-final-score span{font-size:14px;color:var(--text2);font-family:Satoshi,sans-serif;font-weight:500;margin-left:8px}
   .ol-plan-box{margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.12),var(--bg2));border:1.5px solid rgba(201,168,76,.4);border-radius:12px}
   .ol-plan-title{font-family:'Clash Display',sans-serif;font-size:17px;color:var(--gold);margin-bottom:8px}
   .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
@@ -3431,6 +3456,8 @@ body{ padding-top:90px; }
 .ol-toolbar-actions{ display:flex; gap:10px; flex-wrap:wrap; }
 .ol-toolbar-btn{ display:inline-flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:11px; padding:9px 16px; font-family:'Satoshi',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer; transition:border-color .18s var(--ease), color .18s var(--ease), transform .18s var(--ease); }
 .ol-toolbar-btn:hover{ border-color:var(--gold); color:var(--gold); transform:translateY(-1px); }
+.ol-toolbar-btn.gold{ background:linear-gradient(135deg,#dcae4c,#bd8a2f); color:#191307; border-color:transparent; }
+.ol-toolbar-btn.gold:hover{ color:#191307; filter:brightness(1.06); }
 .ol-toolbar-btn .ic{ width:17px; height:17px; }
 .ol-rgrid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(410px, 1fr)); gap:18px; }
 .ol-rcard{ position:relative; display:grid; grid-template-columns:auto minmax(0,1fr); gap:18px; align-items:center; background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:16px; cursor:pointer; transition:transform .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease); }
@@ -24748,6 +24775,7 @@ function olRenderGrid(){
           : (masteredVars>0 ? '<span class="ol-review-clear">All reviews done</span>' : '')}
       </div>
       <div class="ol-toolbar-actions">
+        <button class="ol-toolbar-btn gold" onclick="olOpenPractice()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Practice</button>
         <button class="ol-toolbar-btn" onclick="showSection('creator')"><span class="ic">${PEN}</span> Create a Course</button>
       </div>
     </div>
@@ -25113,11 +25141,14 @@ const OL_FAMILY_INTRO = {
 // moves; draw RED arrows for the opponent's candidate replies; explain each move.
 let olearn = { op:null, opIdx:null, vIdx:null, v:null, sans:[], states:[], idx:0, mode:'learn' };
 
-function olUciKey(states, upto){
+function olUciKey(states, upto, sans){
   // build the UCI prefix string for position lookup
+  // (sans defaults to the learn session's moves for back-compat; drills pass their own)
+  const list = sans || (olearn && olearn.sans) || [];
   const parts = [];
   for(let i=0;i<upto;i++){
-    const mv = sanToMove(olearn.sans[i], states[i]);
+    if(!list[i]) break;
+    const mv = sanToMove(list[i], states[i]);
     if(!mv) break;
     parts.push(mv.from+mv.to+(mv.promotion?mv.promotion:''));
   }
@@ -25151,6 +25182,7 @@ window.olStartLearn = function(opIdx, vIdx){
 };
 
 window.olearnExit = function(){
+  try { if(typeof olDrillStopClock === 'function') olDrillStopClock(); } catch(e){}
   showSection('openings');
   if(olearn.opIdx!=null){ olShowVariations(olearn.opIdx); }
 };
@@ -25302,15 +25334,19 @@ function olDrawMoveArrows(moves, state, color, overlayId){
 }
 
 // ═══════════════ DRILL ENGINE ═══════════════
-// Single-variation drill or mixed (all variations). Accept any of the top-3
-// popular moves at each user position. Wrong → show candidate green arrows +
-// explanations of each candidate.
+// Three drill modes share this engine (oldrill.drillMode):
+//   'learn' — recall with text hints (curated note shown, move masked)
+//   'blitz' — Challenge: recall as many moves as possible in 60 seconds
+//   'zen'   — Challenge: pure recall, no hints, no clock (the classic drill)
+// Accept any of the top-3 popular moves at each user position. Wrong → show
+// candidate green arrows + explanations (learn/zen) or quick-reveal (blitz).
 let oldrill = null;
 
 window.olStartDrill = function(opIdx, vIdx){
   const op = OL[opIdx]; const v = op.v[vIdx];
   const built = olBuildStates(v.s);
-  oldrill = { op, opIdx, mode:'single', queue:[{ vIdx, sans:built.sans, states:built.states }], qi:0,
+  oldrill = { op, opIdx, mode:'single', drillMode:'zen',
+    queue:[{ op, opIdx, vIdx, sans:built.sans, states:built.states }], qi:0,
     sans:built.sans, states:built.states, idx:0, side:null, mistakes:0, vIdx };
   olEnterDrill(`${op.f} — ${v.b?'Main Line':(v.n||'')}`);
 };
@@ -25321,30 +25357,135 @@ window.olStartMixedDrill = function(opIdx, fi){
   const picks = [];
   op.v.forEach((v,vIdx)=>{ if(fi!=null && v.fi!==fi) return; if(v.b || picks.length<8) picks.push(vIdx); });
   const chosen = picks.slice(0,8);
-  const queue = chosen.map(vIdx => { const built = olBuildStates(op.v[vIdx].s); return { vIdx, sans:built.sans, states:built.states }; })
+  const queue = chosen.map(vIdx => { const built = olBuildStates(op.v[vIdx].s); return { op, opIdx, vIdx, sans:built.sans, states:built.states }; })
     .filter(x => x.sans.length >= 2);
   if(!queue.length) return;
-  oldrill = { op, opIdx, mode:'mixed', queue, qi:0, sans:queue[0].sans, states:queue[0].states, idx:0, side:null, mistakes:0 };
+  oldrill = { op, opIdx, mode:'mixed', drillMode:'zen', queue, qi:0, sans:queue[0].sans, states:queue[0].states, idx:0, side:null, mistakes:0 };
   const famName = (fi!=null && op.families && op.families[fi]) ? op.families[fi].name : null;
   olEnterDrill(`${op.f} — ${famName ? famName + ' drill' : 'Mixed drill'} (${queue.length} variations)`);
+};
+
+// ─── PRACTICE HUB: mode → openings → side ───
+const OL_DRILL_MODES = {
+  learn: { label:'Learn drill',        icon:'📖', blurb:'Recall each move with a written hint from the course notes. Wrong answers are explained.' },
+  blitz: { label:'Challenge · 1 minute', icon:'⏱', blurb:'The clock is running — recall as many correct moves as you can in 60 seconds.' },
+  zen:   { label:'Challenge · untimed',  icon:'🎯', blurb:'Pure recall. No hints, no clock — just you and the moves.' },
+};
+
+function olPracticeOps(){
+  const isRecFn = (typeof window.pcoachIsRec === 'function') ? window.pcoachIsRec : (() => false);
+  return OL ? OL.filter(o => /italian|ruy|spanish/i.test(o.f) || isRecFn(o.f)) : [];
+}
+
+window.olOpenPractice = function(){
+  if(!OL){ try{ olInit(); }catch(e){} }
+  document.getElementById('olearn-title').innerHTML = 'Practice <small>drills across your openings</small>';
+  const pill = document.getElementById('olearn-mode-pill');
+  pill.className = 'nlearn-mode-pill nlearn-mode-drill'; pill.textContent = 'DRILL';
+  showSection('olearn');
+  olPracticeRenderModes();
+  window.scrollTo(0,0);
+};
+
+window.olPracticeRenderModes = olPracticeRenderModes;   // inline onclick needs it on window (module scope)
+function olPracticeRenderModes(){
+  const host = document.getElementById('olearn-host');
+  olSetProgress(0,1);
+  const saved = (()=>{ try{ return JSON.parse(localStorage.getItem('gambit_practice')||'{}'); }catch(e){ return {}; } })();
+  host.innerHTML = `
+    <div class="ndrill-pick">
+      <h3>How do you want to practice?</h3>
+      <p>Pick a drill mode, then choose which openings to include.</p>
+      <div class="olp-mode-row">
+        ${Object.entries(OL_DRILL_MODES).map(([k,m]) => `
+          <div class="olp-mode-card${saved.mode===k?' sel':''}" onclick="olPracticeChooseMode('${k}')">
+            <div class="olp-mode-icon">${m.icon}</div>
+            <div class="olp-mode-name">${m.label}</div>
+            <div class="olp-mode-blurb">${m.blurb}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+window.olPracticeChooseMode = function(mode){
+  const ops = olPracticeOps();
+  if(!ops.length){ return; }
+  const saved = (()=>{ try{ return JSON.parse(localStorage.getItem('gambit_practice')||'{}'); }catch(e){ return {}; } })();
+  const sel = new Set((saved.sel && saved.sel.length ? saved.sel : ops.map(o=>o.f)));
+  const host = document.getElementById('olearn-host');
+  host.innerHTML = `
+    <div class="ndrill-pick">
+      <h3>${OL_DRILL_MODES[mode].icon} ${OL_DRILL_MODES[mode].label}</h3>
+      <p>Which openings do you want to practice?</p>
+      <div class="olp-scope">
+        <label class="olp-op-row olp-all">
+          <input type="checkbox" id="olp-all" ${ops.every(o=>sel.has(o.f))?'checked':''}
+            onchange="document.querySelectorAll('.olp-op').forEach(c=>c.checked=this.checked)">
+          <span><b>All openings</b></span>
+        </label>
+        ${ops.map(o => `
+          <label class="olp-op-row">
+            <input type="checkbox" class="olp-op" value="${olEsc(o.f)}" ${sel.has(o.f)?'checked':''}
+              onchange="document.getElementById('olp-all').checked=[...document.querySelectorAll('.olp-op')].every(c=>c.checked)">
+            <span>${olEsc(o.f)} <em>${o.v.length} lines</em>${(typeof window.pcoachIsRec==='function'&&window.pcoachIsRec(o.f))?' <span class="ol-rec">★ Recommended</span>':''}</span>
+          </label>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="olPracticeRenderModes()">← Mode</button>
+        <button class="btn btn-gold" onclick="olPracticeStart('${mode}')">Continue →</button>
+      </div>
+    </div>`;
+};
+
+window.olPracticeStart = function(mode){
+  const names = [...document.querySelectorAll('.olp-op')].filter(c=>c.checked).map(c=>c.value);
+  if(!names.length){ const all = document.getElementById('olp-all'); if(all){ all.checked = false; } return; }
+  try { localStorage.setItem('gambit_practice', JSON.stringify({ mode, sel: names })); } catch(e){}
+  const ops = olPracticeOps().filter(o => names.includes(o.f));
+  let queue = [];
+  ops.forEach(op => {
+    const opIdx = OL.indexOf(op);
+    op.v.forEach((v, vIdx) => {
+      const built = olBuildStates(v.s);
+      if(built.sans.length >= 2) queue.push({ op, opIdx, vIdx, sans:built.sans, states:built.states });
+    });
+  });
+  if(!queue.length) return;
+  if(mode === 'blitz'){ // shuffle for variety under the clock
+    for(let i = queue.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }
+  }
+  queue = queue.slice(0, 40);
+  oldrill = { op: ops[0], opIdx: OL.indexOf(ops[0]), mode:'practice', drillMode: mode,
+    queue, qi:0, sans:queue[0].sans, states:queue[0].states, idx:0, side:null, mistakes:0, score:0 };
+  const scopeLabel = names.length === olPracticeOps().length ? 'all openings' : names.join(', ');
+  olEnterDrill(`${OL_DRILL_MODES[mode].label} — ${scopeLabel.length > 48 ? names.length + ' openings' : scopeLabel}`);
 };
 
 function olEnterDrill(title){
   document.getElementById('olearn-title').innerHTML = `${olEsc(title)}`;
   const pill = document.getElementById('olearn-mode-pill');
-  pill.className = 'nlearn-mode-pill nlearn-mode-drill'; pill.textContent = 'DRILL';
+  pill.className = 'nlearn-mode-pill nlearn-mode-drill';
+  pill.textContent = oldrill && oldrill.drillMode === 'learn' ? 'LEARN DRILL' : oldrill && oldrill.drillMode === 'blitz' ? 'CHALLENGE' : 'DRILL';
   showSection('olearn');
   olRenderDrillPicker();
   window.scrollTo(0,0);
 }
 
+window.olRenderDrillPicker = olRenderDrillPicker;   // inline onclick needs it on window (module scope)
 function olRenderDrillPicker(){
+  olDrillStopClock();
   const host = document.getElementById('olearn-host');
   olSetProgress(0,1);
+  const dm = (oldrill && oldrill.drillMode) || 'zen';
+  const sub = dm === 'learn'
+    ? 'Recall each move — a hint from the course notes is shown before every move.'
+    : dm === 'blitz'
+      ? 'You have <strong>60 seconds</strong> — recall as many correct moves as you can. Wrong moves are revealed instantly so you keep moving.'
+      : `Play the line${oldrill.queue.length>1?'s':''} from memory. Any of the <strong>top-3 popular moves</strong> is accepted.`;
   host.innerHTML = `
     <div class="ndrill-pick">
       <h3>Choose your side</h3>
-      <p>Play the line${oldrill.mode==='mixed'?'s':''} from memory. Any of the <strong>top-3 popular moves</strong> is accepted.</p>
+      <p>${sub}</p>
       <div class="ndrill-side-row">
         <div class="ndrill-side-card" onclick="olDrillBegin('w')"><div class="ndrill-side-icon">♔</div><div class="ndrill-side-label">Play White</div></div>
         <div class="ndrill-side-card" onclick="olDrillBegin('b')"><div class="ndrill-side-icon">♚</div><div class="ndrill-side-label">Play Black</div></div>
@@ -25353,17 +25494,44 @@ function olRenderDrillPicker(){
 }
 
 window.olDrillBegin = function(side){
-  oldrill.side = side; oldrill.qi = 0; oldrill.mistakes = 0;
+  oldrill.side = side; oldrill.qi = 0; oldrill.mistakes = 0; oldrill.score = 0;
+  if(oldrill.drillMode === 'blitz'){
+    // Wall-clock deadline (not tick counting) so the minute stays honest even
+    // if the browser throttles timers in a background tab.
+    oldrill.timeLeft = 60;
+    oldrill.endAt = Date.now() + 60000;
+    olDrillStopClock();
+    oldrill.clock = setInterval(() => {
+      if(!oldrill || !oldrill.endAt){ return; }
+      const left = Math.ceil((oldrill.endAt - Date.now()) / 1000);
+      oldrill.timeLeft = left;
+      const t = document.getElementById('old-timer');
+      if(t){ t.textContent = olDrillFmtClock(left); t.classList.toggle('low', left <= 10); }
+      if(left <= 0){ olDrillBlitzDone(); }
+    }, 500);
+  }
   olDrillLoadCurrent();
 };
+
+function olDrillStopClock(){
+  if(oldrill && oldrill.clock){ clearInterval(oldrill.clock); oldrill.clock = null; }
+}
+
+function olDrillFmtClock(s){ s = Math.max(0, s|0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
 
 function olDrillLoadCurrent(){
   const q = oldrill.queue[oldrill.qi];
   oldrill.sans = q.sans; oldrill.states = q.states; oldrill.idx = 0;
+  oldrill.lineMistakes = 0;
+  if(q.op){ oldrill.op = q.op; oldrill.opIdx = q.opIdx; }
+  const dm = oldrill.drillMode || 'zen';
+  const v = q.op && q.op.v[q.vIdx];
+  const lineLabel = v ? `${q.op.f} — ${v.b ? 'Main Line' : (v.n || '')}` : '';
   const host = document.getElementById('olearn-host');
   host.innerHTML = `
     <div class="nlearn-stage">
       <div>
+        ${dm === 'blitz' ? `<div class="olp-hud"><span class="olp-timer${(oldrill.timeLeft||60) <= 10 ? ' low' : ''}" id="old-timer">${olDrillFmtClock(oldrill.timeLeft ?? 60)}</span><span class="olp-score">Score <b id="old-score">${oldrill.score || 0}</b></span></div>` : ''}
         <div style="display:inline-flex;flex-direction:column;position:relative">
           <div style="display:flex;gap:0;position:relative">
             <div class="board-ranks" id="old-ranks"></div>
@@ -25380,6 +25548,7 @@ function olDrillLoadCurrent(){
         </div>
       </div>
       <div class="nlearn-side">
+        ${lineLabel && oldrill.mode === 'practice' ? `<div class="olp-line-label">${olEsc(lineLabel)} <span style="color:var(--text3)">· line ${oldrill.qi + 1}/${oldrill.queue.length}</span></div>` : ''}
         <div class="nlearn-movebadge" id="old-badge">Your move</div>
         <div class="nlearn-explain" id="old-explain"></div>
         <div class="nlearn-feedback" id="old-fb"></div>
@@ -25389,6 +25558,24 @@ function olDrillLoadCurrent(){
     </div>`;
   if(oldrill.side==='b'){ try{ if(!isBoardFlipped('old-board')) flipBoard('old-board'); }catch(e){} }
   olDrillStep();
+}
+
+// The written hint for learn-mode drills: the curated note with the move masked.
+function olDrillHint(){
+  const idx = oldrill.idx;
+  const q = oldrill.queue[oldrill.qi];
+  const san = oldrill.sans[idx] || '';
+  const v = q.op && q.op.v[q.vIdx];
+  const note = v && v.notes && v.notes[idx];
+  if(note){
+    let t = String(note).replace(/^[^—]*—\s*/, '');           // strip the "N.move — " lead
+    const clean = san.replace(/[+#!?]+$/,'');
+    if(clean){ t = t.split(clean).join('▢▢'); }               // mask the move itself if quoted
+    return `<span class="olp-hint-tag">Hint</span> ${olEsc(t)}`;
+  }
+  if(/^O-O/.test(san)) return `<span class="olp-hint-tag">Hint</span> Think king safety.`;
+  const piece = { N:'a knight', B:'a bishop', R:'a rook', Q:'your queen', K:'your king' }[san[0]] || 'a pawn';
+  return `<span class="olp-hint-tag">Hint</span> It's ${olEsc(piece)} move.`;
 }
 
 function olDrillStep(){
@@ -25412,7 +25599,13 @@ function olDrillStep(){
 
   if(userTurn){
     badge.textContent = 'Your move';
-    explain.innerHTML = `Play move <strong>${Math.floor(idx/2)+1}${moverWhite?'.':'…'}</strong> for ${oldrill.side==='w'?'White':'Black'}. Any of the top-3 popular moves is accepted.`;
+    if(oldrill.drillMode === 'learn'){
+      explain.innerHTML = `Play move <strong>${Math.floor(idx/2)+1}${moverWhite?'.':'…'}</strong> for ${oldrill.side==='w'?'White':'Black'}.<div class="olp-hint">${olDrillHint()}</div>`;
+    } else if(oldrill.drillMode === 'blitz'){
+      explain.innerHTML = `Move <strong>${Math.floor(idx/2)+1}${moverWhite?'.':'…'}</strong> — go!`;
+    } else {
+      explain.innerHTML = `Play move <strong>${Math.floor(idx/2)+1}${moverWhite?'.':'…'}</strong> for ${oldrill.side==='w'?'White':'Black'}. Any of the top-3 popular moves is accepted.`;
+    }
     oldrill.awaiting = true;
     makeBoardInteractive('old-board', state, olDrillUserMove);
   } else {
@@ -25420,7 +25613,7 @@ function olDrillStep(){
     const san = oldrill.sans[idx];
     explain.innerHTML = `Opponent plays <strong>${olEsc(san)}</strong>.`;
     oldrill.awaiting = false;
-    setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, 600);
+    setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, oldrill.drillMode === 'blitz' ? 160 : 600);
   }
 }
 
@@ -25431,7 +25624,7 @@ function olLastHL(d, idx){
 function olDrillUserMove(from, to, newState, san){
   if(!oldrill.awaiting) return;
   const idx = oldrill.idx, state = oldrill.states[idx];
-  const key = olUciKey(oldrill.states, idx);
+  const key = olUciKey(oldrill.states, idx, oldrill.sans);
   const pos = OL_POS[key];
   const top3 = (pos && pos.m) ? pos.m : [];
   const playedUci = from+to;
@@ -25445,13 +25638,21 @@ function olDrillUserMove(from, to, newState, san){
 
   if(matchTop || lineMatch){
     oldrill.awaiting = false;
+    oldrill.score = (oldrill.score || 0) + 1;
+    const sc = document.getElementById('old-score'); if(sc) sc.textContent = oldrill.score;
     const rank = matchTop ? (top3.indexOf(matchTop)+1) : 1;
-    fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — accepted (popular move #${rank}).</span>`;
-    // advance: if they played the exact line move, continue the line; otherwise
-    // follow the line's stored continuation from here (we keep the booked line)
-    setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, 380);
+    fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)}${oldrill.drillMode==='blitz'?'':' — accepted (popular move #'+rank+')'}.</span>`;
+    setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, oldrill.drillMode==='blitz' ? 140 : 380);
+  } else if(oldrill.drillMode === 'blitz'){
+    // Challenge under the clock: no lectures — flash the right move and keep going
+    oldrill.mistakes++; oldrill.lineMistakes = (oldrill.lineMistakes||0) + 1;
+    oldrill.awaiting = false;
+    const right = oldrill.sans[idx];
+    fb.innerHTML = `<span class="nlearn-fb-wrong">✗ It was <strong>${olEsc(right)}</strong></span>`;
+    renderBoardEl('old-board','old-ranks','old-files', state, idx>0?olLastHL(oldrill,idx):[], null);
+    setTimeout(()=>{ if(oldrill && oldrill.clock){ oldrill.idx++; olDrillStep(); } }, 700);
   } else {
-    oldrill.mistakes++;
+    oldrill.mistakes++; oldrill.lineMistakes = (oldrill.lineMistakes||0) + 1;
     fb.innerHTML = `<span class="nlearn-fb-wrong">✗ Not a main move here. The popular choices are shown in green.</span>`;
     // draw green candidate arrows + explanations
     if(top3.length){
@@ -25486,12 +25687,25 @@ window.olDrillReveal = function(){
 };
 
 function olDrillNextOrDone(){
-  // move to next variation in queue (mixed) or finish
+  // a line just finished — flawless recall (outside learn mode) marks it mastered
+  const q = oldrill.queue[oldrill.qi];
+  if(q && q.op && oldrill.lineMistakes === 0 && oldrill.drillMode !== 'learn'){
+    try { olMarkMastered(olVarId(q.op, q.vIdx)); } catch(e){}
+  }
+  // move to next variation in queue or finish
   if(oldrill.qi < oldrill.queue.length - 1){
     oldrill.qi++;
     olDrillLoadCurrent();
     return;
   }
+  // blitz with time still on the clock: reshuffle and keep going
+  if(oldrill.drillMode === 'blitz' && oldrill.clock && oldrill.timeLeft > 0){
+    for(let i = oldrill.queue.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [oldrill.queue[i], oldrill.queue[j]] = [oldrill.queue[j], oldrill.queue[i]]; }
+    oldrill.qi = 0;
+    olDrillLoadCurrent();
+    return;
+  }
+  if(oldrill.drillMode === 'blitz'){ olDrillBlitzDone(); return; }
   // done
   const host = document.getElementById('olearn-host');
   const perfect = oldrill.mistakes === 0;
@@ -25506,7 +25720,37 @@ function olDrillNextOrDone(){
         : `Completed with ${oldrill.mistakes} slip${oldrill.mistakes===1?'':'s'}. Run it again clean to master it.`}</p>
       <div class="ndrill-side-row">
         <div class="ndrill-side-card" onclick="olRenderDrillPicker()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Drill again</div></div>
-        <div class="ndrill-side-card" onclick="olShowVariations(${oldrill.opIdx})"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span></div><div class="ndrill-side-label">Variations</div></div>
+        ${oldrill.mode === 'practice'
+          ? `<div class="ndrill-side-card" onclick="olPracticeRenderModes()"><div class="ndrill-side-icon">🎛</div><div class="ndrill-side-label">Change mode</div></div>`
+          : `<div class="ndrill-side-card" onclick="olShowVariations(${oldrill.opIdx})"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span></div><div class="ndrill-side-label">Variations</div></div>`}
+      </div>
+    </div>`;
+}
+
+// Challenge (1 minute) — time's up: score screen
+function olDrillBlitzDone(){
+  olDrillStopClock();
+  if(!oldrill) return;
+  oldrill.awaiting = false;
+  const host = document.getElementById('olearn-host');
+  olSetProgress(1,1);
+  const score = oldrill.score || 0;
+  let best = 0;
+  try {
+    best = parseInt(localStorage.getItem('gambit_blitz_best') || '0', 10) || 0;
+    if(score > best){ localStorage.setItem('gambit_blitz_best', String(score)); }
+  } catch(e){}
+  const isPB = score > best;
+  host.innerHTML = `
+    <div class="ndrill-pick">
+      <div class="ndrill-side-icon">⏱</div>
+      <h3>Time's up!</h3>
+      <div class="olp-final-score">${score}<span> moves recalled</span></div>
+      <p>${isPB && best > 0 ? `🏆 New personal best (previous: ${best})!` : isPB ? '🏆 Personal best set — beat it next time!' : `Personal best: ${best}.`}
+        ${oldrill.mistakes ? ` ${oldrill.mistakes} slip${oldrill.mistakes===1?'':'s'} along the way.` : ' Not a single mistake — flawless minute!'}</p>
+      <div class="ndrill-side-row">
+        <div class="ndrill-side-card" onclick="olRenderDrillPicker()"><div class="ndrill-side-icon">⏱</div><div class="ndrill-side-label">Run it again</div></div>
+        <div class="ndrill-side-card" onclick="olPracticeRenderModes()"><div class="ndrill-side-icon">🎛</div><div class="ndrill-side-label">Change mode</div></div>
       </div>
     </div>`;
 }
