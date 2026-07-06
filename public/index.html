@@ -2199,6 +2199,13 @@ input:focus, select:focus, textarea:focus {
   .olp-hint-tag{display:inline-block;background:var(--gold);color:#191307;font:800 10px Satoshi,sans-serif;letter-spacing:.05em;padding:2px 7px;border-radius:6px;margin-right:6px;vertical-align:1px}
   .olp-final-score{font-family:'DM Mono',monospace;font-size:44px;font-weight:700;color:var(--gold);margin:10px 0 2px}
   .olp-final-score span{font-size:14px;color:var(--text2);font-family:Satoshi,sans-serif;font-weight:500;margin-left:8px}
+
+  /* ════════ "FINISHED" PROGRESS MARKERS ════════ */
+  .ol-var-finished{display:inline-flex;align-items:center;background:rgba(126,191,106,.12);border:1px solid rgba(126,191,106,.4);color:#8fce7d;font:700 10px Satoshi,sans-serif;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:7px;margin-left:6px;vertical-align:1px}
+  .ol-var-mastered{color:var(--gold);margin-left:4px}
+  .ol-fin-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(126,191,106,.12);border:1px solid rgba(126,191,106,.45);color:#8fce7d;font:800 10px Satoshi,sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:7px;flex-shrink:0}
+  .ol-finished-note{background:rgba(126,191,106,.1);border:1px solid rgba(126,191,106,.35);border-radius:10px;padding:10px 14px;font-size:13px;color:#a5d998;margin-bottom:10px;line-height:1.5}
+  .ol-finished-note strong{color:#c8eebc}
   .ol-plan-box{margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.12),var(--bg2));border:1.5px solid rgba(201,168,76,.4);border-radius:12px}
   .ol-plan-title{font-family:'Clash Display',sans-serif;font-size:17px;color:var(--gold);margin-bottom:8px}
   .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
@@ -24690,6 +24697,23 @@ function olTotalDue(){ let n = 0; (OL||[]).forEach(op=>{ n += olDueCount(op); })
 function olFirstDueIdx(op){ for(let i=0;i<op.v.length;i++){ if(olIsDue(olVarId(op,i))) return i; } return -1; }
 function olFirstUnlearnedIdx(op){ for(let i=0;i<op.v.length;i++){ if(!olIsMastered(olVarId(op,i))) return i; } return -1; }
 
+// ── "Finished" tracking: playing through ALL moves of a variation marks it
+//    finished; finishing every variation marks the whole opening finished.
+//    (Separate from mastery, which requires flawless drill recall.)
+function olFinishedGet(){ try { return JSON.parse(localStorage.getItem('gambit_ol_finished')||'{}'); } catch(e){ return {}; } }
+function olIsFinished(id){ return !!olFinishedGet()[id]; }
+function olMarkFinished(id){
+  try {
+    const f = olFinishedGet();
+    if(f[id]) return false;                 // already finished — not a fresh finish
+    f[id] = Date.now();
+    localStorage.setItem('gambit_ol_finished', JSON.stringify(f));
+    return true;
+  } catch(e){ return false; }
+}
+function olFinishedCount(op){ let n = 0; op.v.forEach((v,i)=>{ if(olIsFinished(olVarId(op,i))) n++; }); return n; }
+function olOpeningFinished(op){ return op.v.length > 0 && olFinishedCount(op) === op.v.length; }
+
 function olEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── format SAN list with move numbers ──
@@ -24745,14 +24769,16 @@ function olRenderGrid(){
     else { ctaLabel = 'Practice again'; ctaIdx = baseIdx; }
     if(ctaIdx < 0) ctaIdx = baseIdx;
     const isRec = (typeof window.pcoachIsRec === 'function') && window.pcoachIsRec(op.f);
+    const opFin = olOpeningFinished(op);
+    const finCount = olFinishedCount(op);
     return `<article class="ol-rcard" onclick="olOpenIntro(${opIdx})">
       <div class="ol-rcard-board"><div class="chess-board ol-thumb-board" id="olthumb-${opIdx}"></div></div>
       <div class="ol-rcard-body">
-        <div class="ol-rcard-head"><h3 class="ol-rcard-name">${olEsc(op.f)}</h3>${isRec?'<span class="ol-rec" title="Recommended for you by your Coach analysis">★ Recommended</span>':''}<span class="ol-rcard-eco">${olEsc(op.eco)}</span></div>
+        <div class="ol-rcard-head"><h3 class="ol-rcard-name">${olEsc(op.f)}</h3>${opFin?'<span class="ol-fin-badge" title="You played every variation of this opening to the end">✓ Finished</span>':''}${isRec?'<span class="ol-rec" title="Recommended for you by your Coach analysis">★ Recommended</span>':''}<span class="ol-rcard-eco">${olEsc(op.eco)}</span></div>
         <p class="ol-rcard-desc">${olEsc(desc)}</p>
         <div class="ol-rcard-prog">
           <div class="ol-rcard-bar"><span style="width:${pct}%"></span></div>
-          <span class="ol-rcard-lines">${op.v.length} lines${learned?' · '+learned+' learned':''}</span>
+          <span class="ol-rcard-lines">${op.v.length} lines${finCount?' · '+finCount+' finished':''}${learned?' · '+learned+' learned':''}</span>
           ${due>0?`<span class="ol-due-badge">${due} due</span>`:''}
         </div>
         <button class="ol-rcard-cta${due>0?' due':''}" onclick="event.stopPropagation();olStartLearn(${opIdx},${ctaIdx})">${olEsc(ctaLabel)} ${ARROW}</button>
@@ -24896,7 +24922,7 @@ window.olOpenIntro = function(opIdx){
       <div class="ol-intro-head">
         <div>
           <div class="ol-intro-eco">${olEsc(op.eco)} · ${OL_STYLE_LABEL[op.style]||op.style}</div>
-          <h1 class="ol-intro-title">${olEsc(op.f)} ${(typeof window.pcoachIsRec==='function' && window.pcoachIsRec(op.f))?'<span class="ol-rec" style="vertical-align:middle">★ Recommended</span>':''}</h1>
+          <h1 class="ol-intro-title">${olEsc(op.f)} ${olOpeningFinished(op)?'<span class="ol-fin-badge" style="vertical-align:middle">✓ Finished</span>':''} ${(typeof window.pcoachIsRec==='function' && window.pcoachIsRec(op.f))?'<span class="ol-rec" style="vertical-align:middle">★ Recommended</span>':''}</h1>
         </div>
       </div>
       <div class="ol-intro-cols">
@@ -25063,10 +25089,11 @@ function olRenderVarRows(opIdx, q){
       if(!plain.includes(q) && !v.eco.toLowerCase().includes(q) && !v.s.join(' ').toLowerCase().includes(q)) return '';
     }
     const isM = !!mastery[olVarId(op, vIdx)];
+    const isF = olIsFinished(olVarId(op, vIdx));
     return `<div class="ol-var-row">
       <span class="ol-var-eco">${v.eco}</span>
       <div class="ol-var-info">
-        <div class="ol-var-name">${label} ${isM?'<span class="ol-var-mastered">✓</span>':''}</div>
+        <div class="ol-var-name">${label} ${isF?'<span class="ol-var-finished" title="You played this variation to the end">✓ Finished</span>':''} ${isM?'<span class="ol-var-mastered" title="Recalled flawlessly in a drill">★</span>':''}</div>
         <div class="ol-var-moves">${olEsc(olFmtMoves(v.s,12))}</div>
       </div>
       <div class="ol-var-actions">
@@ -25272,6 +25299,14 @@ function olRenderLearnStep(){
 
   clearArrows('ol-arrows');
   const atEnd = idx >= olearn.sans.length;
+  // Played through every move of the variation → mark it "finished"
+  let finishedNote = '';
+  if(atEnd && olearn.op && olearn.vIdx != null){
+    const vid = olVarId(olearn.op, olearn.vIdx);
+    const fresh = olMarkFinished(vid);
+    const allDone = olOpeningFinished(olearn.op);
+    finishedNote = `<div class="ol-finished-note">✓ Variation ${fresh ? 'marked as ' : ''}finished${allDone ? ` — and that completes the whole <strong>${olEsc(olearn.op.f)}</strong>! 🏆` : ` (${olFinishedCount(olearn.op)}/${olearn.op.v.length} in this opening)`}</div>`;
+  }
   const planHtml = (atEnd && olearn.v && olearn.v.plan)
     ? `<div class="ol-plan-box">
          <div class="ol-plan-title"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.8 5.41a2 2 0 0 1-1.27 1.27L7.76 16.24l1.8-5.41a2 2 0 0 1 1.27-1.27z"/><circle cx="12" cy="12" r="10"/></svg></span> How to proceed — your plans &amp; ideas</div>
@@ -25281,7 +25316,7 @@ function olRenderLearnStep(){
 
   if(atEnd){
     // reached the end of the line: show the plan, no arrows
-    popular.innerHTML = planHtml || `<div class="ol-pop-title" style="color:var(--text3)">End of the line — play on with the ideas you've learned.</div>`;
+    popular.innerHTML = finishedNote + (planHtml || `<div class="ol-pop-title" style="color:var(--text3)">End of the line — play on with the ideas you've learned.</div>`);
   } else if(pos && pos.m && pos.m.length){
     // draw arrows: RED if opponent to move, gold if the side we're learning
     const color = isOpponentTurn ? 'red' : 'main';
@@ -25687,10 +25722,14 @@ window.olDrillReveal = function(){
 };
 
 function olDrillNextOrDone(){
-  // a line just finished — flawless recall (outside learn mode) marks it mastered
+  // a line just finished — playing through all its moves marks it "finished";
+  // flawless recall (outside learn mode) additionally marks it mastered
   const q = oldrill.queue[oldrill.qi];
-  if(q && q.op && oldrill.lineMistakes === 0 && oldrill.drillMode !== 'learn'){
-    try { olMarkMastered(olVarId(q.op, q.vIdx)); } catch(e){}
+  if(q && q.op){
+    try { olMarkFinished(olVarId(q.op, q.vIdx)); } catch(e){}
+    if(oldrill.lineMistakes === 0 && oldrill.drillMode !== 'learn'){
+      try { olMarkMastered(olVarId(q.op, q.vIdx)); } catch(e){}
+    }
   }
   // move to next variation in queue or finish
   if(oldrill.qi < oldrill.queue.length - 1){
