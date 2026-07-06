@@ -3270,6 +3270,8 @@ body{ padding-top:90px; }
 .ad-infeed{ max-width:728px; min-height:120px; margin:26px auto; }
 .ad-footer{ max-width:970px; margin:30px auto 6px; }
 @media (max-width:600px){ .ad-slot{ min-height:70px; border-radius:12px; } }
+/* ads disabled for now — markup kept so slots can be re-enabled later */
+.ad-slot{ display:none !important; }
 
 /* PGN paste textarea */
 .rv-pgn-input{ width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:12px 14px; color:var(--text); font-family:'DM Mono',monospace; font-size:12.5px; line-height:1.6; resize:vertical; min-height:120px; transition:border-color .2s var(--ease), box-shadow .2s var(--ease); }
@@ -3454,7 +3456,7 @@ body{ padding-top:90px; }
 /* One square-size variable drives BOTH columns: the board reads it for its squares,
    the side panel reads it to lock its height to the board's, so the two columns
    always bottom-align and nothing spills below the fold. */
-#cc-workspace{ --ccsq: clamp(44px, 6.8vh, 66px); }
+#cc-workspace{ --ccsq: clamp(44px, 6.8vh, 56px); }   /* 56px cap = same square size as Game Review */
 #cc-board .sq{ width:var(--ccsq); height:var(--ccsq); }
 #cc-workspace #cc-evalbar{ height:auto; align-self:stretch; }
 #cc-workspace .cc-top{ margin-bottom:8px; }
@@ -3467,21 +3469,26 @@ body{ padding-top:90px; }
 #cc-workspace .cc-board-col{ grid-area:board; }
 /* side = one contained card, height locked to the board column (8 squares + coords + controls) */
 #cc-workspace .cc-side{
-  grid-area:side; max-width:none; display:flex; flex-direction:column; gap:10px;
+  grid-area:side; max-width:none; display:flex; flex-direction:column; gap:8px;
   height:calc(var(--ccsq)*8 + 66px); min-height:420px;
-  background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:14px;
+  background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:12px;
 }
 #cc-workspace .cc-side-head{ flex-shrink:0 }
+/* course title row lives in the panel (ChessReps style): icon + editable name + save */
+#cc-workspace .cc-title-row{ gap:8px }
+#cc-workspace .cc-title-row .cc-tool-icon{ color:var(--gold); display:inline-flex }
+#cc-workspace .cc-name-input{ flex:1; min-width:0; background:transparent; border:none; border-bottom:1px solid transparent; border-radius:0; padding:3px 4px; font-size:17px }
+#cc-workspace .cc-name-input:focus{ outline:none; border-bottom-color:var(--gold) }
 /* inner boxes sit on the card, so they get a quieter surface than the card itself */
 #cc-workspace .cc-analysis-lines, #cc-workspace .cc-movetree, #cc-workspace .cc-note-input, #cc-workspace .cc-stats{ background:rgba(255,255,255,.03); border-color:rgba(255,255,255,.08) }
-#cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:118px; overflow:auto }
+#cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:90px; overflow:auto }
 /* the move list is the flexible middle — it absorbs spare height and scrolls */
-#cc-workspace .cc-movetree{ flex:1 1 auto; min-height:40px; overflow:auto }
-#cc-workspace .cc-endline-btn{ flex-shrink:0; padding:9px 12px; font-size:13px; border-radius:10px }
-#cc-workspace .cc-note-input{ flex-shrink:0; min-height:52px; max-height:76px; resize:none }
+#cc-workspace .cc-movetree{ flex:1 1 auto; min-height:32px; overflow:auto }
+#cc-workspace .cc-endline-btn{ flex-shrink:0; padding:8px 12px; font-size:13px; border-radius:10px }
+#cc-workspace .cc-note-input{ flex-shrink:0; min-height:40px; max-height:64px; resize:none }
 /* stats pinned at the bottom of the card, rows scroll if long */
 #cc-workspace .cc-stats{ flex-shrink:0; margin-top:0 }
-#cc-workspace #cc-stats-rows{ max-height:150px; overflow:auto }
+#cc-workspace #cc-stats-rows{ max-height:96px; overflow:auto }
 #cc-workspace .cc-nav-arrows button{ width:42px; height:34px; font-size:20px }
 #cc-workspace #cc-repviz{ display:none; }   /* visualisation removed for now */
 #cc-repviz .rep-tree{ max-height:min(160px, 19vh); }
@@ -27382,13 +27389,8 @@ function ccOpenWorkspace(){
   const _su=document.getElementById('cc-setup'); if(_su) _su.style.display='none';
   const ws=document.getElementById('cc-workspace'); ws.style.display='block';
   ws.innerHTML = `
-    <div class="cc-top">
-      <button class="acad-learn-back" onclick="ccBackHome()">←</button>
-      <span class="cc-tool-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span></span>
-      <input id="cc-name" class="cc-name-input" value="${ccEsc(CC.name)}" oninput="CC.name=this.value" placeholder="Course name…">
-      <button class="nop-mini-btn gold" onclick="ccSave()">☁ Save</button>
-    </div>
     <div class="cc-analysis-toggle">
+      <button class="acad-learn-back" onclick="ccBackHome()">←</button>
       <label class="cc-switch"><input type="checkbox" id="cc-analysis-cb" ${CC.analysisOn?'checked':''} onchange="ccToggleAnalysis(this.checked)"><span class="cc-slider"></span></label>
       <span>Analysis</span>
       <span class="cc-engine-tag">Stockfish 18 Lite</span>
@@ -27414,6 +27416,11 @@ function ccOpenWorkspace(){
         </div>
       </div>
       <div class="cc-side">
+        <div class="cc-side-head cc-title-row">
+          <span class="cc-tool-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span></span>
+          <input id="cc-name" class="cc-name-input" value="${ccEsc(CC.name)}" oninput="CC.name=this.value" placeholder="Untitled Course">
+          <button class="nop-mini-btn gold" onclick="ccSave()">☁ Save</button>
+        </div>
         <div class="cc-side-head">
           <span class="cc-lines-count" id="cc-lines-count">0 lines in course</span>
           <span class="cc-coverage" id="cc-coverage"></span>
@@ -27649,12 +27656,8 @@ async function ccRunEngine(){
     updateEvalBar('cc-evalbar-black','cc-evalbar-score', r.score, r.isMate, r.mateIn);
     if(inline) inline.textContent=formatEval(r.score,r.isMate,r.mateIn);
     const alts=(r.alternatives&&r.alternatives.length)?r.alternatives:[{pv:r.pv,score:r.score,isMate:r.isMate,mateIn:r.mateIn}];
-    // top line arrow (blue, like chessreps analysis)
+    // no persistent arrows — one appears on hover over a line's first move (ChessReps style)
     clearArrows('cc-arrows');
-    // Three arrows — first move of each of the engine's top lines (best = bold green)
-    const ccArrowSpec=[{c:'rgba(237,158,40,.92)',w:11},{c:'rgba(237,158,40,.58)',w:9},{c:'rgba(237,158,40,.4)',w:8}];
-    const ccArrowList=alts.slice(0,3).map((a,i)=>({uci:((a&&a.pv)||'').trim().split(/\s+/)[0],color:ccArrowSpec[i].c,width:ccArrowSpec[i].w})).filter(a=>a.uci&&a.uci.length>=4);
-    ccDrawArrows([...ccArrowList].reverse());
     if(linesHost){
       const startPly = CC.sans.length;
       CC._pvLines = alts.slice(0,3).map(a => ((a&&a.pv)||'').trim().split(/\s+/).filter(Boolean));
@@ -27666,7 +27669,7 @@ async function ccRunEngine(){
           let num='';
           if(t.ply%2===1) num=`<span class="cc-pv-num">${Math.ceil(t.ply/2)}.</span>`;
           else if(mi===0) num=`<span class="cc-pv-num">${Math.ceil(t.ply/2)}…</span>`;
-          return `${num}<span class="cc-pv-mv" data-fen="${encodeURIComponent(t.fen)}" onmouseenter="ccPvHover(this)" onmouseleave="ccPvHoverOut()" onclick="ccPlayLine(${li},${mi})">${ccEsc(t.san)}</span>`;
+          return `${num}<span class="cc-pv-mv" data-fen="${encodeURIComponent(t.fen)}" data-uci="${t.uci}" data-mi="${mi}" onmouseenter="ccPvHover(this)" onmouseleave="ccPvHoverOut()" onclick="ccPlayLine(${li},${mi})">${ccEsc(t.san)}</span>`;
         }).join(' ');
         return `<div class="cc-aline"><span class="cc-aline-eval ${cls}">${ev}</span><span class="cc-aline-moves">${moves}</span></div>`;
       }).join('');
@@ -27725,6 +27728,11 @@ function ccMiniBoardHTML(fen){
   return `<div class="cc-mini-board">${cells}</div>`;
 }
 window.ccPvHover=function(el){
+  // first move of a line: draw its arrow on the big board instead of the popup preview
+  if(el && el.getAttribute('data-mi')==='0'){
+    const u=el.getAttribute('data-uci');
+    if(u && u.length>=4){ ccDrawArrows([{uci:u, color:'rgba(237,158,40,.92)', width:11}]); return; }
+  }
   const enc=el&&el.getAttribute('data-fen'); if(!enc) return;
   let pop=document.getElementById('cc-pv-preview');
   if(!pop){ pop=document.createElement('div'); pop.id='cc-pv-preview'; pop.className='cc-pv-preview'; document.body.appendChild(pop); }
@@ -27735,7 +27743,7 @@ window.ccPvHover=function(el){
   let top=r.bottom+8; if(top+sz>window.innerHeight-8) top=r.top-sz-8;
   pop.style.left=Math.max(8,left)+'px'; pop.style.top=Math.max(8,top)+'px';
 };
-window.ccPvHoverOut=function(){ const pop=document.getElementById('cc-pv-preview'); if(pop) pop.style.display='none'; };
+window.ccPvHoverOut=function(){ const pop=document.getElementById('cc-pv-preview'); if(pop) pop.style.display='none'; try{ clearArrows('cc-arrows'); }catch(e){} };
 // Click an engine-line move → play that line up to (and including) the clicked move on the big board
 window.ccPlayLine=function(li, mi){
   const line=(CC._pvLines||[])[li]; if(!line) return;
@@ -28029,7 +28037,7 @@ window.ccSave = function(){
   if(!c){ c={id:'cc_'+Date.now()}; courses.unshift(c); CC.courseId=c.id; }
   c.name=CC.name; c.description=CC.description||''; c.playAs=CC.playAs||'white'; c.tree=CC.tree; c.notes=CC.notes; c.courseLines=CC.courseLines; c.notesCount=Object.keys(CC.notes).length; c.saved=Date.now();
   ccStore(courses);
-  const btn=document.querySelector('.cc-top .nop-mini-btn.gold'); if(btn){ const t=btn.textContent; btn.textContent='✓ Saved'; setTimeout(()=>{ if(btn) btn.textContent=t; },1500); }
+  const btn=document.querySelector('.cc-title-row .nop-mini-btn.gold, .cc-top .nop-mini-btn.gold'); if(btn){ const t=btn.textContent; btn.textContent='✓ Saved'; setTimeout(()=>{ if(btn) btn.textContent=t; },1500); }
 };
 
 // ════════════════════════════════════════════════════════
