@@ -3456,7 +3456,12 @@ body{ padding-top:90px; }
 /* One square-size variable drives BOTH columns: the board reads it for its squares,
    the side panel reads it to lock its height to the board's, so the two columns
    always bottom-align and nothing spills below the fold. */
-#cc-workspace{ --ccsq: clamp(44px, 6.8vh, 56px); }   /* 56px cap = same square size as Game Review */
+/* ChessReps proportions: the board dominates — squares sized so board + page chrome
+   (~320px: nav offset, analysis row, coords, controls) exactly fill the viewport height */
+#cc-workspace{ --ccsq: clamp(44px, calc(12.5vh - 40px), 112px); }
+/* break out of the 1140px .acad-wrap: center the workspace on the viewport so the
+   side panel keeps a ChessReps-like width next to the big board */
+#cc-workspace{ width:min(calc(100vw - 64px), 1560px); position:relative; left:50%; transform:translateX(-50%); }
 #cc-board .sq{ width:var(--ccsq); height:var(--ccsq); }
 #cc-workspace #cc-evalbar{ height:auto; align-self:stretch; }
 #cc-workspace .cc-top{ margin-bottom:8px; }
@@ -3481,14 +3486,14 @@ body{ padding-top:90px; }
 #cc-workspace .cc-name-input:focus{ outline:none; border-bottom-color:var(--gold) }
 /* inner boxes sit on the card, so they get a quieter surface than the card itself */
 #cc-workspace .cc-analysis-lines, #cc-workspace .cc-movetree, #cc-workspace .cc-note-input, #cc-workspace .cc-stats{ background:rgba(255,255,255,.03); border-color:rgba(255,255,255,.08) }
-#cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:90px; overflow:auto }
+#cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:clamp(64px, 11vh, 118px); overflow:auto }
 /* the move list is the flexible middle — it absorbs spare height and scrolls */
-#cc-workspace .cc-movetree{ flex:1 1 auto; min-height:32px; overflow:auto }
+#cc-workspace .cc-movetree{ flex:1 1 auto; min-height:36px; overflow:auto }
 #cc-workspace .cc-endline-btn{ flex-shrink:0; padding:8px 12px; font-size:13px; border-radius:10px }
-#cc-workspace .cc-note-input{ flex-shrink:0; min-height:40px; max-height:64px; resize:none }
+#cc-workspace .cc-note-input{ flex-shrink:0; height:clamp(36px, 6vh, 80px); min-height:0; resize:none }
 /* stats pinned at the bottom of the card, rows scroll if long */
 #cc-workspace .cc-stats{ flex-shrink:0; margin-top:0 }
-#cc-workspace #cc-stats-rows{ max-height:96px; overflow:auto }
+#cc-workspace #cc-stats-rows{ max-height:clamp(76px, 14vh, 150px); overflow:auto }
 #cc-workspace .cc-nav-arrows button{ width:42px; height:34px; font-size:20px }
 #cc-workspace #cc-repviz{ display:none; }   /* visualisation removed for now */
 #cc-repviz .rep-tree{ max-height:min(160px, 19vh); }
