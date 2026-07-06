@@ -1,0 +1,14 @@
+cd C:\Users\user\AppData\Local\Temp\claude\C--Users-user-Downloads-gambit-chess-academy-lite-2\55ca0069-be41-4a0c-a424-11e6932eca4e\scratchpad\deploy-repo
+git pull --ff-only
+copy ..\..\..\..\..\..\..\..\Downloads\gambit_chess_academy_lite_2\gambit_lite\public\index.html public\index.html
+git add public\index.html
+git commit -m "Feature: Personal Coach onboarding + opening recommendations"
+git push origin main
+
+
+
+copy ..\..\..\..\..\..\..\..\Downloads\gambit_chess_academy_lite_2\gambit_lite\public\openings_v5.json public\openings_v5.json
+git add public\openings_v5.json
+
+cd C:\Users\user\Documents
+git clone https://github.com/osamaoma/gambit-chess-academy.git
