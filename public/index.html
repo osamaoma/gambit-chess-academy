@@ -2119,6 +2119,61 @@ input:focus, select:focus, textarea:focus {
   .ol-fam-side{display:flex;align-items:center;gap:10px;flex-shrink:0}
   .ol-fam-bar{width:56px;height:3px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
   .ol-fam-bar i{display:block;height:100%;background:var(--gold);border-radius:2px;transition:width .3s var(--ease)}
+
+  /* ════════ PERSONAL COACH ════════ */
+  .pc-wrap{max-width:920px;margin:0 auto;padding:8px 0 40px}
+  .pc-hero{text-align:center;padding:28px 16px 8px}
+  .pc-hero h1{font-family:'Clash Display',sans-serif;font-size:clamp(26px,3.4vw,38px);letter-spacing:-.01em;margin-bottom:10px}
+  .pc-hero h1 em{color:var(--gold);font-style:normal}
+  .pc-hero p{color:var(--text2);font-size:14px;max-width:560px;margin:0 auto;line-height:1.6}
+  .pc-card{background:var(--bg2,#141416);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:22px;margin:18px auto;max-width:560px}
+  .pc-plat{display:flex;gap:8px;margin-bottom:14px}
+  .pc-plat button{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--text2);font:600 13px Satoshi,sans-serif;cursor:pointer;transition:all .18s var(--ease)}
+  .pc-plat button.active{border-color:var(--gold);color:var(--gold);background:rgba(212,175,55,.08)}
+  .pc-user{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);font:500 14px Satoshi,sans-serif;margin-bottom:12px}
+  .pc-user:focus{outline:none;border-color:var(--gold)}
+  .pc-fine{font-size:11px;color:var(--text3);margin-top:10px;text-align:center;line-height:1.5}
+  .pc-prog-track{background:rgba(255,255,255,.07);border-radius:4px;height:6px;overflow:hidden;margin:14px 0 8px}
+  .pc-prog-fill{height:100%;background:var(--gold);border-radius:4px;width:0%;transition:width .3s}
+  .pc-prog-text{font-size:12px;color:var(--text3);text-align:center}
+  .pc-step-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .pc-step-kicker{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:.04em}
+  .pc-dots{display:flex;gap:6px}
+  .pc-dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .2s}
+  .pc-dots i.on{background:var(--gold)}
+  .pc-review{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 26px;align-items:start}
+  @media(max-width:900px){.pc-review{grid-template-columns:1fr}}
+  .pc-board-wrap{position:relative;display:inline-flex;flex-direction:column}
+  .pc-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:9px;font:700 13px Satoshi,sans-serif}
+  .pc-badge i{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;color:#111;font:800 12px 'DM Mono',monospace}
+  .pc-pat-title{font-family:'Clash Display',sans-serif;font-size:22px;margin:2px 0 4px}
+  .pc-pat-sub{font-size:13px;color:var(--text2);margin-bottom:12px}
+  .pc-eval-row{display:flex;gap:14px;align-items:center;margin:12px 0;font-family:'DM Mono',monospace;font-size:13px}
+  .pc-eval-row .cev{background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px}
+  .pc-eval-row .drop{color:#e0524e;font-weight:700}
+  .pc-say{background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.65;color:var(--text);margin:12px 0}
+  .pc-say strong{color:var(--gold)}
+  .pc-games-seen{font-size:12px;color:var(--text3);line-height:1.6;margin:8px 0}
+  .pc-nav{display:flex;gap:10px;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
+  .pc-sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:16px}
+  .pc-sum-card{background:var(--bg2,#141416);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px}
+  .pc-sum-card h3{font-family:'Clash Display',sans-serif;font-size:16px;margin-bottom:10px;color:var(--gold)}
+  .pc-sum-card ul{list-style:none;padding:0;margin:0;font-size:13px;color:var(--text2);line-height:1.7}
+  .pc-sum-card li b{color:var(--text)}
+  .pc-style-axes{margin-top:10px}
+  .pc-ax{display:grid;grid-template-columns:86px 1fr 28px;gap:8px;align-items:center;font-size:11px;color:var(--text3);margin:5px 0}
+  .pc-ax .t{background:rgba(255,255,255,.07);height:5px;border-radius:3px;overflow:hidden}
+  .pc-ax .t span{display:block;height:100%;background:var(--gold);border-radius:3px}
+  .ol-rec{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#dcae4c,#bd8a2f);color:#191307;font:800 10px Satoshi,sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:7px;flex-shrink:0}
+  .pc-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(212,175,55,.1),rgba(212,175,55,.03));border:1px solid rgba(212,175,55,.3);border-radius:13px;padding:14px 18px;margin:0 0 18px;flex-wrap:wrap}
+  .pc-banner .cb-txt{flex:1;min-width:220px;font-size:13px;color:var(--text2);line-height:1.5}
+  .pc-banner .cb-txt b{color:var(--text);font-size:14px}
+  .pc-toast{position:fixed;right:18px;bottom:18px;z-index:400;background:#1c1810;border:1px solid rgba(212,175,55,.45);border-radius:13px;padding:14px 16px;max-width:320px;box-shadow:0 12px 40px rgba(0,0,0,.5);cursor:pointer;animation:pcToastIn .4s var(--ease)}
+  .pc-toast b{color:var(--gold)}
+  .pc-toast p{font-size:12px;color:var(--text2);margin:4px 0 0;line-height:1.5}
+  .pc-toast .ct-x{position:absolute;top:6px;right:10px;color:var(--text3);cursor:pointer;font-size:14px}
+  @keyframes pcToastIn{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+  @media(prefers-reduced-motion:reduce){.pc-toast{animation:none}}
   .ol-plan-box{margin-top:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(201,168,76,.12),var(--bg2));border:1.5px solid rgba(201,168,76,.4);border-radius:12px}
   .ol-plan-title{font-family:'Clash Display',sans-serif;font-size:17px;color:var(--gold);margin-bottom:8px}
   .ol-plan-text{font-size:14px;line-height:1.62;color:var(--text)}
@@ -3485,6 +3540,7 @@ body{ padding-top:90px; }
     <button class="nav-tab active" onclick="showSection('openings')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/><path d="M22 10v6"/></svg></span> Opening Academy</button>
     <button class="nav-tab" onclick="showSection('creator')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span> Course Creator</button>
     <button class="nav-tab" onclick="showSection('review')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span> Game Review</button>
+    <button class="nav-tab" onclick="showSection('coach')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span> Coach</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
   <div id="nav-account" class="nav-account"></div>
@@ -3846,6 +3902,13 @@ body{ padding-top:90px; }
 
 
 <!-- ══════════════ QUIZZES ══════════════ -->
+<!-- ══════════════ PERSONAL COACH (onboarding, opening-mistake review, recommendations) ══════════════ -->
+<div id="sec-coach" class="section">
+  <div class="page-wrap">
+    <div id="coach-host"></div>
+  </div>
+</div>
+
 <div id="sec-quizzes" class="section">
   <!-- Opening picker home screen -->
   <div id="quiz-home">
@@ -9955,6 +10018,7 @@ async function fetchChessComGames(username, count, tc){
       black: g.black?.username || '?',
       whiteRating: g.white?.rating,
       blackRating: g.black?.rating,
+      rated: g.rated !== false,
       result: g.white?.result === 'win' ? '1-0' : g.black?.result === 'win' ? '0-1' : '1/2-1/2',
       opening: headers.Opening || headers.ECOUrl?.split('/').pop()?.replace(/-/g,' ') || 'Unknown',
       eco: headers.ECO || '?',
@@ -9966,14 +10030,15 @@ async function fetchChessComGames(username, count, tc){
   });
 }
 
-async function fetchLichessGames(username, count, tc){
+async function fetchLichessGames(username, count, tc, opts){
   // Lichess: usernames are case-insensitive (their API normalises)
   const u = username.trim();
   const params = new URLSearchParams({
     max: count,
     opening: 'true',
     pgnInJson: 'true',
-    ...(tc !== 'all' ? { perfType: tc } : {})
+    ...(tc !== 'all' ? { perfType: tc } : {}),
+    ...(opts && opts.rated ? { rated: 'true' } : {})
   });
   // Fetch DIRECTLY from lichess.org (CORS-enabled)
   const url = `https://lichess.org/api/games/user/${encodeURIComponent(u)}?${params}`;
@@ -10000,13 +10065,14 @@ async function fetchLichessGames(username, count, tc){
   return lines.map(line => {
     try {
       const g = JSON.parse(line);
-      const wUser = g.players?.white?.user?.name || g.players?.white?.aiLevel ? 'Stockfish' : '?';
-      const bUser = g.players?.black?.user?.name || g.players?.black?.aiLevel ? 'Stockfish' : '?';
+      const wUser = g.players?.white?.user?.name || (g.players?.white?.aiLevel ? 'Stockfish' : '?');
+      const bUser = g.players?.black?.user?.name || (g.players?.black?.aiLevel ? 'Stockfish' : '?');
       const outcome = g.winner === 'white' ? '1-0' : g.winner === 'black' ? '0-1' : '1/2-1/2';
       return {
         white: wUser, black: bUser,
         whiteRating: g.players?.white?.rating,
         blackRating: g.players?.black?.rating,
+        rated: g.rated !== false,
         result: outcome,
         opening: g.opening?.name || 'Unknown',
         eco: g.opening?.eco || '?',
@@ -13048,10 +13114,12 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, review:2, quizzes:3};
+  const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, review:2, coach:3, quizzes:-1};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // Openings library loads lazily on first visit (ChessReps-style grid)
   if(id === 'openings'){ try{ if(!OL){ olInit(); } else { olRenderGrid(); } }catch(e){ console.warn('ol lazy init', e); } }
+  // Personal Coach renders its current step lazily
+  if(id === 'coach'){ try{ pcoachInit(); }catch(e){ console.warn('coach init', e); } }
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
     // Show the home picker, not any active quiz
@@ -24620,10 +24688,13 @@ function olRenderGrid(){
   if(host) host.style.display = '';
   if(!host || !OL) return;
 
-  // Focused rollout: only the Italian Game is published for now, built to full
-  // quality. More openings ship one at a time, same structure, as they're finished.
-  let ops = OL.filter(o => /italian|ruy|spanish/i.test(o.f));
+  // Focused rollout: the fully-curated openings are always published; openings the
+  // Coach recommends for this user also surface so they can start studying them.
+  const isRecFn = (typeof window.pcoachIsRec === 'function') ? window.pcoachIsRec : (() => false);
+  let ops = OL.filter(o => /italian|ruy|spanish/i.test(o.f) || isRecFn(o.f));
   if(olFilter !== 'all') ops = ops.filter(o => o.style === olFilter);
+  // Recommended openings first, keeping curated order within each group
+  ops = ops.slice().sort((a, b) => (isRecFn(b.f) ? 1 : 0) - (isRecFn(a.f) ? 1 : 0));
 
   // progress across the published opening(s)
   const totalVars = ops.reduce((s,o)=>s+o.v.length,0);
@@ -24646,10 +24717,11 @@ function olRenderGrid(){
     else if(learned < op.v.length){ ctaLabel = 'Continue learning'; ctaIdx = olFirstUnlearnedIdx(op); }
     else { ctaLabel = 'Practice again'; ctaIdx = baseIdx; }
     if(ctaIdx < 0) ctaIdx = baseIdx;
+    const isRec = (typeof window.pcoachIsRec === 'function') && window.pcoachIsRec(op.f);
     return `<article class="ol-rcard" onclick="olOpenIntro(${opIdx})">
       <div class="ol-rcard-board"><div class="chess-board ol-thumb-board" id="olthumb-${opIdx}"></div></div>
       <div class="ol-rcard-body">
-        <div class="ol-rcard-head"><h3 class="ol-rcard-name">${olEsc(op.f)}</h3><span class="ol-rcard-eco">${olEsc(op.eco)}</span></div>
+        <div class="ol-rcard-head"><h3 class="ol-rcard-name">${olEsc(op.f)}</h3>${isRec?'<span class="ol-rec" title="Recommended for you by your Coach analysis">★ Recommended</span>':''}<span class="ol-rcard-eco">${olEsc(op.eco)}</span></div>
         <p class="ol-rcard-desc">${olEsc(desc)}</p>
         <div class="ol-rcard-prog">
           <div class="ol-rcard-bar"><span style="width:${pct}%"></span></div>
@@ -24663,6 +24735,11 @@ function olRenderGrid(){
 
   const totalDue = ops.reduce((s,o)=>s+olDueCount(o),0);
   host.innerHTML = `
+    ${!window.pcoachSaved || !window.pcoachSaved() ? `
+    <div class="pc-banner">
+      <div class="cb-txt"><b>Get your personalized opening plan.</b> Connect your Chess.com or Lichess account — the Coach finds your recurring opening mistakes and recommends exactly what to study.</div>
+      <button class="btn btn-gold btn-sm" onclick="showSection('coach')">Analyse my games →</button>
+    </div>` : ''}
     <div class="ol-toolbar">
       <div class="ol-toolbar-stats">
         <span class="ol-toolbar-stat">${masteredVars}/${totalVars} lines learned</span>
@@ -24791,7 +24868,7 @@ window.olOpenIntro = function(opIdx){
       <div class="ol-intro-head">
         <div>
           <div class="ol-intro-eco">${olEsc(op.eco)} · ${OL_STYLE_LABEL[op.style]||op.style}</div>
-          <h1 class="ol-intro-title">${olEsc(op.f)}</h1>
+          <h1 class="ol-intro-title">${olEsc(op.f)} ${(typeof window.pcoachIsRec==='function' && window.pcoachIsRec(op.f))?'<span class="ol-rec" style="vertical-align:middle">★ Recommended</span>':''}</h1>
         </div>
       </div>
       <div class="ol-intro-cols">
@@ -27534,6 +27611,465 @@ window.ccSave = function(){
   const btn=document.querySelector('.cc-top .nop-mini-btn.gold'); if(btn){ const t=btn.textContent; btn.textContent='✓ Saved'; setTimeout(()=>{ if(btn) btn.textContent=t; },1500); }
 };
 
+// ════════════════════════════════════════════════════════
+// PERSONAL COACH — post-signup onboarding, recurring opening-mistake
+// review (Game Review parity), playing style + opening recommendations.
+// Reuses: fetchers, Stockfish evalPosition, winPct, book_moves, uciToSAN,
+// renderBoardEl, perf* style collectors, and the curated course data (OL).
+// ════════════════════════════════════════════════════════
+const PC_OPENING_PLIES = 20;   // "opening phase" = first 10 moves
+const PC_CATS = {
+  inaccuracy: { label:'Inaccuracy', gly:'?!', col:'#e6b450' },
+  mistake:    { label:'Mistake',    gly:'?',  col:'#e08a3c' },
+  blunder:    { label:'Blunder',    gly:'??', col:'#e0524e' },
+};
+let pcoach = { step:'connect', platform:'chesscom', busy:false, games:[], mistakes:[], patterns:[], curIdx:0, style:null, recs:[], summary:null };
+
+function pcEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+window.pcoachSaved = function(){ try { return JSON.parse(localStorage.getItem('gambit_coach')||'null'); } catch(e){ return null; } };
+window.pcoachRecs = function(){ const s = window.pcoachSaved(); return (s && s.recs) || []; };
+window.pcoachIsRec = function(name){ return window.pcoachRecs().some(r => r === name); };
+
+window.pcoachInit = function(){
+  const saved = window.pcoachSaved();
+  if(pcoach.step === 'connect' && saved && !pcoach.busy){ pcoachRenderSavedSummary(saved); return; }
+  if(pcoach.step === 'review' && pcoach.patterns.length){ pcoachRenderReview(pcoach.curIdx); return; }
+  if(pcoach.step === 'summary' && pcoach.summary){ pcoachRenderSummary(); return; }
+  if(!pcoach.busy) pcoachRenderConnect();
+};
+
+// ── Step 1: connect an account ──
+function pcoachRenderConnect(msg){
+  pcoach.step = 'connect';
+  const host = document.getElementById('coach-host'); if(!host) return;
+  host.innerHTML = `
+    <div class="pc-wrap">
+      <div class="pc-hero">
+        <h1>Your personal <em>opening coach</em></h1>
+        <p>Connect your Chess.com or Lichess account. We'll analyse your last 50 rated games with Stockfish, find the opening mistakes you keep repeating, walk you through each one — and recommend exactly which openings to study.</p>
+      </div>
+      <div class="pc-card">
+        <div class="pc-plat">
+          <button id="coach-p-cc" class="${pcoach.platform==='chesscom'?'active':''}" onclick="pcoachSetPlatform('chesscom')">♟ Chess.com</button>
+          <button id="coach-p-li" class="${pcoach.platform==='lichess'?'active':''}" onclick="pcoachSetPlatform('lichess')">♞ Lichess</button>
+        </div>
+        <input id="pc-user" class="pc-user" placeholder="Your ${pcoach.platform==='chesscom'?'Chess.com':'Lichess'} username" autocomplete="off" onkeydown="if(event.key==='Enter')pcoachStart()">
+        <button class="btn btn-gold" style="width:100%" onclick="pcoachStart()">Analyse my last 50 games</button>
+        ${msg ? `<div class="error-box" style="margin-top:12px">${pcEsc(msg)}</div>` : ''}
+        <div class="pc-fine">Rated games only · analysis runs in your browser with Stockfish 18 · nothing is uploaded anywhere.</div>
+      </div>
+    </div>`;
+  const u = document.getElementById('pc-user');
+  if(u && pcoach.username) u.value = pcoach.username;
+}
+window.pcoachSetPlatform = function(p){ pcoach.platform = p; pcoachRenderConnect(); };
+
+window.pcoachStart = async function(){
+  const input = document.getElementById('pc-user');
+  const username = (input && input.value || '').trim();
+  if(!username){ if(input) input.focus(); return; }
+  if(!window.gambitGate('Create a free account to get your personalized opening plan.', function(){ window.pcoachStart(); })) return;
+  if(pcoach.busy) return;
+  pcoach.busy = true; pcoach.username = username;
+  const host = document.getElementById('coach-host');
+  host.innerHTML = `
+    <div class="pc-wrap"><div class="pc-card" style="max-width:520px">
+      <div style="text-align:center;font-family:'Clash Display',sans-serif;font-size:19px;margin-bottom:4px">Analysing your games</div>
+      <div class="pc-prog-track"><div class="pc-prog-fill" id="coach-pf"></div></div>
+      <div class="pc-prog-text" id="coach-pt">Fetching your last rated games…</div>
+      <div class="pc-fine">This takes a couple of minutes — Stockfish is checking every opening move you played. Keep this tab open.</div>
+    </div></div>`;
+  const setP = (pct, txt) => {
+    const f = document.getElementById('coach-pf'), t = document.getElementById('coach-pt');
+    if(f) f.style.width = Math.round(pct) + '%';
+    if(t) t.textContent = txt;
+  };
+  try {
+    // 1. games
+    const maxGames = window._coachMaxGames || 50;
+    let games;
+    if(pcoach.platform === 'chesscom'){
+      games = await fetchChessComGames(username, maxGames * 2, 'all');
+      games = games.filter(g => g.rated !== false).slice(0, maxGames);
+    } else {
+      games = await fetchLichessGames(username, maxGames, 'all', { rated: true });
+    }
+    const uname = username.toLowerCase();
+    games = games.filter(g => g.pgn && ((g.white||'').toLowerCase() === uname || (g.black||'').toLowerCase() === uname));
+    if(games.length < 3) throw new Error(`Only found ${games.length} rated games for "${username}" — need at least 3 to build a profile.`);
+    pcoach.games = games;
+    // 2. engine
+    setP(4, 'Waking up Stockfish 18…');
+    try { if(!sfWorker) await initStockfish(); } catch(e){}
+    if(!sfWorker || !sfReady) throw new Error('The Stockfish engine failed to load in this browser. Try reloading the page.');
+    // 3. openings library (for curated-line tie-ins + recommendations)
+    if(!OL){ try { await olInit(); } catch(e){} }
+    // 4. analyse
+    const res = await pcoachAnalyze(games, username, setP);
+    pcoach.mistakes = res.mistakes;
+    pcoach.patterns = pcoachBuildPatterns(res.mistakes);
+    pcoach.style = pcoachComputeStyle();
+    pcoach.recs = pcoachComputeRecs(pcoach.patterns, pcoach.style);
+    pcoach.summary = pcoachBuildSummary(res);
+    pcoachPersist();
+    pcoach.busy = false;
+    if(!pcoach.patterns.length){ pcoach.step = 'summary'; pcoachRenderSummary(); return; }
+    // "Next" interstitial — analysis done, begin the personalized review
+    host.innerHTML = `
+      <div class="pc-wrap"><div class="pc-card" style="max-width:560px;text-align:center">
+        <div style="font-size:34px;margin-bottom:6px">🔍</div>
+        <div style="font-family:'Clash Display',sans-serif;font-size:22px;margin-bottom:8px">Analysis complete</div>
+        <p style="font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:16px">
+          Across <strong style="color:var(--text)">${pcoach.games.length} rated games</strong> we found
+          <strong style="color:var(--gold)">${pcoach.patterns.length} recurring opening ${pcoach.patterns.length===1?'pattern':'patterns'}</strong>
+          costing you points. Let's review them one by one — the same way Game Review works, jumping straight to each mistake.
+        </p>
+        <button class="btn btn-gold" onclick="pcoachBeginReview()">Next → review my first mistake</button>
+      </div></div>`;
+  } catch(e){
+    pcoach.busy = false;
+    pcoachRenderConnect(e && e.message || 'Something went wrong. Try again.');
+  }
+};
+
+// ── Step 2: opening-phase batch analysis (FEN-cached so shared prefixes are free) ──
+async function pcoachAnalyze(games, username, setP){
+  const uname = username.toLowerCase();
+  let book = {};
+  try { book = await (await fetch('/book_moves.json',{cache:'force-cache'})).json(); } catch(e){}
+  try { perfResetCollectors(); } catch(e){}
+  const cache = Object.create(null);
+  let evals = 0;
+  async function ev(fen){
+    if(cache[fen]) return cache[fen];
+    const r = await evalPosition(fen, 11, 1);
+    cache[fen] = r; evals++;
+    await new Promise(rr => setTimeout(rr, 0)); // keep the UI responsive
+    return r;
+  }
+  const mistakes = [], earlyEvals = [];
+  for(let gi = 0; gi < games.length; gi++){
+    setP(6 + (gi / games.length) * 92, `Game ${gi + 1} / ${games.length} · ${evals} positions evaluated`);
+    const game = games[gi];
+    let moveSANs;
+    try { ({ moveSANs } = parsePGN(game.pgn)); } catch(e){ continue; }
+    if(!moveSANs || moveSANs.length < 8) continue;
+    const isWhite = (game.white||'').toLowerCase() === uname;
+    let hist;
+    try { hist = buildHistory(moveSANs); } catch(e){ continue; }
+    const N = Math.min(hist.length - 1, PC_OPENING_PLIES);
+    if(N < 6) continue;
+    const ucis = hist.slice(1).map(h => (h.from||'')+(h.to||''));
+    let prev = await ev(stateToFEN(hist[0].state));
+    for(let i = 1; i <= N; i++){
+      const cur = await ev(stateToFEN(hist[i].state));
+      const userMove = ((i % 2 === 1) === isWhite);
+      if(userMove){
+        const pb = isWhite ? (prev.score||0) : -(prev.score||0);
+        const pa = isWhite ? (cur.score||0) :  -(cur.score||0);
+        const wDrop = winPct(pb) - winPct(pa);
+        const prefix = ucis.slice(0, i-1).join(',');
+        const inBook = !!(book[prefix] && book[prefix][ucis[i-1]]);
+        try { perfCollectMove(hist[i].san||'', { ply:i, isWhite, loss: Math.max(0, pb-pa), timeUsed:null, clockAtMove:null, from:hist[i].from||null, to:hist[i].to||null, phase:'opening' }); } catch(e){}
+        if(!inBook && wDrop >= 5 && prev.bestMove){
+          const fenB = stateToFEN(hist[i-1].state);
+          mistakes.push({
+            gameIdx: gi, ply: i, moveNo: Math.ceil(i/2),
+            fenBefore: fenB,
+            played: hist[i].san, playedUci: ucis[i-1],
+            bestUCI: prev.bestMove,
+            bestSAN: uciToSAN(fenB, prev.bestMove) || prev.bestMove,
+            wDrop, evalBefore: pb, evalAfter: pa,
+            cat: wDrop >= 20 ? 'blunder' : wDrop >= 10 ? 'mistake' : 'inaccuracy',
+            opening: normalizeOpeningName(game.opening || 'Unknown'),
+            userIsWhite: isWhite,
+            ucis: ucis.slice(0, i),
+            sans: moveSANs.slice(0, i),
+            opp: isWhite ? (game.black||'?') : (game.white||'?'),
+            result: game.result, url: game.url,
+          });
+        }
+      }
+      prev = cur;
+    }
+    // did the user come out of the opening already worse?
+    const k = Math.min(16, N);
+    const evK = cache[stateToFEN(hist[k].state)];
+    if(evK) earlyEvals.push(isWhite ? (evK.score||0) : -(evK.score||0));
+  }
+  return { mistakes, earlyEvals };
+}
+
+// ── Recurring-pattern aggregation ──
+function pcoachBuildPatterns(mistakes){
+  const byPos = {};
+  mistakes.forEach(m => { const k = m.fenBefore + '|' + m.playedUci; (byPos[k] = byPos[k] || []).push(m); });
+  const posPatterns = Object.values(byPos).filter(a => a.length >= 2).map(a => ({
+    type:'position', opening:a[0].opening, color:a[0].userIsWhite?'White':'Black',
+    examples:a.slice().sort((x,y)=>y.wDrop-x.wDrop), count:a.length,
+    games:new Set(a.map(x=>x.gameIdx)).size, totalDrop:a.reduce((s,x)=>s+x.wDrop,0),
+  }));
+  const inPos = new Set(); posPatterns.forEach(p => p.examples.forEach(e => inPos.add(e)));
+  const byOp = {};
+  mistakes.forEach(m => { if(inPos.has(m)) return; const k = m.opening + '|' + (m.userIsWhite?'w':'b'); (byOp[k] = byOp[k] || []).push(m); });
+  const opPatterns = Object.values(byOp).map(a => ({
+    type:'opening', opening:a[0].opening, color:a[0].userIsWhite?'White':'Black',
+    examples:a.slice().sort((x,y)=>y.wDrop-x.wDrop), count:a.length,
+    games:new Set(a.map(x=>x.gameIdx)).size, totalDrop:a.reduce((s,x)=>s+x.wDrop,0),
+  })).filter(p => p.games >= 2 || p.count >= 3);
+  let pats = posPatterns.concat(opPatterns).sort((a,b) => b.count - a.count || b.totalDrop - a.totalDrop);
+  if(!pats.length && mistakes.length){
+    pats = mistakes.slice().sort((a,b)=>b.wDrop-a.wDrop).slice(0,4).map(m => ({
+      type:'single', opening:m.opening, color:m.userIsWhite?'White':'Black',
+      examples:[m], count:1, games:1, totalDrop:m.wDrop,
+    }));
+  }
+  return pats.slice(0, 6);
+}
+
+// ── Curated-course tie-in: is the BEST move part of a curated line we teach? ──
+function pcoachFindCourseLine(m){
+  if(!OL) return null;
+  const pre = m.ucis.slice(0, m.ply - 1);
+  for(let oi = 0; oi < OL.length; oi++){
+    const op = OL[oi]; if(!op.curated || !op.v) continue;
+    for(let vi = 0; vi < op.v.length; vi++){
+      const u = op.v[vi].u || [];
+      if(u.length <= pre.length) continue;
+      let ok = true;
+      for(let j = 0; j < pre.length; j++){ if(u[j] !== pre[j]){ ok = false; break; } }
+      if(ok && u[pre.length] === m.bestUCI){
+        const note = (op.v[vi].notes && op.v[vi].notes[pre.length]) || '';
+        return { opIdx: oi, vIdx: vi, opName: op.f, lineName: op.v[vi].n, note: note.replace(/^[^—]*—\s*/, '') };
+      }
+    }
+  }
+  return null;
+}
+
+function pcoachAdvice(m){
+  const b = m.bestSAN || '';
+  if(/^O-O/.test(b)) return 'King safety comes first in the opening — castling here keeps the initiative and avoids the tactics that follow an exposed king.';
+  if(/x/.test(b)) return 'There was a capture in the position — always check every check, capture and threat before playing a "natural" developing move.';
+  if(/^[NB][a-h]?[1-8]?[a-h][1-8]/.test(b)) return 'A developing move was stronger — in the opening, every move should develop a piece, fight for the centre, or prepare castling.';
+  if(/^[de][45]/.test(b)) return 'The centre needed attention — central pawns restrict your opponent and give your pieces room to work.';
+  if(/^Q/.test(b)) return 'The queen had a strong square here — but note it was the exception: usually early queen moves lose time.';
+  return 'Compare the two moves on the board — the engine\'s choice fights for the centre and keeps every piece defended.';
+}
+
+// ── Step 3: guided review of each recurring mistake (Game Review parity) ──
+window.pcoachBeginReview = function(){ pcoach.step = 'review'; pcoach.curIdx = 0; pcoachRenderReview(0); };
+window.pcoachNextPattern = function(){ if(pcoach.curIdx >= pcoach.patterns.length - 1){ pcoach.step = 'summary'; pcoachRenderSummary(); } else { pcoach.curIdx++; pcoachRenderReview(pcoach.curIdx); } };
+window.pcoachPrevPattern = function(){ if(pcoach.curIdx > 0){ pcoach.curIdx--; pcoachRenderReview(pcoach.curIdx); } };
+
+function pcoachRenderReview(k){
+  const host = document.getElementById('coach-host'); if(!host) return;
+  const p = pcoach.patterns[k]; if(!p){ pcoachRenderSummary(); return; }
+  const m = p.examples[0];
+  const cat = PC_CATS[m.cat] || PC_CATS.mistake;
+  const course = pcoachFindCourseLine(m);
+  const seenIn = p.examples.slice(0, 4).map(e => `vs ${pcEsc(e.opp)} ${e.result === (e.userIsWhite?'1-0':'0-1') ? '(won anyway)' : e.result === '1/2-1/2' ? '(draw)' : '(lost)'}`).join(' · ');
+  const evF = v => (v >= 0 ? '+' : '') + v.toFixed(2);
+  const dots = pcoach.patterns.map((_,i)=>`<i class="${i<=k?'on':''}"></i>`).join('');
+  const recur = p.type === 'position'
+    ? `You reached this exact position <strong>${p.count} times</strong> — and played the same ${cat.label.toLowerCase()} each time.`
+    : p.type === 'opening'
+      ? `${p.count} opening ${p.count===1?'mistake':'mistakes'} across <strong>${p.games} games</strong> in this opening.`
+      : 'Your sharpest single opening mistake from these games.';
+  host.innerHTML = `
+    <div class="pc-wrap">
+      <div class="pc-step-head">
+        <span class="pc-step-kicker">RECURRING OPENING MISTAKE ${k+1} / ${pcoach.patterns.length}</span>
+        <div class="pc-dots">${dots}</div>
+      </div>
+      <div class="pc-pat-title">${pcEsc(p.opening)} <span style="color:var(--text3);font-weight:400">· as ${p.color}</span></div>
+      <div class="pc-pat-sub">${recur}</div>
+      <div class="pc-review">
+        <div>
+          <div class="pc-board-wrap">
+            <div style="display:flex;gap:0;position:relative">
+              <div class="board-ranks" id="coach-ranks"></div>
+              <div style="position:relative">
+                <div id="coach-board" class="chess-board"></div>
+                <svg class="arrow-overlay" id="coach-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+              </div>
+            </div>
+            <div class="board-files" id="coach-files"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px"><span style="color:#e0524e">■</span> what you played &nbsp; <span style="color:#7bbf6a">■</span> what Stockfish plays</div>
+        </div>
+        <div>
+          <div class="pc-badge" style="background:${cat.col}22;color:${cat.col}"><i style="background:${cat.col}">${cat.gly}</i> ${cat.label} — move ${m.moveNo}</div>
+          <div class="pc-eval-row">
+            <span class="cev">${evF(m.evalBefore)} → ${evF(m.evalAfter)}</span>
+            <span class="drop">−${Math.round(m.wDrop)}% win chance</span>
+          </div>
+          <div style="font-size:14px;margin:6px 0"><strong style="color:${cat.col}">${pcEsc(m.played)}</strong> was played here — Stockfish's move is <strong style="color:#7bbf6a">${pcEsc(m.bestSAN)}</strong>.</div>
+          <div class="pc-say">${
+            course && course.note
+              ? `<strong>${pcEsc(m.bestSAN)}</strong> — ${pcEsc(course.note)}`
+              : pcoachAdvice(m)
+          }</div>
+          ${course ? `<button class="nop-mini-btn gold" onclick="olStartLearn(${course.opIdx},${course.vIdx})">📖 This position is in our <strong>${pcEsc(course.opName)}</strong> course — learn "${pcEsc(course.lineName)}"</button>` : ''}
+          <div class="pc-games-seen">Seen in: ${seenIn}</div>
+          <div class="pc-nav">
+            <button class="btn btn-outline btn-sm" onclick="pcoachPrevPattern()" ${k===0?'disabled':''}>← Previous</button>
+            <button class="btn btn-gold btn-sm" onclick="pcoachNextPattern()">${k >= pcoach.patterns.length-1 ? 'Finish → my summary' : 'Next mistake →'}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  try {
+    boardFlippedState.set('coach-board', !m.userIsWhite);
+    const st = parseFEN(m.fenBefore);
+    renderBoardEl('coach-board','coach-ranks','coach-files', st, [m.playedUci.slice(0,2), m.playedUci.slice(2,4)], null);
+    pcoachDrawArrows(m);
+  } catch(e){ console.warn('coach board', e); }
+  window.scrollTo(0,0);
+}
+
+function pcoachDrawArrows(m){
+  const ov = document.getElementById('coach-arrows'); if(!ov) return;
+  const flipped = boardFlippedState.get('coach-board') === true;
+  const mk = (id, color) => `<marker id="${id}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4.6" markerHeight="4.6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker>`;
+  const line = (uci, color, mid) => {
+    const p1 = squareToSVG(uci.slice(0,2), flipped), p2 = squareToSVG(uci.slice(2,4), flipped);
+    const dx = p2.x-p1.x, dy = p2.y-p1.y, len = Math.sqrt(dx*dx+dy*dy)||1, ex = p2.x-(dx/len)*18, ey = p2.y-(dy/len)*18;
+    return `<line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="9" stroke-linecap="round" marker-end="url(#${mid})" opacity=".88"/>`;
+  };
+  ov.innerHTML = `<defs>${mk('coach-am-bad','#e0524e')}${mk('coach-am-best','#7bbf6a')}</defs>`
+    + line(m.playedUci, '#e0524e', 'coach-am-bad')
+    + line(m.bestUCI, '#7bbf6a', 'coach-am-best');
+}
+
+// ── Style + recommendations ──
+function pcoachComputeStyle(){
+  let vec = null;
+  try { vec = perfComputeStyleVector(); } catch(e){}
+  if(!vec || !vec.raw || vec.raw.moves < 10) return null;
+  const ranked = STYLE_LEGENDS.map(L => ({ L, dist: perfStyleDistance(vec, L.v) })).sort((a,b) => a.dist - b.dist);
+  const sim = Math.max(40, Math.round(100 - (ranked[0].dist / 223) * 100));
+  return { vec, top: ranked[0].L, sim };
+}
+
+function pcoachComputeRecs(patterns, style){
+  const lib = OL || [];
+  const weak = [...new Set(patterns.map(p => p.opening))];
+  return lib.map((op, oi) => {
+    let s = 0, why = [];
+    if(op.curated) s += 3;
+    weak.forEach(w => {
+      const a = w.toLowerCase(), b = op.f.toLowerCase();
+      if(a.includes(b) || b.includes(a)){ s += 5; why.push('fixes your ' + w + ' problems'); }
+    });
+    if(style){
+      const v = style.vec;
+      if(op.style === 'aggressive' && v.aggression >= 55){ s += 2; why.push('matches your attacking style'); }
+      if(op.style === 'gambit' && (v.risk >= 55 || v.aggression >= 60)){ s += 2; why.push('suits your appetite for risk'); }
+      if(op.style === 'positional' && v.technique >= 55){ s += 2; why.push('rewards your patient technique'); }
+      if(op.style === 'solid' && v.risk < 45){ s += 2; why.push('fits your solid approach'); }
+    }
+    return { op, oi, s, why };
+  }).filter(x => x.s >= 3).sort((a,b) => b.s - a.s).slice(0, 4);
+}
+
+function pcoachBuildSummary(res){
+  const bad = res.earlyEvals.filter(e => e <= -0.8).length;
+  return {
+    gamesAnalyzed: pcoach.games.length,
+    mistakeCount: res.mistakes.length,
+    earlyTrouble: bad,
+    earlyTroublePct: res.earlyEvals.length ? Math.round(100 * bad / res.earlyEvals.length) : 0,
+  };
+}
+
+function pcoachPersist(){
+  try {
+    const s = pcoach.style;
+    localStorage.setItem('gambit_coach', JSON.stringify({
+      v: 1, at: Date.now(), platform: pcoach.platform, username: pcoach.username,
+      gamesAnalyzed: pcoach.games.length,
+      style: s ? { name: s.top.name, tag: s.top.tag, emoji: s.top.emoji, blurb: s.top.blurb, sim: s.sim,
+                   axes: { aggression: Math.round(s.vec.aggression), tactics: Math.round(s.vec.tactics), activity: Math.round(s.vec.activity), risk: Math.round(s.vec.risk), technique: Math.round(s.vec.technique) } } : null,
+      patterns: pcoach.patterns.map(p => ({ opening: p.opening, color: p.color, count: p.count, games: p.games, cat: (p.examples[0]||{}).cat || 'mistake' })),
+      weak: [...new Set(pcoach.patterns.map(p => p.opening))],
+      recs: pcoach.recs.map(r => r.op.f),
+      recsWhy: pcoach.recs.map(r => ({ name: r.op.f, why: r.why[0] || 'a strong fit for your game' })),
+      summary: pcoach.summary,
+    }));
+  } catch(e){}
+}
+
+// ── Step 4: personalized summary ──
+function pcoachRenderSummary(){
+  pcoach.step = 'summary';
+  const saved = window.pcoachSaved() || {};
+  pcoachRenderSavedSummary(saved, true);
+}
+
+function pcoachRenderSavedSummary(saved, fresh){
+  const host = document.getElementById('coach-host'); if(!host) return;
+  const st = saved.style;
+  const axes = st && st.axes ? [['Aggression','aggression'],['Tactics','tactics'],['Activity','activity'],['Risk-taking','risk'],['Technique','technique']] : [];
+  const pats = saved.patterns || [];
+  const weak = saved.weak || [];
+  const recsWhy = saved.recsWhy || (saved.recs || []).map(n => ({ name:n, why:'a strong fit for your game' }));
+  host.innerHTML = `
+    <div class="pc-wrap">
+      <div class="pc-hero" style="padding-bottom:0">
+        <h1>${fresh ? 'Your personalized <em>opening plan</em>' : 'Your <em>opening plan</em>'}</h1>
+        <p>Based on ${saved.gamesAnalyzed || '—'} rated games from ${pcEsc(saved.username || '')} on ${saved.platform === 'lichess' ? 'Lichess' : 'Chess.com'}.</p>
+      </div>
+      <div class="pc-sum-grid">
+        <div class="pc-sum-card">
+          <h3>Playing style</h3>
+          ${st ? `
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:34px">${st.emoji || '♟'}</div>
+              <div>
+                <div style="font-family:'Clash Display',sans-serif;font-size:18px;color:var(--text)">${pcEsc(st.name)}</div>
+                <div style="font-size:12px;color:var(--text3)">${pcEsc(st.tag)} · ${st.sim}% match</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.55;margin-top:8px">${pcEsc(st.blurb || '')}</div>
+            <div class="pc-style-axes">${axes.map(a => `
+              <div class="pc-ax"><span>${a[0]}</span><span class="t"><span style="width:${st.axes[a[1]]}%"></span></span><span>${st.axes[a[1]]}</span></div>`).join('')}
+            </div>` : `<div style="font-size:13px;color:var(--text2)">Not enough moves to fingerprint a style yet — play a few more games and re-analyse.</div>`}
+        </div>
+        <div class="pc-sum-card">
+          <h3>Your most common opening mistakes</h3>
+          ${pats.length ? `<ul>${pats.map(p => {
+            const c = PC_CATS[p.cat] || PC_CATS.mistake;
+            return `<li><span style="color:${c.col};font-family:'DM Mono',monospace">${c.gly}</span> <b>${pcEsc(p.opening)}</b> as ${p.color} — ${p.count}× across ${p.games} game${p.games===1?'':'s'}</li>`;
+          }).join('')}</ul>` : '<div style="font-size:13px;color:var(--text2)">No recurring opening mistakes found — your openings are in good shape. The recommendations below will still sharpen your repertoire.</div>'}
+          ${saved.summary && saved.summary.earlyTroublePct >= 25 ? `<div style="font-size:12px;color:#e6b450;margin-top:10px">⚠ You came out of the opening clearly worse in ${saved.summary.earlyTroublePct}% of these games — fixing the patterns above is worth real rating points.</div>` : ''}
+        </div>
+        <div class="pc-sum-card" style="grid-column:1/-1">
+          <h3>Recommended openings for you</h3>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px">These carry a <span class="ol-rec">★ Recommended</span> badge across the whole platform so you can find them anytime.</div>
+          ${recsWhy.length ? recsWhy.map(r => `
+            <div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap">
+              <div style="flex:1;min-width:200px"><b style="color:var(--text)">${pcEsc(r.name)}</b><div style="font-size:12px;color:var(--text3)">${pcEsc(r.why)}</div></div>
+              <button class="nop-mini-btn gold" onclick="pcoachStudy('${pcEsc(r.name).replace(/'/g,"\\'")}')">Study now →</button>
+            </div>`).join('') : '<div style="font-size:13px;color:var(--text2)">Analyse more games to unlock recommendations.</div>'}
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
+        <button class="btn btn-gold" onclick="showSection('openings')">Browse the Opening Academy →</button>
+        <button class="btn btn-outline" onclick="pcoachReset()">Re-analyse my games</button>
+      </div>
+    </div>`;
+  try { if(OL) olRenderGrid(); } catch(e){}
+}
+window.pcoachStudy = function(name){
+  showSection('openings');
+  try {
+    const oi = (OL || []).findIndex(o => o.f === name);
+    if(oi >= 0) olOpenIntro(oi);
+  } catch(e){}
+};
+window.pcoachReset = function(){ pcoach = { step:'connect', platform: pcoach.platform, username: pcoach.username, busy:false, games:[], mistakes:[], patterns:[], curIdx:0, style:null, recs:[], summary:null }; pcoachRenderConnect(); };
+
 </script>
 <script>
 /* Grandmaster's Study — scroll reveal & view-change re-arm */
@@ -27609,6 +28145,26 @@ window.ccSave = function(){
     document.body.style.overflow = ''; reflect();
     var fn = pending; pending = null;
     if(typeof fn === 'function'){ setTimeout(function(){ try{ fn(); }catch(e){} }, 30); }
+    // Post-signup onboarding: invite the new account to connect Chess.com/Lichess
+    try {
+      if(!localStorage.getItem('gambit_coach') && !localStorage.getItem('gambit_coach_invited')){
+        localStorage.setItem('gambit_coach_invited', '1');
+        if(typeof fn === 'function'){
+          // The user was mid-action (e.g. starting a lesson) — don't hijack; offer a toast instead.
+          setTimeout(function(){
+            var t = document.createElement('div');
+            t.className = 'pc-toast';
+            t.innerHTML = '<span class="ct-x" onclick="event.stopPropagation();this.parentNode.remove()">✕</span><b>✨ Get your personalized opening plan</b><p>Connect your Chess.com or Lichess account — the Coach analyses your last 50 games and shows you exactly what to fix.</p>';
+            t.onclick = function(){ t.remove(); if(window.showSection) showSection('coach'); };
+            document.body.appendChild(t);
+            setTimeout(function(){ try{ t.remove(); }catch(e){} }, 20000);
+          }, 800);
+        } else {
+          // Signed up directly from the nav — take them straight to onboarding.
+          setTimeout(function(){ if(window.showSection) showSection('coach'); }, 250);
+        }
+      }
+    } catch(e){}
     return false;
   };
   window.gambitSignOut = function(){ try { localStorage.removeItem('gambit_account'); } catch(e){} reflect(); };
