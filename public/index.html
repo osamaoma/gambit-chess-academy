@@ -2944,13 +2944,19 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
    Warm brass-on-near-black over the space backdrop. Brown board stays.
    ════════════════════════════════════════════════════════════════ */
 #sec-review{
-  --ob-brass:#d9a441; --ob-brass-2:#f2d18a;
-  --ob-panel:rgba(24,20,13,.82); --ob-panel-2:rgba(33,27,17,.9);
-  --ob-line:rgba(217,164,65,.18); --ob-tx:#efe7d4; --ob-tx2:#bcb097; --ob-tx3:#8c8268;
+  /* broadsheet analyst report — light editorial (remapped from Brass Observatory) */
+  --ob-brass:#2E7D5B; --ob-brass-2:#1C4E3A;
+  --ob-panel:#E9E9E2; --ob-panel-2:#F3F3EE;
+  --ob-line:#D7D6CC; --ob-tx:#17181A; --ob-tx2:#55564F; --ob-tx3:#8B8C83;
   --ob-mono:'DM Mono','Fira Code',ui-monospace,monospace;
-  /* brass-ify every gold accent inside the review screen */
-  --gold:#d9a441; --gold2:#f2d18a; --gold3:rgba(217,164,65,.14); --gold-glow:rgba(217,164,65,.34);
-  position:relative;
+  /* green accent replaces every gold reference inside the review screen */
+  --gold:#2E7D5B; --gold2:#1C4E3A; --gold3:rgba(46,125,91,.1); --gold-glow:rgba(46,125,91,.28);
+  /* remap the global dark-theme tokens to light so generic components
+     (cards, inputs, platform tabs, game list) read correctly on porcelain */
+  --text:#17181A; --text2:#55564F; --text3:#8B8C83;
+  --bg:#EDEDE8; --bg2:#F3F3EE; --bg3:#E9E9E2; --bg4:#DEDED5;
+  --border:#D7D6CC; --border2:#C6C5B8; --border3:#C6C5B8;
+  position:relative; background:var(--paper);
 }
 #sec-review .btn-gold{ background:linear-gradient(135deg,#e7b94f,#cf9433) !important; color:#241704 !important; box-shadow:0 6px 20px rgba(217,164,65,.3) !important; }
 #sec-review .btn-gold:hover{ filter:brightness(1.07); }
@@ -3208,17 +3214,21 @@ body{ padding-top:90px; }
 @media (max-width:640px){ .chess-hero{ padding-top:14px } .chess-hero-scene{ height:180px } }
 
 
-/* ── Game Review re-skin: brass -> monochrome + gold (keeps all structure) ── */
+/* ── Game Review re-skin: broadsheet analyst report (light editorial) ── */
 #sec-review{
-  --ob-brass:#d4af37 !important; --ob-brass-2:#e8c75a !important;
-  --ob-panel:rgba(20,20,24,.82) !important; --ob-panel-2:rgba(28,28,33,.92) !important;
-  --ob-line:rgba(255,255,255,.10) !important;
-  --ob-tx:#f5f5f7 !important; --ob-tx2:#b4b4bb !important; --ob-tx3:#7c7c85 !important;
-  --gold:#d4af37 !important; --gold2:#e8c75a !important; --gold3:rgba(212,175,55,.13) !important; --gold-glow:rgba(212,175,55,.30) !important;
+  --ob-brass:#2E7D5B !important; --ob-brass-2:#1C4E3A !important;
+  --ob-panel:#E9E9E2 !important; --ob-panel-2:#F3F3EE !important;
+  --ob-line:#D7D6CC !important;
+  --ob-tx:#17181A !important; --ob-tx2:#55564F !important; --ob-tx3:#8B8C83 !important;
+  --gold:#2E7D5B !important; --gold2:#1C4E3A !important; --gold3:rgba(46,125,91,.1) !important; --gold-glow:rgba(46,125,91,.28) !important;
+  --text:#17181A !important; --text2:#55564F !important; --text3:#8B8C83 !important;
+  --bg:#EDEDE8 !important; --bg2:#F3F3EE !important; --bg3:#E9E9E2 !important; --bg4:#DEDED5 !important;
+  --border:#D7D6CC !important; --border2:#C6C5B8 !important;
+  color:#17181A !important;   /* body{color:var(--text)} already computed to near-white above; reset it here */
 }
-#sec-review::before{ background:radial-gradient(58% 48% at 50% 2%, rgba(212,175,55,.05), transparent 62%) !important; }
-#sec-review .btn-gold{ background:#fff !important; color:#0a0a0b !important; box-shadow:0 6px 20px rgba(0,0,0,.45) !important; }
-#sec-review .btn-gold:hover{ background:#ececef !important; }
+#sec-review::before{ display:none !important; }
+#sec-review .btn-gold{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-review .btn-gold:hover{ background:#1C4E3A !important; }
 
 /* ════════════ PREMIUM ICONS + ALIVE MOTION ════════════ */
 .ic{ display:inline-flex; align-items:center; justify-content:center; width:1.06em; height:1.06em; vertical-align:-0.16em; flex:none; line-height:0; }
@@ -3740,6 +3750,36 @@ body{ padding-top:0 !important; }
 .nav-logo .gb-word small{ font-family:var(--font-mono) !important; }
 #landing .bslp-sub, #landing .bslp-cta, #landing .bslp-link, #landing .bslp-login, #landing .bslp-start,
 #sec-openings .op-clean-hero p, #sec-openings .ol-rcard-desc{ font-family:var(--font-ui) !important; }
+
+/* ═══════════ GAME REVIEW — broadsheet analyst report (light) ═══════════ */
+#sec-review{ background:var(--paper); min-height:100vh; }
+#sec-review::before{ display:none !important; }
+#sec-review .rv-accp-num, #sec-review .rvr-elo-n{ text-shadow:none !important; color:var(--green) !important; }
+#sec-review .btn-gold{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-review .rvr-title, #sec-review .mdb-head-label{ font-family:var(--font-display) !important; color:var(--ink) !important; }
+#sec-review h1, #sec-review h2, #sec-review h3, #sec-review #rv-players{ font-family:var(--font-display) !important; color:var(--ink) !important; }
+#sec-review .rvr-title::before{ background:var(--green) !important; box-shadow:none !important; }
+#sec-review .rv-player-name{ font-family:var(--font-ui) !important; }
+#sec-review .rvr-elo-cell{ background:var(--paper-3) !important; }
+#sec-review .rvr-row{ border-bottom-color:var(--rule) !important; }
+#sec-review .chess-board{ box-shadow:0 14px 34px -16px rgba(23,24,26,.5) !important; }
+#sec-review .eval-bar-vertical{ box-shadow:inset 0 0 0 1px var(--rule-2), 0 6px 16px -10px rgba(23,24,26,.4) !important; }
+#sec-review .move-cell:hover{ background:rgba(46,125,91,.1) !important; }
+#sec-review .move-cell.cur{ background:rgba(46,125,91,.16) !important; box-shadow:inset 0 0 0 1px rgba(46,125,91,.4) !important; }
+#sec-review .learn-panel{ background:var(--paper-2) !important; border-color:var(--rule) !important; }
+#sec-review .rv-player-dot{ box-shadow:0 0 0 1px var(--rule-2) !important; }
+#sec-review .rv-eg-phases span{ border-right-color:var(--rule) !important; }
+#sec-review .rv-evalgraph{ box-shadow:inset 0 0 0 1px var(--rule), 0 6px 18px -10px rgba(23,24,26,.25) !important; }
+#sec-review .rv-eg-tabs button.active{ background:var(--green) !important; color:#F3F1E9 !important; border-color:transparent !important; }
+#sec-review .card{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; box-shadow:0 10px 26px -16px rgba(23,24,26,.35) !important; }
+#sec-review .ptab{ background:var(--paper-2) !important; border-color:var(--rule-2) !important; color:var(--ink-2) !important; }
+#sec-review .ptab.active{ background:rgba(46,125,91,.12) !important; border-color:var(--green) !important; color:var(--green) !important; box-shadow:inset 0 0 0 1px rgba(46,125,91,.25) !important; }
+#sec-review .ptab.active .ic{ color:var(--green) !important; }
+#sec-review .rv-pgn-input:focus{ border-color:var(--green) !important; box-shadow:0 0 0 3px rgba(46,125,91,.16) !important; }
+#sec-review .rv-player{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.5) !important; }
+#sec-review .move-list-panel, #sec-review .move-detail-box, #sec-review .user-moves-list, #sec-review #rv-live-eval, #sec-review .play-mode-bar{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; }
+#sec-review .move-row{ border-bottom-color:var(--rule) !important; }
+#sec-review .move-row:hover .move-cell{ background:rgba(46,125,91,.06) !important; }
 
 </style>
 </head>
@@ -12109,7 +12149,7 @@ function renderEvalGraph(){
       '<span style="flex:'+Math.max(1, bd.b-bd.a)+'">'+bd.label+'</span>').join('') + '</div>';
   let dividers = '';
   bands.forEach((bd, i) => { if(i>0){ const x=(bd.a/total*W).toFixed(1);
-    dividers += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" stroke="rgba(217,164,65,.3)" stroke-width="1" stroke-dasharray="2 3"/>'; } });
+    dividers += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" stroke="rgba(23,24,26,.14)" stroke-width="1" stroke-dasharray="2 3"/>'; } });
 
   // ── Time-trouble band: red ticks at the bottom where a side dropped under 10s ──
   let ttMarks = '';
@@ -12147,21 +12187,21 @@ function renderEvalGraph(){
       const bw = Math.max(1.2, slot*0.62);
       const x  = ((i-0.5)/total*W - bw/2).toFixed(1);
       const y  = (H - bh).toFixed(1);
-      const col = (i % 2 === 1) ? 'rgba(244,236,216,.85)' : 'rgba(184,140,72,.92)';
+      const col = (i % 2 === 1) ? 'rgba(23,24,26,.30)' : 'rgba(46,125,91,.82)';
       bars += '<rect x="'+x+'" y="'+y+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="1" fill="'+col+'"><title>Move '+i+': '+rvFmtSpent(t)+'</title></rect>';
     }
-    body = '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(12,9,4,.55)"/>'
+    body = '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(23,24,26,.035)"/>'
       + dividers + bars + ttMarks
-      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>';
+      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#1C4E3A" stroke-width="1.6"/>';
   } else {
-    body = '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(244,236,216,.34)"/><stop offset="1" stop-color="rgba(244,236,216,.10)"/></linearGradient></defs>'
-      + '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(12,9,4,.55)"/>'
+    body = '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(46,125,91,.22)"/><stop offset="1" stop-color="rgba(46,125,91,.05)"/></linearGradient></defs>'
+      + '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(23,24,26,.035)"/>'
       + '<path d="'+area+'" fill="url(#rvWhiteGrad)"/>'
-      + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="rgba(217,164,65,.18)" stroke-width="1"/>'
+      + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="rgba(23,24,26,.16)" stroke-width="1"/>'
       + dividers
-      + '<path d="'+line+'" fill="none" stroke="rgba(242,225,186,.6)" stroke-width="1.4"/>'
+      + '<path d="'+line+'" fill="none" stroke="rgba(28,78,58,.75)" stroke-width="1.6"/>'
       + dots + ttMarks
-      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#f0c97a" stroke-width="1.6"/>';
+      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#1C4E3A" stroke-width="1.6"/>';
   }
 
   // Time-mode caption: average time per move + the longest think
