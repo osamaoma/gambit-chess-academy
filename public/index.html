@@ -3214,17 +3214,17 @@ body{ padding-top:90px; }
 @media (max-width:640px){ .chess-hero{ padding-top:14px } .chess-hero-scene{ height:180px } }
 
 
-/* ── Game Review re-skin: broadsheet analyst report (light editorial) ── */
+/* ── Game Review re-skin: broadsheet analyst report (theme-aware) ── */
 #sec-review{
-  --ob-brass:#2E7D5B !important; --ob-brass-2:#1C4E3A !important;
-  --ob-panel:#E9E9E2 !important; --ob-panel-2:#F3F3EE !important;
-  --ob-line:#D7D6CC !important;
-  --ob-tx:#17181A !important; --ob-tx2:#55564F !important; --ob-tx3:#8B8C83 !important;
-  --gold:#2E7D5B !important; --gold2:#1C4E3A !important; --gold3:rgba(46,125,91,.1) !important; --gold-glow:rgba(46,125,91,.28) !important;
-  --text:#17181A !important; --text2:#55564F !important; --text3:#8B8C83 !important;
-  --bg:#EDEDE8 !important; --bg2:#F3F3EE !important; --bg3:#E9E9E2 !important; --bg4:#DEDED5 !important;
-  --border:#D7D6CC !important; --border2:#C6C5B8 !important;
-  color:#17181A !important;   /* body{color:var(--text)} already computed to near-white above; reset it here */
+  --ob-brass:var(--green-2) !important; --ob-brass-2:var(--green) !important;
+  --ob-panel:var(--paper-2) !important; --ob-panel-2:var(--paper-3) !important;
+  --ob-line:var(--rule) !important;
+  --ob-tx:var(--ink) !important; --ob-tx2:var(--ink-2) !important; --ob-tx3:var(--ink-3) !important;
+  --gold:var(--green-2) !important; --gold2:var(--green) !important; --gold3:rgba(46,125,91,.1) !important; --gold-glow:rgba(46,125,91,.28) !important;
+  --text:var(--ink) !important; --text2:var(--ink-2) !important; --text3:var(--ink-3) !important;
+  --bg:var(--paper) !important; --bg2:var(--paper-2) !important; --bg3:var(--paper-3) !important; --bg4:var(--paper-3) !important;
+  --border:var(--rule) !important; --border2:var(--rule-2) !important;
+  color:var(--ink) !important;   /* body{color:var(--text)} computes to the theme text above; reset it in-scope */
 }
 #sec-review::before{ display:none !important; }
 #sec-review .btn-gold{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
@@ -3605,7 +3605,37 @@ body{ padding-top:90px; }
   --walnut:#6B4E3A; --bs-cream:#E8DFC8; --bs-board-dark:#9C7A54;
   /* tinted insets that flip with the theme (ink tint on light, white tint on dark) */
   --inset-bg:rgba(23,24,26,.035); --inset-bd:rgba(23,24,26,.09);
+  /* global legacy tokens flipped to the broadsheet so the WHOLE site themes as one */
+  --bg:#EDEDE8; --bg2:#F3F3EE; --bg3:#E9E9E2; --bg4:#DEDED5;
+  --text:#17181A; --text2:#55564F; --text3:#8B8C83;
+  --border:#D7D6CC; --border2:#C6C5B8;
+  --gold:#1C4E3A; --gold2:#2E7D5B; --gold3:rgba(46,125,91,.1);
+  /* Game Review eval-graph colors (used via style="...:var()" so they flip) */
+  --rvg-ground:rgba(23,24,26,.035); --rvg-zero:rgba(23,24,26,.16); --rvg-div:rgba(23,24,26,.14);
+  --rvg-line:rgba(28,78,58,.8); --rvg-marker:#1C4E3A; --rvg-bar-w:rgba(23,24,26,.30); --rvg-bar-b:rgba(46,125,91,.82);
+  color-scheme:light;
 }
+/* ═══ DARK THEME — "midnight tournament hall" (whole-site) ═══ */
+:root[data-theme="dark"]{
+  --paper:#141513; --paper-2:#1B1C19; --paper-3:#26271F;
+  --ink:#ECEBE2; --ink-2:#A7A79C; --ink-3:#73736A;
+  --rule:#2D2E28; --rule-2:#3B3C34;
+  --green:#3FA06E; --green-2:#57BE88; --green-ink:#2E7D5B;
+  --inset-bg:rgba(255,255,255,.045); --inset-bd:rgba(255,255,255,.10);
+  --bg:#141513; --bg2:#1B1C19; --bg3:#26271F; --bg4:#2E2F27;
+  --text:#ECEBE2; --text2:#A7A79C; --text3:#73736A;
+  --border:#2D2E28; --border2:#3B3C34;
+  --gold:#3FA06E; --gold2:#57BE88; --gold3:rgba(63,160,110,.15);
+  --rvg-ground:rgba(255,255,255,.04); --rvg-zero:rgba(255,255,255,.22); --rvg-div:rgba(255,255,255,.16);
+  --rvg-line:#57BE88; --rvg-marker:#7EE0AA; --rvg-bar-w:rgba(255,255,255,.34); --rvg-bar-b:rgba(79,180,126,.85);
+  color-scheme:dark;
+}
+/* nav brand mark: ink on light, bone on dark */
+:root[data-theme="dark"] .nav .gb-mark{ filter:saturate(0) brightness(1.85) !important; }
+/* theme toggle button in the nav */
+.nav-theme-toggle{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:100%; flex:none; background:none; border:0; color:var(--ink-2); cursor:pointer; transition:color .18s var(--ease), background .18s var(--ease); }
+.nav-theme-toggle:hover{ color:var(--green); background:rgba(46,125,91,.07); }
+.nav-theme-toggle svg{ width:18px; height:18px; }
 
 /* ── shared editorial primitives ── */
 .bs-eyebrow{ font-family:var(--font-mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--green-2); }
@@ -3828,6 +3858,33 @@ body{ padding-top:0 !important; }
 #sec-creator .cc-analysis-toggle{ color:var(--ink-2) !important; }
 
 </style>
+<script>
+/* theme: set data-theme on <html> ASAP (no flash), before body renders */
+(function(){
+  try{
+    var t=localStorage.getItem('gambit_theme');
+    if(t!=='light'&&t!=='dark'){ t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'; }
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){ document.documentElement.setAttribute('data-theme','light'); }
+})();
+window.gambitSyncThemeBtn=function(){
+  var dark=document.documentElement.getAttribute('data-theme')==='dark';
+  var SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+  document.querySelectorAll('.nav-theme-toggle').forEach(function(b){ b.innerHTML=dark?SUN:MOON; b.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode'); });
+};
+window.gambitToggleTheme=function(){
+  var next=(document.documentElement.getAttribute('data-theme')==='dark')?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  try{ localStorage.setItem('gambit_theme',next); }catch(e){}
+  gambitSyncThemeBtn();
+};
+try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(e){
+  var s; try{ s=localStorage.getItem('gambit_theme'); }catch(_){}
+  if(s!=='light'&&s!=='dark'){ document.documentElement.setAttribute('data-theme',e.matches?'dark':'light'); gambitSyncThemeBtn(); }
+}); }catch(e){}
+document.addEventListener('DOMContentLoaded', function(){ gambitSyncThemeBtn(); });
+</script>
 </head>
 <body>
 
@@ -3904,6 +3961,7 @@ body{ padding-top:0 !important; }
     <button class="nav-tab" onclick="showSection('coach')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span> Coach</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
+  <button class="nav-theme-toggle" onclick="gambitToggleTheme()" aria-label="Toggle theme" title="Toggle light / dark"></button>
   <div id="nav-account" class="nav-account"></div>
 </nav>
 
@@ -12195,7 +12253,7 @@ function renderEvalGraph(){
       '<span style="flex:'+Math.max(1, bd.b-bd.a)+'">'+bd.label+'</span>').join('') + '</div>';
   let dividers = '';
   bands.forEach((bd, i) => { if(i>0){ const x=(bd.a/total*W).toFixed(1);
-    dividers += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" stroke="rgba(23,24,26,.14)" stroke-width="1" stroke-dasharray="2 3"/>'; } });
+    dividers += '<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" style="stroke:var(--rvg-div)" stroke-width="1" stroke-dasharray="2 3"/>'; } });
 
   // ── Time-trouble band: red ticks at the bottom where a side dropped under 10s ──
   let ttMarks = '';
@@ -12233,21 +12291,21 @@ function renderEvalGraph(){
       const bw = Math.max(1.2, slot*0.62);
       const x  = ((i-0.5)/total*W - bw/2).toFixed(1);
       const y  = (H - bh).toFixed(1);
-      const col = (i % 2 === 1) ? 'rgba(23,24,26,.30)' : 'rgba(46,125,91,.82)';
-      bars += '<rect x="'+x+'" y="'+y+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="1" fill="'+col+'"><title>Move '+i+': '+rvFmtSpent(t)+'</title></rect>';
+      const col = (i % 2 === 1) ? 'var(--rvg-bar-w)' : 'var(--rvg-bar-b)';
+      bars += '<rect x="'+x+'" y="'+y+'" width="'+bw.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="1" style="fill:'+col+'"><title>Move '+i+': '+rvFmtSpent(t)+'</title></rect>';
     }
-    body = '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(23,24,26,.035)"/>'
+    body = '<rect x="0" y="0" width="'+W+'" height="'+H+'" style="fill:var(--rvg-ground)"/>'
       + dividers + bars + ttMarks
-      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#1C4E3A" stroke-width="1.6"/>';
+      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" style="stroke:var(--rvg-marker)" stroke-width="1.6"/>';
   } else {
     body = '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(46,125,91,.22)"/><stop offset="1" stop-color="rgba(46,125,91,.05)"/></linearGradient></defs>'
-      + '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="rgba(23,24,26,.035)"/>'
+      + '<rect x="0" y="0" width="'+W+'" height="'+H+'" style="fill:var(--rvg-ground)"/>'
       + '<path d="'+area+'" fill="url(#rvWhiteGrad)"/>'
-      + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="rgba(23,24,26,.16)" stroke-width="1"/>'
+      + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" style="stroke:var(--rvg-zero)" stroke-width="1"/>'
       + dividers
-      + '<path d="'+line+'" fill="none" stroke="rgba(28,78,58,.75)" stroke-width="1.6"/>'
+      + '<path d="'+line+'" fill="none" style="stroke:var(--rvg-line)" stroke-width="1.6"/>'
       + dots + ttMarks
-      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" stroke="#1C4E3A" stroke-width="1.6"/>';
+      + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" style="stroke:var(--rvg-marker)" stroke-width="1.6"/>';
   }
 
   // Time-mode caption: average time per move + the longest think
