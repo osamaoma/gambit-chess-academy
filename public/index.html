@@ -3908,6 +3908,32 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* inputs never leave a low-contrast placeholder */
 input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE — phones & tablets. Hamburger nav + per-surface stacking.
+   ═══════════════════════════════════════════════════════════════════════ */
+.nav-hamburger{ display:none; align-items:center; justify-content:center; width:44px; height:100%; flex:none; background:none; border:0; color:var(--ink); cursor:pointer; }
+.nav-hamburger svg{ width:22px; height:22px; }
+@media (max-width:820px){
+  .nav-hamburger{ display:inline-flex; }
+  nav.nav .nav-theme-toggle{ margin-left:auto; }
+  /* tabs collapse into a dropdown panel under the bar */
+  nav.nav .nav-tabs{ position:absolute; top:60px; left:0; right:0; flex-direction:column; align-items:stretch; background:var(--paper); border-bottom:1px solid var(--rule); box-shadow:0 20px 44px -20px rgba(0,0,0,.35); max-height:0; overflow:hidden; transition:max-height .32s var(--smooth); z-index:200; }
+  nav.nav[data-menu="open"] .nav-tabs{ max-height:78vh; overflow:auto; }
+  nav.nav .nav-tab{ height:52px; justify-content:flex-start; gap:12px; padding:0 22px; border-bottom:1px solid var(--rule) !important; border-left:3px solid transparent; }
+  nav.nav .nav-tab.active{ border-bottom-color:var(--rule) !important; border-left-color:var(--green); background:rgba(46,125,91,.07); }
+  /* Game Review stacks to one column */
+  #sec-review .review-layout{ grid-template-columns:1fr !important; }
+  /* landing can scroll on short screens */
+  #landing{ overflow-y:auto; }
+}
+@media (max-width:520px){
+  #landing .bslp-login{ display:none; }
+  #sec-openings .op-clean-wrap{ padding:26px 16px 56px; }
+  #sec-review .page-wrap{ padding:16px; }
+  /* comfortable touch targets */
+  .btn, .ol-toolbar-btn, .bslp-cta, .bslp-start, .ol-filter, .ptab{ min-height:44px; }
+}
+
 </style>
 <script>
 /* theme: set data-theme on <html> ASAP (no flash), before body renders */
@@ -3934,7 +3960,18 @@ try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change'
   var s; try{ s=localStorage.getItem('gambit_theme'); }catch(_){}
   if(s!=='light'&&s!=='dark'){ document.documentElement.setAttribute('data-theme',e.matches?'dark':'light'); gambitSyncThemeBtn(); }
 }); }catch(e){}
-document.addEventListener('DOMContentLoaded', function(){ gambitSyncThemeBtn(); });
+window.gambitToggleMenu=function(){
+  var n=document.querySelector('.nav'); if(!n) return;
+  var open=n.getAttribute('data-menu')==='open';
+  n.setAttribute('data-menu', open?'':'open');
+  var h=n.querySelector('.nav-hamburger'); if(h) h.setAttribute('aria-expanded', open?'false':'true');
+};
+document.addEventListener('DOMContentLoaded', function(){
+  gambitSyncThemeBtn();
+  document.querySelectorAll('.nav .nav-tab').forEach(function(t){
+    t.addEventListener('click', function(){ var n=document.querySelector('.nav'); if(n){ n.setAttribute('data-menu',''); var h=n.querySelector('.nav-hamburger'); if(h) h.setAttribute('aria-expanded','false'); } });
+  });
+});
 </script>
 </head>
 <body>
@@ -4013,6 +4050,7 @@ document.addEventListener('DOMContentLoaded', function(){ gambitSyncThemeBtn(); 
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
   <button class="nav-theme-toggle" onclick="gambitToggleTheme()" aria-label="Toggle theme" title="Toggle light / dark"></button>
+  <button class="nav-hamburger" onclick="gambitToggleMenu()" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
   <div id="nav-account" class="nav-account"></div>
 </nav>
 
