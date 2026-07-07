@@ -25131,7 +25131,7 @@ async function olInit(){
   const grid = document.getElementById('ol-grid');
   if(grid) grid.innerHTML = '<div class="ol-loading">Loading openings…</div>';
   try {
-    const res = await fetch('/openings_v5.json?v=9', { cache:'force-cache' });   // bump ?v= when the openings data changes
+    const res = await fetch('/openings_v5.json?v=11', { cache:'force-cache' });   // bump ?v= when the openings data changes
     const data = await res.json();
     OL = data.openings || [];
     OL_POS = data.positions || {};
@@ -25216,7 +25216,7 @@ function olRenderGrid(){
   // Focused rollout: the fully-curated openings are always published; openings the
   // Coach recommends for this user also surface so they can start studying them.
   const isRecFn = (typeof window.pcoachIsRec === 'function') ? window.pcoachIsRec : (() => false);
-  let ops = OL.filter(o => /italian|ruy|spanish/i.test(o.f) || isRecFn(o.f));
+  let ops = OL.filter(o => /italian|ruy|spanish|french/i.test(o.f) || isRecFn(o.f));
   if(olFilter !== 'all') ops = ops.filter(o => o.style === olFilter);
   // Recommended openings first, keeping curated order within each group
   ops = ops.slice().sort((a, b) => (isRecFn(b.f) ? 1 : 0) - (isRecFn(a.f) ? 1 : 0));
@@ -25637,6 +25637,13 @@ const OL_FAMILY_INTRO = {
   'Marshall Attack':"Black sacrifices a pawn for a ferocious attack — learn the defense cold, or dodge it entirely with 8.a4 / 8.h3.",
   'Open Variation':"5...Nxe4 — Black grabs the pawn and fights for activity. Sharp, concrete, and full of famous traps like the Dilworth.",
   'Third-Move Alternatives':"Everything else Black can try on move three — the Schliemann, Bird's, the Steinitz defenses, and friends.",
+  // French Defense chapters
+  'Advance Variation':"3.e5 grabs space and locks the centre — but the d4-e5 chain needs constant defending. Black swarms the base with ...c5, ...Nc6, ...Qb6 and the knight to f5.",
+  'Tarrasch Variation':"3.Nd2 — White's flexible, low-risk try. Meet it head-on with the open 3...c5 or the solid closed 3...Nf6, and play against d4.",
+  'Winawer Variation':"3...Bb4, the sharpest French. Trade the dark-squared bishop to shatter White's queenside pawns, then hound c3 and d4 in a deeply-analysed brawl.",
+  'Classical & Steinitz':"3...Nf6 — classical development. The Bg5 main lines, the Burn, the space-grabbing Steinitz, and the combative MacCutcheon.",
+  'French Exchange':"3.exd5 releases the tension into a symmetrical structure. Drawish by reputation — so keep the pieces on and play for the first imbalance.",
+  'Rubinstein & Sidelines':"The rock-solid Rubinstein (...dxe4) and Fort Knox, plus White's sidesteps — the King's Indian Attack, Chigorin's 2.Qe2, and the Wing Gambit.",
 };
 // ═══════════════ LEARN VIEW ═══════════════
 // Walk the variation move by move. At every position show the top-3 popular
@@ -25884,7 +25891,7 @@ const OL_DRILL_MODES = {
 
 function olPracticeOps(){
   const isRecFn = (typeof window.pcoachIsRec === 'function') ? window.pcoachIsRec : (() => false);
-  return OL ? OL.filter(o => /italian|ruy|spanish/i.test(o.f) || isRecFn(o.f)) : [];
+  return OL ? OL.filter(o => /italian|ruy|spanish|french/i.test(o.f) || isRecFn(o.f)) : [];
 }
 
 window.olOpenPractice = function(){
