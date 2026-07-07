@@ -3857,6 +3857,43 @@ body{ padding-top:0 !important; }
 #sec-creator .cc-setup-icon, #sec-creator .rep-root{ background:rgba(46,125,91,.12) !important; color:var(--green) !important; }
 #sec-creator .cc-analysis-toggle{ color:var(--ink-2) !important; }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   MOTION LAYER (Emil) — purposeful, spring-driven, reduced-motion-safe.
+   Springs for hover/press feedback; smooth easing for entrances/transitions.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{ --spring:cubic-bezier(.34,1.4,.5,1); --smooth:cubic-bezier(.4,0,.2,1); }
+@media (prefers-reduced-motion: no-preference){
+  /* section change feels alive: a quiet rise + fade on every nav */
+  .section.active{ animation:bsSecIn .5s var(--smooth) both; }
+  @keyframes bsSecIn{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
+
+  /* buttons & pills: springy lift on hover, tactile press */
+  .bslp-cta, .bslp-start, .bslp-link, .btn, .ol-toolbar-btn, .ol-rcard-cta,
+  .nav-theme-toggle, .cc-play-btn, .nop-mini-btn, .acad-cta-btn, .ptab, .ol-filter, .nav-tab{
+    transition:transform .34s var(--spring), background-color .2s var(--smooth), color .2s var(--smooth),
+               box-shadow .3s var(--smooth), border-color .2s var(--smooth), gap .2s var(--smooth);
+  }
+  .bslp-cta:hover, .bslp-start:hover, .ol-toolbar-btn:hover, .cc-play-btn:hover, .acad-cta-btn:hover{ transform:translateY(-2px); }
+  .btn:active, .bslp-cta:active, .bslp-start:active, .ol-toolbar-btn:active,
+  .nav-theme-toggle:active, .acad-cta-btn:active, .nop-mini-btn:active{ transform:translateY(0) scale(.96); }
+  .nav-theme-toggle:hover svg{ transform:rotate(-18deg) scale(1.08); transition:transform .4s var(--spring); }
+
+  /* catalogue plates: spring lift + staggered entrance */
+  #sec-openings .ol-rcard{ transition:background-color .25s var(--smooth), transform .4s var(--spring); animation:bsPlateIn .55s var(--smooth) both; }
+  #sec-openings .ol-rcard:hover{ transform:translateY(-2px); }
+  #sec-openings .ol-rcard:nth-child(1){ animation-delay:.04s } #sec-openings .ol-rcard:nth-child(2){ animation-delay:.11s }
+  #sec-openings .ol-rcard:nth-child(3){ animation-delay:.18s } #sec-openings .ol-rcard:nth-child(4){ animation-delay:.25s }
+  #sec-openings .ol-rcard:nth-child(5){ animation-delay:.32s } #sec-openings .ol-rcard:nth-child(n+6){ animation-delay:.38s }
+  @keyframes bsPlateIn{ from{ opacity:0; transform:translateY(16px) } to{ opacity:1; transform:none } }
+
+  /* cards elsewhere: gentle spring lift */
+  .cc-card, .gai-card, .pc-sum-card, .acad-cc-card, .cc-mode-card{ transition:transform .38s var(--spring), border-color .25s var(--smooth), box-shadow .3s var(--smooth); }
+  .cc-card:hover, .acad-cc-card:hover, .cc-mode-card:hover{ transform:translateY(-3px); }
+
+  /* landing hero stagger (uses the existing bsUp keyframes) — asset floats up last */
+  #landing .bslp-caption{ animation:bsUp .8s var(--ease) .42s both; }
+}
+
 </style>
 <script>
 /* theme: set data-theme on <html> ASAP (no flash), before body renders */
