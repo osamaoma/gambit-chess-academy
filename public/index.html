@@ -3499,7 +3499,7 @@ body{ padding-top:90px; }
 #cc-workspace .cc-name-input{ flex:1; min-width:0; background:transparent; border:none; border-bottom:1px solid transparent; border-radius:0; padding:3px 4px; font-size:17px }
 #cc-workspace .cc-name-input:focus{ outline:none; border-bottom-color:var(--gold) }
 /* inner boxes sit on the card, so they get a quieter surface than the card itself */
-#cc-workspace .cc-analysis-lines, #cc-workspace .cc-movetree, #cc-workspace .cc-note-input, #cc-workspace .cc-stats{ background:rgba(255,255,255,.03); border-color:rgba(255,255,255,.08) }
+#cc-workspace .cc-analysis-lines, #cc-workspace .cc-movetree, #cc-workspace .cc-note-input, #cc-workspace .cc-stats{ background:var(--inset-bg); border-color:var(--inset-bd) }
 #cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:clamp(64px, 11vh, 118px); overflow:auto }
 /* the move list is the flexible middle — it absorbs spare height and scrolls */
 #cc-workspace .cc-movetree{ flex:1 1 auto; min-height:36px; overflow:auto }
@@ -3603,6 +3603,8 @@ body{ padding-top:90px; }
   --rule:#D7D6CC; --rule-2:#C6C5B8;
   --green:#1C4E3A; --green-2:#2E7D5B; --green-ink:#123829;
   --walnut:#6B4E3A; --bs-cream:#E8DFC8; --bs-board-dark:#9C7A54;
+  /* tinted insets that flip with the theme (ink tint on light, white tint on dark) */
+  --inset-bg:rgba(23,24,26,.035); --inset-bd:rgba(23,24,26,.09);
 }
 
 /* ── shared editorial primitives ── */
@@ -3800,6 +3802,28 @@ body{ padding-top:0 !important; }
 #sec-coach .pc-banner{ background:linear-gradient(120deg, rgba(46,125,91,.12), rgba(46,125,91,.05)) !important; border-color:var(--rule) !important; }
 #sec-coach .coach-study, #sec-coach .gai-card{ background:var(--paper-2) !important; border-color:var(--rule) !important; }
 #sec-coach .coach-next{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; }
+
+/* ═══════════ REPERTOIRE — broadsheet study surface (token-based, theme-ready) ═══════════ */
+#sec-creator{
+  --text:var(--ink); --text2:var(--ink-2); --text3:var(--ink-3);
+  --bg:var(--paper); --bg2:var(--paper-2); --bg3:var(--paper-2); --bg4:var(--paper-3);
+  --border:var(--rule); --border2:var(--rule-2);
+  --gold:var(--green); --gold2:var(--green-ink); --gold3:rgba(46,125,91,.1); --gold-glow:rgba(46,125,91,.28);
+  color:var(--ink); background:var(--paper); min-height:100vh;
+}
+#sec-creator h1, #sec-creator h2, #sec-creator h3, #sec-creator .cc-hero h1, #sec-creator .acad-cc-name, #sec-creator .cc-name-input{ font-family:var(--font-display) !important; color:var(--ink) !important; }
+#sec-creator .cc-hero h1 em{ color:var(--green) !important; }
+#sec-creator .acad-hero-badge{ color:var(--green) !important; background:rgba(46,125,91,.1) !important; }
+#sec-creator .btn-gold, #sec-creator .acad-cta-btn{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-creator .nop-mini-btn.gold{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; }
+#sec-creator .cc-title-row .cc-tool-icon, #sec-creator .cc-tool-icon{ color:var(--green) !important; }
+#sec-creator .cc-name-input:focus{ border-bottom-color:var(--green) !important; }
+#sec-creator .cc-engine-tag, #sec-creator .cc-stats-head, #sec-creator .cc-st-bar, #sec-creator .cc-stats-foot{ background:var(--inset-bg) !important; }
+#sec-creator .cc-st-bar i.pop{ background:linear-gradient(90deg,#2E7D5B,#1C4E3A) !important; }
+#sec-creator .cc-stat-row:hover{ background:rgba(46,125,91,.07) !important; }
+#sec-creator .cc-engine-tag{ border-color:var(--rule) !important; color:var(--ink-3) !important; }
+#sec-creator .cc-setup-icon, #sec-creator .rep-root{ background:rgba(46,125,91,.12) !important; color:var(--green) !important; }
+#sec-creator .cc-analysis-toggle{ color:var(--ink-2) !important; }
 
 </style>
 </head>
