@@ -3894,6 +3894,20 @@ body{ padding-top:0 !important; }
   #landing .bslp-caption{ animation:bsUp .8s var(--ease) .42s both; }
 }
 
+/* ═══════════ IMPECCABLE PASS — scrollbars + focus states (theme-aware) ═══════════ */
+/* neutral, theme-following scrollbars (replaces the old gold thumb) */
+*{ scrollbar-color:var(--rule-2) transparent !important; }
+::-webkit-scrollbar{ width:11px; height:11px; }
+::-webkit-scrollbar-track{ background:transparent !important; }
+::-webkit-scrollbar-thumb{ background:var(--rule-2) !important; border-radius:8px; border:3px solid transparent; background-clip:content-box !important; }
+::-webkit-scrollbar-thumb:hover{ background:var(--ink-3) !important; background-clip:content-box !important; }
+/* visible keyboard focus everywhere — single consistent green ring */
+:focus-visible{ outline:2px solid var(--green-2); outline-offset:2px; border-radius:3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
+.nav-tab:focus-visible, .ol-filter:focus-visible, .ptab:focus-visible{ outline:2px solid var(--green-2); outline-offset:2px; }
+/* inputs never leave a low-contrast placeholder */
+input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
+
 </style>
 <script>
 /* theme: set data-theme on <html> ASAP (no flash), before body renders */
