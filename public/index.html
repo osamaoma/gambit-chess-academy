@@ -3781,6 +3781,26 @@ body{ padding-top:0 !important; }
 #sec-review .move-row{ border-bottom-color:var(--rule) !important; }
 #sec-review .move-row:hover .move-cell{ background:rgba(46,125,91,.06) !important; }
 
+/* ═══════════ COACH — broadsheet (token-based so it adapts to the theme) ═══════════ */
+#sec-coach{
+  --text:var(--ink); --text2:var(--ink-2); --text3:var(--ink-3);
+  --bg:var(--paper); --bg2:var(--paper-2); --bg3:var(--paper-2); --bg4:var(--paper-3);
+  --border:var(--rule); --border2:var(--rule-2);
+  --gold:var(--green); --gold2:var(--green-ink); --gold3:rgba(46,125,91,.1); --gold-glow:rgba(46,125,91,.28);
+  color:var(--ink); background:var(--paper); min-height:100vh;
+}
+#sec-coach h1, #sec-coach h2, #sec-coach h3, #sec-coach .coach-page-title, #sec-coach .gai-name, #sec-coach .pc-hero h1{ font-family:var(--font-display) !important; color:var(--ink) !important; }
+#sec-coach .pc-hero h1 em, #sec-coach .coach-page-eyebrow{ color:var(--green) !important; }
+#sec-coach .btn-gold{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-coach .btn-gold:hover{ background:#1C4E3A !important; }
+#sec-coach .pc-user{ background:var(--paper) !important; border:1px solid var(--rule-2) !important; color:var(--ink) !important; }
+#sec-coach .pc-user:focus{ border-color:var(--green) !important; }
+#sec-coach .pc-prog-track{ background:var(--paper-3) !important; }
+#sec-coach .pc-say{ background:rgba(46,125,91,.1) !important; border-color:rgba(46,125,91,.28) !important; }
+#sec-coach .pc-banner{ background:linear-gradient(120deg, rgba(46,125,91,.12), rgba(46,125,91,.05)) !important; border-color:var(--rule) !important; }
+#sec-coach .coach-study, #sec-coach .gai-card{ background:var(--paper-2) !important; border-color:var(--rule) !important; }
+#sec-coach .coach-next{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; }
+
 </style>
 </head>
 <body>
