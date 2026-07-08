@@ -3958,6 +3958,24 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
   #sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(34px, 10.4vw, 56px); }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   POLISH — a living board (pieces settle when they move) + crisper type.
+   ═══════════════════════════════════════════════════════════════════════ */
+body{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; }
+/* tabular numerals so evals, ratings and stats never jitter */
+.rv-accp-num, .rvr-elo-n, .cc-eval-inline, #cc-evalbar-score, .eval-bar-score, .expl-evalbar-score,
+.cc-st-n, .cc-st-pct, .ol-rcard-lines, .ol-toolbar-stat, .cc-aline-eval, .cc-lines-count{ font-variant-numeric:tabular-nums; }
+.board-coord, .bscoord{ font-variant-numeric:tabular-nums; letter-spacing:.02em; }
+@media (prefers-reduced-motion: no-preference){
+  /* the piece that just moved settles onto its destination square (hl-last marks the last move; only the to-square holds a piece) */
+  .sq.hl-last .piece{ animation: pcLand .24s cubic-bezier(.34,1.5,.5,1) both; }
+  @keyframes pcLand{ 0%{ transform:scale(1.16) } 62%{ transform:scale(.96) } 100%{ transform:none } }
+  /* the analysis arrow eases in rather than snapping */
+  .arrow-overlay path, .arrow-overlay polygon, .arrow-overlay line{ transition:opacity .18s ease; }
+  /* smooth eval-bar fill + eval readouts */
+  .eval-bar-black, .expl-evalbar-black, #cc-evalbar-black{ transition:height .35s cubic-bezier(.4,0,.2,1); }
+}
+
 </style>
 <script>
 /* theme: set data-theme on <html> ASAP (no flash), before body renders */
