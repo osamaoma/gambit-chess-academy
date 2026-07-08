@@ -3472,7 +3472,7 @@ body{ padding-top:90px; }
 #cc-workspace{ --ccsq: clamp(44px, calc(12.5vh - 26px), 118px); }
 /* break out of the 1140px .acad-wrap: center the workspace on the viewport so the
    side panel keeps a ChessReps-like width next to the big board */
-#cc-workspace{ width:min(calc(100vw - 64px), 1560px); position:relative; left:50%; transform:translateX(-50%); }
+#cc-workspace{ width:min(calc(100vw - 56px), 1300px); position:relative; left:50%; transform:translateX(-50%); }
 #cc-board .sq{ width:var(--ccsq); height:var(--ccsq); }
 #cc-workspace #cc-evalbar{ height:auto; align-self:stretch; }
 #cc-workspace .cc-top{ margin-bottom:8px; }
@@ -3481,9 +3481,9 @@ body{ padding-top:90px; }
 #cc-workspace .cc-eval-inline{ margin-left:auto }
 #cc-workspace .cc-title-row .acad-learn-back{ flex-shrink:0 }
 #cc-workspace .cc-stage{
-  grid-template-columns:auto minmax(0,1fr);
+  grid-template-columns:auto minmax(340px, 430px);
   grid-template-areas:"board side";
-  gap:14px 28px; align-items:start;
+  gap:14px 26px; align-items:start; justify-content:center;
 }
 #cc-workspace .cc-board-col{ grid-area:board; }
 /* side = one contained card, height locked to the board column (8 squares + coords + controls) */
@@ -25253,7 +25253,7 @@ function olRenderGrid(){
   // Focused rollout: the fully-curated openings are always published; openings the
   // Coach recommends for this user also surface so they can start studying them.
   const isRecFn = (typeof window.pcoachIsRec === 'function') ? window.pcoachIsRec : (() => false);
-  let ops = OL.filter(o => /italian|ruy|spanish|french/i.test(o.f) || isRecFn(o.f));
+  let ops = OL.filter(o => /italian|ruy|spanish|french|sicilian/i.test(o.f) || isRecFn(o.f));
   if(olFilter !== 'all') ops = ops.filter(o => o.style === olFilter);
   // Recommended openings first, keeping curated order within each group
   ops = ops.slice().sort((a, b) => (isRecFn(b.f) ? 1 : 0) - (isRecFn(a.f) ? 1 : 0));
@@ -25681,6 +25681,13 @@ const OL_FAMILY_INTRO = {
   'Classical & Steinitz':"3...Nf6 — classical development. The Bg5 main lines, the Burn, the space-grabbing Steinitz, and the combative MacCutcheon.",
   'French Exchange':"3.exd5 releases the tension into a symmetrical structure. Drawish by reputation — so keep the pieces on and play for the first imbalance.",
   'Rubinstein & Sidelines':"The rock-solid Rubinstein (...dxe4) and Fort Knox, plus White's sidesteps — the King's Indian Attack, Chigorin's 2.Qe2, and the Wing Gambit.",
+  // Sicilian Defense chapters
+  'Najdorf Variation':"5...a6, the deepest opening in chess. Meet every 6th move — Be2, Bg5, the English Attack, Bc4, g3 — right up to the legendary Poisoned Pawn.",
+  'Dragon & Accelerated Dragon':"...g6 and the fire-breathing bishop. The Yugoslav Attack race, the ...d5 antidote, the Classical, and the Accelerated Dragon's fight against the Maroczy Bind.",
+  'Sveshnikov & Classical':"2...Nc6 — the modern Sveshnikov's ...e5, the Kalashnikov, the Richter-Rauzer, Boleslavsky and the Four Knights.",
+  'Taimanov, Kan & Scheveningen':"2...e6 — the flexible Taimanov (...Qc7), the ultra-solid Kan (...a6), and the resilient Scheveningen, including the violent Keres Attack.",
+  'Alapin & Rossolimo':"White's most popular sidesteps — the Alapin (2.c3) met by ...d5 and ...Nf6, and the Rossolimo/Moscow bishop-swaps on b5.",
+  'Anti-Sicilians':"Everything else White throws at you — the Closed Sicilian, the Grand Prix Attack, the Smith-Morra Gambit (and the Siberian trap), and the Wing Gambit.",
 };
 // ═══════════════ LEARN VIEW ═══════════════
 // Walk the variation move by move. At every position show the top-3 popular
@@ -25928,7 +25935,7 @@ const OL_DRILL_MODES = {
 
 function olPracticeOps(){
   const isRecFn = (typeof window.pcoachIsRec === 'function') ? window.pcoachIsRec : (() => false);
-  return OL ? OL.filter(o => /italian|ruy|spanish|french/i.test(o.f) || isRecFn(o.f)) : [];
+  return OL ? OL.filter(o => /italian|ruy|spanish|french|sicilian/i.test(o.f) || isRecFn(o.f)) : [];
 }
 
 window.olOpenPractice = function(){
