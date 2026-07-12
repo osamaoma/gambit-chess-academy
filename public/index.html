@@ -10203,7 +10203,7 @@ function triggerEngineAnalysis(state){
   document.getElementById('ep-alt-o').style.display = 'none';
 
   // multipv=3 to get top 3 candidate moves (for arrows)
-  evalPosition(fen, 14, 3).then(result => {
+  evalPosition(fen, 16, 3, 700).then(result => {
     // Discard if a newer request superseded this one
     if(myToken !== analysisToken) return;
     renderEngineAnalysis(result, state);
@@ -11984,7 +11984,7 @@ async function analyseGame(white, black, username){
     if(stat) stat.textContent = `Analysing move ${i}/${analyseLimit}…`;
 
     // Depth 2 with quiescence — enough to spot tactical mistakes
-    const result = await evalPosition(positions[i].fen, 12, 1);
+    const result = await evalPosition(positions[i].fen, 12, 1, 350);
     evals[i] = result;
 
     // CRITICAL: yield to the event loop between positions so the browser
@@ -13330,12 +13330,12 @@ async function analyzeBranchMove(idx){
   if(!sfWorker || !sfReady) return;
   try {
     const fenAfter = stateToFEN(m.state);
-    const afterResult = await evalPosition(fenAfter, 20, 1, 1200);
+    const afterResult = await evalPosition(fenAfter, 16, 1, 300);
     m.eval = afterResult.score;
     m.isMate = afterResult.isMate;
     m.mateIn = afterResult.mateIn;
 
-    const beforeResult = await evalPosition(m.fenBefore, 20, 1, 1200);
+    const beforeResult = await evalPosition(m.fenBefore, 16, 1, 300);
     m.bestMoveUCI = beforeResult.bestMove || null;
 
     // Classify with chess.com-style thresholds (matches game-review logic)
@@ -13491,7 +13491,7 @@ function triggerEngineAnalysisR(state){
   const myToken = ++reviewAnalysisToken;
   if(!sfWorker || !sfReady) return;
   const fen = stateToFEN(state);
-  evalPosition(fen, 14, 3).then(result => {
+  evalPosition(fen, 16, 3, 700).then(result => {
     if(myToken !== reviewAnalysisToken) return;
 
     // Update live engine line — each move is hoverable for a mini-board preview.
@@ -16958,7 +16958,7 @@ window.runDeepAnalysis = async function(){
     for(let i = 0; i < limit; i++){
       const state = hist[i].state;
       const fen = stateToFEN(state);
-      const result = await evalPosition(fen, 10, 1);  // depth 10 for speed
+      const result = await evalPosition(fen, 10, 1, 300);  // depth 10 for speed
 
       if(i > 0){
         const wasUserMove = (i % 2 === 1) === isWhite;
@@ -17741,7 +17741,7 @@ async function analyzeMistakeCandidates(idx, ex){
   let result;
   try {
     // Higher depth + multi-PV 4 to compare top 4 moves
-    result = await evalPosition(ex.fenBefore, 20, 4);
+    result = await evalPosition(ex.fenBefore, 18, 4, 700);
   } catch(e){
     panel.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px">Engine analysis failed for this position.</div>';
     return;
@@ -17924,7 +17924,7 @@ async function analyzeMistakeWhy(idx, ex){
     let punishLine = null, planLine = null, punishEval = null, planEval = null;
     if(stateAfterPlayed){
       const fenAfterPlayed = stateToFEN(stateAfterPlayed);
-      const r1 = await evalPosition(fenAfterPlayed, 18, 1);
+      const r1 = await evalPosition(fenAfterPlayed, 18, 1, 500);
       if(r1 && r1.pv){
         punishLine = uciSequenceToSAN(fenAfterPlayed, r1.pv, 5);
         punishEval = r1.score;
@@ -17932,7 +17932,7 @@ async function analyzeMistakeWhy(idx, ex){
     }
     if(stateAfterBest){
       const fenAfterBest = stateToFEN(stateAfterBest);
-      const r2 = await evalPosition(fenAfterBest, 18, 1);
+      const r2 = await evalPosition(fenAfterBest, 18, 1, 500);
       if(r2 && r2.pv){
         planLine = uciSequenceToSAN(fenAfterBest, r2.pv, 5);
         planEval = r2.score;
@@ -18250,7 +18250,7 @@ async function triggerEngineAnalysisQ(state){
   const sideToMove = fen.split(' ')[1] || 'w';
   try {
     // Get top 5 candidates so we can filter to the "completely fine" ones
-    const result = await evalPosition(fen, 14, 5);
+    const result = await evalPosition(fen, 16, 5, 700);
     if(myToken !== quizAnalysisToken) return;
     const allAlts = result.alternatives && result.alternatives.length > 0
       ? result.alternatives
@@ -24326,7 +24326,7 @@ async function nlearnRequestEval(state){
     if(typeof evalPosition !== 'function'){ clearTimeout(fallback); nlearnSetEval(null); return; }
     let fen;
     try { fen = stateToFEN(state); } catch(e){ clearTimeout(fallback); nlearnSetEval(null); return; }
-    const result = await evalPosition(fen, 12, 1);
+    const result = await evalPosition(fen, 12, 1, 400);
     settled = true; clearTimeout(fallback);
     if(token !== nlearn.evalTokenE) return;   // stale (user moved on)
     nlearnSetEval(result);
@@ -24672,7 +24672,7 @@ async function nlearnRunEngine(state){
   try { fen = stateToFEN(state); } catch(e){ if(bestEl) bestEl.textContent = 'Position error.'; return; }
 
   try {
-    const result = await evalPosition(fen, 14, 3);  // depth 14, top-3 lines
+    const result = await evalPosition(fen, 16, 3, 700);  // depth 14, top-3 lines
     if(token !== nlearn.engToken) return;            // stale
 
     // eval bar (always White's perspective, like the rest of the app)
@@ -26493,7 +26493,7 @@ async function explRunEngine(){
   let fen; try { fen = stateToFEN(state); } catch(e){ return; }
 
   try {
-    const result = await evalPosition(fen, 24, expl.multipv, 5000);
+    const result = await evalPosition(fen, 18, expl.multipv, 700);
     if(token !== expl.evalToken) return;
     if(dot) dot.className = 'expl-engine-dot ready';
     if(depthEl) depthEl.textContent = 'depth ' + (result.depth || 16);
@@ -27357,7 +27357,7 @@ async function acadLessonEngine(state, lessonMove){
   let fen; try{ fen=stateToFEN(state); }catch(e){ host.innerHTML=''; return; }
   const myToken = (alesson._tok = (alesson._tok||0)+1);
   try {
-    const r = await evalPosition(fen, 14, 1);
+    const r = await evalPosition(fen, 14, 1, 400);
     if(myToken !== alesson._tok) return;
     updateEvalBar('al-evalbar-black','al-evalbar-score', r.score, r.isMate, r.mateIn);
     // NOTE: we deliberately keep the BLUE lesson arrow as the focus and do NOT
@@ -28148,7 +28148,7 @@ async function ccRunEngine(){
   if(typeof evalPosition!=='function'){ if(linesHost) linesHost.innerHTML=''; return; }
   const state=ccCurrentState(); let fen; try{ fen=stateToFEN(state); }catch(e){ return; }
   try {
-    const r=await evalPosition(fen, 24, 3, 5000);
+    const r=await evalPosition(fen, 18, 3, 700);
     if(token!==CC.evalToken) return;
     updateEvalBar('cc-evalbar-black','cc-evalbar-score', r.score, r.isMate, r.mateIn);
     if(inline) inline.textContent=formatEval(r.score,r.isMate,r.mateIn);
@@ -28381,7 +28381,7 @@ async function ccLoadExplorer(){
       try {
         const st=ccCurrentState(); const mv=sanToMove(e.s,st); if(!mv) continue;
         const ns=applyMove(st,mv); const fen=stateToFEN(ns);
-        const r=await evalPosition(fen, 16, 1, 800);
+        const r=await evalPosition(fen, 14, 1, 350);
         if(token!==CC.explorerToken) return;
         const cell=document.getElementById('cc-bk-eval-'+i);
         if(cell){ let sc=-r.score, mate=r.mateIn!=null?-r.mateIn:null;
@@ -28668,7 +28668,7 @@ async function pcoachAnalyze(games, username, setP){
   let evals = 0;
   async function ev(fen){
     if(cache[fen]) return cache[fen];
-    const r = await evalPosition(fen, 14, 1);
+    const r = await evalPosition(fen, 14, 1, 400);
     cache[fen] = r; evals++;
     await new Promise(rr => setTimeout(rr, 0)); // keep the UI responsive
     return r;
