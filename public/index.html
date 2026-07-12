@@ -81,8 +81,8 @@ input::placeholder{color:var(--text3)}
 .sq.hl-from{background-color:rgba(155,199,0,.41)!important;z-index:2}
 .sq.hl-to{background-color:rgba(245,221,80,.62)!important;z-index:2}
 .sq.hl-last{background-color:rgba(155,199,0,.41)!important}
-.sq.can-move::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(20,85,30,.5) 0 16%,transparent 17%);pointer-events:none;z-index:1}
-.sq.can-capture::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,transparent 0 77%,rgba(20,85,30,.5) 78%);pointer-events:none;z-index:1}
+.sq.can-move::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(20,85,30,.5) 0 22%,transparent 23%);pointer-events:none;z-index:1}
+.sq.can-capture::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,transparent 0 80%,rgba(20,85,30,.35) 80%);pointer-events:none;z-index:1}
 .piece{width:84%;height:84%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));position:relative;z-index:3;transition:transform .1s;pointer-events:none}
 .piece svg{width:100%;height:100%;display:block}
 .piece:hover{transform:scale(1.06)}
@@ -362,8 +362,8 @@ input::placeholder{color:var(--text3)}
   .sq.hl-dest{cursor:pointer}
   .sq.hl-cap{cursor:pointer}
   .sq:hover .piece{cursor:pointer}
-  .legal-dot{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,rgba(20,85,30,.5) 0 16%,transparent 17%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
-  .legal-cap{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,transparent 0 77%,rgba(20,85,30,.5) 78%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
+  .legal-dot{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,rgba(20,85,30,.5) 0 22%,transparent 23%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
+  .legal-cap{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,transparent 0 80%,rgba(20,85,30,.35) 80%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   .sq{position:relative}
 
@@ -2927,7 +2927,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 .piece{ filter:drop-shadow(0 1px 1px rgba(23,24,26,.14)) !important }
 .sq.light{ background-image:linear-gradient(150deg, rgba(255,255,255,.10), transparent 55%) }
 .sq.dark{ background-image:linear-gradient(150deg, rgba(255,255,255,.06), transparent 55%) }
-#arrow-overlay-r, #arrow-overlay-o, #arrow-overlay-nl{ filter:drop-shadow(0 0 5px rgba(21,120,27,.4)) }
+
 #cosmos{ background:
   radial-gradient(1300px 850px at 80% -14%, rgba(70,100,235,.22), transparent 60%),
   radial-gradient(1100px 950px at 6% 110%, rgba(40,170,210,.16), transparent 58%),
@@ -4001,8 +4001,18 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* ── Coach step-through ── */
 #sec-coach #coach-board{ --cbsq: clamp(42px, calc((100vh - 310px) / 8), 92px); }
 #sec-coach #coach-board .sq{ width:var(--cbsq) !important; height:var(--cbsq) !important; }
-/* ── Learn + drill — medium board: comfortable, never dominating ── */
-#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(40px, calc((100vh - 360px) / 8), 74px); }
+/* ── Learn + drill — chessable-size board, app-like no-scroll layout ── */
+#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(46px, calc((100vh - 240px) / 8), 92px); }
+#sec-olearn .nlearn-wrap{ max-width:min(1500px, calc(100vw - 40px)); margin:0 auto; padding-top:10px; }
+#sec-olearn .nlearn-stage{ grid-template-columns:auto minmax(360px, 470px); gap:36px; justify-content:center; }
+/* coach panel: sticks beside the board and scrolls internally — the PAGE never scrolls */
+#sec-olearn .nlearn-side{ position:sticky; top:10px; max-height:calc(100vh - 120px); overflow-y:auto; padding-right:4px; }
+@media (max-width:920px){ #sec-olearn .nlearn-side{ position:static; max-height:none; } }
+/* chessable-style coach card pieces */
+.ol-opp-ctx{ color:var(--text2); margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.ol-play-cmd{ margin-top:14px; font-weight:800; font-size:16px; color:var(--gold); }
+/* plan squares glow lichess-green at the end of a line */
+.sq.hl-plan{ box-shadow:inset 0 0 0 9999px rgba(155,199,0,.5) !important; }
 #sec-olearn #ol-board .sq, #sec-olearn #old-board .sq{ width:var(--lbsq) !important; height:var(--lbsq) !important; }
 @media(max-width:820px){
   #sec-review .review-layout{ grid-template-columns:1fr !important; justify-content:stretch; }
@@ -10405,16 +10415,16 @@ function drawAnalysisArrows(overlayId, alternatives){
   // #1 best = thick deep green, #2/#3/#4 = progressively lighter green.
   // The eye can instantly tell which arrow is the engine's TOP choice.
   overlay.innerHTML += `<defs>
-    <marker id="ah-best" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="ah-best" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
-    <marker id="ah-alt1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="ah-alt1" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.75)"/>
     </marker>
-    <marker id="ah-alt2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="ah-alt2" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.55)"/>
     </marker>
-    <marker id="ah-alt3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="ah-alt3" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.35)"/>
     </marker>
   </defs>`;
@@ -13034,13 +13044,13 @@ function drawReviewArrows(ann, idx){
   const bestUCI = ann.bestMoveUCI;
 
   let svg = `<defs>
-    <marker id="ah-best-green" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="ah-best-green" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
     </marker>
-    <marker id="ah-best-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="ah-best-yellow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
     </marker>
-    <marker id="ah-bad" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="ah-bad" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.85)"/>
     </marker>
   </defs>`;
@@ -13060,7 +13070,10 @@ function drawReviewArrows(ann, idx){
   overlay.innerHTML = svg;
 }
 
-// Build SVG <line> markup for an arrow from→to using board square coordinates
+// Build SVG <line> markup for an arrow from→to using board square coordinates.
+// Lichess/chessground geometry: flat (butt) shaft start, triangle head that scales
+// with the stroke (markerUnits=strokeWidth on the markers), tip pulled just short
+// of the destination centre, no glow.
 function arrowSVG(from, to, color, width, markerId, flipped = false){
   if(!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) return '';
   const p1 = squareToSVG(from, flipped);
@@ -13068,10 +13081,15 @@ function arrowSVG(from, to, color, width, markerId, flipped = false){
   const dx = p2.x - p1.x, dy = p2.y - p1.y;
   const len = Math.sqrt(dx*dx + dy*dy);
   if(len < 0.1) return '';
-  const shrink = 14;
+  // shaft starts a little OUT of the from-square centre (lichess leaves the piece visible)
+  const startOff = 10;
+  const sX = p1.x + (dx / len) * startOff;
+  const sY = p1.y + (dy / len) * startOff;
+  // shaft ends short of the target centre; the marker head extends from there
+  const shrink = 12 + width * 1.1;
   const endX = p2.x - (dx / len) * shrink;
   const endY = p2.y - (dy / len) * shrink;
-  return `<line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" marker-end="url(#${markerId})" />`;
+  return `<line x1="${sX}" y1="${sY}" x2="${endX}" y2="${endY}" stroke="${color}" stroke-width="${width}" stroke-linecap="butt" marker-end="url(#${markerId})" />`;
 }
 
 // Draw arrows on the quiz board to visualize the theory move (green) + user's wrong move (red)
@@ -13080,10 +13098,10 @@ function drawQuizArrows(theoryMoveUCI, userMoveUCI){
   const overlay = document.getElementById('arrow-overlay-q');
   if(!overlay){ return; }
   let svg = `<defs>
-    <marker id="qz-ah-best" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="qz-ah-best" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
-    <marker id="qz-ah-bad" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="qz-ah-bad" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.9)"/>
     </marker>
   </defs>`;
@@ -13107,10 +13125,10 @@ function drawAllCandidateArrows(q, playedMove){
   const overlay = document.getElementById('arrow-overlay-q');
   if(!overlay) return;
   let svg = `<defs>
-    <marker id="qzc-main" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="qzc-main" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
-    <marker id="qzc-alt" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="qzc-alt" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.6)"/>
     </marker>
   </defs>`;
@@ -13149,7 +13167,7 @@ function drawSingleArrow(uciMove){
   const endY = p2.y - (dy / len) * 14;
   overlay.innerHTML = `
     <defs>
-      <marker id="ah-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <marker id="ah-yellow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
         <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
       </marker>
     </defs>
@@ -13305,7 +13323,7 @@ function renderReviewBoard(){
     }
     // Green arrow for best move
     if(displayedBestUCI && /^[a-h][1-8][a-h][1-8]/.test(displayedBestUCI)){
-      let svg = `<defs><marker id="rv-best-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/></marker></defs>`;
+      let svg = `<defs><marker id="rv-best-arrow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/></marker></defs>`;
       svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(21,120,27,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
       if(overlay) overlay.innerHTML = svg;
     }
@@ -13341,7 +13359,7 @@ function drawBestMoveArrow(idx){
   }
   // Build SVG with green arrow + arrowhead marker
   let svg = `<defs>
-    <marker id="rv-best-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <marker id="rv-best-arrow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
   </defs>`;
@@ -13672,7 +13690,7 @@ function triggerEngineAnalysisR(state){
     if(viewingBranch && result.bestMove && /^[a-h][1-8][a-h][1-8]/.test(result.bestMove)){
       const ov = document.getElementById('arrow-overlay-r');
       if(ov){
-        let svg = `<defs><marker id="rv-blue-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(0,48,136,.85)"/></marker></defs>`;
+        let svg = `<defs><marker id="rv-blue-arrow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(0,48,136,.85)"/></marker></defs>`;
         svg += arrowSVG(result.bestMove.slice(0,2), result.bestMove.slice(2,4), 'rgba(0,48,136,.8)', 9, 'rv-blue-arrow', boardFlippedState.get('board-r') === true);
         ov.innerHTML = svg;
       }
@@ -18161,10 +18179,10 @@ function renderMistakeBoard(idx, ex){
     const overlay = document.getElementById(overlayId);
     if(!overlay) return;
     let svg = `<defs>
-      <marker id="we-m-best-${idx}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <marker id="we-m-best-${idx}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
         <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
       </marker>
-      <marker id="we-m-bad-${idx}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <marker id="we-m-bad-${idx}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
         <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.92)"/>
       </marker>
     </defs>`;
@@ -24860,9 +24878,9 @@ function nlearnDrawBlueArrows(alternatives){
   const overlay = document.getElementById('arrow-overlay-nl');
   if(!overlay) return;
   overlay.innerHTML = `<defs>
-    <marker id="nlb-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker>
-    <marker id="nlb-2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(90,180,110,.75)"/></marker>
-    <marker id="nlb-3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(140,205,160,.55)"/></marker>
+    <marker id="nlb-1" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker>
+    <marker id="nlb-2" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(90,180,110,.75)"/></marker>
+    <marker id="nlb-3" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(140,205,160,.55)"/></marker>
   </defs>`;
   const styles = [
     { stroke:'rgba(21,120,27,.85)',  marker:'nlb-1', width:13 }, // best — bold blue
@@ -26121,22 +26139,26 @@ function olRenderLearnStep(){
   olLearnTryToken++;                       // cancel any pending wrong-move feedback
   const idx = olearn.idx;
   const state = olearn.states[idx];
+  const atEnd = idx >= olearn.sans.length;
   const hl = [];
   if(idx>0){ const mv = sanToMove(olearn.sans[idx-1], olearn.states[idx-1]); if(mv){ hl.push(mv.from, mv.to); } }
   renderBoardEl('ol-board','ol-b-ranks','ol-b-files', state, hl, null);
   // The user PLAYS the moves of THEIR side on the board; the opponent replies by itself.
   const learnerWhite = olearn.learnerWhite !== false;
   const learnerTurn = (state.turn === 'w') === learnerWhite;
-  if(idx < olearn.sans.length && learnerTurn){
+  const key = olUciKey(olearn.states, idx);
+  const pos = OL_POS[key];
+  const hasBars = !atEnd && !learnerTurn && pos && pos.m && pos.m.length;
+  if(!atEnd && learnerTurn){
     makeBoardInteractive('ol-board', state, olLearnTryMove);
   } else {
     // freeze input; if the line continues, the opponent plays after a beat
     interactiveState['ol-board'] = { from:null, dests:[], state, onMove:null };
-    if(idx < olearn.sans.length){
+    if(!atEnd){
       const tok = olLearnTryToken;
       setTimeout(() => {
         if(tok === olLearnTryToken && olearn.idx === idx){ olearn.idx++; olRenderLearnStep(); }
-      }, 950);
+      }, hasBars ? 1600 : 950);            // linger while their likely replies are on screen
     }
   }
   olSetProgress(idx, olearn.sans.length);
@@ -26145,39 +26167,44 @@ function olRenderLearnStep(){
   const explain = document.getElementById('ol-explain');
   const nextBtn = document.getElementById('ol-next');
   const popular = document.getElementById('ol-popular');
+  const notes = olearn.v && olearn.v.notes;
+  const noteFor = i => (notes && notes[i])
+    ? olEsc(notes[i]).replace(/^([\dO][^—]*—)/, '<strong>$1</strong>')
+    : olExplainMove(olearn.sans[i], i, olearn.sans, olearn.op, olearn.learnerWhite);
 
-  // explanation of the move just played (or intro at idx 0)
-  if(idx === 0){
-    badge.textContent = 'Starting position';
-    const sideName = learnerWhite ? 'White' : 'Black';
-    explain.innerHTML = `<strong>You play the ${sideName} pieces.</strong> Make ${sideName}'s moves on the board yourself — the opponent replies on its own. The <strong>popularity bars</strong> hint at the right move, and <span style="color:#c85f5f;font-weight:600">red arrows</span> mark the opponent's likely tries. Wrong move? No harm — you'll see why, then try again.`;
-  } else {
+  // badge = the move just played (or the start)
+  if(idx === 0){ badge.textContent = 'Starting position'; }
+  else {
     const san = olearn.sans[idx-1];
-    const moverWhite = ((idx-1)%2===0);
     const num = Math.floor((idx-1)/2)+1;
-    badge.textContent = moverWhite ? `${num}. ${san}` : `${num}… ${san}`;
-    // prefer the hand-written note for this ply if the variation has one
-    const notes = olearn.v && olearn.v.notes;
-    if(notes && notes[idx-1]){
-      explain.innerHTML = olEsc(notes[idx-1]).replace(/^([\dO][^—]*—)/, '<strong>$1</strong>');
-    } else {
-      explain.innerHTML = olExplainMove(san, idx-1, olearn.sans, olearn.op);
-    }
+    badge.textContent = ((idx-1)%2===0) ? `${num}. ${san}` : `${num}… ${san}`;
   }
+
+  // ── coach text (chessable-style: context → idea → explicit order) ──
+  if(atEnd){
+    explain.innerHTML = idx>0 ? noteFor(idx-1) : '';
+  } else if(learnerTurn){
+    let html = '';
+    if(idx === 0){
+      html += `<div class="ol-opp-ctx"><strong>You play the ${learnerWhite?'White':'Black'} pieces.</strong> Read the idea, then make the move on the board — wrong tries get checked by the engine and explained.</div>`;
+    } else {
+      html += `<div class="ol-opp-ctx">${noteFor(idx-1)}</div>`;
+    }
+    html += `<div>${noteFor(idx)}</div>`;
+    html += `<div class="ol-play-cmd">${olPlayCmd(olearn.sans[idx], state)}</div>`;
+    explain.innerHTML = html;
+  } else {
+    // opponent about to reply — show what just happened while they "think"
+    explain.innerHTML = idx>0 ? noteFor(idx-1)
+      : `<strong>You play the Black pieces.</strong> White opens first — watch the reply, then it's your move.`;
+  }
+
   // playing the move on the board is the main path — the button just skips ahead
-  nextBtn.textContent = idx >= olearn.sans.length ? '✓ End of variation' : 'Skip →';
+  nextBtn.textContent = atEnd ? '✓ End of variation' : 'Skip →';
   nextBtn.classList.remove('btn-gold');
   nextBtn.classList.add('btn-outline');
 
-  // ── popularity at the current position: top-3 moves ──
-  const key = olUciKey(olearn.states, idx);
-  const pos = OL_POS[key];
-  const sideToMove = state.turn === 'w' ? 'White' : 'Black';
-  // Opponent = whichever side the learner is NOT playing (course side, not first-mover)
-  const isOpponentTurn = !learnerTurn;
-
   clearArrows('ol-arrows');
-  const atEnd = idx >= olearn.sans.length;
   // Played through every move of the variation → mark it "finished"
   let finishedNote = '';
   if(atEnd && olearn.op && olearn.vIdx != null){
@@ -26194,18 +26221,21 @@ function olRenderLearnStep(){
     : '';
 
   if(atEnd){
-    // reached the end of the line: show the plan, no arrows
+    // end of the line: the plan in plain English, VISUALISED — squares it mentions
+    // glow green, "d2–f1" style manoeuvres become green arrows on the board
     popular.innerHTML = finishedNote + (planHtml || `<div class="ol-pop-title" style="color:var(--text3)">End of the line — play on with the ideas you've learned.</div>`);
-  } else if(pos && pos.m && pos.m.length){
-    // draw arrows: RED if opponent to move, gold if the side we're learning
-    const color = isOpponentTurn ? 'red' : 'main';
-    olDrawMoveArrows(pos.m, state, color);
-
-    const title = isOpponentTurn
-      ? `<span style="color:#e0706f">⬤</span> ${sideToMove}'s most likely replies:`
-      : `Most popular moves here (the lesson follows #1):`;
-    popular.innerHTML = `<div class="ol-pop-title">${title}</div>` + pos.m.map((m,i)=>{
-      const playedNext = idx < olearn.sans.length && (() => { const nm = sanToMove(olearn.sans[idx], state); return nm && (nm.from+nm.to)===m.u.slice(0,4); })();
+    if(olearn.v && olearn.v.plan) olPlanVisuals(olearn.v.plan);
+  } else if(learnerTurn){
+    // YOUR turn: no popularity bars — a green arrow shows the course move,
+    // red arrows mark what is threatened in the position right now
+    popular.innerHTML = '';
+    olGuidedArrows(state, olearn.sans[idx]);
+  } else if(hasBars){
+    // OPPONENT's turn: their most popular responses (the only place bars appear)
+    olDrawMoveArrows(pos.m, state, 'red');
+    const sideToMove = state.turn === 'w' ? 'White' : 'Black';
+    popular.innerHTML = `<div class="ol-pop-title"><span style="color:#c85f5f">⬤</span> ${sideToMove}'s most likely replies:</div>` + pos.m.map((m,i)=>{
+      const playedNext = (() => { const nm = sanToMove(olearn.sans[idx], state); return nm && (nm.from+nm.to)===m.u.slice(0,4); })();
       return `<div class="ol-pop-row ${i===0?'first':''} ${playedNext?'is-line':''}">
         <span class="ol-pop-rank">#${i+1}</span>
         <span class="ol-pop-move">${olEsc(m.san)}</span>
@@ -26214,8 +26244,89 @@ function olRenderLearnStep(){
       </div>`;
     }).join('');
   } else {
-    popular.innerHTML = planHtml || `<div class="ol-pop-title" style="color:var(--text3)">End of the database — keep playing with the ideas you've learned.</div>`;
+    popular.innerHTML = '';
   }
+}
+
+// "Play knight to f3." — the explicit order that ends every coaching card
+function olPlayCmd(san, state){
+  const s = (san||'').replace(/[+#!?]/g,'');
+  if(s === 'O-O') return 'Castle kingside.';
+  if(s === 'O-O-O') return 'Castle queenside.';
+  let mv = null; try{ mv = sanToMove(san, state); }catch(e){}
+  if(!mv) return `Play ${san}.`;
+  const names = {P:'pawn',N:'knight',B:'bishop',R:'rook',Q:'queen',K:'king'};
+  const mover = state.board[mv.from], victim = state.board[mv.to];
+  const pn = mover ? names[mover[1]] : 'piece';
+  const Pn = pn.charAt(0).toUpperCase() + pn.slice(1);
+  if(victim) return `${Pn} takes ${names[victim[1]]} on ${mv.to}.`;
+  if(/x/.test(s)) return `${Pn} takes on ${mv.to}.`;   // en passant
+  return `Play ${pn} to ${mv.to}.`;
+}
+
+// Profitable captures available on the board right now (either side): "what is threatened"
+function olFindThreats(state){
+  const out = [];
+  try{
+    for(const color of ['w','b']){
+      const st = (state.turn === color) ? state : Object.assign({}, state, { turn: color });
+      for(const sq in state.board){
+        const p = state.board[sq]; if(!p || p[0] !== color) continue;
+        let dests = []; try{ dests = legalMovesFor(st, sq) || []; }catch(e){ continue; }
+        for(const d of dests){
+          const victim = state.board[d];
+          if(!victim || victim[0] === color) continue;
+          const av = PIECE_VALUES[p[1]] || 0, vv = PIECE_VALUES[victim[1]] || 0;
+          let hangs = false; try{ hangs = isPieceHanging(state, d); }catch(e){}
+          if(vv > av || hangs) out.push({ u: sq + d, score: vv * 10 - av });
+        }
+      }
+    }
+  }catch(e){}
+  out.sort((a,b) => b.score - a.score);
+  const seen = {}, top = [];                      // one arrow per attacked square, max 2
+  for(const t of out){ const v = t.u.slice(2,4); if(seen[v]) continue; seen[v] = 1; top.push(t); if(top.length >= 2) break; }
+  return top;
+}
+
+// Learner's turn: solid lichess-green arrow on the course move, red on live threats
+function olGuidedArrows(state, san){
+  const overlay = document.getElementById('ol-arrows'); if(!overlay) return;
+  const flipped = boardFlippedState.get('ol-board') === true;
+  let mv = null; try{ mv = sanToMove(san, state); }catch(e){}
+  let svg = `<defs>
+    <marker id="olg-go" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#15781B"/></marker>
+    <marker id="olg-th" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(136,32,32,.85)"/></marker>
+  </defs>`;
+  const exp = mv ? mv.from + mv.to : '';
+  for(const t of olFindThreats(state)){
+    if(t.u.slice(0,4) === exp) continue;
+    svg += arrowSVG(t.u.slice(0,2), t.u.slice(2,4), 'rgba(136,32,32,.85)', 8, 'olg-th', flipped);
+  }
+  if(mv) svg += arrowSVG(mv.from, mv.to, '#15781B', 9, 'olg-go', flipped);
+  overlay.innerHTML = svg;
+}
+
+// End of line: highlight the squares the plan text mentions in green; draw
+// "d2–f1"-style manoeuvre patterns as green arrows — the plan, visualised.
+function olPlanVisuals(planText){
+  try{
+    const boardEl = document.getElementById('ol-board'); if(!boardEl) return;
+    const overlay = document.getElementById('ol-arrows');
+    const flipped = boardFlippedState.get('ol-board') === true;
+    const txt = String(planText || '');
+    const arrows = [];
+    const pairRe = /([a-h][1-8])\s*[–\-−→>]+\s*([a-h][1-8])/g; let m;
+    while((m = pairRe.exec(txt)) && arrows.length < 4) arrows.push([m[1], m[2]]);
+    const inArrows = {}; arrows.forEach(a => { inArrows[a[0]] = 1; inArrows[a[1]] = 1; });
+    const sqs = [...new Set(txt.match(/\b[a-h][1-8]\b/g) || [])].filter(s => !inArrows[s]).slice(0, 6);
+    sqs.forEach(s => { const el = boardEl.querySelector(`[data-sq="${s}"]`); if(el) el.classList.add('hl-plan'); });
+    if(overlay && arrows.length){
+      let svg = `<defs><marker id="olg-plan" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#15781B"/></marker></defs>`;
+      arrows.forEach(a => { svg += arrowSVG(a[0], a[1], '#15781B', 9, 'olg-plan', flipped); });
+      overlay.innerHTML = svg;
+    }
+  }catch(e){}
 }
 
 // Draw arrows for a list of {u: uci} moves. color: 'red' | 'green' | 'main'
@@ -26228,11 +26339,11 @@ function olDrawMoveArrows(moves, state, color, overlayId){
     green: ['rgba(21,120,27,.85)','rgba(21,120,27,.55)','rgba(21,120,27,.4)'],
     main:  ['rgba(21,120,27,.85)','rgba(21,120,27,.5)','rgba(21,120,27,.35)'],
   }[color] || ['rgba(246,218,90,.9)'];
-  const widths = [12,8,5];
+  const widths = [9,9,9];        // lichess: rank shown by opacity, not thickness
   const boardId = overlayId==='ol-arrows' ? 'ol-board' : 'old-board';
   const flipped = boardFlippedState.get(boardId) === true;
   let defs = '<defs>';
-  palette.forEach((c,i)=>{ defs += `<marker id="${overlayId}-m${i}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`; });
+  palette.forEach((c,i)=>{ defs += `<marker id="${overlayId}-m${i}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`; });
   defs += '</defs>';
   let svg = defs;
   moves.slice(0,3).forEach((m,i)=>{
@@ -26895,7 +27006,7 @@ function explDrawArrows(alts){
   const widths = [13,8,6];
   const flipped = isBoardFlipped('expl-board');
   let defs = '<defs>';
-  palette.forEach((c,i)=>{ defs += `<marker id="expla-m${i}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`; });
+  palette.forEach((c,i)=>{ defs += `<marker id="expla-m${i}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`; });
   defs += '</defs>';
   let svg = defs;
   alts.slice(0,3).forEach((a,i)=>{
@@ -27144,7 +27255,7 @@ function revRender(){
   const children = rev.node.children || [];
   if(overlay){
     const flipped = isBoardFlipped('rev-board');
-    let svg = `<defs><marker id="revb-m" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.85)"/></marker></defs>`;
+    let svg = `<defs><marker id="revb-m" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.85)"/></marker></defs>`;
     children.forEach(ch => {
       const u = ch.uci; if(!u||u.length<4) return;
       const from=u.slice(0,2), to=u.slice(2,4);
@@ -27304,7 +27415,7 @@ function rtrainUserMove(from, to, newState, san){
       const p1=squareToSVG(from2,flipped), p2=squareToSVG(to2,flipped);
       const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
       const ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
-      overlay.innerHTML = `<defs><marker id="rtok" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(239,157,43,.9)" stroke-width="12" stroke-linecap="round" marker-end="url(#rtok)"/>`;
+      overlay.innerHTML = `<defs><marker id="rtok" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(239,157,43,.9)" stroke-width="12" stroke-linecap="round" marker-end="url(#rtok)"/>`;
     }
     // re-render board at the position (undo wrong move) and show the correct move highlighted
     renderBoardEl('rt-board','rt-ranks','rt-files', rtrain.curState, [], null);
@@ -27710,7 +27821,7 @@ function acadDrawArrow(overlayId, boardId, uci, color){
   const flipped=isBoardFlipped(boardId);
   const p1=squareToSVG(from,flipped), p2=squareToSVG(to,flipped);
   const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1, ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
-  ov.innerHTML=`<defs><marker id="${overlayId}-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${overlayId}-mk)"/>`;
+  ov.innerHTML=`<defs><marker id="${overlayId}-mk" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${overlayId}-mk)"/>`;
 }
 function acadFinishLesson(){
   acadMarkDone(alesson.step.id, null);
@@ -28628,7 +28739,7 @@ function ccDrawArrows(arrows){
   });
   ov.innerHTML=svg;
 }
-function ccArrow(uci,color){ const ov=document.getElementById('cc-arrows'); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped('cc-board'); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="cc-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="11" stroke-linecap="round" marker-end="url(#cc-mk)"/>`; }
+function ccArrow(uci,color){ const ov=document.getElementById('cc-arrows'); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped('cc-board'); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="cc-mk" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="11" stroke-linecap="round" marker-end="url(#cc-mk)"/>`; }
 
 // ── Explorer: live Lichess stats (token via server) OR offline book fallback ──
 let CC_BOOK = null;
@@ -28840,7 +28951,7 @@ function ccTrainMove(from,to,ns,san){
     setTimeout(()=>{ if(ccTrain){ ccTrain.i++; ccRenderTrain(); } },1200);
   }
 }
-function ccArrowOn(ovId,boardId,uci,color){ const ov=document.getElementById(ovId); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped(boardId); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="${ovId}-mk" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${ovId}-mk)"/>`; }
+function ccArrowOn(ovId,boardId,uci,color){ const ov=document.getElementById(ovId); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped(boardId); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="${ovId}-mk" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${ovId}-mk)"/>`; }
 function ccTrainResults(){
   const ws=document.getElementById('cc-workspace');
   const total=ccTrain.tests.length, acc=total?Math.round(100*ccTrain.correct/total):0;
