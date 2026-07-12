@@ -78,11 +78,11 @@ input::placeholder{color:var(--text3)}
 .sq{width:56px;height:56px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all .1s}
 .sq.light{background:var(--ws)}
 .sq.dark{background:var(--bs)}
-.sq.hl-from{background-color:rgba(245,221,80,.62)!important;z-index:2}
+.sq.hl-from{background-color:rgba(155,199,0,.41)!important;z-index:2}
 .sq.hl-to{background-color:rgba(245,221,80,.62)!important;z-index:2}
-.sq.hl-last{background-color:rgba(245,221,80,.62)!important}
-.sq.can-move::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(20,20,20,.16) 0 16%,transparent 17%);pointer-events:none;z-index:1}
-.sq.can-capture::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,transparent 0 77%,rgba(20,20,20,.16) 78%);pointer-events:none;z-index:1}
+.sq.hl-last{background-color:rgba(155,199,0,.41)!important}
+.sq.can-move::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(20,85,30,.5) 0 16%,transparent 17%);pointer-events:none;z-index:1}
+.sq.can-capture::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,transparent 0 77%,rgba(20,85,30,.5) 78%);pointer-events:none;z-index:1}
 .piece{width:84%;height:84%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));position:relative;z-index:3;transition:transform .1s;pointer-events:none}
 .piece svg{width:100%;height:100%;display:block}
 .piece:hover{transform:scale(1.06)}
@@ -358,12 +358,12 @@ input::placeholder{color:var(--text3)}
 
 
   /* ── INTERACTIVE BOARD HIGHLIGHTS ── */
-  .sq.hl-sel{background-color:rgba(245,221,80,.62) !important}
+  .sq.hl-sel{background-color:rgba(20,85,30,.5) !important}
   .sq.hl-dest{cursor:pointer}
   .sq.hl-cap{cursor:pointer}
   .sq:hover .piece{cursor:pointer}
-  .legal-dot{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,rgba(20,20,20,.16) 0 16%,transparent 17%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
-  .legal-cap{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,transparent 0 77%,rgba(20,20,20,.16) 78%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
+  .legal-dot{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,rgba(20,85,30,.5) 0 16%,transparent 17%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
+  .legal-cap{position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(circle,transparent 0 77%,rgba(20,85,30,.5) 78%);pointer-events:none;z-index:2;animation:fadeIn .15s;box-sizing:border-box}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   .sq{position:relative}
 
@@ -1535,7 +1535,7 @@ input:focus, select:focus, textarea:focus {
   .branch-block{
     margin:6px 8px 8px 36px;
     padding:8px 10px;
-    border-left:2px solid rgba(239,157,43,.55);
+    border-left:2px solid rgba(21,120,27,.4);
     background:rgba(212,175,55,.05);
     border-radius:0 6px 6px 0;
   }
@@ -2927,7 +2927,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 .piece{ filter:drop-shadow(0 1px 1px rgba(23,24,26,.14)) !important }
 .sq.light{ background-image:linear-gradient(150deg, rgba(255,255,255,.10), transparent 55%) }
 .sq.dark{ background-image:linear-gradient(150deg, rgba(255,255,255,.06), transparent 55%) }
-#arrow-overlay-r, #arrow-overlay-o, #arrow-overlay-nl{ filter:drop-shadow(0 0 5px rgba(239,157,43,.55)) }
+#arrow-overlay-r, #arrow-overlay-o, #arrow-overlay-nl{ filter:drop-shadow(0 0 5px rgba(21,120,27,.4)) }
 #cosmos{ background:
   radial-gradient(1300px 850px at 80% -14%, rgba(70,100,235,.22), transparent 60%),
   radial-gradient(1100px 950px at 6% 110%, rgba(40,170,210,.16), transparent 58%),
@@ -3129,7 +3129,7 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
   --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.15);
   --gold:#d4af37; --gold2:#e8c75a; --gold3:rgba(212,175,55,.13); --gold-glow:rgba(212,175,55,.30);
   --ws:#E8DCC4; --bs:#A67C55;
-  --ease:cubic-bezier(.22,1,.36,1); --arrow:#ef9d2b;
+  --ease:cubic-bezier(.22,1,.36,1); --arrow:#15781B;
 }
 html,body{ background:var(--bg) !important; color:var(--text); }
 body{ font-family:'Satoshi','Satoshi',sans-serif; }
@@ -3190,7 +3190,7 @@ body{ padding-top:90px; }
 .sq.dark{ background:var(--bs); }
 .piece{ filter:drop-shadow(0 1px 1px rgba(23,24,26,.14)) !important; }
 /* last-move / selected highlight = warm yellow (matches the reference board) */
-.sq.hl-last, .sq.sel, .sq.highlight{ box-shadow:inset 0 0 0 9999px rgba(243,221,80,.45) !important; }
+.sq.hl-last, .sq.sel, .sq.highlight{ box-shadow:inset 0 0 0 9999px rgba(155,199,0,.41) !important; }
 #arrow-overlay-r,#arrow-overlay-o,#arrow-overlay-nl,#arrow-overlay-q,#arrow-overlay-l{
   filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));
 }
@@ -5207,7 +5207,7 @@ function renderBoardEl(boardId, ranksId, filesId, state, highlights = [], fromSq
 // (lichess/chess.com style). Works on any board element by id.
 // ════════════════════════════════════════════════════════
 const boardAnnotations = new Map();   // boardId -> { arrows:[{from,to,color}], squares:{sq:color} }
-const ANNOT_DEFAULT = 'rgba(239,157,43,.85)';   // orange (matches the theme)
+const ANNOT_DEFAULT = 'rgba(21,120,27,.8)';   // orange (matches the theme)
 function annotState(boardId){ if(!boardAnnotations.has(boardId)) boardAnnotations.set(boardId,{arrows:[],squares:{}}); return boardAnnotations.get(boardId); }
 
 function makeBoardAnnotatable(boardId){
@@ -5242,7 +5242,7 @@ function makeBoardAnnotatable(boardId){
     const to=sqFromEvent(e);
     if(!dragFrom||!to){ dragFrom=null; return; }
     const st=annotState(boardId);
-    const color = e.shiftKey ? 'rgba(224,85,106,.8)' : (e.ctrlKey||e.altKey ? 'rgba(239,157,43,.8)' : ANNOT_DEFAULT);
+    const color = e.shiftKey ? 'rgba(136,32,32,.8)' : (e.ctrlKey||e.altKey ? 'rgba(0,48,136,.8)' : ANNOT_DEFAULT);
     if(dragFrom===to){
       // toggle square highlight
       if(st.squares[to]) delete st.squares[to]; else st.squares[to]=color;
@@ -10406,24 +10406,24 @@ function drawAnalysisArrows(overlayId, alternatives){
   // The eye can instantly tell which arrow is the engine's TOP choice.
   overlay.innerHTML += `<defs>
     <marker id="ah-best" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.98)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
     <marker id="ah-alt1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(242,180,90,.90)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.75)"/>
     </marker>
     <marker id="ah-alt2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(245,196,128,.80)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.55)"/>
     </marker>
     <marker id="ah-alt3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(190,225,190,.60)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.35)"/>
     </marker>
   </defs>`;
 
   const colors = [
-    {stroke: 'rgba(239,157,43,.95)',   marker: 'ah-best', width: 13},  // best — deep green
-    {stroke: 'rgba(242,180,90,.85)',   marker: 'ah-alt1', width: 8},   // 2nd — medium green
-    {stroke: 'rgba(245,196,128,.72)', marker: 'ah-alt2', width: 5},   // 3rd — light green
-    {stroke: 'rgba(190,225,190,.55)', marker: 'ah-alt3', width: 3},   // 4th — pale green (quiz only)
+    {stroke: 'rgba(21,120,27,.9)',   marker: 'ah-best', width: 13},  // best — deep green
+    {stroke: 'rgba(21,120,27,.7)',   marker: 'ah-alt1', width: 8},   // 2nd — medium green
+    {stroke: 'rgba(21,120,27,.5)', marker: 'ah-alt2', width: 5},   // 3rd — light green
+    {stroke: 'rgba(21,120,27,.3)', marker: 'ah-alt3', width: 3},   // 4th — pale green (quiz only)
   ];
 
   let drawn = 0;
@@ -12797,7 +12797,7 @@ window.selectReviewMove = function(idx){
         <div class="learn-loss">Lost <strong>${lossStr} pawns</strong> of advantage by missing this</div>
         <div style="display:flex;gap:14px;justify-content:center;font-size:11px;color:var(--text3);margin:4px 0 8px;font-family:'DM Mono',monospace">
           <span><span style="color:rgba(220,80,80,1)">→</span> Your move</span>
-          <span><span style="color:rgba(246,218,90,1)">→</span> Engine's recommendation</span>
+          <span><span style="color:rgb(21,120,27)">→</span> Engine's recommendation</span>
         </div>
         ${pvSAN ? `<div class="learn-line"><span class="ll-label">Best line:</span>${pvSAN}</div>` : ''}
         <div class="learn-lesson" id="${lessonId}">${lesson}</div>
@@ -13021,7 +13021,7 @@ function drawReviewArrows(ann, idx){
   //   - For best/brilliant/good: GREEN (the move played WAS effectively the engine's recommendation,
   //     or close enough — the green arrow confirms "this was the right idea")
   //   - For sub-best (inaccuracy/mistake/blunder): YELLOW, to contrast with the red user-move arrow
-  const bestColor = isSubBest ? 'rgba(246,218,90,.95)' : 'rgba(212,175,55,.95)';
+  const bestColor = isSubBest ? 'rgba(21,120,27,.9)' : 'rgba(21,120,27,.9)';
   const bestMarkerId = isSubBest ? 'ah-best-yellow' : 'ah-best-green';
 
   // Get the user's actual move
@@ -13035,10 +13035,10 @@ function drawReviewArrows(ann, idx){
 
   let svg = `<defs>
     <marker id="ah-best-green" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(212,175,55,.95)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
     </marker>
     <marker id="ah-best-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(246,218,90,.95)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
     </marker>
     <marker id="ah-bad" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.85)"/>
@@ -13081,7 +13081,7 @@ function drawQuizArrows(theoryMoveUCI, userMoveUCI){
   if(!overlay){ return; }
   let svg = `<defs>
     <marker id="qz-ah-best" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.98)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
     <marker id="qz-ah-bad" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
       <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.9)"/>
@@ -13095,7 +13095,7 @@ function drawQuizArrows(theoryMoveUCI, userMoveUCI){
   // Theory move in green
   if(theoryMoveUCI && theoryMoveUCI.length >= 4){
     svg += arrowSVG(theoryMoveUCI.slice(0,2), theoryMoveUCI.slice(2,4),
-                    'rgba(239,157,43,.98)', 11, 'qz-ah-best');
+                    'rgba(21,120,27,.95)', 11, 'qz-ah-best');
   }
   overlay.innerHTML = svg;
 }
@@ -13108,10 +13108,10 @@ function drawAllCandidateArrows(q, playedMove){
   if(!overlay) return;
   let svg = `<defs>
     <marker id="qzc-main" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.98)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
     <marker id="qzc-alt" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(245,196,128,.90)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.6)"/>
     </marker>
   </defs>`;
   // All candidates: q.correct + q.alsoOK
@@ -13121,7 +13121,7 @@ function drawAllCandidateArrows(q, playedMove){
     if(!uci || uci.length < 4) continue;
     const base = uci.toLowerCase().replace(/[+#x!?=]/g, '');
     const isPlayedMove = base === playedLower || base === playedLower + 'q';
-    const colour = isPlayedMove ? 'rgba(239,157,43,.98)' : 'rgba(245,196,128,.80)';
+    const colour = isPlayedMove ? 'rgba(21,120,27,.95)' : 'rgba(21,120,27,.55)';
     const width = isPlayedMove ? 11 : 7;
     const markerId = isPlayedMove ? 'qzc-main' : 'qzc-alt';
     svg += arrowSVG(uci.slice(0,2), uci.slice(2,4), colour, width, markerId);
@@ -13150,7 +13150,7 @@ function drawSingleArrow(uciMove){
   overlay.innerHTML = `
     <defs>
       <marker id="ah-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(246,218,90,.95)"/>
+        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
       </marker>
     </defs>
     <line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="rgba(246,218,90,.9)" stroke-width="10" stroke-linecap="round" marker-end="url(#ah-yellow)" />`;
@@ -13305,8 +13305,8 @@ function renderReviewBoard(){
     }
     // Green arrow for best move
     if(displayedBestUCI && /^[a-h][1-8][a-h][1-8]/.test(displayedBestUCI)){
-      let svg = `<defs><marker id="rv-best-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.98)"/></marker></defs>`;
-      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(212,175,55,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
+      let svg = `<defs><marker id="rv-best-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/></marker></defs>`;
+      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(21,120,27,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
       if(overlay) overlay.innerHTML = svg;
     }
   }
@@ -13342,10 +13342,10 @@ function drawBestMoveArrow(idx){
   // Build SVG with green arrow + arrowhead marker
   let svg = `<defs>
     <marker id="rv-best-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.98)"/>
+      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
   </defs>`;
-  svg += arrowSVG(bestFrom, bestTo, 'rgba(212,175,55,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
+  svg += arrowSVG(bestFrom, bestTo, 'rgba(21,120,27,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
   overlay.innerHTML = svg;
 }
 
@@ -13672,8 +13672,8 @@ function triggerEngineAnalysisR(state){
     if(viewingBranch && result.bestMove && /^[a-h][1-8][a-h][1-8]/.test(result.bestMove)){
       const ov = document.getElementById('arrow-overlay-r');
       if(ov){
-        let svg = `<defs><marker id="rv-blue-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.95)"/></marker></defs>`;
-        svg += arrowSVG(result.bestMove.slice(0,2), result.bestMove.slice(2,4), 'rgba(239,157,43,.88)', 9, 'rv-blue-arrow', boardFlippedState.get('board-r') === true);
+        let svg = `<defs><marker id="rv-blue-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(0,48,136,.85)"/></marker></defs>`;
+        svg += arrowSVG(result.bestMove.slice(0,2), result.bestMove.slice(2,4), 'rgba(0,48,136,.8)', 9, 'rv-blue-arrow', boardFlippedState.get('board-r') === true);
         ov.innerHTML = svg;
       }
     }
@@ -18162,7 +18162,7 @@ function renderMistakeBoard(idx, ex){
     if(!overlay) return;
     let svg = `<defs>
       <marker id="we-m-best-${idx}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.98)"/>
+        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
       </marker>
       <marker id="we-m-bad-${idx}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
         <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.92)"/>
@@ -18174,7 +18174,7 @@ function renderMistakeBoard(idx, ex){
     }
     // Green arrow for engine's recommendation (drawn on top)
     if(ex.bestFrom && ex.bestTo){
-      svg += arrowSVG(ex.bestFrom, ex.bestTo, 'rgba(239,157,43,.98)', 11, `we-m-best-${idx}`);
+      svg += arrowSVG(ex.bestFrom, ex.bestTo, 'rgba(21,120,27,.95)', 11, `we-m-best-${idx}`);
     }
     overlay.innerHTML = svg;
   } catch(e){
@@ -24860,12 +24860,12 @@ function nlearnDrawBlueArrows(alternatives){
   const overlay = document.getElementById('arrow-overlay-nl');
   if(!overlay) return;
   overlay.innerHTML = `<defs>
-    <marker id="nlb-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.95)"/></marker>
+    <marker id="nlb-1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker>
     <marker id="nlb-2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(90,180,110,.75)"/></marker>
     <marker id="nlb-3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(140,205,160,.55)"/></marker>
   </defs>`;
   const styles = [
-    { stroke:'rgba(239,157,43,.92)',  marker:'nlb-1', width:13 }, // best — bold blue
+    { stroke:'rgba(21,120,27,.85)',  marker:'nlb-1', width:13 }, // best — bold blue
     { stroke:'rgba(90,180,110,.70)',  marker:'nlb-2', width:8  }, // 2nd — medium blue
     { stroke:'rgba(140,205,160,.52)', marker:'nlb-3', width:5  }, // 3rd — light blue
   ];
@@ -25689,11 +25689,16 @@ function olGeneratePlans(op, base){
 // picked deterministically from the move itself so the text is stable per position
 // but never reads like the same template twice in a row.
 function olSeed(s, ply){ let h = ply * 7; for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i))|0; return Math.abs(h); }
-function olExplainMove(san, ply, sansList, op){
+// Voice: the text always speaks TO the learner. Their own moves are "you";
+// the opponent's moves are narrated ("White plays…") with the fallout framed for the learner.
+function olExplainMove(san, ply, sansList, op, learnerWhite){
   const s = (san||'').replace(/[+#!?]/g,'');
   const moverWhite = (ply % 2 === 0);
-  const who = moverWhite ? 'White' : 'Black';
-  const them = moverWhite ? 'Black' : 'White';
+  const youWhite = (learnerWhite === undefined || learnerWhite === null)
+    ? ((typeof olearn !== 'undefined' && olearn && olearn.op === op && olearn.learnerWhite !== undefined) ? olearn.learnerWhite : olLearnerWhite(op))
+    : learnerWhite;
+  const isYou = moverWhite === youWhite;
+  const opp = moverWhite ? 'White' : 'Black';      // name of the mover when it ISN'T you
   const dest = s.match(/([a-h][1-8])(?:=[QRBN])?$/);
   const destSq = dest ? dest[1] : null;
   const isCapture = /x/.test(s);
@@ -25701,91 +25706,125 @@ function olExplainMove(san, ply, sansList, op){
   const castleK = s==='O-O', castleQ = s==='O-O-O';
   const seed = olSeed(s, ply);
   const pick = arr => arr[seed % arr.length];
-  // did the opponent just capture on this same square? → this is the recapture
   const prev = (sansList && sansList[ply-1]) || '';
   const isRecapture = isCapture && /x/.test(prev) && prev.replace(/[+#!?]/g,'').slice(-2) === destSq;
   let txt = '';
 
   if(castleK){
-    txt = pick([
-      `<strong>Castles kingside.</strong> The king grabs his coat and moves to the suburbs — three pawns for a fence, a rook for a neighbour. With the address sorted, ${who} can start making threats instead of excuses.`,
-      `<strong>Castles kingside.</strong> Two problems solved with one move: the king is out of the firing line and the rook finally joins the conversation. This is the moment ${who}'s position becomes fully operational.`,
-      `<strong>Castles kingside.</strong> Safety first — but it's a greedy kind of safety. A castled king means every ${who} piece can commit to the fight without leaving anyone home to babysit.`,
+    txt = isYou ? pick([
+      `<strong>Castle kingside.</strong> Your king grabs his coat and moves to the suburbs — three pawns for a fence, a rook for a neighbour. With the address sorted, you can start making threats instead of excuses.`,
+      `<strong>Castle kingside.</strong> Two problems solved with one move: your king is out of the firing line and your rook finally joins the conversation. Your position is now fully operational.`,
+      `<strong>Castle kingside.</strong> Safety first — but it's a greedy kind of safety. With the king castled, every one of your pieces can commit to the fight without leaving anyone home to babysit.`,
+    ]) : pick([
+      `<strong>${opp} castles kingside.</strong> The king is tucked away, so cheap threats against it stop working. Your plans should now aim at something sturdier than a quick knockout.`,
+      `<strong>${opp} castles kingside.</strong> King safe, rook connected — the standard paperwork. Note WHERE the king lives now: that corner is the long-term target for your attack.`,
     ]);
   } else if(castleQ){
-    txt = pick([
-      `<strong>Castles queenside.</strong> The bold address. The king ducks left, the rook lands on a centre file instantly — and the kingside pawns are now free to charge like they've got nothing to lose. Expect fireworks.`,
-      `<strong>Castles queenside.</strong> ${who} castles long, which is chess for "I'm attacking, and I've brought luggage." The rook arrives on the d-file already working; the g- and h-pawns are cleared to storm.`,
-      `<strong>Castles queenside.</strong> Opposite-side castling usually means both players race to checkmate first. ${who} just picked the fast lane — count on pawns being hurled at both kings from here.`,
+    txt = isYou ? pick([
+      `<strong>Castle queenside.</strong> The bold address. Your king ducks left, your rook lands on a centre file instantly — and your kingside pawns are free to charge like they've got nothing to lose. Expect fireworks.`,
+      `<strong>Castle queenside.</strong> Castling long is chess for "I'm attacking, and I've brought luggage." Your rook arrives already working; your g- and h-pawns are cleared to storm.`,
+    ]) : pick([
+      `<strong>${opp} castles queenside.</strong> That's a declaration of war — opposite-side castling means both players race to checkmate first. Start pushing pawns at that king before theirs reach yours.`,
+      `<strong>${opp} castles long.</strong> The king went the other way, which usually promises a pawn storm against you. The good news: their king is now a fixed target for YOUR pawns too. It's a race — run.`,
     ]);
   } else if(/^[NBRQK]/.test(s)){
     const piece = OL_PIECE_NAME[s[0]];
     const role = destSq && OL_SQUARE_ROLE[destSq] ? OL_SQUARE_ROLE[destSq] : null;
     if(isCapture && isRecapture){
-      txt = pick([
-        `<strong>${piece} takes back on ${destSq}.</strong> The polite reply — material stays level and the ${piece} often lands on a better square than the one it left. Always check which recapture improves your position most; this one does.`,
-        `<strong>Recaptures on ${destSq}.</strong> No drama, just bookkeeping: ${who} restores the material balance. The interesting part is WHAT recaptures — here the ${piece} takes because it ends up doing the most useful work afterward.`,
-        `<strong>${piece} recaptures on ${destSq}.</strong> An even trade on the surface, but notice the small print: the ${piece} now sits more actively than before. Good players win these tiny fractions on every exchange.`,
+      txt = isYou ? pick([
+        `<strong>Take back on ${destSq}.</strong> The polite reply — material stays level, and your ${piece} often lands on a better square than the one it left. Always ask which recapture improves your position most; this one does.`,
+        `<strong>Recapture on ${destSq}.</strong> No drama, just bookkeeping — but notice WHAT recaptures. Here the ${piece} takes because it ends up doing the most useful work afterward. Tiny fractions like this add up to whole points.`,
+      ]) : pick([
+        `<strong>${opp} recaptures on ${destSq}.</strong> Material is level again. What matters for you is the new shape of the position — check which files just opened and whether your pieces can use them first.`,
+        `<strong>${opp} takes back on ${destSq}.</strong> The expected reply. Look closely at where that ${piece} now stands — if it's suddenly active, part of your job is making sure it doesn't stay comfortable.`,
       ]);
     } else if(isCapture){
-      txt = pick([
-        `<strong>${piece} takes on ${destSq}.</strong> ${who} cashes in. Before every capture, ask the shopkeeper's questions: what does it cost, what recaptures, and who's happier after the dust settles? Here the answers all favour ${who}.`,
-        `<strong>${piece} takes on ${destSq}.</strong> A capture with a purpose — it ${ply<12?'fights for the centre and forces '+them+' to make a structural decision':'damages '+them+"'s coordination and clarifies the position on "+who+"'s terms"}.`,
-        `<strong>${piece} captures on ${destSq}.</strong> Chess is a barter economy and ${who} just made a trade that helps the plan. Watch how the recapture shapes ${them}'s pawns — that's the real price tag on this deal.`,
+      txt = isYou ? pick([
+        `<strong>${piece} takes on ${destSq}.</strong> Cash in. Before every capture, ask the shopkeeper's questions: what does it cost, what recaptures, and who's happier after the dust settles? Here the answers all favour you.`,
+        `<strong>${piece} takes on ${destSq}.</strong> A capture with a purpose — it ${ply<12?'fights for the centre and forces the opponent into a structural decision':'damages the opponent’s coordination and clarifies the position on your terms'}.`,
+      ]) : pick([
+        `<strong>${opp} takes on ${destSq}.</strong> Don't just recapture on autopilot — check every way to take back (and whether a zwischenzug is better). The course move shows the recapture that keeps your position healthiest.`,
+        `<strong>${opp} captures on ${destSq}.</strong> A trade offer. The question isn't whether you can take back — it's which recapture leaves your structure and pieces happiest. That's what the next move settles.`,
       ]);
     } else if(ply < 10){
-      txt = pick([
-        `<strong>Develops the ${piece} to ${destSq}.</strong> Pieces win games from the middle of the board, not the back rank. The ${piece} clocks in${role?`, eyeing ${role},`:''} and ${who} is one move closer to castling — the opening checklist, ticked in order.`,
-        `<strong>${piece} to ${destSq}.</strong> Simple, honest development: the ${piece} takes its best square${role?` and points at ${role}`:''}. In the opening, the player who gets everyone to work first usually gets to boss the middlegame.`,
-        `<strong>${piece} out to ${destSq}.</strong> No tricks, just good manners — every piece developed is a promise you can keep later. ${role?`From here it watches ${role}, which`:'It now controls squares that'} will matter very soon.`,
+      txt = isYou ? pick([
+        `<strong>Develop the ${piece} to ${destSq}.</strong> Pieces win games from the middle of the board, not the back rank. Your ${piece} clocks in${role?`, eyeing ${role},`:''} and you're one move closer to castling — the opening checklist, ticked in order.`,
+        `<strong>${piece} to ${destSq}.</strong> Simple, honest development: the ${piece} takes its best square${role?` and points at ${role}`:''}. Get everyone to work first and you get to boss the middlegame around.`,
+        `<strong>${piece} out to ${destSq}.</strong> No tricks, just good manners — every piece you develop is a promise you can keep later. ${role?`From here it watches ${role}, which`:'It now controls squares that'} will matter very soon.`,
+      ]) : pick([
+        `<strong>${opp} develops the ${piece} to ${destSq}.</strong> Normal, sensible development${role?` toward ${role}`:''}. Nothing to panic about — but notice which squares that ${piece} eyes, because your setup has to respect them.`,
+        `<strong>${opp} brings the ${piece} to ${destSq}.</strong> The opponent follows the same rules you do: develop, castle, argue later. ${role?`That ${piece} looks at ${role} — factor it into your plan.`:'Keep developing; falling behind here is how good positions go bad.'}`,
       ]);
     } else {
-      txt = pick([
-        `<strong>${piece} to ${destSq}.</strong> A quiet upgrade. ${who} spots the laziest piece on the payroll and gives it a better job${role?` near ${role}`:''}. Middlegame mastery is mostly this: small promotions for underperforming staff.`,
-        `<strong>${piece} to ${destSq}.</strong> Repositioning with intent — the ${piece} wasn't doing enough where it stood, and ${destSq} is where the action is heading. Strong players move pieces to where the game WILL be, not where it was.`,
-        `<strong>${piece} slides to ${destSq}.</strong> Not flashy, extremely useful. ${who} improves the ${piece}'s scope${role?` toward ${role}`:''} and keeps the tension. Positions are won by a hundred of these before anyone shouts "tactic".`,
+      txt = isYou ? pick([
+        `<strong>${piece} to ${destSq}.</strong> A quiet upgrade. Find the laziest piece on your payroll and give it a better job${role?` near ${role}`:''} — middlegame mastery is mostly small promotions for underperforming staff.`,
+        `<strong>${piece} to ${destSq}.</strong> Repositioning with intent — the ${piece} wasn't doing enough where it stood, and ${destSq} is where the action is heading. Move pieces to where the game WILL be, not where it was.`,
+      ]) : pick([
+        `<strong>${opp} improves the ${piece} to ${destSq}.</strong> A quiet regrouping move. Ask yourself what that ${piece} wants to do two moves from now — spotting the plan early is half of defending against it.`,
+        `<strong>${opp} shifts the ${piece} to ${destSq}.</strong> Not a threat yet, but pieces don't travel without a reason. The course's reply keeps your position solid while the opponent reorganises.`,
       ]);
     }
-    if(isCheck) txt += ` And it lands with <strong>check</strong> — ${them} doesn't get a vote on what happens next.`;
+    if(isCheck) txt += isYou
+      ? ` And it lands with <strong>check</strong> — the opponent doesn't get a vote on what happens next.`
+      : ` It comes with <strong>check</strong>, so you must deal with it before anything else.`;
   } else {
     if(isCapture && isRecapture){
-      txt = pick([
-        `<strong>Pawn takes back on ${destSq}.</strong> Balance restored — but look at the new pawn shape. Recaptures like this quietly decide which files open, and open files are where rooks make their living.`,
-        `<strong>Recaptures with the pawn on ${destSq}.</strong> The structure shifts: a file half-opens and a new pawn duty roster is posted. ${who}'s rooks should already be circling the fresh open lines.`,
+      txt = isYou ? pick([
+        `<strong>Take back with the pawn on ${destSq}.</strong> Balance restored — but look at your new pawn shape. Recaptures like this quietly decide which files open, and open files are where your rooks make their living.`,
+        `<strong>Pawn takes back on ${destSq}.</strong> The structure shifts: a file half-opens and a new pawn duty roster is posted. Get your rooks circling the fresh open lines.`,
+      ]) : pick([
+        `<strong>${opp} recaptures with the pawn on ${destSq}.</strong> The structure just changed for good. Read the new pawn skeleton — it tells you where your play is and where it isn't.`,
       ]);
     } else if(isCapture){
-      txt = pick([
-        `<strong>Pawn takes on ${destSq}.</strong> Pawns can't retreat and neither can this decision — pawn captures are permanent renovations, not redecorating. This one ${ply<12?`opens lines exactly where ${who} wants them`:`reshapes the structure to fit ${who}'s plan`}.`,
-        `<strong>Pawn captures on ${destSq}.</strong> The cheapest piece just made the most lasting change on the board. Structure is destiny in chess, and ${who} just signed the paperwork.`,
+      txt = isYou ? pick([
+        `<strong>Pawn takes on ${destSq}.</strong> Pawns can't retreat and neither can this decision — pawn captures are permanent renovations, not redecorating. This one ${ply<12?'opens lines exactly where you want them':'reshapes the structure to fit your plan'}.`,
+        `<strong>Pawn takes on ${destSq}.</strong> The cheapest piece just made the most lasting change on the board. Structure is destiny in chess, and you just signed the paperwork — on your terms.`,
+      ]) : pick([
+        `<strong>${opp} takes on ${destSq}.</strong> A permanent change to the structure. Before recapturing, take one breath and check the options — the right recapture here is what the lesson plays next.`,
+        `<strong>${opp} captures on ${destSq}.</strong> The opponent commits the structure. Whatever recaptures decides which lines open — the course reply picks the one that suits YOUR pieces.`,
       ]);
     } else if(['e4','d4','e5','d5','c4','c5'].includes(s)){
-      txt = pick([
-        `<strong>${s} — stakes a claim in the centre.</strong> The centre is the high ground of chess: pawns there feed your pieces and starve ${them}'s. Every opening argument starts with who owns these squares.`,
-        `<strong>${s} — centre, immediately.</strong> ${who} plants a flag where it matters most. Central pawns are like good real estate — they pay rent every single move by cramping ${them} and freeing your own pieces.`,
-        `<strong>${s}.</strong> The classical move order of business: occupy the centre first, argue later. This pawn gives ${who}'s pieces room to breathe and ${them}'s pieces a smaller apartment.`,
+      txt = isYou ? pick([
+        `<strong>${s} — stake your claim in the centre.</strong> The centre is the high ground of chess: your pawns there feed your pieces and starve the opponent's. Every opening argument starts with who owns these squares.`,
+        `<strong>${s} — centre, immediately.</strong> Plant the flag where it matters most. Central pawns are good real estate — they pay rent every move by cramping the opponent and freeing your own pieces.`,
+        `<strong>${s}.</strong> The classical order of business: occupy the centre first, argue later. This pawn gives your pieces room to breathe and the opponent's a smaller apartment.`,
+      ]) : pick([
+        `<strong>${opp} plays ${s}, claiming the centre.</strong> Expected — everyone wants the high ground. Your opening's whole point is the answer to this: contest those squares on your own terms, not theirs.`,
+        `<strong>${opp} grabs centre space with ${s}.</strong> Let them have the square, not the argument. Your setup strikes back at the centre in a way that suits your pieces — that's exactly where this line is going.`,
       ]);
     } else if(['g6','b6','g3','b3'].includes(s)){
-      txt = pick([
-        `<strong>${s} — the fianchetto is coming.</strong> ${who} opens the long diagonal so the bishop can move into the corner office — modest address, enormous view. From there it will stare across the whole board for the rest of the game.`,
-        `<strong>${s} — preparing to fianchetto.</strong> One pawn step, one huge diagonal. The bishop heading to this wing will influence the centre from a distance, like artillery that never has to relocate.`,
+      txt = isYou ? pick([
+        `<strong>${s} — your fianchetto is coming.</strong> Open the long diagonal and the bishop moves into the corner office — modest address, enormous view. From there it will stare across the whole board all game.`,
+        `<strong>${s} — prepare the fianchetto.</strong> One pawn step, one huge diagonal. Your bishop will influence the centre from a distance, like artillery that never has to relocate.`,
+      ]) : pick([
+        `<strong>${opp} plays ${s} — a fianchetto is coming.</strong> That bishop will be a long-diagonal nuisance for the rest of the game. Good plans against it: trade it off, or blunt the diagonal with your pawns.`,
       ]);
     } else if(['a6','h6','a3','h3'].includes(s)){
-      txt = pick([
-        `<strong>${s} — a little move with a long memory.</strong> ${who} takes a key square away from ${them}'s minor pieces before they get comfortable. Nobody applauds these moves, but skipping them is how you end up pinned and miserable.`,
+      txt = isYou ? pick([
+        `<strong>${s} — a little move with a long memory.</strong> You take a key square away from the opponent's minor pieces before they get comfortable. Nobody applauds these moves, but skipping them is how you end up pinned and miserable.`,
         `<strong>${s} — quiet housekeeping.</strong> This stops a bishop or knight from ever landing on the annoying square. Prophylaxis, the grandmasters call it; "no, you don't" works too.`,
+      ]) : pick([
+        `<strong>${opp} plays ${s} — a useful little move.</strong> It takes a square away from your pieces (usually dodging a pin or a knight hop). Petty? A bit. Necessary? Usually. Your plan continues unbothered.`,
       ]);
     } else if(['f5','f4','b5','b4','g5','g4'].includes(s)){
-      txt = pick([
-        `<strong>${s} — space, with attitude.</strong> A flank pawn steps up to grab territory and pry open lines. Pushes like this are the opening bars of an attack — ${who} is telling you which side of the board the fight will be on.`,
-        `<strong>${s} — the pawn storm files its intent.</strong> ${who} gains space and threatens to open lines toward ${them}'s position. When wing pawns start marching, kings start checking their exits.`,
+      txt = isYou ? pick([
+        `<strong>${s} — space, with attitude.</strong> Your flank pawn steps up to grab territory and pry open lines. Pushes like this are the opening bars of an attack — you're choosing which side of the board the fight happens on.`,
+        `<strong>${s} — the pawn storm files its intent.</strong> You gain space and threaten to open lines toward the enemy position. When your wing pawns start marching, their king starts checking the exits.`,
+      ]) : pick([
+        `<strong>${opp} pushes ${s} — space, with intent.</strong> Wing pawns don't march for fun; an attack is being sketched on that side. Meet a flank attack the classical way: hit back in the centre.`,
+        `<strong>${opp} plays ${s}, grabbing space.</strong> Noted — and slightly loosening. Every pawn push leaves squares behind it; part of your plan is to move in on exactly those weakened squares.`,
       ]);
     } else {
-      txt = pick([
-        `<strong>${s}.</strong> A solid, useful pawn move — it supports the centre, opens a path for a piece, and commits to nothing prematurely. Flexible moves like this keep ${them} guessing about your real plan.`,
-        `<strong>${s}.</strong> Structure before glory: this pawn quietly improves ${who}'s setup and keeps every good option on the table. The move you barely notice is often the one holding the position together.`,
+      txt = isYou ? pick([
+        `<strong>${s}.</strong> A solid, useful pawn move — it supports the centre, opens a path for a piece, and commits to nothing prematurely. Flexible moves like this keep the opponent guessing about your real plan.`,
+        `<strong>${s}.</strong> Structure before glory: this pawn quietly improves your setup and keeps every good option on the table. The move you barely notice is often the one holding your position together.`,
+      ]) : pick([
+        `<strong>${opp} plays ${s}.</strong> A quiet structural move — nothing to fear, something to note. Positions are shaped by these small commitments; your reply keeps your own plan on schedule.`,
       ]);
     }
-    if(isCheck) txt += ` With <strong>check</strong>, no less — ${them} must deal with it before doing anything they actually wanted to do.`;
+    if(isCheck) txt += isYou
+      ? ` With <strong>check</strong>, no less — the opponent must deal with it before doing anything they actually wanted to do.`
+      : ` It comes with <strong>check</strong> — handle it first, plans second.`;
   }
   return txt;
 }
@@ -25950,12 +25989,21 @@ function olBuildStates(sans){
   return { states, sans:clean };
 }
 
+// Which side is this course FOR? Defences and Black systems → the learner plays Black.
+function olLearnerWhite(op){
+  const f = ((op && op.f) || '').toLowerCase();
+  if(/defense|defence|sicilian|caro|french|scandinavian|pirc|alekhine|dutch|benko|indian|gr[uü]nfeld|nimzo|declined|accepted|berlin/.test(f)) return false;
+  return true;
+}
+
 window.olStartLearn = function(opIdx, vIdx){
   if(!window.gambitGate('Create a free account to start learning this opening.', function(){ olStartLearn(opIdx, vIdx); })) return;
   const op = OL[opIdx]; if(!op) return;
   const v = op.v[vIdx]; if(!v) return;
   const built = olBuildStates(v.s);
-  olearn = { op, opIdx, vIdx, v, sans:built.sans, states:built.states, idx:0, mode:'learn' };
+  const learnerWhite = olLearnerWhite(op);
+  olearn = { op, opIdx, vIdx, v, sans:built.sans, states:built.states, idx:0, mode:'learn', learnerWhite };
+  boardFlippedState.set('ol-board', !learnerWhite);   // Black courses are viewed from Black's side
   document.getElementById('olearn-title').innerHTML = `${olEsc(op.f)}<small>${olEsc(v.b?'Main Line':(v.n||''))} · ${v.eco}</small>`;
   const pill = document.getElementById('olearn-mode-pill');
   pill.className = 'nlearn-mode-pill nlearn-mode-learn'; pill.textContent = 'LEARN';
@@ -26006,7 +26054,15 @@ function olRenderLearn(){
 }
 
 window.olLearnNext = function(){ if(olearn.idx < olearn.sans.length){ olearn.idx++; olRenderLearnStep(); } };
-window.olLearnBack = function(){ if(olearn.idx > 0){ olearn.idx--; olRenderLearnStep(); } };
+window.olLearnBack = function(){
+  if(olearn.idx <= 0) return;
+  olearn.idx--;
+  // never park the lesson on the opponent's turn — step back one more so
+  // Back doesn't fight the opponent auto-play
+  const st = olearn.states[olearn.idx];
+  if(olearn.idx > 0 && st && ((st.turn === 'w') !== olearn.learnerWhite)) olearn.idx--;
+  olRenderLearnStep();
+};
 
 // ── The user plays the lesson moves on the board ──
 // Right move → advance (same as Next). Wrong move → say so and revert.
@@ -26068,8 +26124,21 @@ function olRenderLearnStep(){
   const hl = [];
   if(idx>0){ const mv = sanToMove(olearn.sans[idx-1], olearn.states[idx-1]); if(mv){ hl.push(mv.from, mv.to); } }
   renderBoardEl('ol-board','ol-b-ranks','ol-b-files', state, hl, null);
-  // the user PLAYS each move on the board (click or drag) instead of pressing Next
-  if(idx < olearn.sans.length) makeBoardInteractive('ol-board', state, olLearnTryMove);
+  // The user PLAYS the moves of THEIR side on the board; the opponent replies by itself.
+  const learnerWhite = olearn.learnerWhite !== false;
+  const learnerTurn = (state.turn === 'w') === learnerWhite;
+  if(idx < olearn.sans.length && learnerTurn){
+    makeBoardInteractive('ol-board', state, olLearnTryMove);
+  } else {
+    // freeze input; if the line continues, the opponent plays after a beat
+    interactiveState['ol-board'] = { from:null, dests:[], state, onMove:null };
+    if(idx < olearn.sans.length){
+      const tok = olLearnTryToken;
+      setTimeout(() => {
+        if(tok === olLearnTryToken && olearn.idx === idx){ olearn.idx++; olRenderLearnStep(); }
+      }, 950);
+    }
+  }
   olSetProgress(idx, olearn.sans.length);
 
   const badge = document.getElementById('ol-badge');
@@ -26080,7 +26149,8 @@ function olRenderLearnStep(){
   // explanation of the move just played (or intro at idx 0)
   if(idx === 0){
     badge.textContent = 'Starting position';
-    explain.innerHTML = `<strong>You make the moves here.</strong> Pick up a piece and play the line yourself — both sides, so you learn the opponent's ideas too. The <strong>popularity bars</strong> hint at the right move, and <span style="color:#e0706f;font-weight:600">red arrows</span> mark the opponent's likely tries. Wrong move? No harm — you'll see why, then try again.`;
+    const sideName = learnerWhite ? 'White' : 'Black';
+    explain.innerHTML = `<strong>You play the ${sideName} pieces.</strong> Make ${sideName}'s moves on the board yourself — the opponent replies on its own. The <strong>popularity bars</strong> hint at the right move, and <span style="color:#c85f5f;font-weight:600">red arrows</span> mark the opponent's likely tries. Wrong move? No harm — you'll see why, then try again.`;
   } else {
     const san = olearn.sans[idx-1];
     const moverWhite = ((idx-1)%2===0);
@@ -26103,12 +26173,8 @@ function olRenderLearnStep(){
   const key = olUciKey(olearn.states, idx);
   const pos = OL_POS[key];
   const sideToMove = state.turn === 'w' ? 'White' : 'Black';
-  // Is it the opponent's move? In a White opening (bk e4/d4/c4/Nf3 with base starting move by white),
-  // we treat the side NOT matching the learner. Learner side = side of the opening's first move.
-  const learnerWhite = olearn.op.bk !== 'other' ? true : true; // openings are framed from the mover's view
-  // Heuristic: the variation is "for" whoever moves first in the family bucket.
-  const openingForWhite = ['e4','d4','c4','Nf3'].includes(olearn.op.bk);
-  const isOpponentTurn = (state.turn === 'w') !== openingForWhite;
+  // Opponent = whichever side the learner is NOT playing (course side, not first-mover)
+  const isOpponentTurn = !learnerTurn;
 
   clearArrows('ol-arrows');
   const atEnd = idx >= olearn.sans.length;
@@ -26158,9 +26224,9 @@ function olDrawMoveArrows(moves, state, color, overlayId){
   const overlay = document.getElementById(overlayId);
   if(!overlay) return;
   const palette = {
-    red:   ['rgba(224,112,111,.92)','rgba(224,112,111,.62)','rgba(224,112,111,.42)'],
-    green: ['rgba(239,157,43,.92)','rgba(239,157,43,.62)','rgba(239,157,43,.42)'],
-    main:  ['rgba(246,218,90,.92)','rgba(246,218,90,.6)','rgba(246,218,90,.42)'],
+    red:   ['rgba(136,32,32,.85)','rgba(136,32,32,.55)','rgba(136,32,32,.4)'],
+    green: ['rgba(21,120,27,.85)','rgba(21,120,27,.55)','rgba(21,120,27,.4)'],
+    main:  ['rgba(21,120,27,.85)','rgba(21,120,27,.5)','rgba(21,120,27,.35)'],
   }[color] || ['rgba(246,218,90,.9)'];
   const widths = [12,8,5];
   const boardId = overlayId==='ol-arrows' ? 'ol-board' : 'old-board';
@@ -26825,7 +26891,7 @@ window.explPlaySan = function(san){
 function explDrawArrows(alts){
   const overlay = document.getElementById('expl-arrows');
   if(!overlay) return;
-  const palette = ['rgba(239,157,43,.95)','rgba(242,180,90,.75)','rgba(245,196,128,.55)'];
+  const palette = ['rgba(21,120,27,.9)','rgba(242,180,90,.75)','rgba(245,196,128,.55)'];
   const widths = [13,8,6];
   const flipped = isBoardFlipped('expl-board');
   let defs = '<defs>';
@@ -27078,7 +27144,7 @@ function revRender(){
   const children = rev.node.children || [];
   if(overlay){
     const flipped = isBoardFlipped('rev-board');
-    let svg = `<defs><marker id="revb-m" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.92)"/></marker></defs>`;
+    let svg = `<defs><marker id="revb-m" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.85)"/></marker></defs>`;
     children.forEach(ch => {
       const u = ch.uci; if(!u||u.length<4) return;
       const from=u.slice(0,2), to=u.slice(2,4);
@@ -27086,7 +27152,7 @@ function revRender(){
       const p1=squareToSVG(from,flipped), p2=squareToSVG(to,flipped);
       const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
       const ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
-      svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(239,157,43,.85)" stroke-width="11" stroke-linecap="round" marker-end="url(#revb-m)"/>`;
+      svg += `<line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(21,120,27,.8)" stroke-width="11" stroke-linecap="round" marker-end="url(#revb-m)"/>`;
     });
     overlay.innerHTML = svg;
   }
@@ -27238,7 +27304,7 @@ function rtrainUserMove(from, to, newState, san){
       const p1=squareToSVG(from2,flipped), p2=squareToSVG(to2,flipped);
       const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
       const ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
-      overlay.innerHTML = `<defs><marker id="rtok" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(239,157,43,.95)"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(239,157,43,.9)" stroke-width="12" stroke-linecap="round" marker-end="url(#rtok)"/>`;
+      overlay.innerHTML = `<defs><marker id="rtok" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(239,157,43,.9)" stroke-width="12" stroke-linecap="round" marker-end="url(#rtok)"/>`;
     }
     // re-render board at the position (undo wrong move) and show the correct move highlighted
     renderBoardEl('rt-board','rt-ranks','rt-files', rtrain.curState, [], null);
@@ -27612,7 +27678,7 @@ function acadLessonStep(){
   text.innerHTML = `<div class="acad-learn-move">${acadEsc(moveLabel)}</div>${body}`;
 
   // BLUE arrow for the move to play (Chessly style)
-  if(mv){ acadDrawArrow('al-arrows','al-board', mv.from+mv.to, 'rgba(239,157,43,.92)'); }
+  if(mv){ acadDrawArrow('al-arrows','al-board', mv.from+mv.to, 'rgba(21,120,27,.85)'); }
 
   // next button as a clear CTA
   cta.innerHTML = `<button class="acad-cta-btn" onclick="acadLessonNext()">${idx===0?'Start the line →':'Play this move →'}</button>`;
