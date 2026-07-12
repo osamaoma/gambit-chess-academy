@@ -3999,11 +3999,14 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* with the report hidden, the move list can use the sidebar's full height */
 #sec-review #rv-page-moves .move-list-panel{ max-height:calc(100vh - 340px); }
 /* ── Coach step-through ── */
-#sec-coach #coach-board{ --cbsq: clamp(42px, calc((100vh - 310px) / 8), 92px); }
+#sec-coach #coach-board{ --cbsq: clamp(42px, calc((100vh - 260px) / 8), 100px); }
 #sec-coach #coach-board .sq{ width:var(--cbsq) !important; height:var(--cbsq) !important; }
 /* ── Learn + drill — chessable-size board, app-like no-scroll layout ── */
-#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(46px, calc((100vh - 240px) / 8), 92px); }
-#sec-olearn .nlearn-wrap{ max-width:min(1500px, calc(100vw - 40px)); margin:0 auto; padding-top:10px; }
+#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(46px, calc((100vh - 214px) / 8), 106px); }
+#sec-olearn .nlearn-wrap{ max-width:min(1500px, calc(100vw - 40px)); margin:0 auto; padding-top:4px; }
+#sec-olearn .nlearn-top{ padding-top:0; padding-bottom:4px; margin-bottom:2px; }
+#sec-olearn .nlearn-progress-track{ margin-bottom:10px; }
+#sec-olearn .nlearn-board-controls{ margin-top:6px; }
 #sec-olearn .nlearn-stage{ grid-template-columns:auto minmax(360px, 470px); gap:36px; justify-content:center; }
 /* coach panel: sticks beside the board and scrolls internally — the PAGE never scrolls */
 #sec-olearn .nlearn-side{ position:sticky; top:10px; max-height:calc(100vh - 120px); overflow-y:auto; padding-right:4px; }
@@ -4011,8 +4014,12 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* chessable-style coach card pieces */
 .ol-opp-ctx{ color:var(--text2); margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border); }
 .ol-play-cmd{ margin-top:14px; font-weight:800; font-size:16px; color:var(--gold); }
-/* plan squares glow lichess-green at the end of a line */
-.sq.hl-plan{ box-shadow:inset 0 0 0 9999px rgba(155,199,0,.5) !important; }
+/* plan squares get a lichess-style green RING at the end of a line */
+.sq.hl-plan::after{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:3;
+  background:radial-gradient(closest-side, transparent 0 72%, #15781B 73% 90%, transparent 91%);
+  opacity:.95;
+}
 #sec-olearn #ol-board .sq, #sec-olearn #old-board .sq{ width:var(--lbsq) !important; height:var(--lbsq) !important; }
 @media(max-width:820px){
   #sec-review .review-layout{ grid-template-columns:1fr !important; justify-content:stretch; }
@@ -5273,8 +5280,8 @@ function renderAnnotations(boardId){
   const st=annotState(boardId);
   const flipped = boardFlippedState.get(boardId)===true;
   let svg='';
-  // square highlights (soft-cornered)
-  for(const sq in st.squares){ const p=squareToSVG(sq,flipped); svg+=`<rect x="${p.x-28}" y="${p.y-28}" width="56" height="56" rx="5" fill="${st.squares[sq]}" opacity="0.5"/>`; }
+  // square highlights — lichess-style rings (chessground circles), not filled squares
+  for(const sq in st.squares){ const p=squareToSVG(sq,flipped); svg+=`<circle cx="${p.x}" cy="${p.y}" r="23.5" fill="none" stroke="${st.squares[sq]}" stroke-width="9" opacity="0.95"/>`; }
   // arrows — one clean proportional shape (tapered shaft + triangular head); knight moves bend into an L
   st.arrows.forEach(a=>{
     const p1=squareToSVG(a.from,flipped), p2=squareToSVG(a.to,flipped);
@@ -26129,7 +26136,7 @@ window.olLearnTryMove = async function(from, to, newState, san){
       : `it gives the opponent a strong reply${replySAN ? ` — <b>${replySAN}</b> (red arrow) and your position turns sour` : ''}`;
     explain.innerHTML = `<span style="color:#c85f5f;font-weight:700">✗ That's a blunder:</span> ${why}. Take it back and try again.`;
   } else if(explain){
-    explain.innerHTML = `<span style="color:#c85f5f;font-weight:600">✗ Not the course move.</span> Nothing disastrous, but the lesson has a better idea here — check the popularity bars and try again.`;
+    explain.innerHTML = `<span style="color:#c85f5f;font-weight:600">✗ Not the course move.</span> Nothing disastrous, but the lesson has a better idea here — follow the green arrow and try again.`;
   }
   // revert to the lesson position (longer pause after a blunder, so the arrow sinks in)
   setTimeout(() => { if(token === olLearnTryToken) olRenderLearnStep(); }, isBlunder ? 3400 : 1900);
@@ -26146,9 +26153,6 @@ function olRenderLearnStep(){
   // The user PLAYS the moves of THEIR side on the board; the opponent replies by itself.
   const learnerWhite = olearn.learnerWhite !== false;
   const learnerTurn = (state.turn === 'w') === learnerWhite;
-  const key = olUciKey(olearn.states, idx);
-  const pos = OL_POS[key];
-  const hasBars = !atEnd && !learnerTurn && pos && pos.m && pos.m.length;
   if(!atEnd && learnerTurn){
     makeBoardInteractive('ol-board', state, olLearnTryMove);
   } else {
@@ -26158,7 +26162,7 @@ function olRenderLearnStep(){
       const tok = olLearnTryToken;
       setTimeout(() => {
         if(tok === olLearnTryToken && olearn.idx === idx){ olearn.idx++; olRenderLearnStep(); }
-      }, hasBars ? 1600 : 950);            // linger while their likely replies are on screen
+      }, 950);
     }
   }
   olSetProgress(idx, olearn.sans.length);
@@ -26226,23 +26230,10 @@ function olRenderLearnStep(){
     popular.innerHTML = finishedNote + (planHtml || `<div class="ol-pop-title" style="color:var(--text3)">End of the line — play on with the ideas you've learned.</div>`);
     if(olearn.v && olearn.v.plan) olPlanVisuals(olearn.v.plan);
   } else if(learnerTurn){
-    // YOUR turn: no popularity bars — a green arrow shows the course move,
+    // YOUR turn: a green arrow shows the course move,
     // red arrows mark what is threatened in the position right now
     popular.innerHTML = '';
     olGuidedArrows(state, olearn.sans[idx]);
-  } else if(hasBars){
-    // OPPONENT's turn: their most popular responses (the only place bars appear)
-    olDrawMoveArrows(pos.m, state, 'red');
-    const sideToMove = state.turn === 'w' ? 'White' : 'Black';
-    popular.innerHTML = `<div class="ol-pop-title"><span style="color:#c85f5f">⬤</span> ${sideToMove}'s most likely replies:</div>` + pos.m.map((m,i)=>{
-      const playedNext = (() => { const nm = sanToMove(olearn.sans[idx], state); return nm && (nm.from+nm.to)===m.u.slice(0,4); })();
-      return `<div class="ol-pop-row ${i===0?'first':''} ${playedNext?'is-line':''}">
-        <span class="ol-pop-rank">#${i+1}</span>
-        <span class="ol-pop-move">${olEsc(m.san)}</span>
-        <div class="ol-pop-bar"><span style="width:${m.pct}%"></span></div>
-        <span class="ol-pop-pct">${m.pct}%</span>
-      </div>`;
-    }).join('');
   } else {
     popular.innerHTML = '';
   }
@@ -26301,9 +26292,9 @@ function olGuidedArrows(state, san){
   const exp = mv ? mv.from + mv.to : '';
   for(const t of olFindThreats(state)){
     if(t.u.slice(0,4) === exp) continue;
-    svg += arrowSVG(t.u.slice(0,2), t.u.slice(2,4), 'rgba(136,32,32,.85)', 8, 'olg-th', flipped);
+    svg += arrowSVG(t.u.slice(0,2), t.u.slice(2,4), 'rgba(136,32,32,.9)', 10, 'olg-th', flipped);
   }
-  if(mv) svg += arrowSVG(mv.from, mv.to, '#15781B', 9, 'olg-go', flipped);
+  if(mv) svg += arrowSVG(mv.from, mv.to, '#15781B', 11, 'olg-go', flipped);
   overlay.innerHTML = svg;
 }
 
@@ -26323,7 +26314,7 @@ function olPlanVisuals(planText){
     sqs.forEach(s => { const el = boardEl.querySelector(`[data-sq="${s}"]`); if(el) el.classList.add('hl-plan'); });
     if(overlay && arrows.length){
       let svg = `<defs><marker id="olg-plan" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#15781B"/></marker></defs>`;
-      arrows.forEach(a => { svg += arrowSVG(a[0], a[1], '#15781B', 9, 'olg-plan', flipped); });
+      arrows.forEach(a => { svg += arrowSVG(a[0], a[1], '#15781B', 11, 'olg-plan', flipped); });
       overlay.innerHTML = svg;
     }
   }catch(e){}
@@ -26339,7 +26330,7 @@ function olDrawMoveArrows(moves, state, color, overlayId){
     green: ['rgba(21,120,27,.85)','rgba(21,120,27,.55)','rgba(21,120,27,.4)'],
     main:  ['rgba(21,120,27,.85)','rgba(21,120,27,.5)','rgba(21,120,27,.35)'],
   }[color] || ['rgba(246,218,90,.9)'];
-  const widths = [9,9,9];        // lichess: rank shown by opacity, not thickness
+  const widths = [11,11,11];     // lichess: rank shown by opacity, not thickness
   const boardId = overlayId==='ol-arrows' ? 'ol-board' : 'old-board';
   const flipped = boardFlippedState.get(boardId) === true;
   let defs = '<defs>';
