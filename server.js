@@ -37,6 +37,16 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Cross-origin isolation → SharedArrayBuffer → multi-threaded Stockfish.
+// "credentialless" (not "require-corp") so cross-origin fonts/avatars keep
+// loading without CORP headers; browsers without support ignore it and the
+// engine falls back to the single-threaded build.
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+  next();
+});
+
 // Large static data files that rarely change should be cacheable.
 // Stockfish engine truly never changes → immutable, 1 year.
 app.use('/stockfish', (req, res, next) => {

@@ -1496,6 +1496,17 @@ input:focus, select:focus, textarea:focus {
   /* ════════ USER BRANCH PANEL (alternative move analysis) ════════ */
   #user-moves-r{padding:0;background:transparent}
   #user-moves-r.visible{display:block}
+  /* analysis-board variation tree (lichess-style): bold mainline row + indented (…) line */
+  .ubv-main{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:9px 12px 3px;font-family:'DM Mono',monospace;font-size:13px}
+  .ubv-var{display:flex;align-items:center;gap:2px 4px;flex-wrap:wrap;margin:4px 12px 12px 22px;padding:5px 8px;border-left:2px solid var(--border2);font-family:'DM Mono',monospace;font-size:12.5px;color:var(--text2)}
+  .ubv-num{color:var(--text3);font-style:italic;font-size:11px;margin-right:1px}
+  .ubv-mv{background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;color:var(--text);padding:2px 5px;border-radius:5px;display:inline-flex;align-items:center;gap:3px;transition:background .15s ease}
+  .ubv-mv:hover{background:var(--gold3)}
+  .ubv-cur{background:var(--bg4);box-shadow:inset 0 0 0 1px var(--border2);font-weight:700}
+  .ubv-game{font-weight:700}
+  .ubv-paren{color:var(--text3);margin:0 2px}
+  .ubv-best{color:var(--gold);font-size:11px;white-space:nowrap}
+  .ubv-intag{margin-left:auto;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
   .ubp-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:linear-gradient(180deg,rgba(212,165,68,.08),transparent);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0}
   .ubp-title{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:600}
   .ubp-back{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:4px 10px;border-radius:var(--r);font-family:inherit;font-size:11px;cursor:pointer;transition:all var(--t)}
@@ -3007,9 +3018,15 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .rvr-n.z{ color:var(--ob-tx3); opacity:.45; font-weight:400; }
 
 /* ── Premium eval bar beside the board ── */
-#sec-review .eval-bar-vertical{ width:16px; border-radius:8px; overflow:hidden; background:linear-gradient(180deg,#f5ecd7,#e6dabf); box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(217,164,65,.3); }
+#sec-review .eval-bar-vertical{ width:26px; border-radius:8px; overflow:hidden; background:linear-gradient(180deg,#f5ecd7,#e6dabf); box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(217,164,65,.3); }
 #sec-review .eval-bar-black{ background:linear-gradient(180deg,#1b160c,#070503); transition:height .5s var(--ease); }
-#sec-review .eval-bar-score{ font-family:var(--ob-mono); font-size:10px; font-weight:600; }
+/* score chip: always readable — dark-on-white in the white zone, white-on-dark in the black zone */
+#sec-review .eval-bar-score{ font-family:var(--ob-mono); font-size:10.5px; font-weight:700; letter-spacing:-.4px; padding:1px 2px; width:100%; text-align:center; background:transparent; color:#f0ece0; }
+#sec-review .eval-bar-score.white-bg{ background:transparent; color:#141309; }
+
+/* live engine panel: three stacked lines */
+#sec-review .rv-live-line{ display:flex; align-items:baseline; gap:8px; margin-top:4px; }
+#sec-review .rv-live-line:nth-of-type(1){ margin-top:6px; }
 
 /* ── Warm panels (move list, detail, branch, live-eval, play bar) ── */
 #sec-review .move-list-panel, #sec-review .move-detail-box, #sec-review .user-moves-list,
@@ -3956,14 +3973,26 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
    chess.com-style fit: square size is budgeted from the REAL vertical space —
    100vh minus nav + title row + two player bars + controls — so the whole
    board column (bars and controls included) sits above the fold on any screen. */
-#sec-review .page-wrap{ max-width:min(1600px, calc(100vw - 40px)); }
-#sec-review{ --rvsq: clamp(42px, calc((100vh - 366px) / 8), 92px); }
+#sec-review .page-wrap{ max-width:min(1600px, calc(100vw - 40px)); padding-top:14px; }
+#sec-review{ --rvsq: clamp(42px, calc((100vh - 310px) / 8), 96px); }
 #sec-review .review-layout{ grid-template-columns:auto 372px; gap:28px; justify-content:center; align-items:start; }
 #sec-review #board-r .sq{ width:var(--rvsq) !important; height:var(--rvsq) !important; }
 #sec-review #eval-bar-r{ height:calc(var(--rvsq) * 8) !important; align-self:flex-start; }
 /* accuracy dials live in the right panel now (chess.com layout) — compact them */
 #sec-review .acc-wrap{ margin-bottom:14px; }
 #sec-review .rv-accp-num{ font-size:32px; }
+/* sidebar pages: report card (default) ⇄ move list, flipped by a corner arrow */
+#sec-review .rv-side-page{ position:relative; }
+#sec-review .rv-page-arrow{
+  position:absolute; top:10px; right:12px; z-index:6;
+  width:30px; height:30px; border-radius:50%; border:1px solid var(--rule-2);
+  background:var(--paper-2); color:var(--ink-2); font-size:15px; line-height:1; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s var(--smooth), color .2s var(--smooth), transform .3s var(--spring);
+}
+#sec-review .rv-page-arrow:hover{ background:var(--green); color:#fff; transform:scale(1.08); }
+/* with the report hidden, the move list can use the sidebar's full height */
+#sec-review #rv-page-moves .move-list-panel{ max-height:calc(100vh - 340px); }
 /* ── Coach step-through ── */
 #sec-coach #coach-board{ --cbsq: clamp(42px, calc((100vh - 310px) / 8), 92px); }
 #sec-coach #coach-board .sq{ width:var(--cbsq) !important; height:var(--cbsq) !important; }
@@ -4409,16 +4438,16 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
 
     <div id="rv-output" style="display:none">
-      <button class="back-btn" onclick="backToGamePick()">← Choose another game</button>
       <div class="review-layout">
         <!-- Board side -->
         <div>
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-            <div>
-              <div id="rv-players" style="font-family:'Clash Display',sans-serif;font-size:17px"></div>
-              <div id="rv-opening" style="font-size:12px;color:var(--text2);margin-top:2px"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:10px">
+            <button class="back-btn" onclick="backToGamePick()" style="margin:0;flex:none">← Choose another game</button>
+            <div style="flex:1;min-width:0">
+              <div id="rv-players" style="font-family:'Clash Display',sans-serif;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+              <div id="rv-opening" style="font-size:12px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
             </div>
-            <div id="rv-result" style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--gold)"></div>
+            <div id="rv-result" style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--gold);flex:none"></div>
           </div>
           <div class="sum-grid" id="rv-summary"></div>
           <div id="rv-player-top" class="rv-player"></div>
@@ -4446,6 +4475,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <button class="btn btn-outline btn-sm" onclick="rvEnd()" title="Jump to the final position">End ⇥</button>
             <button class="btn btn-gold btn-sm" onclick="rvSee()" title="Jump to the key moments — brilliancies, blunders, mistakes and misses"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></span> See key moments</button>
             <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
+            <button class="btn btn-gold btn-sm" id="rv-btg" onclick="returnToGameLine()" title="Leave this exploration branch and return to the game" style="display:none">↶ Back to game</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
           <div class="rv-evalgraph" id="rv-evalgraph" style="display:none"></div>
@@ -4458,11 +4488,18 @@ document.addEventListener('DOMContentLoaded', function(){
             <div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>
           </div>
         </div>
-        <!-- Game Review report + move list + your exploration branch -->
+        <!-- Game Review sidebar: accuracy on top, then ONE page at a time —
+             the report card (default) or the move list — flipped by the arrow. -->
         <div>
           <div class="acc-wrap" id="rv-acc"></div>
-          <div class="rv-report" id="rv-report"></div>
-          <div class="move-list-panel" id="rv-movelist"></div>
+          <div class="rv-side-page" id="rv-page-report">
+            <button class="rv-page-arrow" onclick="rvTogglePage()" title="Show the move list" aria-label="Show the move list">→</button>
+            <div class="rv-report" id="rv-report"></div>
+          </div>
+          <div class="rv-side-page" id="rv-page-moves" style="display:none">
+            <button class="rv-page-arrow" onclick="rvTogglePage()" title="Back to the report" aria-label="Back to the report">←</button>
+            <div class="move-list-panel" id="rv-movelist"></div>
+          </div>
           <div class="user-moves-list" id="user-moves-r"></div>
         </div>
       </div>
@@ -5404,9 +5441,15 @@ function initStockfish(){
   return new Promise((resolve) => {
     try {
       // Load Stockfish.js DIRECTLY as the worker.
-      // When run this way, its self.location.pathname is the stockfish-18-lite-single.js path,
-      // so its WASM lookup correctly resolves to stockfish-18-lite-single.wasm next to it.
-      sfWorker = new Worker('/stockfish/stockfish-18-lite-single.js');
+      // When run this way, its self.location.pathname is the stockfish js path,
+      // so its WASM lookup correctly resolves to the .wasm next to it.
+      // MULTI-THREADED build when the page is cross-origin isolated (COOP/COEP
+      // headers set by the server) — several CPU cores instead of one makes the
+      // same Stockfish 18 markedly stronger at the same sub-second time budget.
+      const threaded = (typeof crossOriginIsolated !== 'undefined') && crossOriginIsolated
+                       && typeof SharedArrayBuffer !== 'undefined';
+      sfWorker = new Worker(threaded ? '/stockfish/stockfish-18-lite.js'
+                                     : '/stockfish/stockfish-18-lite-single.js');
 
       sfWorker.onmessage = (e) => {
         const line = e.data;
@@ -5420,6 +5463,12 @@ function initStockfish(){
 
       // Kick off UCI handshake
       sfWorker.postMessage('uci');
+      if(threaded){
+        const cores = Math.max(2, Math.min(8, (navigator.hardwareConcurrency || 4) - 1));
+        sfWorker.postMessage('setoption name Threads value ' + cores);
+        sfWorker.postMessage('setoption name Hash value 128');
+        console.log('✓ Stockfish 18 multi-threaded: ' + cores + ' threads');
+      }
       sfWorker.postMessage('isready');
 
       // Wait up to 10s for "readyok"
@@ -10312,9 +10361,10 @@ function updateEvalBar(blackBarId, scoreId, score, isMate, mateIn){
   blackBar.style.height = pct + '%';
 
   scoreLabel.textContent = formatEval(score, isMate, mateIn);
-  // Position the score label: if eval favors white, put it near the bottom (in white area)
-  // If favors black, put it near the top (in black area)
-  scoreLabel.style.top = score >= 0 ? `${pct + (100-pct)/2 - 5}%` : `${pct/2 - 5}%`;
+  // Pin the score at the bar's end (chess.com style): bottom of the white area when
+  // White leads, top of the black area when Black leads — always fully visible.
+  scoreLabel.style.top = score >= 0 ? 'calc(100% - 18px)' : '3px';
+  scoreLabel.style.marginTop = '0';
   scoreLabel.classList.toggle('white-bg', score >= 0);
 }
 
@@ -11917,6 +11967,7 @@ async function loadReview(gameIdx){
 
   document.getElementById('rv-input').style.display = 'none';
   document.getElementById('rv-output').style.display = 'block';
+  try{ rvShowReportPage(); }catch(e){}   // sidebar always opens on the report card
 
   document.getElementById('rv-players').textContent = `${game.white} vs ${game.black}`;
   const op = game.opening || headers.Opening || 'Unknown opening';
@@ -12002,8 +12053,8 @@ async function analyseGame(white, black, username){
     if(prog) prog.style.width = Math.round((i / analyseLimit) * 100) + '%';
     if(stat) stat.textContent = `Analysing move ${i}/${analyseLimit}…`;
 
-    // MultiPV 2 so classification knows the gap between best and 2nd-best ("Great" detection)
-    const result = await evalPosition(positions[i].fen, 14, 2, 350);
+    // MultiPV 3 so classification knows the 2nd/3rd-best moves (Excellent/Good) and the only-move gap (Great)
+    const result = await evalPosition(positions[i].fen, 14, 3, 350);
     evals[i] = result;
 
     // CRITICAL: yield to the event loop between positions so the browser
@@ -12047,14 +12098,19 @@ async function analyseGame(white, black, username){
     // What the opponent's previous move was classified as (drives Miss / Great)
     const prevAnn = moveAnnotations.length ? moveAnnotations[moveAnnotations.length - 1].ann : null;
 
-    // 2nd-best gap (MultiPV) in win% — how much the position depends on finding THE move
-    let gap2Win = null;
+    // 2nd-best gap (MultiPV) in win% — how much the position depends on finding THE move —
+    // plus the 2nd/3rd-best move UCIs (user's system: Excellent = 2nd best, Good = 3rd best)
+    let gap2Win = null, secondUCI = null, thirdUCI = null;
     try {
       const alts = evals[i - 1] && evals[i - 1].alternatives;
       if(alts && alts.length >= 2 && typeof alts[0].score === 'number' && typeof alts[1].score === 'number'){
         gap2Win = Math.abs(winPct(alts[0].score) - winPct(alts[1].score));
       }
+      if(alts && alts[1] && alts[1].pv) secondUCI = String(alts[1].pv).trim().split(/\s+/)[0] || null;
+      if(alts && alts[2] && alts[2].pv) thirdUCI  = String(alts[2].pv).trim().split(/\s+/)[0] || null;
     } catch(e){}
+    const wasSecondBest = secondUCI && playerMoveUCI && secondUCI.slice(0,4) === playerMoveUCI;
+    const wasThirdBest  = thirdUCI  && playerMoveUCI && thirdUCI.slice(0,4)  === playerMoveUCI;
 
     // ── Material context: a real sacrifice INVESTS net material (not an even/winning trade) ──
     let isSacrifice = false, hangsPiece = false;
@@ -12077,50 +12133,66 @@ async function analyseGame(white, black, username){
       }
     } catch(e){}
 
-    // ─── chess.com-style classification ladder (win%-driven) ───
+    // ─── Classification ladder ───
+    // Book = theory · Brilliant = sound PIECE sacrifice for advantage · Great = the one
+    // move that takes/keeps the advantage · Best = engine #1 · Excellent = #2 · Good = #3 ·
+    // Inaccuracy = neither good nor bad · Mistake = worsens the position, loses advantage ·
+    // Miss = failed to play a winning/drawing move · Blunder = loses a piece/the advantage/mated.
     if(isBookMove){
       ann = 'book';
       note = openingName ? ('Opening theory — ' + openingName) : 'A known opening theory move.';
     } else if(isSacrifice && (wasBestMove || wDrop < 2) && wpAfter >= 45 && wpBefore <= 93){
-      // Brilliant: a sound piece sacrifice — best (or near-best), you're not lost after it,
-      // and you weren't already completely winning (chess.com's rules).
+      // Brilliant: sacrificing a piece (not a pawn — PIECE_VALUES ≥ 3 enforced upstream)
+      // for a real advantage, while the position stays sound
       ann = 'brilliant';
-      note = 'A brilliant sacrifice — material is given up for a clearly stronger position.';
+      note = 'A brilliant sacrifice — a piece is given up for a clearly stronger position.';
       bestLine = '';
     } else if(wasBestMove && gap2Win !== null && gap2Win >= 12 && wpBefore >= 25 && wpBefore <= 93 && i > 6){
-      // Great: THE only move — every alternative gives away a big slice of win%
+      // Great: THE one move that takes the advantage — every alternative gives it away
       ann = 'great';
-      note = 'A great move — the only continuation that held the position together.';
+      note = 'A great move — the one move that takes the advantage in this position.';
     } else if(wasBestMove && (prevAnn === 'blunder' || prevAnn === 'miss') && wpAfter >= 65 && i > 6){
-      // Great: found the punishment after the opponent's blunder
+      // Great: the one move that converts the opponent's blunder into an advantage
       ann = 'great';
       note = 'A great find — this is exactly how to punish the opponent\'s mistake.';
     } else if(wasBestMove){
       ann = 'best';
       note = 'The engine\'s top recommended move.';
+    } else if(wasSecondBest && wDrop < 10){
+      ann = 'excellent';
+      note = 'An excellent move — the engine\'s second-best choice here.';
+    } else if(wasThirdBest && wDrop < 10){
+      ann = 'good';
+      note = 'A good move — the engine\'s third-best choice here.';
     } else if(wDrop >= 10 && wpBefore >= 65 && wpAfter >= 35 && (wpAfter < 60 || prevAnn === 'blunder' || prevAnn === 'mistake')){
-      // Miss: there was a winning tactic (often handed over by the opponent's error) and it wasn't taken
+      // Miss: there was a winning move here and it wasn't played
       ann = 'miss';
-      note = 'A miss — there was a chance for a winning tactic here that slipped by.';
+      note = 'A miss — there was a winning move here that slipped by.';
+    } else if(wDrop >= 15 && wpBefore >= 40 && wpBefore <= 60 && wpAfter < 30){
+      // Miss: the drawing resource existed and wasn't found — the game is now losing
+      ann = 'miss';
+      note = 'A miss — there was a move here that held the draw.';
     } else if(hangsPiece && wDrop >= 10){
+      // Blunder: loses a piece outright
       ann = 'blunder';
       note = 'Hangs a piece — material is given away for nothing.';
     } else if(wDrop >= 20){
+      // Blunder: throws away the advantage (or walks into mate)
       ann = 'blunder';
       note = (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
                                           : 'A serious error that swings the game — a much better move was available.';
     } else if(wDrop >= 10){
       ann = 'mistake';
-      note = 'This move worsened your position — a clearly better continuation was available.';
+      note = 'A mistake — this worsens your position long-term and gives up part of the advantage.';
     } else if(wDrop >= 5){
       ann = 'inaccuracy';
-      note = 'A slight imprecision — not good or bad, but a better move was available.';
+      note = 'An inaccuracy — not good or bad, but a better move was available.';
     } else if(wDrop >= 2){
       ann = 'good';
       note = 'A good move — nothing wrong, though a slightly stronger option existed.';
     } else {
       ann = 'excellent';
-      note = 'An excellent move — almost exactly as good as the engine\'s best.';
+      note = 'An excellent move — practically as strong as the engine\'s best.';
     }
 
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
@@ -12345,7 +12417,10 @@ function rvRenderPlayers(state){
     const av   = color === 'w' ? reviewMeta.whiteAvatar : reviewMeta.blackAvatar;
     const caps = color === 'w' ? whiteCapd : blackCapd;
     const adv  = color === 'w' ? (diff > 0 ? diff : 0) : (diff < 0 ? -diff : 0);
-    const clk  = inBranch ? null : rvClockForColor(color, reviewIdx);
+    // In a branch, freeze the clocks at the branch point instead of hiding them
+    const clkIdx = (inBranch && typeof branchState !== 'undefined' && branchState && typeof branchState.startIdx === 'number')
+                     ? branchState.startIdx : reviewIdx;
+    const clk  = rvClockForColor(color, clkIdx);
     const clkCls = clk == null ? '' : (clk < 10 ? ' crit' : (clk < 30 ? ' low' : ''));
     const initial = ((name || '?').trim().charAt(0) || '?').toUpperCase();
     const avatar = `<span class="rv-avatar ${color}">${av ? `<img src="${av}" alt="" onload="this.style.opacity=1" onerror="this.remove()">` : ''}<span class="rv-avatar-i">${initial}</span></span>`;
@@ -13196,6 +13271,8 @@ function renderReviewBoard(){
   renderBoardEl('board-r', 'board-ranks-r', 'board-files-r', displayState, [], null);
   try{ rvEvalMarker(); }catch(e){}
   try{ rvRenderPlayers(displayState); }catch(e){}
+  // "Back to game" appears only while exploring a branch
+  try{ const btg = document.getElementById('rv-btg'); if(btg) btg.style.display = viewingBranch ? '' : 'none'; }catch(e){}
 
   if(displayedMove){
     document.querySelectorAll('#board-r .sq').forEach(sq => {
@@ -13461,42 +13538,42 @@ function renderUserVariationPanel(){
                good:'mcb-good', book:'mcb-book', inaccuracy:'mcb-inacc',
                mistake:'mcb-mist', blunder:'mcb-blun', miss:'mcb-miss'};
 
-  // Build the move pills — each one navigates within the branch
-  const movePills = branchState.moves.map((m, i) => {
+  // ── Analysis-board-style variation tree ──
+  // Main row = the move the game actually played (bold). Your exploration line sits
+  // beneath it, indented with a rule and wrapped in parentheses — like lichess/chess.com
+  // analysis move lists. Move numbers use REAL chess numbering (half-move → move no.).
+  const annCls = {brilliant:'ann-brill',great:'ann-great',best:'ann-best',excellent:'ann-excel',good:'ann-good',book:'ann-book',inaccuracy:'ann-inacc',mistake:'ann-mist',blunder:'ann-blun',miss:'ann-miss'};
+  const plyNum = h => Math.ceil(h / 2);
+  const moveTok = (m, i) => {
+    const h = branchState.startIdx + i + 1;             // absolute half-move of this branch move
     const isCur = viewingBranch && branchPly === i + 1;
-    const badge = m.ann ? `<span class="ann ${({brilliant:'ann-brill',great:'ann-great',best:'ann-best',excellent:'ann-excel',good:'ann-good',book:'ann-book',inaccuracy:'ann-inacc',mistake:'ann-mist',blunder:'ann-blun',miss:'ann-miss'})[m.ann]||''}">${sym[m.ann]||''}</span>` : '';
-    const evalStr = (m.eval !== null && m.eval !== undefined)
-      ? `<span class="ubp-mini-eval">${fmtEval(m.eval, m.isMate, m.mateIn)}</span>`
-      : '';
-    return `<button class="ubp-pill ${isCur ? 'ubp-pill-cur' : ''}" onclick="selectBranchPly(${i + 1})">
-      <span class="ubp-pill-num">${branchState.startIdx + i + 1}${m.isWhiteMove ? '.' : '...'}</span>
-      <span class="ubp-pill-san">${m.san}</span>${badge}${evalStr}
-    </button>`;
-  }).join('');
+    const badge = m.ann ? `<span class="ann ${annCls[m.ann]||''}">${sym[m.ann]||''}</span>` : '';
+    const num = (m.isWhiteMove || i === 0) ? `<span class="ubv-num">${plyNum(h)}${m.isWhiteMove ? '.' : '…'}</span>` : '';
+    const ev = (m.eval !== null && m.eval !== undefined) ? `<span class="ubp-mini-eval">${fmtEval(m.eval, m.isMate, m.mateIn)}</span>` : '';
+    return `${num}<button class="ubv-mv${isCur ? ' ubv-cur' : ''}" onclick="selectBranchPly(${i + 1})">${m.san}${badge}${ev}</button>`;
+  };
+  const varLine = branchState.moves.map(moveTok).join('');
+
+  const h0 = branchState.startIdx + 1;                  // half-move of the in-game move at the branch point
+  const isW0 = h0 % 2 === 1;
 
   let html_out = `<div class="ubp-header">
-    <span class="ubp-title">Branch from move ${branchState.startIdx + 1}</span>
+    <span class="ubp-title">Branch from move ${plyNum(h0)}</span>
     <button class="ubp-back" onclick="returnToGameLine()">↶ Back to game</button>
   </div>`;
 
-  html_out += `<div class="ubp-branch-line">
-    <span class="ubp-tag tag-user">Your line</span>
-    ${movePills}
-  </div>`;
-
-  // Comparison strip — what the game played + engine's preferred move
   if(gameMv){
-    html_out += `<div class="ubp-compare">
-      <span class="ubp-tag tag-game">In game</span>
-      <span class="ubp-pill ubp-pill-static">
-        <span class="ubp-pill-num">${branchState.startIdx + 1}.</span>
-        <span class="ubp-pill-san">${gameMv.san || '?'}</span>
-        ${gameAnn ? `<span class="ubp-mini-eval">${fmtEval(parseFloat(gameAnn.eval), gameAnn.isMate, gameAnn.mateIn)}</span>` : ''}
-      </span>
-      ${bestSAN && !gamePlayedBest ? `<span class="ubp-tag tag-best" style="margin-left:8px">★ Best</span>
-        <span class="ubp-pill ubp-pill-static"><span class="ubp-pill-san">${bestSAN}</span></span>` : ''}
+    const gBadge = (gameAnn && gameAnn.ann) ? `<span class="ann ${annCls[gameAnn.ann]||''}">${sym[gameAnn.ann]||''}</span>` : '';
+    html_out += `<div class="ubv-main">
+      <span class="ubv-num">${plyNum(h0)}${isW0 ? '.' : '…'}</span>
+      <button class="ubv-mv ubv-game" onclick="returnToGameLine()" title="Return to the game move">${gameMv.san || '?'}${gBadge}
+        ${gameAnn ? `<span class="ubp-mini-eval">${fmtEval(parseFloat(gameAnn.eval), gameAnn.isMate, gameAnn.mateIn)}</span>` : ''}</button>
+      ${bestSAN && !gamePlayedBest ? `<span class="ubv-best">★ best was ${bestSAN}</span>` : ''}
+      <span class="ubv-intag">in game</span>
     </div>`;
   }
+
+  html_out += `<div class="ubv-var"><span class="ubv-paren">(</span>${varLine}<span class="ubv-paren">)</span></div>`;
 
   list.innerHTML = html_out;
 }
@@ -13509,6 +13586,22 @@ window.selectBranchPly = function(ply){
   branchPly = ply;
   viewingBranch = true;
   renderReviewBoard();
+};
+
+// Flip the review sidebar between the report card and the move list
+window.rvTogglePage = function(){
+  const rep = document.getElementById('rv-page-report');
+  const mov = document.getElementById('rv-page-moves');
+  if(!rep || !mov) return;
+  const showMoves = mov.style.display === 'none';
+  mov.style.display = showMoves ? '' : 'none';
+  rep.style.display = showMoves ? 'none' : '';
+};
+window.rvShowReportPage = function(){
+  const rep = document.getElementById('rv-page-report');
+  const mov = document.getElementById('rv-page-moves');
+  if(rep) rep.style.display = '';
+  if(mov) mov.style.display = 'none';
 };
 
 // Exit branch view — show the main game move at branchState.startIdx (preserves branch for return)
@@ -13532,27 +13625,40 @@ function triggerEngineAnalysisR(state){
   evalPosition(fen, 16, 3, 700).then(result => {
     if(myToken !== reviewAnalysisToken) return;
 
-    // Update live engine line — each move is hoverable for a mini-board preview.
+    // Update the live engine panel — the engine's TOP THREE lines, each move
+    // hoverable for a mini-board preview and clickable to play the line out.
     const liveEl = document.getElementById('rv-live-eval');
     if(liveEl){
-      const evalStr = result.isMate
-        ? (result.mateIn > 0 ? `M${Math.abs(result.mateIn)}` : `-M${Math.abs(result.mateIn)}`)
-        : (result.score > 0 ? '+' : '') + result.score.toFixed(2);
-      let pvHtml = '';
-      try {
-        let st = parseFEN(fen);
-        const ms = (result.pv||'').trim().split(/\s+/).filter(Boolean).slice(0,8), toks = [];
-        for(const u of ms){
-          if(u.length < 4) break;
-          const from=u.slice(0,2),to=u.slice(2,4),promo=u.length>4?u[4].toUpperCase():null;
-          let san; try{ san=moveToSAN(st,from,to,promo); }catch(e){ break; } if(!san) break;
-          let ns; try{ ns=applyMove(st,{from,to,promotion:promo}); }catch(e){ break; }
-          toks.push({san, fen: stateToFEN(ns), uci:u}); st = ns;
-        }
-        window._rvLivePv = { fen: fen, moves: toks.map(t=>t.uci) };
-        pvHtml = toks.map((t,ti)=>`<span class="rv-pv-mv" data-fen="${encodeURIComponent(t.fen)}" onmouseenter="ccPvHover(this)" onmouseleave="ccPvHoverOut()" onclick="rvPlayLive(${ti})" title="Play this line on the board">${coachEsc(t.san)}</span>`).join(' ');
-      } catch(e){ pvHtml = result.pv ? uciSequenceToSAN(fen, result.pv, 6) : ''; }
-      liveEl.innerHTML = `<span style="color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-right:8px">Live engine:</span><span style="font-family:'DM Mono',monospace;color:var(--gold);font-weight:600;font-size:14px">${evalStr}</span>${pvHtml ? `<span style="margin-left:10px">${pvHtml}</span>` : ''}`;
+      const fmtLn = (sc, isM, mIn) => isM
+        ? (mIn > 0 ? `M${Math.abs(mIn)}` : `-M${Math.abs(mIn)}`)
+        : (sc > 0 ? '+' : '') + sc.toFixed(2);
+      const lines = (result.alternatives && result.alternatives.length)
+        ? result.alternatives.slice(0, 3)
+        : [{ score: result.score, pv: result.pv, isMate: result.isMate, mateIn: result.mateIn }];
+      window._rvLivePvs = [];
+      const rows = lines.map((ln, li) => {
+        let pvHtml = '';
+        const toksU = [];
+        try {
+          let st = parseFEN(fen);
+          const ms = (ln.pv||'').trim().split(/\s+/).filter(Boolean).slice(0,8), toks = [];
+          for(const u of ms){
+            if(u.length < 4) break;
+            const from=u.slice(0,2),to=u.slice(2,4),promo=u.length>4?u[4].toUpperCase():null;
+            let san; try{ san=moveToSAN(st,from,to,promo); }catch(e){ break; } if(!san) break;
+            let ns; try{ ns=applyMove(st,{from,to,promotion:promo}); }catch(e){ break; }
+            toks.push({san, fen: stateToFEN(ns), uci:u}); st = ns;
+          }
+          toksU.push(...toks.map(t=>t.uci));
+          pvHtml = toks.map((t,ti)=>`<span class="rv-pv-mv" data-fen="${encodeURIComponent(t.fen)}" onmouseenter="ccPvHover(this)" onmouseleave="ccPvHoverOut()" onclick="rvPlayLive(${li},${ti})" title="Play this line on the board">${coachEsc(t.san)}</span>`).join(' ');
+        } catch(e){ pvHtml = ln.pv ? uciSequenceToSAN(fen, ln.pv, 6) : ''; }
+        window._rvLivePvs.push({ fen: fen, moves: toksU });
+        return `<div class="rv-live-line">
+          <span style="font-family:'DM Mono',monospace;color:${li===0?'var(--gold)':'var(--text3)'};font-weight:600;font-size:${li===0?'14px':'12px'};min-width:46px;display:inline-block">${fmtLn(ln.score, ln.isMate, ln.mateIn)}</span>
+          <span>${pvHtml}</span>
+        </div>`;
+      }).join('');
+      liveEl.innerHTML = `<span style="color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:.5px">Live engine:</span>${rows}`;
     }
 
     updateEvalBar('eval-bar-black-r', 'eval-bar-score-r', result.score, result.isMate, result.mateIn);
@@ -13615,9 +13721,11 @@ window.rvEnd = function(){
 };
 // "See key moments" — skip the quiet moves and jump straight to the next
 // real mistake (blunder, mistake, inaccuracy or miss), wrapping around.
-// Click a move in the live-engine line → play that line up to it on the board (as an exploration branch).
-window.rvPlayLive = function(idx){
-  const pv = window._rvLivePv; if(!pv || !pv.moves || !pv.moves.length) return;
+// Click a move in a live-engine line → play that line up to it on the board (as an exploration branch).
+window.rvPlayLive = function(lineIdx, idx){
+  if(idx === undefined){ idx = lineIdx; lineIdx = 0; }   // old single-arg callers
+  const pv = (window._rvLivePvs || [])[lineIdx] || window._rvLivePv;
+  if(!pv || !pv.moves || !pv.moves.length) return;
   try{ if(window.ccPvHoverOut) ccPvHoverOut(); }catch(e){}
   let st;
   try{ st = parseFEN(pv.fen); }catch(e){ return; }
