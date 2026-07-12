@@ -3952,17 +3952,23 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
    BIGGER BOARDS — fill the free space on every board page (match Repertoire).
    Board squares scale with viewport height; panels sit right beside the board.
    ═══════════════════════════════════════════════════════════════════════ */
-/* ── Game Review ── */
+/* ── Game Review ──
+   chess.com-style fit: square size is budgeted from the REAL vertical space —
+   100vh minus nav + title row + two player bars + controls — so the whole
+   board column (bars and controls included) sits above the fold on any screen. */
 #sec-review .page-wrap{ max-width:min(1600px, calc(100vw - 40px)); }
-#sec-review{ --rvsq: clamp(46px, calc(11.6vh - 4px), 98px); }
-#sec-review .review-layout{ grid-template-columns:auto 348px; gap:30px; justify-content:center; align-items:start; }
+#sec-review{ --rvsq: clamp(42px, calc((100vh - 366px) / 8), 92px); }
+#sec-review .review-layout{ grid-template-columns:auto 372px; gap:28px; justify-content:center; align-items:start; }
 #sec-review #board-r .sq{ width:var(--rvsq) !important; height:var(--rvsq) !important; }
 #sec-review #eval-bar-r{ height:calc(var(--rvsq) * 8) !important; align-self:flex-start; }
+/* accuracy dials live in the right panel now (chess.com layout) — compact them */
+#sec-review .acc-wrap{ margin-bottom:14px; }
+#sec-review .rv-accp-num{ font-size:32px; }
 /* ── Coach step-through ── */
-#sec-coach #coach-board{ --cbsq: clamp(46px, calc(11.6vh - 4px), 98px); }
+#sec-coach #coach-board{ --cbsq: clamp(42px, calc((100vh - 310px) / 8), 92px); }
 #sec-coach #coach-board .sq{ width:var(--cbsq) !important; height:var(--cbsq) !important; }
 /* ── Learn + drill ── */
-#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(46px, calc(11.2vh - 4px), 92px); }
+#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(42px, calc((100vh - 310px) / 8), 90px); }
 #sec-olearn #ol-board .sq, #sec-olearn #old-board .sq{ width:var(--lbsq) !important; height:var(--lbsq) !important; }
 @media(max-width:820px){
   #sec-review .review-layout{ grid-template-columns:1fr !important; justify-content:stretch; }
@@ -4415,7 +4421,6 @@ document.addEventListener('DOMContentLoaded', function(){
             <div id="rv-result" style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--gold)"></div>
           </div>
           <div class="sum-grid" id="rv-summary"></div>
-          <div class="acc-wrap" id="rv-acc"></div>
           <div id="rv-player-top" class="rv-player"></div>
           <div class="board-with-eval" style="margin-top:6px">
             <!-- Vertical eval bar (matches Openings tab) -->
@@ -4455,6 +4460,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
         <!-- Game Review report + move list + your exploration branch -->
         <div>
+          <div class="acc-wrap" id="rv-acc"></div>
           <div class="rv-report" id="rv-report"></div>
           <div class="move-list-panel" id="rv-movelist"></div>
           <div class="user-moves-list" id="user-moves-r"></div>
@@ -11996,8 +12002,8 @@ async function analyseGame(white, black, username){
     if(prog) prog.style.width = Math.round((i / analyseLimit) * 100) + '%';
     if(stat) stat.textContent = `Analysing move ${i}/${analyseLimit}…`;
 
-    // Depth 2 with quiescence — enough to spot tactical mistakes
-    const result = await evalPosition(positions[i].fen, 12, 1, 350);
+    // MultiPV 2 so classification knows the gap between best and 2nd-best ("Great" detection)
+    const result = await evalPosition(positions[i].fen, 14, 2, 350);
     evals[i] = result;
 
     // CRITICAL: yield to the event loop between positions so the browser
@@ -12035,14 +12041,18 @@ async function analyseGame(white, black, username){
     const isBookMove  = !!bookEntry || !!reviewOpenings[fullSeq];
 
     // ── Win % the mover gave up vs. best play (lichess/chess.com model) ──
-    const wDrop = winPct(playerBefore) - winPct(playerAfter);
+    const wpBefore = winPct(playerBefore);   // mover's win% with best play
+    const wpAfter  = winPct(playerAfter);    // mover's win% after this move
+    const wDrop = wpBefore - wpAfter;
+    // What the opponent's previous move was classified as (drives Miss / Great)
+    const prevAnn = moveAnnotations.length ? moveAnnotations[moveAnnotations.length - 1].ann : null;
 
-    // 2nd-best gap (MultiPV) — how much better the top move was than the alternative
-    let gap2 = null;
+    // 2nd-best gap (MultiPV) in win% — how much the position depends on finding THE move
+    let gap2Win = null;
     try {
       const alts = evals[i - 1] && evals[i - 1].alternatives;
       if(alts && alts.length >= 2 && typeof alts[0].score === 'number' && typeof alts[1].score === 'number'){
-        gap2 = Math.abs(alts[0].score - alts[1].score);
+        gap2Win = Math.abs(winPct(alts[0].score) - winPct(alts[1].score));
       }
     } catch(e){}
 
@@ -12067,52 +12077,48 @@ async function analyseGame(white, black, username){
       }
     } catch(e){}
 
-    if(isMate1 || isMate2){
-      if(wDrop >= 25 || playerAfter <= -2){ ann = 'blunder'; note = 'Walked into a forced mate — the defence collapsed.'; }
-      else if(wasBestMove){ ann = 'best'; note = 'The engine\'s top move.'; }
-      else { ann = 'good'; note = 'A reasonable move.'; }
-    } else if(isBookMove){
+    // ─── chess.com-style classification ladder (win%-driven) ───
+    if(isBookMove){
       ann = 'book';
       note = openingName ? ('Opening theory — ' + openingName) : 'A known opening theory move.';
-    } else if(isSacrifice){
-      // Sacrificing a piece for something better
+    } else if(isSacrifice && (wasBestMove || wDrop < 2) && wpAfter >= 45 && wpBefore <= 93){
+      // Brilliant: a sound piece sacrifice — best (or near-best), you're not lost after it,
+      // and you weren't already completely winning (chess.com's rules).
       ann = 'brilliant';
       note = 'A brilliant sacrifice — material is given up for a clearly stronger position.';
       bestLine = '';
+    } else if(wasBestMove && gap2Win !== null && gap2Win >= 12 && wpBefore >= 25 && wpBefore <= 93 && i > 6){
+      // Great: THE only move — every alternative gives away a big slice of win%
+      ann = 'great';
+      note = 'A great move — the only continuation that held the position together.';
+    } else if(wasBestMove && (prevAnn === 'blunder' || prevAnn === 'miss') && wpAfter >= 65 && i > 6){
+      // Great: found the punishment after the opponent's blunder
+      ann = 'great';
+      note = 'A great find — this is exactly how to punish the opponent\'s mistake.';
     } else if(wasBestMove){
-      if(gap2 !== null && gap2 >= 1.5 && i > 8 && Math.abs(playerBefore) < 6){
-        // The single move that held the advantage where the alternatives let it slip
-        ann = 'great';
-        note = 'A great move — the only continuation that kept the advantage.';
-      } else {
-        ann = 'best';
-        note = 'The engine\'s top recommended move.';
-      }
-    } else if(hangsPiece){
-      // Completely hanging a piece
+      ann = 'best';
+      note = 'The engine\'s top recommended move.';
+    } else if(wDrop >= 10 && wpBefore >= 65 && wpAfter >= 35 && (wpAfter < 60 || prevAnn === 'blunder' || prevAnn === 'mistake')){
+      // Miss: there was a winning tactic (often handed over by the opponent's error) and it wasn't taken
+      ann = 'miss';
+      note = 'A miss — there was a chance for a winning tactic here that slipped by.';
+    } else if(hangsPiece && wDrop >= 10){
       ann = 'blunder';
       note = 'Hangs a piece — material is given away for nothing.';
-    } else if(playerBefore >= 1.5 && playerAfter >= 0.5 && wDrop >= 10){
-      // A chance to grow the advantage was missed (still winning, but a much stronger move existed)
-      ann = 'miss';
-      note = 'Missed a chance to grow your advantage — a much stronger move was available.';
     } else if(wDrop >= 20){
       ann = 'blunder';
-      note = 'A serious error that swings the game — a much better move was available.';
+      note = (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
+                                          : 'A serious error that swings the game — a much better move was available.';
     } else if(wDrop >= 10){
-      // A move that worsens the position
       ann = 'mistake';
       note = 'This move worsened your position — a clearly better continuation was available.';
     } else if(wDrop >= 5){
-      // Not good, not bad — a slight imprecision
       ann = 'inaccuracy';
       note = 'A slight imprecision — not good or bad, but a better move was available.';
     } else if(wDrop >= 2){
-      // Nothing wrong, but a slightly better move existed
       ann = 'good';
       note = 'A good move — nothing wrong, though a slightly stronger option existed.';
     } else {
-      // Essentially as strong as the engine's top choice
       ann = 'excellent';
       note = 'An excellent move — almost exactly as good as the engine\'s best.';
     }
@@ -12120,6 +12126,7 @@ async function analyseGame(white, black, username){
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
     moveAnnotations.push({
       san: mv.san, ann, eval: evalStr, note, bestLine,
+      ply: i,
       rawScore: after,
       isMate: evals[i]?.isMate || false,
       mateIn: evals[i]?.mateIn || null,
@@ -12135,7 +12142,7 @@ async function analyseGame(white, black, username){
 
   // Fill remaining with 'good' if we hit the cap
   for(let i = moveAnnotations.length; i < total; i++){
-    moveAnnotations.push({ san: reviewHistory[i + 1]?.san, ann: 'good', eval: '0.00', note: '', bestLine: '', rawScore: 0, evalBefore: 0, evalAfter: 0, lossInPawns: 0, bestMoveUCI: null, fenBefore: null });
+    moveAnnotations.push({ san: reviewHistory[i + 1]?.san, ann: 'good', eval: '0.00', note: '', bestLine: '', ply: i + 1, rawScore: 0, evalBefore: 0, evalAfter: 0, lossInPawns: 0, bestMoveUCI: null, fenBefore: null });
   }
 
   // Summary stats
@@ -12143,13 +12150,27 @@ async function analyseGame(white, black, username){
   const mistakes  = moveAnnotations.filter(m => m.ann === 'mistake').length;
   const blunders  = moveAnnotations.filter(m => m.ann === 'blunder').length;
   const allMoves  = moveAnnotations.length;
-  // Accuracy — chess.com/lichess win%-loss model: per-move accuracy averaged per player
-  const moveAcc = wl => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * Math.max(0, wl)) - 3.1669));
-  const accOf = arr => { const xs = arr.filter(m => typeof m.winLoss === 'number'); return xs.length ? Math.round(xs.reduce((s,m)=>s+moveAcc(m.winLoss),0) / xs.length) : 100; };
+  // Accuracy — the real chess.com/lichess CAPS model. Per-move accuracy from win%-loss,
+  // then per player: mean of (a) the HARMONIC mean (blunders hurt disproportionately, as
+  // they should) and (b) a volatility-WEIGHTED mean (sharp phases of the game count more).
+  // A plain average inflates everyone to ~90%; this lands where chess.com lands.
+  const moveAcc = wl => Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * Math.max(0, wl)) - 3.1669 + 1));
+  const winsSeries = [50].concat(moveAnnotations.map(m => winPct(m.evalAfter))); // White-pov win% after each ply
+  const winSz = Math.max(2, Math.min(8, Math.floor(winsSeries.length / 10)));
+  const stdevOf = xs => { if(xs.length < 2) return 0.5; const mu = xs.reduce((a,b)=>a+b,0)/xs.length; return Math.sqrt(xs.reduce((s,x)=>s+(x-mu)*(x-mu),0)/xs.length); };
+  const weightAt = ply => Math.max(0.5, Math.min(12, stdevOf(winsSeries.slice(Math.max(0, ply - winSz), ply + 1))));
+  const accOf = arr => {
+    const xs = arr.filter(m => typeof m.winLoss === 'number').map(m => ({ a: moveAcc(m.winLoss), w: weightAt(m.ply || 0) }));
+    if(!xs.length) return 100;
+    const wSum = xs.reduce((s,x)=>s+x.w,0);
+    const weighted = xs.reduce((s,x)=>s+x.a*x.w,0) / wSum;
+    const harmonic = xs.length / xs.reduce((s,x)=>s+1/Math.max(1,x.a),0);
+    return Math.round(Math.max(0, Math.min(100, (weighted + harmonic) / 2)) * 10) / 10;
+  };
   const accuracy = accOf(moveAnnotations);
 
-  const wMoves = moveAnnotations.filter((_, i) => (i + 1) % 2 === 1);
-  const bMoves = moveAnnotations.filter((_, i) => (i + 1) % 2 === 0);
+  const wMoves = moveAnnotations.filter(m => (m.ply || 0) % 2 === 1);
+  const bMoves = moveAnnotations.filter(m => (m.ply || 0) % 2 === 0);
   const wAcc = accOf(wMoves);
   const bAcc = accOf(bMoves);
 
@@ -12159,7 +12180,8 @@ async function analyseGame(white, black, username){
   const RV_CAT_GLY = {brilliant:'!!',great:'!',best:'★',excellent:'✓',good:'✓',book:'B',inaccuracy:'?!',mistake:'?',miss:'×',blunder:'??'};
   const RV_CAT_COL = {brilliant:'#34c6a8',great:'#6aa6ff',best:'#7bbf6a',excellent:'#9ccc65',good:'#b9c08f',book:'#c79a5b',inaccuracy:'#e6b450',mistake:'#e08a3c',miss:'#d06b7a',blunder:'#e0524e'};
   const cntOf = (arr, a) => arr.filter(m => m.ann === a).length;
-  const estElo = acc => Math.max(250, Math.min(2850, Math.round(250 + Math.pow(Math.max(0, acc)/100, 2.2) * 2600)));
+  // Fitted to chess.com-like anchors: 60%→~850, 80%→~2100, 95%→~2900
+  const estElo = acc => Math.max(250, Math.min(3200, Math.round(-0.262*acc*acc + 99.2*acc - 4157)));
   const wElo = estElo(wAcc), bElo = estElo(bAcc);
   const shortName = s => { s = String(s || ''); return s.length > 11 ? s.slice(0,10) + '…' : s; };
 
@@ -12511,10 +12533,12 @@ function rvAnimateReport(){
     }
     if(reduce){ el.childNodes[0].nodeValue = target; return; }
     const dur = 900, t0 = performance.now();
+    const dec = (target % 1 !== 0); // accuracy has one decimal (76.3), ratings are whole
     (function step(now){
       const p = Math.min(1, (now - t0) / dur);
       const e = 1 - Math.pow(1 - p, 3);
-      el.childNodes[0].nodeValue = Math.round(target * e);
+      const v = target * e;
+      el.childNodes[0].nodeValue = dec ? v.toFixed(1) : Math.round(v);
       if(p < 1) requestAnimationFrame(step);
     })(performance.now());
   });
@@ -13386,7 +13410,8 @@ async function analyzeBranchMove(idx){
     else if(wDrop >= 20){ ann = 'blunder'; }
     else if(wDrop >= 10){ ann = 'mistake'; }
     else if(wDrop >= 5){ ann = 'inaccuracy'; }
-    else { ann = 'good'; }
+    else if(wDrop >= 2){ ann = 'good'; }
+    else { ann = 'excellent'; }
 
     m.ann = ann;
     m.lossInPawns = Math.max(0, loss);
