@@ -1878,7 +1878,7 @@ input:focus, select:focus, textarea:focus {
   .nop-var-actions { display:flex; gap:8px; flex-shrink:0; }
   .nop-mini-btn { padding:7px 13px; border-radius:8px; font-size:13px; cursor:pointer;
     font-family:'Satoshi',sans-serif; border:1px solid var(--border); background:var(--bg3); color:var(--text); }
-  .nop-mini-btn.gold { background:linear-gradient(135deg,var(--gold),#b8860b); color:#1a1a1a; font-weight:700; border:none; }
+  .nop-mini-btn.gold { background:var(--green, var(--gold)); color:#fff; font-weight:700; border:none; }
   .nop-mini-btn:hover { filter:brightness(1.08); }
   .nop-var-mastered { color:#d4af37; font-size:16px; }
 
@@ -3877,7 +3877,12 @@ body{ padding-top:0 !important; }
 #sec-creator .cc-hero h1 em{ color:var(--green) !important; }
 #sec-creator .acad-hero-badge{ color:var(--green) !important; background:rgba(46,125,91,.1) !important; }
 #sec-creator .btn-gold, #sec-creator .acad-cta-btn{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
-#sec-creator .nop-mini-btn.gold{ background:linear-gradient(135deg,#2E7D5B,#1C4E3A) !important; color:#F3F1E9 !important; }
+#sec-creator .nop-mini-btn.gold{ background:var(--green) !important; color:#fff !important; }
+/* saved-course cards: warm paper, not the legacy deep-space navy */
+#sec-creator .cc-card{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; backdrop-filter:none !important; }
+#sec-creator .cc-card-name{ color:var(--ink) !important; }
+#sec-creator .cc-card-meta{ color:var(--ink-3) !important; }
+#sec-creator .nop-mini-btn{ background:var(--paper) ; color:var(--ink-2); border:1px solid var(--rule-2); }
 #sec-creator .cc-title-row .cc-tool-icon, #sec-creator .cc-tool-icon{ color:var(--green) !important; }
 #sec-creator .cc-name-input:focus{ border-bottom-color:var(--green) !important; }
 #sec-creator .cc-engine-tag, #sec-creator .cc-stats-head, #sec-creator .cc-st-bar, #sec-creator .cc-stats-foot{ background:var(--inset-bg) !important; }
@@ -3996,8 +4001,8 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* ── Coach step-through ── */
 #sec-coach #coach-board{ --cbsq: clamp(42px, calc((100vh - 310px) / 8), 92px); }
 #sec-coach #coach-board .sq{ width:var(--cbsq) !important; height:var(--cbsq) !important; }
-/* ── Learn + drill ── */
-#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(42px, calc((100vh - 310px) / 8), 90px); }
+/* ── Learn + drill — medium board: comfortable, never dominating ── */
+#sec-olearn #ol-board, #sec-olearn #old-board{ --lbsq: clamp(40px, calc((100vh - 360px) / 8), 74px); }
 #sec-olearn #ol-board .sq, #sec-olearn #old-board .sq{ width:var(--lbsq) !important; height:var(--lbsq) !important; }
 @media(max-width:820px){
   #sec-review .review-layout{ grid-template-columns:1fr !important; justify-content:stretch; }
@@ -25680,46 +25685,107 @@ function olGeneratePlans(op, base){
   };
 }
 
-// Detailed per-move explanation: idea + what it accomplishes (simple English).
+// Per-move explanation with a hand-written voice: several phrasings per move type,
+// picked deterministically from the move itself so the text is stable per position
+// but never reads like the same template twice in a row.
+function olSeed(s, ply){ let h = ply * 7; for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i))|0; return Math.abs(h); }
 function olExplainMove(san, ply, sansList, op){
   const s = (san||'').replace(/[+#!?]/g,'');
   const moverWhite = (ply % 2 === 0);
   const who = moverWhite ? 'White' : 'Black';
+  const them = moverWhite ? 'Black' : 'White';
   const dest = s.match(/([a-h][1-8])(?:=[QRBN])?$/);
   const destSq = dest ? dest[1] : null;
   const isCapture = /x/.test(s);
   const isCheck = /\+/.test(san) || /#/.test(san);
   const castleK = s==='O-O', castleQ = s==='O-O-O';
+  const seed = olSeed(s, ply);
+  const pick = arr => arr[seed % arr.length];
+  // did the opponent just capture on this same square? → this is the recapture
+  const prev = (sansList && sansList[ply-1]) || '';
+  const isRecapture = isCapture && /x/.test(prev) && prev.replace(/[+#!?]/g,'').slice(-2) === destSq;
   let txt = '';
 
-  if(castleK){ txt = `<strong>Castles kingside.</strong> ${who} tucks the king safely into the corner and connects the rooks. Castling is one of the most important things to do early — a safe king lets you attack without worrying about counterplay.`; }
-  else if(castleQ){ txt = `<strong>Castles queenside.</strong> ${who} brings the king to safety on the other wing and activates the rook. This often signals an aggressive plan — the kingside pawns are now free to storm forward.`; }
-  else if(/^[NBRQK]/.test(s)){
-    const pieceLetter = s[0]; const piece = OL_PIECE_NAME[pieceLetter];
-    const role = destSq && OL_SQUARE_ROLE[destSq] ? OL_SQUARE_ROLE[destSq] : 'an active square';
-    if(isCapture){
-      txt = `<strong>${piece} takes on ${destSq}.</strong> ${who} captures, ${ply<10?'fighting for the centre and':''} either winning material or improving the structure. Always ask after a capture: can it be recaptured well, and does it help my plan?`;
+  if(castleK){
+    txt = pick([
+      `<strong>Castles kingside.</strong> The king grabs his coat and moves to the suburbs — three pawns for a fence, a rook for a neighbour. With the address sorted, ${who} can start making threats instead of excuses.`,
+      `<strong>Castles kingside.</strong> Two problems solved with one move: the king is out of the firing line and the rook finally joins the conversation. This is the moment ${who}'s position becomes fully operational.`,
+      `<strong>Castles kingside.</strong> Safety first — but it's a greedy kind of safety. A castled king means every ${who} piece can commit to the fight without leaving anyone home to babysit.`,
+    ]);
+  } else if(castleQ){
+    txt = pick([
+      `<strong>Castles queenside.</strong> The bold address. The king ducks left, the rook lands on a centre file instantly — and the kingside pawns are now free to charge like they've got nothing to lose. Expect fireworks.`,
+      `<strong>Castles queenside.</strong> ${who} castles long, which is chess for "I'm attacking, and I've brought luggage." The rook arrives on the d-file already working; the g- and h-pawns are cleared to storm.`,
+      `<strong>Castles queenside.</strong> Opposite-side castling usually means both players race to checkmate first. ${who} just picked the fast lane — count on pawns being hurled at both kings from here.`,
+    ]);
+  } else if(/^[NBRQK]/.test(s)){
+    const piece = OL_PIECE_NAME[s[0]];
+    const role = destSq && OL_SQUARE_ROLE[destSq] ? OL_SQUARE_ROLE[destSq] : null;
+    if(isCapture && isRecapture){
+      txt = pick([
+        `<strong>${piece} takes back on ${destSq}.</strong> The polite reply — material stays level and the ${piece} often lands on a better square than the one it left. Always check which recapture improves your position most; this one does.`,
+        `<strong>Recaptures on ${destSq}.</strong> No drama, just bookkeeping: ${who} restores the material balance. The interesting part is WHAT recaptures — here the ${piece} takes because it ends up doing the most useful work afterward.`,
+        `<strong>${piece} recaptures on ${destSq}.</strong> An even trade on the surface, but notice the small print: the ${piece} now sits more actively than before. Good players win these tiny fractions on every exchange.`,
+      ]);
+    } else if(isCapture){
+      txt = pick([
+        `<strong>${piece} takes on ${destSq}.</strong> ${who} cashes in. Before every capture, ask the shopkeeper's questions: what does it cost, what recaptures, and who's happier after the dust settles? Here the answers all favour ${who}.`,
+        `<strong>${piece} takes on ${destSq}.</strong> A capture with a purpose — it ${ply<12?'fights for the centre and forces '+them+' to make a structural decision':'damages '+them+"'s coordination and clarifies the position on "+who+"'s terms"}.`,
+        `<strong>${piece} captures on ${destSq}.</strong> Chess is a barter economy and ${who} just made a trade that helps the plan. Watch how the recapture shapes ${them}'s pawns — that's the real price tag on this deal.`,
+      ]);
     } else if(ply < 10){
-      txt = `<strong>Develops the ${piece} to ${destSq}.</strong> Early in the game the priority is development — get your pieces off the back rank toward ${role}. The ${piece} now controls important squares and helps you prepare to castle.`;
+      txt = pick([
+        `<strong>Develops the ${piece} to ${destSq}.</strong> Pieces win games from the middle of the board, not the back rank. The ${piece} clocks in${role?`, eyeing ${role},`:''} and ${who} is one move closer to castling — the opening checklist, ticked in order.`,
+        `<strong>${piece} to ${destSq}.</strong> Simple, honest development: the ${piece} takes its best square${role?` and points at ${role}`:''}. In the opening, the player who gets everyone to work first usually gets to boss the middlegame.`,
+        `<strong>${piece} out to ${destSq}.</strong> No tricks, just good manners — every piece developed is a promise you can keep later. ${role?`From here it watches ${role}, which`:'It now controls squares that'} will matter very soon.`,
+      ]);
     } else {
-      txt = `<strong>${piece} to ${destSq}.</strong> ${who} improves the ${piece}, aiming it at ${role}. In the middlegame, look for your worst-placed piece and make it better — that's exactly what this move does.`;
+      txt = pick([
+        `<strong>${piece} to ${destSq}.</strong> A quiet upgrade. ${who} spots the laziest piece on the payroll and gives it a better job${role?` near ${role}`:''}. Middlegame mastery is mostly this: small promotions for underperforming staff.`,
+        `<strong>${piece} to ${destSq}.</strong> Repositioning with intent — the ${piece} wasn't doing enough where it stood, and ${destSq} is where the action is heading. Strong players move pieces to where the game WILL be, not where it was.`,
+        `<strong>${piece} slides to ${destSq}.</strong> Not flashy, extremely useful. ${who} improves the ${piece}'s scope${role?` toward ${role}`:''} and keeps the tension. Positions are won by a hundred of these before anyone shouts "tactic".`,
+      ]);
     }
-    if(isCheck) txt += ` It comes with check, forcing ${moverWhite?'Black':'White'} to respond immediately.`;
+    if(isCheck) txt += ` And it lands with <strong>check</strong> — ${them} doesn't get a vote on what happens next.`;
   } else {
-    // pawn move
-    if(isCapture){
-      txt = `<strong>Pawn takes on ${destSq}.</strong> ${who} captures in the centre/structure. Pawn captures change the pawn structure permanently, so they matter a lot — this one ${ply<12?'opens lines for your pieces':'reshapes the position to suit your plan'}.`;
+    if(isCapture && isRecapture){
+      txt = pick([
+        `<strong>Pawn takes back on ${destSq}.</strong> Balance restored — but look at the new pawn shape. Recaptures like this quietly decide which files open, and open files are where rooks make their living.`,
+        `<strong>Recaptures with the pawn on ${destSq}.</strong> The structure shifts: a file half-opens and a new pawn duty roster is posted. ${who}'s rooks should already be circling the fresh open lines.`,
+      ]);
+    } else if(isCapture){
+      txt = pick([
+        `<strong>Pawn takes on ${destSq}.</strong> Pawns can't retreat and neither can this decision — pawn captures are permanent renovations, not redecorating. This one ${ply<12?`opens lines exactly where ${who} wants them`:`reshapes the structure to fit ${who}'s plan`}.`,
+        `<strong>Pawn captures on ${destSq}.</strong> The cheapest piece just made the most lasting change on the board. Structure is destiny in chess, and ${who} just signed the paperwork.`,
+      ]);
     } else if(['e4','d4','e5','d5','c4','c5'].includes(s)){
-      txt = `<strong>${s} — strikes in the centre.</strong> ${who} grabs central space. Controlling the centre is the single most important opening principle: central pawns restrict the opponent and give your pieces more room.`;
+      txt = pick([
+        `<strong>${s} — stakes a claim in the centre.</strong> The centre is the high ground of chess: pawns there feed your pieces and starve ${them}'s. Every opening argument starts with who owns these squares.`,
+        `<strong>${s} — centre, immediately.</strong> ${who} plants a flag where it matters most. Central pawns are like good real estate — they pay rent every single move by cramping ${them} and freeing your own pieces.`,
+        `<strong>${s}.</strong> The classical move order of business: occupy the centre first, argue later. This pawn gives ${who}'s pieces room to breathe and ${them}'s pieces a smaller apartment.`,
+      ]);
     } else if(['g6','b6','g3','b3'].includes(s)){
-      txt = `<strong>${s} — preparing a fianchetto.</strong> ${who} opens a diagonal so the bishop can sit on the long diagonal (g7/b7/g2/b2), where it controls a huge stretch of the board and supports the centre.`;
+      txt = pick([
+        `<strong>${s} — the fianchetto is coming.</strong> ${who} opens the long diagonal so the bishop can move into the corner office — modest address, enormous view. From there it will stare across the whole board for the rest of the game.`,
+        `<strong>${s} — preparing to fianchetto.</strong> One pawn step, one huge diagonal. The bishop heading to this wing will influence the centre from a distance, like artillery that never has to relocate.`,
+      ]);
     } else if(['a6','h6','a3','h3'].includes(s)){
-      txt = `<strong>${s} — a useful little move.</strong> ${who} takes away a square from an enemy piece (often stopping a bishop or knight from landing on b5/g5/b4/g4). These quiet 'luft' moves prevent annoying pins and gain time.`;
+      txt = pick([
+        `<strong>${s} — a little move with a long memory.</strong> ${who} takes a key square away from ${them}'s minor pieces before they get comfortable. Nobody applauds these moves, but skipping them is how you end up pinned and miserable.`,
+        `<strong>${s} — quiet housekeeping.</strong> This stops a bishop or knight from ever landing on the annoying square. Prophylaxis, the grandmasters call it; "no, you don't" works too.`,
+      ]);
     } else if(['f5','f4','b5','b4','g5','g4'].includes(s)){
-      txt = `<strong>${s} — gaining space / starting an attack.</strong> ${who} pushes a pawn to grab space and open lines. Flank pawn pushes like this often signal the start of an attack on that side of the board.`;
+      txt = pick([
+        `<strong>${s} — space, with attitude.</strong> A flank pawn steps up to grab territory and pry open lines. Pushes like this are the opening bars of an attack — ${who} is telling you which side of the board the fight will be on.`,
+        `<strong>${s} — the pawn storm files its intent.</strong> ${who} gains space and threatens to open lines toward ${them}'s position. When wing pawns start marching, kings start checking their exits.`,
+      ]);
     } else {
-      txt = `<strong>${s}.</strong> ${who} makes a solid developing/structural move, improving the position and keeping options open.`;
+      txt = pick([
+        `<strong>${s}.</strong> A solid, useful pawn move — it supports the centre, opens a path for a piece, and commits to nothing prematurely. Flexible moves like this keep ${them} guessing about your real plan.`,
+        `<strong>${s}.</strong> Structure before glory: this pawn quietly improves ${who}'s setup and keeps every good option on the table. The move you barely notice is often the one holding the position together.`,
+      ]);
     }
+    if(isCheck) txt += ` With <strong>check</strong>, no less — ${them} must deal with it before doing anything they actually wanted to do.`;
   }
   return txt;
 }
@@ -25942,12 +26008,68 @@ function olRenderLearn(){
 window.olLearnNext = function(){ if(olearn.idx < olearn.sans.length){ olearn.idx++; olRenderLearnStep(); } };
 window.olLearnBack = function(){ if(olearn.idx > 0){ olearn.idx--; olRenderLearnStep(); } };
 
+// ── The user plays the lesson moves on the board ──
+// Right move → advance (same as Next). Wrong move → say so and revert.
+// Wrong AND a blunder → explain why, with a red arrow on the punishment.
+let olLearnTryToken = 0;
+window.olLearnTryMove = async function(from, to, newState, san){
+  if(!olearn || olearn.idx >= olearn.sans.length) return;
+  const state = olearn.states[olearn.idx];
+  const expected = sanToMove(olearn.sans[olearn.idx], state);
+  if(expected && expected.from === from && expected.to === to){
+    olearn.idx++; olRenderLearnStep(); return;          // correct — step forward
+  }
+  const token = ++olLearnTryToken;
+  // show the wrong move on the board (frozen — no input during feedback)
+  renderBoardEl('ol-board','ol-b-ranks','ol-b-files', newState, [from, to], null);
+  const ctx = interactiveState['ol-board']; if(ctx){ ctx.onMove = null; ctx.from = null; ctx.dests = []; }
+  clearArrows('ol-arrows');
+  const explain = document.getElementById('ol-explain');
+  const badge = document.getElementById('ol-badge');
+  if(badge) badge.textContent = san;
+  if(explain) explain.innerHTML = `<span style="color:#c85f5f;font-weight:600">✗ Not the course move.</span> One second — checking what it does…`;
+
+  // judge the move with the engine: win% the mover gave up vs. best play
+  let wDrop = 0, hangs = false, replySAN = '', bestU = null;
+  try {
+    const moverWhite = state.turn === 'w';
+    const rb = await evalPosition(stateToFEN(state), 12, 1, 350);
+    const ra = await evalPosition(stateToFEN(newState), 12, 1, 350);
+    if(token !== olLearnTryToken) return;               // user navigated away meanwhile
+    wDrop = winPct(moverWhite ? rb.score : -rb.score) - winPct(moverWhite ? ra.score : -ra.score);
+    bestU = ra.bestMove || null;                        // the opponent's punishment
+    if(bestU){ try{ replySAN = uciSequenceToSAN(stateToFEN(newState), bestU, 1) || ''; }catch(e){} }
+    try {
+      const moved = newState.board[to];
+      if(moved && moved[1] !== 'K' && (PIECE_VALUES[moved[1]]||0) >= 3 && isPieceHanging(newState, to)) hangs = true;
+    } catch(e){}
+  } catch(e){}
+  if(token !== olLearnTryToken) return;
+
+  let isBlunder = wDrop >= 10;
+  if(isBlunder && explain){
+    if(bestU && /^[a-h][1-8][a-h][1-8]/.test(bestU)) olDrawMoveArrows([{u:bestU}], newState, 'red');
+    const pieceName = OL_PIECE_NAME[((newState.board[to]||' P')[1])] || 'pawn';
+    const why = hangs
+      ? `it leaves your ${pieceName} on <b>${to}</b> hanging${replySAN ? ` — after <b>${replySAN}</b> (red arrow) it's simply gone` : ''}`
+      : `it gives the opponent a strong reply${replySAN ? ` — <b>${replySAN}</b> (red arrow) and your position turns sour` : ''}`;
+    explain.innerHTML = `<span style="color:#c85f5f;font-weight:700">✗ That's a blunder:</span> ${why}. Take it back and try again.`;
+  } else if(explain){
+    explain.innerHTML = `<span style="color:#c85f5f;font-weight:600">✗ Not the course move.</span> Nothing disastrous, but the lesson has a better idea here — check the popularity bars and try again.`;
+  }
+  // revert to the lesson position (longer pause after a blunder, so the arrow sinks in)
+  setTimeout(() => { if(token === olLearnTryToken) olRenderLearnStep(); }, isBlunder ? 3400 : 1900);
+};
+
 function olRenderLearnStep(){
+  olLearnTryToken++;                       // cancel any pending wrong-move feedback
   const idx = olearn.idx;
   const state = olearn.states[idx];
   const hl = [];
   if(idx>0){ const mv = sanToMove(olearn.sans[idx-1], olearn.states[idx-1]); if(mv){ hl.push(mv.from, mv.to); } }
   renderBoardEl('ol-board','ol-b-ranks','ol-b-files', state, hl, null);
+  // the user PLAYS each move on the board (click or drag) instead of pressing Next
+  if(idx < olearn.sans.length) makeBoardInteractive('ol-board', state, olLearnTryMove);
   olSetProgress(idx, olearn.sans.length);
 
   const badge = document.getElementById('ol-badge');
@@ -25958,7 +26080,7 @@ function olRenderLearnStep(){
   // explanation of the move just played (or intro at idx 0)
   if(idx === 0){
     badge.textContent = 'Starting position';
-    explain.innerHTML = `We'll walk through this line one move at a time. At each step you'll see the <strong>most popular moves</strong> and, when it's the opponent's turn, their likely replies marked with <span style="color:#e0706f;font-weight:600">red arrows</span>. Press <strong>Next →</strong> to begin.`;
+    explain.innerHTML = `<strong>You make the moves here.</strong> Pick up a piece and play the line yourself — both sides, so you learn the opponent's ideas too. The <strong>popularity bars</strong> hint at the right move, and <span style="color:#e0706f;font-weight:600">red arrows</span> mark the opponent's likely tries. Wrong move? No harm — you'll see why, then try again.`;
   } else {
     const san = olearn.sans[idx-1];
     const moverWhite = ((idx-1)%2===0);
@@ -25972,9 +26094,10 @@ function olRenderLearnStep(){
       explain.innerHTML = olExplainMove(san, idx-1, olearn.sans, olearn.op);
     }
   }
-  nextBtn.textContent = idx >= olearn.sans.length ? '✓ End of variation' : 'Next →';
-  nextBtn.classList.toggle('btn-gold', idx < olearn.sans.length);
-  nextBtn.classList.toggle('btn-outline', idx >= olearn.sans.length);
+  // playing the move on the board is the main path — the button just skips ahead
+  nextBtn.textContent = idx >= olearn.sans.length ? '✓ End of variation' : 'Skip →';
+  nextBtn.classList.remove('btn-gold');
+  nextBtn.classList.add('btn-outline');
 
   // ── popularity at the current position: top-3 moves ──
   const key = olUciKey(olearn.states, idx);
