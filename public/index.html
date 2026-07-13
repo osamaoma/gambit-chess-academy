@@ -4032,6 +4032,30 @@ body.app-screen footer.site-credit{ display:none; }   /* credit lives on content
   max-height:calc(100vh - 70px); overflow-y:auto; overscroll-behavior:contain;
   position:sticky; top:6px; scrollbar-width:thin; padding-right:2px;
 }
+/* sidebar is an app column: graph + players pinned up top, the report/move page
+   scrolls internally, the playback bar never leaves the bottom edge */
+#sec-review .review-layout > div.rv-sidebar{ overflow:hidden; display:flex; flex-direction:column; }
+#sec-review .rv-sidebar .rv-side-page{ flex:1 1 auto; min-height:0; overflow-y:auto; scrollbar-width:thin; }
+#sec-review .rv-sidebar #rv-page-moves .move-list-panel{ max-height:none; }
+#sec-review .rv-sidebar .rv-evalgraph{ flex:none; margin-bottom:10px; }
+#sec-review .rv-sidebar .acc-wrap{ flex:none; }
+#sec-review .rv-sidebar .user-moves-list{ flex:none; }
+/* players + accuracy (chess.com grid: label | White | Black) */
+.rv-pl-grid{ display:grid; grid-template-columns:minmax(58px,auto) 1fr 1fr; gap:7px 10px; align-items:center;
+  padding:11px 12px; background:var(--paper-2); border:1px solid var(--rule); border-radius:12px; }
+.rv-pl-name{ font-weight:700; font-size:12.5px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rv-pl-lab{ font-size:11px; letter-spacing:.04em; color:var(--text3); }
+.rv-pl-av{ display:flex; justify-content:center; }
+.rv-pl-acc{ font-family:'DM Mono',monospace; font-weight:700; font-size:15px; text-align:center;
+  background:var(--inset-bg); border:1px solid var(--inset-bd); border-radius:8px; padding:4px 0; font-variant-numeric:tabular-nums; }
+/* playback bar (chess.com): ⏮ ◀ [Next →] ▶ ⏭ */
+.rv-playbar{ flex:none; display:grid; grid-template-columns:1fr 1fr 1.9fr 1fr 1fr; gap:6px; padding-top:10px; }
+.rv-pb-btn{ padding:9px 0; border-radius:10px; border:1px solid var(--rule-2); background:var(--paper-2);
+  color:var(--ink-2); font-size:13px; font-family:inherit; cursor:pointer; line-height:1;
+  transition:background .15s ease, transform .15s ease; }
+.rv-pb-btn:hover{ background:var(--inset-bg); }
+.rv-pb-btn:active{ transform:scale(.96); }
+.rv-pb-next{ background:var(--green) !important; color:#fff !important; border-color:var(--green) !important; font-weight:700; }
 body.app-screen #sec-review .page-wrap{ padding-bottom:0; }
 body.app-screen #sec-review{ padding-bottom:0; }
 /* sections default to min-height:100vh, which forces a nav-height page scroll —
@@ -4568,11 +4592,6 @@ document.addEventListener('DOMContentLoaded', function(){
           </div>
           <div id="rv-player-bot" class="rv-player"></div>
           <div class="board-controls">
-            <button class="btn btn-outline btn-sm" onclick="rvStart()" title="Back to the start position">⟲ Restart</button>
-            <button class="btn btn-outline btn-sm" onclick="rvPrev()">← Back</button>
-            <button class="btn btn-outline btn-sm" onclick="rvNext()">Next →</button>
-            <button class="btn btn-outline btn-sm" onclick="rvEnd()" title="Jump to the final position">End ⇥</button>
-            <button class="btn btn-gold btn-sm" onclick="rvSee()" title="Jump to the key moments — brilliancies, blunders, mistakes and misses"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></span> See key moments</button>
             <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
             <button class="btn btn-gold btn-sm" id="rv-btg" onclick="returnToGameLine()" title="Leave this exploration branch and return to the game" style="display:none">↶ Back to game</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
@@ -4582,14 +4601,15 @@ document.addEventListener('DOMContentLoaded', function(){
             <span class="pm-label">Play mode</span>
             <span class="pm-text">Click any piece to explore alternative moves. Branch off the game to test ideas with live engine analysis.</span>
           </div>
-          <div class="rv-evalgraph" id="rv-evalgraph" style="display:none;margin-bottom:6px"></div>
           <div class="move-detail-box" id="rv-detail">
             <div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>
           </div>
         </div>
-        <!-- Game Review sidebar: accuracy on top, then ONE page at a time —
-             the report card (default) or the move list — flipped by the arrow. -->
-        <div>
+        <!-- Game Review sidebar (chess.com structure, no coach): eval graph on top,
+             players + accuracy, then ONE page at a time — report or move list —
+             flipped by the arrow; playback bar pinned at the bottom. -->
+        <div class="rv-sidebar">
+          <div class="rv-evalgraph" id="rv-evalgraph" style="display:none"></div>
           <div class="acc-wrap" id="rv-acc"></div>
           <div class="rv-side-page" id="rv-page-report">
             <button class="rv-page-arrow" onclick="rvTogglePage()" title="Show the move list" aria-label="Show the move list">→</button>
@@ -4600,6 +4620,13 @@ document.addEventListener('DOMContentLoaded', function(){
             <div class="move-list-panel" id="rv-movelist"></div>
           </div>
           <div class="user-moves-list" id="user-moves-r"></div>
+          <div class="rv-playbar">
+            <button class="rv-pb-btn" onclick="rvStart()" title="Back to the start">⏮</button>
+            <button class="rv-pb-btn" onclick="rvPrev()" title="One move back">◀</button>
+            <button class="rv-pb-btn rv-pb-next" onclick="rvSee()" title="Fast-play to the next key moment (brilliant, great, mistake, miss, blunder)">Next →</button>
+            <button class="rv-pb-btn" onclick="rvNext()" title="One move forward">▶</button>
+            <button class="rv-pb-btn" onclick="rvEnd()" title="Jump to the final position">⏭</button>
+          </div>
         </div>
       </div>
     </div>
@@ -12153,7 +12180,7 @@ async function analyseGame(white, black, username){
     if(stat) stat.textContent = `Analysing move ${i}/${analyseLimit}…`;
 
     // MultiPV 3 so classification knows the 2nd/3rd-best moves (Excellent/Good) and the only-move gap (Great)
-    const result = await evalPosition(positions[i].fen, 14, 3, 350);
+    const result = await evalPosition(positions[i].fen, 16, 3, 600);
     evals[i] = result;
 
     // CRITICAL: yield to the event loop between positions so the browser
@@ -12356,19 +12383,20 @@ async function analyseGame(white, black, username){
   const wElo = estElo(wAcc), bElo = estElo(bAcc);
   const shortName = s => { s = String(s || ''); return s.length > 11 ? s.slice(0,10) + '…' : s; };
 
-  // Accuracy header — two big dials above the board
+  // Players + Accuracy (chess.com structure): names, avatars, accuracy boxes
   const accEl = document.getElementById('rv-acc');
+  const rvAv = (av, name) => `<span class="rv-avatar">${av ? `<img src="${av}" alt="" onload="this.style.opacity=1" onerror="this.remove()">` : ''}<span class="rv-avatar-i">${((name||'?').trim().charAt(0)||'?').toUpperCase()}</span></span>`;
   if(accEl) accEl.innerHTML = `
-    <div class="rv-accp">
-      <div class="rv-accp-cap">White · ${shortName(white)}</div>
-      <div class="rv-accp-num" data-countup="${wAcc}">0<span>%</span></div>
-      <div class="rv-accp-sub">Accuracy</div>
-    </div>
-    <div class="rv-acc-vs">vs</div>
-    <div class="rv-accp">
-      <div class="rv-accp-cap">Black · ${shortName(black)}</div>
-      <div class="rv-accp-num" data-countup="${bAcc}">0<span>%</span></div>
-      <div class="rv-accp-sub">Accuracy</div>
+    <div class="rv-pl-grid">
+      <span></span>
+      <span class="rv-pl-name" title="${olEsc ? olEsc(white) : white}">${shortName(white)}</span>
+      <span class="rv-pl-name" title="${olEsc ? olEsc(black) : black}">${shortName(black)}</span>
+      <span class="rv-pl-lab">Players</span>
+      <span class="rv-pl-av">${rvAv(reviewMeta.whiteAvatar, white)}</span>
+      <span class="rv-pl-av">${rvAv(reviewMeta.blackAvatar, black)}</span>
+      <span class="rv-pl-lab">Accuracy</span>
+      <span class="rv-pl-acc" data-countup="${wAcc}">0</span>
+      <span class="rv-pl-acc" data-countup="${bAcc}">0</span>
     </div>`;
 
   // Classification report card — right column, above the move list
@@ -13798,6 +13826,7 @@ function rvScrollMove(el){
   else if(er.bottom > cr.bottom) cont.scrollTop += (er.bottom - cr.bottom) + 6;
 }
 window.rvNext = function(){
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
   if(viewingBranch && branchState){
     if(branchPly < branchState.moves.length){ branchPly++; renderReviewBoard(); }
   } else if(reviewIdx < reviewHistory.length - 1){
@@ -13806,6 +13835,7 @@ window.rvNext = function(){
   }
 };
 window.rvPrev = function(){
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
   if(viewingBranch && branchState){
     if(branchPly > 0){ branchPly--; renderReviewBoard(); }
     else { /* at branch start — could exit branch here, but keep branch view to allow re-entry */ }
@@ -13814,10 +13844,12 @@ window.rvPrev = function(){
   }
 };
 window.rvStart = function(){
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
   if(viewingBranch && branchState){ branchPly = 0; renderReviewBoard(); }
   else { reviewIdx = 0; renderReviewBoard(); }
 };
 window.rvEnd = function(){
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
   if(viewingBranch && branchState){
     branchPly = branchState.moves.length;
     renderReviewBoard();
@@ -13845,11 +13877,14 @@ window.rvPlayLive = function(lineIdx, idx){
     st = ns;
   }
 };
-const RV_CRITICAL = ['brilliant','blunder','mistake','miss'];
+const RV_CRITICAL = ['brilliant','great','blunder','mistake','miss'];
+// "Next" (chess.com-style): FAST-PLAY through the quiet moves — every ply animated
+// at speed, never skipped — and settle on the next key moment.
 window.rvSee = function(){
   const total = reviewHistory.length - 1;
   if(total < 1 || !moveAnnotations || !moveAnnotations.length) return;
   viewingBranch = false;                                   // leave any branch we're exploring
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; }
   const start = (typeof reviewIdx === 'number') ? reviewIdx : 0;
   let found = -1;
   for(let step = 1; step <= total; step++){
@@ -13862,8 +13897,20 @@ window.rvSee = function(){
     if(lbl){ const t = lbl.textContent; lbl.textContent = 'No critical mistakes — clean game!'; setTimeout(()=>{ if(lbl) lbl.textContent = t; }, 2200); }
     return;
   }
-  reviewIdx = found; renderReviewBoard();
-  document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
+  if(found <= reviewIdx){ reviewIdx = 0; renderReviewBoard(); }   // wrapped — restart the reel
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){ reviewIdx = found; renderReviewBoard(); document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'}); return; }
+  window._rvFastTimer = setInterval(() => {
+    if(typeof reviewIdx !== 'number' || reviewIdx >= found || viewingBranch){
+      clearInterval(window._rvFastTimer); window._rvFastTimer = null; return;
+    }
+    reviewIdx++;
+    renderReviewBoard();                                   // each render slides the piece
+    if(reviewIdx >= found){
+      clearInterval(window._rvFastTimer); window._rvFastTimer = null;
+      document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
+    }
+  }, 230);
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -27285,7 +27332,7 @@ async function explRunEngine(){
   let fen; try { fen = stateToFEN(state); } catch(e){ return; }
 
   try {
-    const result = await evalPosition(fen, 18, expl.multipv, 700);
+    const result = await evalPosition(fen, 16, expl.multipv, 700);
     if(token !== expl.evalToken) return;
     if(dot) dot.className = 'expl-engine-dot ready';
     if(depthEl) depthEl.textContent = 'depth ' + (result.depth || 16);
@@ -29035,7 +29082,7 @@ async function ccRunEngine(){
   if(typeof evalPosition!=='function'){ if(linesHost) linesHost.innerHTML=''; return; }
   const state=ccCurrentState(); let fen; try{ fen=stateToFEN(state); }catch(e){ return; }
   try {
-    const r=await evalPosition(fen, 18, 3, 700);
+    const r=await evalPosition(fen, 16, 3, 700);
     if(token!==CC.evalToken) return;
     updateEvalBar('cc-evalbar-black','cc-evalbar-score', r.score, r.isMate, r.mateIn);
     if(inline) inline.textContent=formatEval(r.score,r.isMate,r.mateIn);
