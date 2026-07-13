@@ -4021,6 +4021,25 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* chessable-style coach card pieces */
 .ol-opp-ctx{ color:var(--text2); margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border); }
 .ol-play-cmd{ margin-top:14px; font-weight:800; font-size:16px; color:var(--gold); }
+/* ═══════════ APP-SHELL — working screens (Repertoire / Learn / Review) fit the
+   viewport: slim nav, no page scroll, side panels scroll internally ═══════════ */
+body.app-screen nav.nav{ height:44px !important; }
+body.app-screen .nav-logo{ font-size:16px; }
+body.app-screen .nav-tab{ padding-top:4px; padding-bottom:4px; }
+body.app-screen footer.site-credit{ display:none; }   /* credit lives on content pages */
+/* Game Review: both columns cap at the viewport and scroll inside themselves */
+#sec-review .review-layout > div{
+  max-height:calc(100vh - 70px); overflow-y:auto; overscroll-behavior:contain;
+  position:sticky; top:6px; scrollbar-width:thin; padding-right:2px;
+}
+body.app-screen #sec-review .page-wrap{ padding-bottom:0; }
+body.app-screen #sec-review{ padding-bottom:0; }
+/* sections default to min-height:100vh, which forces a nav-height page scroll —
+   on app screens the content itself defines the height */
+body.app-screen #sec-review, body.app-screen #sec-creator, body.app-screen #sec-olearn, body.app-screen #sec-explorer{ min-height:calc(100vh - 56px) !important; }
+body.app-screen #sec-creator .acad-wrap{ padding-bottom:8px; }
+body.app-screen #sec-creator{ padding-bottom:0; }
+
 /* course menu: origin-aware popover scaling from its trigger (top-right) */
 .cc-menu-wrap{ position:relative; flex-shrink:0; }
 .cc-menu{
@@ -29922,6 +29941,21 @@ window.pcoachStudy = function(name){
 };
 window.pcoachReset = function(){ pcoach = { step:'connect', platform: pcoach.platform, username: pcoach.username, busy:false, games:[], mistakes:[], patterns:[], curIdx:0, style:null, recs:[], summary:null }; pcoachRenderConnect(); };
 
+</script>
+<script>
+/* App-shell flag: working screens get the slim nav + no-scroll treatment */
+(function(){
+  const APP = ['creator','olearn','review','explorer'];
+  function arm(){
+    const orig = window.showSection;
+    if(typeof orig !== 'function'){ setTimeout(arm, 200); return; }
+    window.showSection = function(id){
+      orig.apply(this, arguments);
+      try{ document.body.classList.toggle('app-screen', APP.includes(id)); }catch(e){}
+    };
+  }
+  arm();
+})();
 </script>
 <script>
 /* Grandmaster's Study — scroll reveal & view-change re-arm */
