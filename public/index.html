@@ -4021,6 +4021,26 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* chessable-style coach card pieces */
 .ol-opp-ctx{ color:var(--text2); margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border); }
 .ol-play-cmd{ margin-top:14px; font-weight:800; font-size:16px; color:var(--gold); }
+/* course menu: origin-aware popover scaling from its trigger (top-right) */
+.cc-menu-wrap{ position:relative; flex-shrink:0; }
+.cc-menu{
+  position:absolute; top:calc(100% + 6px); right:0; min-width:212px; z-index:60;
+  background:var(--bg2); border:1px solid var(--border2); border-radius:12px; padding:6px;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.35);
+  transform-origin:top right; transform:scale(.96); opacity:0; pointer-events:none;
+  transition:transform .16s cubic-bezier(.23,1,.32,1), opacity .16s cubic-bezier(.23,1,.32,1);
+}
+.cc-menu.open{ transform:scale(1); opacity:1; pointer-events:auto; }
+.cc-menu button{
+  display:block; width:100%; text-align:left; background:none; border:none; cursor:pointer;
+  padding:8px 10px; border-radius:8px; color:var(--text); font-size:13.5px; font-family:inherit;
+  transition:background .12s ease, transform .12s ease;
+}
+.cc-menu button:hover{ background:var(--gold3); }
+.cc-menu button:active{ transform:scale(.98); }
+.cc-menu-sec{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); padding:8px 10px 3px; }
+@media (prefers-reduced-motion: reduce){ .cc-menu{ transition:opacity .12s ease; transform:none } }
+
 /* drill feedback: ✓/✗ stamp on the destination square (chessable-style) */
 .sq-badge{
   position:absolute; top:2px; right:2px; width:22px; height:22px; border-radius:50%;
@@ -26824,19 +26844,26 @@ function olDrillUserMove(from, to, newState, san){
       // the user's move stays on the board, stamped correct
       renderBoardEl('old-board','old-ranks','old-files', newState, [from, to], null);
       olSqBadge(to, true);
-      // other selected lines diverge here → invite the user to PLAY them now,
-      // or continue with the move they chose
+      // other selected lines diverge here — but this is a MEMORY test: don't name
+      // the move. Cue the line, let the user recall it, reveal only on request.
       const others = cands.filter(c => c !== hit)
         .map(o => ({ o, allDone: o.qis.every(qi2 => oldrill.doneVids[oldrill.queue[qi2].vIdx]) }));
-      if(others.length){
-        const extra = others.map(({o, allDone}) =>
-          `<div class="olp-fork">Also correct here: <b>${olEsc(o.san)}</b> — your <i>${olEsc(olDrillLineName(o.qis[0]))}</i> pick.${allDone ? ' Already drilled ✓' : ''}</div>`
-        ).join('');
-        fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct (<i>${olEsc(olDrillLineName(oldrill.qi))}</i>).</span>${extra}`;
-        // no clock: continue with the played move, or rewind and play the other branch now
-        const otherBtns = others.filter(x => !x.allDone)
-          .map(({o}) => `<button class="btn btn-outline btn-sm" onclick="olDrillTryAgain()">↩ Play ${olEsc(o.san)} instead</button>`).join('');
-        actions.innerHTML = `<button class="btn btn-gold btn-sm" onclick="olDrillContinue()">Continue with ${olEsc(san)} →</button>${otherBtns}`;
+      const freshOthers = others.filter(x => !x.allDone);
+      if(freshOthers.length){
+        oldrill.forkSan = san;
+        oldrill.forkOthers = freshOthers.map(({o}) => ({ san: o.san, name: olDrillLineName(o.qis[0]) }));
+        const cue = freshOthers.length === 1
+          ? `Your <i>${olEsc(oldrill.forkOthers[0].name)}</i> pick plays a <b>different move</b> here. Do you remember it?`
+          : `${freshOthers.length} of your other lines play <b>different moves</b> here. Do you remember them?`;
+        fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct (<i>${olEsc(olDrillLineName(oldrill.qi))}</i>).</span>
+          <div class="olp-fork">${cue}</div>`;
+        actions.innerHTML = `<button class="btn btn-gold btn-sm" onclick="olDrillContinue()">Continue with ${olEsc(san)} →</button>
+          <button class="btn btn-outline btn-sm" onclick="olDrillTryAgain()">↩ Play it from memory</button>
+          <button class="btn btn-outline btn-sm" onclick="olDrillForkShow()">Show the move${freshOthers.length>1?'s':''}</button>`;
+      } else if(others.length){
+        // the sibling branches are all drilled already — just acknowledge and move on
+        fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct (<i>${olEsc(olDrillLineName(oldrill.qi))}</i>). Sibling branch already drilled ✓</span>`;
+        setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, 900);
       } else {
         fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct.</span>`;
         setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, 600);
@@ -26950,6 +26977,22 @@ function olSqBadge(sq, ok){
 
 // Try again: back to the prompt state (board reset + input re-armed by olDrillStep)
 window.olDrillTryAgain = function(){ if(oldrill) olDrillStep(); };
+// Fork reveal: the user gave up recalling the sibling move — show it (rewound board,
+// green arrow, line name), keep the board armed to play it, keep Continue available.
+window.olDrillForkShow = function(){
+  if(!oldrill || !oldrill.forkOthers || !oldrill.forkOthers.length) return;
+  const idx = oldrill.idx, state = oldrill.states[idx];
+  renderBoardEl('old-board','old-ranks','old-files', state, idx>0?olLastHL(oldrill,idx):[], null);
+  const mvs = oldrill.forkOthers.map(o => { try{ const m = sanToMove(o.san, state); return m ? { u: m.from+m.to } : null; }catch(e){ return null; } }).filter(Boolean);
+  if(mvs.length) olDrawMoveArrows(mvs, state, 'green', 'old-arrows');
+  const fb = document.getElementById('old-fb');
+  if(fb) fb.innerHTML = oldrill.forkOthers.map(o =>
+    `<div class="olp-fork">The move is <b>${olEsc(o.san)}</b> — your <i>${olEsc(o.name)}</i> pick. Play it now, or continue with <b>${olEsc(oldrill.forkSan)}</b>.</div>`).join('');
+  const actions = document.getElementById('old-actions');
+  if(actions) actions.innerHTML = `<button class="btn btn-gold btn-sm" onclick="olDrillContinue()">Continue with ${olEsc(oldrill.forkSan)} →</button>`;
+  makeBoardInteractive('old-board', state, olDrillUserMove);
+  oldrill.awaiting = true;
+};
 // Continue: acknowledge a fork notice and let the line move on
 window.olDrillContinue = function(){ if(oldrill){ oldrill.idx++; olDrillStep(); } };
 // Show the move(s): green arrows + names — then the user still plays it themselves
@@ -27026,11 +27069,16 @@ function olDrillNextOrDone(){
       <p>${perfect
         ? (oldrill.mode==='single' ? 'Flawless recall — this variation is marked mastered.' : 'Flawless recall across all variations!')
         : `Completed with ${oldrill.mistakes} slip${oldrill.mistakes===1?'':'s'}. Run it again clean to master it.`}</p>
+      ${(oldrill.ccConclusions && oldrill.ccConclusions.length)
+        ? oldrill.ccConclusions.map(t => `<div class="old-coach" style="max-width:520px;margin:0 auto 14px;text-align:left"><div class="old-coach-verdict ok">Course conclusion</div><div class="old-coach-body">${olEsc(t)}</div></div>`).join('')
+        : ''}
       <div class="ndrill-side-row">
         <div class="ndrill-side-card" onclick="olRenderDrillPicker()"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span></div><div class="ndrill-side-label">Drill again</div></div>
-        ${oldrill.mode === 'practice'
-          ? `<div class="ndrill-side-card" onclick="olPracticeRenderModes()"><div class="ndrill-side-icon">🎛</div><div class="ndrill-side-label">Change mode</div></div>`
-          : `<div class="ndrill-side-card" onclick="olShowVariations(${oldrill.opIdx})"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span></div><div class="ndrill-side-label">Variations</div></div>`}
+        ${oldrill.ccDrill
+          ? `<div class="ndrill-side-card" onclick="showSection('creator')"><div class="ndrill-side-icon">♟</div><div class="ndrill-side-label">Back to repertoire</div></div>`
+          : oldrill.mode === 'practice'
+            ? `<div class="ndrill-side-card" onclick="olPracticeRenderModes()"><div class="ndrill-side-icon">🎛</div><div class="ndrill-side-label">Change mode</div></div>`
+            : `<div class="ndrill-side-card" onclick="olShowVariations(${oldrill.opIdx})"><div class="ndrill-side-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg></span></div><div class="ndrill-side-label">Variations</div></div>`}
       </div>
     </div>`;
 }
@@ -28572,7 +28620,8 @@ window.ccDrillBegin = function(){
   if(!queue.length) return;
   const side = (window._ccDrillSel && _ccDrillSel.side) || 'w';
   oldrill = { op:null, opIdx:null, mode:'mixed', drillMode:'zen', ccDrill:true, queue, qi:0,
-    sans: queue[0].sans, states: queue[0].states, idx:0, side, mistakes:0, score:0, doneVids:{} };
+    sans: queue[0].sans, states: queue[0].states, idx:0, side, mistakes:0, score:0, doneVids:{},
+    ccConclusions: courses.map(c => c.conclusion).filter(Boolean) };
   document.getElementById('olearn-title').innerHTML = `Your repertoire<small>Mixed drill · ${queue.length} line${queue.length===1?'':'s'} · you play ${side==='w'?'White':'Black'}</small>`;
   const pill = document.getElementById('olearn-mode-pill');
   pill.className = 'nlearn-mode-pill nlearn-mode-drill'; pill.textContent = 'DRILL';
@@ -28582,7 +28631,7 @@ window.ccDrillBegin = function(){
 
 // ── new / edit course ──
 window.ccNewCourse = function(){
-  CC.courseId=null; CC.name='Untitled Course'; CC.description=''; CC.playAs='white'; CC.flipped=false;
+  CC.courseId=null; CC.name='Untitled Course'; CC.description=''; CC.conclusion=''; CC.playAs='white'; CC.flipped=false;
   CC.tree={children:[]}; CC.node=CC.tree;
   CC.states=[parseFEN(startFEN())]; CC.sans=[]; CC.uci=[]; CC.notes={}; CC.courseLines=[];
   ccRenderSetup();
@@ -28679,7 +28728,7 @@ window.ccStartBuilding = async function(){
 };
 window.ccEditCourse = function(id){
   const c=ccLoad().find(x=>x.id===id); if(!c) return;
-  CC.courseId=c.id; CC.name=c.name||'Untitled Course'; CC.description=c.description||'';
+  CC.courseId=c.id; CC.name=c.name||'Untitled Course'; CC.description=c.description||''; CC.conclusion=c.conclusion||'';
   CC.playAs=c.playAs||'white'; CC.flipped=(c.playAs==='black')||!!c.flipped;
   CC.tree=c.tree||{children:[]}; CC.node=CC.tree;
   CC.notes=c.notes||{}; CC.courseLines=c.courseLines||[]; CC.states=[parseFEN(startFEN())]; CC.sans=[]; CC.uci=[];
@@ -28715,6 +28764,21 @@ function ccOpenWorkspace(){
           <span class="cc-tool-icon"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span></span>
           <input id="cc-name" class="cc-name-input" value="${ccEsc(CC.name)}" oninput="CC.name=this.value" placeholder="Untitled Course">
           <button class="nop-mini-btn gold" onclick="ccSave()">☁ Save</button>
+          <div class="cc-menu-wrap">
+            <button class="nop-mini-btn" id="cc-menu-btn" onclick="ccMenuToggle(event)" aria-haspopup="menu" title="Course menu">⋯</button>
+            <div class="cc-menu" id="cc-menu" role="menu">
+              <button onclick="ccMenuAct('play')">▶ Play Course</button>
+              <div class="cc-menu-sec">Share</div>
+              <button onclick="ccMenuAct('link')">Copy Course Link</button>
+              <div class="cc-menu-sec">Course</div>
+              <button onclick="ccMenuAct('desc')">Edit Description</button>
+              <button onclick="ccMenuAct('conc')">Edit conclusion popup</button>
+              <div class="cc-menu-sec">Export position</div>
+              <button onclick="ccMenuAct('lichess')">Open in Lichess</button>
+              <button onclick="ccMenuAct('pgn')">Copy PGN</button>
+              <button onclick="ccMenuAct('fen')">Copy FEN</button>
+            </div>
+          </div>
         </div>
         <div class="cc-side-head cc-analysis-toggle">
           <label class="cc-switch"><input type="checkbox" id="cc-analysis-cb" ${CC.analysisOn?'checked':''} onchange="ccToggleAnalysis(this.checked)"><span class="cc-slider"></span></label>
@@ -29330,13 +29394,71 @@ function ccTrainResults(){
 window.ccExitTrain = function(){ ccTrain=null; ccOpenWorkspace(); };
 
 // ── save ──
+// ── Course menu (Play / Share / Edit / Export) ──
+window.ccMenuToggle = function(e){
+  e.stopPropagation();
+  const m = document.getElementById('cc-menu'); if(m) m.classList.toggle('open');
+};
+document.addEventListener('click', () => { const m = document.getElementById('cc-menu'); if(m) m.classList.remove('open'); });
+function ccMenuFlash(t){
+  const b = document.getElementById('cc-menu-btn'); if(!b) return;
+  const o = b.textContent; b.textContent = '✓'; b.title = t;
+  setTimeout(() => { if(b){ b.textContent = o; b.title = 'Course menu'; } }, 1300);
+}
+window.ccMenuAct = async function(k){
+  const m = document.getElementById('cc-menu'); if(m) m.classList.remove('open');
+  const fen = stateToFEN(CC.states[CC.states.length - 1]);
+  try{
+    if(k === 'play'){ ccPlayCourse(); return; }
+    if(k === 'lichess'){ window.open('https://lichess.org/analysis/' + fen.replace(/ /g, '_'), '_blank', 'noopener'); return; }
+    if(k === 'fen'){ await navigator.clipboard.writeText(fen); ccMenuFlash('FEN copied'); return; }
+    if(k === 'pgn'){
+      const pgn = CC.sans.map((s, i) => (i % 2 === 0 ? (Math.floor(i/2) + 1) + '. ' : '') + s).join(' ');
+      await navigator.clipboard.writeText(pgn || '(no moves on the board yet)');
+      ccMenuFlash('PGN copied'); return;
+    }
+    if(k === 'desc'){
+      const d = prompt('Course description:', CC.description || '');
+      if(d !== null){ CC.description = d; ccMenuFlash('Description set — hit Save'); }
+      return;
+    }
+    if(k === 'conc'){
+      const d = prompt('Conclusion popup — shown when a drill of this course finishes:', CC.conclusion || '');
+      if(d !== null){ CC.conclusion = d; ccMenuFlash('Conclusion set — hit Save'); }
+      return;
+    }
+    if(k === 'link'){
+      // self-contained share link: the whole course rides in the URL hash
+      const course = { name: CC.name, playAs: CC.playAs, tree: CC.tree, notes: CC.notes || {},
+                       description: CC.description || '', conclusion: CC.conclusion || '' };
+      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(course))));
+      await navigator.clipboard.writeText(location.origin + '/#cc=' + b64);
+      ccMenuFlash('Link copied'); return;
+    }
+  }catch(e){ console.warn('course menu:', e); }
+};
+// Importing a shared course link: #cc=<base64 course JSON>
+(function(){
+  try{
+    const m = location.hash.match(/^#cc=(.+)$/);
+    if(!m) return;
+    const course = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if(!course || !course.tree) return;
+    course.id = 'imp_' + Date.now();
+    course.name = (course.name || 'Imported course');
+    const all = ccLoad(); all.unshift(course); ccStore(all);
+    history.replaceState(null, '', location.pathname);
+    setTimeout(() => { try{ showSection('creator'); ccRenderGrid(); }catch(e){} }, 400);
+  }catch(e){}
+})();
+
 window.ccSave = function(){
   if(!window.gambitGate('Create a free account to save your course.', function(){ ccSave(); })) return;
   const courses=ccLoad();
   let c;
   if(CC.courseId){ c=courses.find(x=>x.id===CC.courseId); }
   if(!c){ c={id:'cc_'+Date.now()}; courses.unshift(c); CC.courseId=c.id; }
-  c.name=CC.name; c.description=CC.description||''; c.playAs=CC.playAs||'white'; c.tree=CC.tree; c.notes=CC.notes; c.courseLines=CC.courseLines; c.notesCount=Object.keys(CC.notes).length; c.saved=Date.now();
+  c.name=CC.name; c.description=CC.description||''; c.conclusion=CC.conclusion||''; c.playAs=CC.playAs||'white'; c.tree=CC.tree; c.notes=CC.notes; c.courseLines=CC.courseLines; c.notesCount=Object.keys(CC.notes).length; c.saved=Date.now();
   ccStore(courses);
   const btn=document.querySelector('.cc-title-row .nop-mini-btn.gold, .cc-top .nop-mini-btn.gold'); if(btn){ const t=btn.textContent; btn.textContent='✓ Saved'; setTimeout(()=>{ if(btn) btn.textContent=t; },1500); }
 };
