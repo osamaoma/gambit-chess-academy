@@ -3517,7 +3517,7 @@ body{ padding-top:90px; }
 #cc-workspace .cc-name-input:focus{ outline:none; border-bottom-color:var(--gold) }
 /* inner boxes sit on the card, so they get a quieter surface than the card itself */
 #cc-workspace .cc-analysis-lines, #cc-workspace .cc-movetree, #cc-workspace .cc-note-input, #cc-workspace .cc-stats{ background:var(--inset-bg); border-color:var(--inset-bd) }
-#cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:clamp(64px, 11vh, 118px); overflow:auto }
+#cc-workspace .cc-analysis-lines{ flex-shrink:0; max-height:none; overflow:visible }  /* all 3 engine lines visible, no scroll */
 /* the move list is the flexible middle — it absorbs spare height and scrolls */
 #cc-workspace .cc-movetree{ flex:1 1 auto; min-height:36px; overflow:auto }
 #cc-workspace .cc-endline-btn{ flex-shrink:0; padding:8px 12px; font-size:13px; border-radius:10px }
@@ -3978,9 +3978,16 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
    chess.com-style fit: square size is budgeted from the REAL vertical space —
    100vh minus nav + title row + two player bars + controls — so the whole
    board column (bars and controls included) sits above the fold on any screen. */
-#sec-review .page-wrap{ max-width:min(1600px, calc(100vw - 40px)); padding-top:14px; }
-#sec-review{ --rvsq: clamp(42px, calc((100vh - 310px) / 8), 96px); }
-#sec-review .review-layout{ grid-template-columns:auto 372px; gap:28px; justify-content:center; align-items:start; }
+#sec-review .page-wrap{ max-width:min(1720px, calc(100vw - 32px)); padding-top:14px; }
+#sec-review{ --rvsq: clamp(42px, calc((100vh - 296px) / 8), 106px); }
+#sec-review .review-layout{ grid-template-columns:auto 312px; gap:24px; justify-content:center; align-items:start; }
+/* compact report card — its saved space goes to the board column */
+#sec-review .rv-accp-num{ font-size:26px; }
+#sec-review .rvr-title{ font-size:13.5px; }
+#sec-review .rvr-elo-cell{ padding:7px 5px; }
+#sec-review .rvr-elo-n{ font-size:20px; }
+#sec-review .rvr-row{ padding:4.5px 4px; font-size:12.5px; }
+#sec-review .rvr-row .rvr-ico{ transform:scale(.9); }
 #sec-review #board-r .sq{ width:var(--rvsq) !important; height:var(--rvsq) !important; }
 #sec-review #eval-bar-r{ height:calc(var(--rvsq) * 8) !important; align-self:flex-start; }
 /* accuracy dials live in the right panel now (chess.com layout) — compact them */
@@ -4531,12 +4538,12 @@ document.addEventListener('DOMContentLoaded', function(){
             <button class="btn btn-gold btn-sm" id="rv-btg" onclick="returnToGameLine()" title="Leave this exploration branch and return to the game" style="display:none">↶ Back to game</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
-          <div class="rv-evalgraph" id="rv-evalgraph" style="display:none"></div>
+          <div id="rv-live-eval" style="padding:8px 12px;background:var(--bg3);border-radius:5px;margin:6px 0;font-size:12px;min-height:20px"></div>
           <div class="play-mode-bar" style="margin-bottom:6px">
             <span class="pm-label">Play mode</span>
             <span class="pm-text">Click any piece to explore alternative moves. Branch off the game to test ideas with live engine analysis.</span>
           </div>
-          <div id="rv-live-eval" style="padding:8px 12px;background:var(--bg3);border-radius:5px;margin-bottom:6px;font-size:12px;min-height:20px"></div>
+          <div class="rv-evalgraph" id="rv-evalgraph" style="display:none;margin-bottom:6px"></div>
           <div class="move-detail-box" id="rv-detail">
             <div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>
           </div>
@@ -26597,6 +26604,7 @@ function olEnterDrill(title){
 window.olRenderDrillPicker = olRenderDrillPicker;   // inline onclick needs it on window (module scope)
 function olRenderDrillPicker(){
   // mixed drills restart into their own setup screen (line + side selection)
+  if(oldrill && oldrill.ccDrill){ ccStartDrill(); return; }
   if(oldrill && oldrill.mode === 'mixed'){ olStartMixedDrill(oldrill.opIdx, window._olMixSel && window._olMixSel.fi); return; }
   olDrillStopClock();
   const host = document.getElementById('olearn-host');
@@ -26765,7 +26773,9 @@ function olDrillCandidates(){
   return cands;
 }
 function olDrillLineName(qi2){
-  const q = oldrill.queue[qi2]; if(!q || !q.op) return 'another line';
+  const q = oldrill.queue[qi2]; if(!q) return 'another line';
+  if(q.cc) return `${q.cc} — line ${q.lineNo}`;          // user-built repertoire course
+  if(!q.op) return 'another line';
   const v = q.op.v[q.vIdx];
   return v ? (v.b ? 'Main Line' : (v.n || 'variation')) : 'another line';
 }
@@ -26814,16 +26824,19 @@ function olDrillUserMove(from, to, newState, san){
       // the user's move stays on the board, stamped correct
       renderBoardEl('old-board','old-ranks','old-files', newState, [from, to], null);
       olSqBadge(to, true);
-      // other selected lines diverge here → tell the user the OTHER move awaits them
-      const others = cands.filter(c => c !== hit);
+      // other selected lines diverge here → invite the user to PLAY them now,
+      // or continue with the move they chose
+      const others = cands.filter(c => c !== hit)
+        .map(o => ({ o, allDone: o.qis.every(qi2 => oldrill.doneVids[oldrill.queue[qi2].vIdx]) }));
       if(others.length){
-        const extra = others.map(o => {
-          const allDone = o.qis.every(qi2 => oldrill.doneVids[oldrill.queue[qi2].vIdx]);
-          return `<div class="olp-fork">Also correct here: <b>${olEsc(o.san)}</b> — your <i>${olEsc(olDrillLineName(o.qis[0]))}</i> pick.${allDone ? ' Already drilled ✓' : ` When that line comes up, play <b>${olEsc(o.san)}</b> instead.`}</div>`;
-        }).join('');
-        // a fork is worth reading — no clock; continue when ready
+        const extra = others.map(({o, allDone}) =>
+          `<div class="olp-fork">Also correct here: <b>${olEsc(o.san)}</b> — your <i>${olEsc(olDrillLineName(o.qis[0]))}</i> pick.${allDone ? ' Already drilled ✓' : ''}</div>`
+        ).join('');
         fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct (<i>${olEsc(olDrillLineName(oldrill.qi))}</i>).</span>${extra}`;
-        actions.innerHTML = `<button class="btn btn-gold btn-sm" onclick="olDrillContinue()">Continue →</button>`;
+        // no clock: continue with the played move, or rewind and play the other branch now
+        const otherBtns = others.filter(x => !x.allDone)
+          .map(({o}) => `<button class="btn btn-outline btn-sm" onclick="olDrillTryAgain()">↩ Play ${olEsc(o.san)} instead</button>`).join('');
+        actions.innerHTML = `<button class="btn btn-gold btn-sm" onclick="olDrillContinue()">Continue with ${olEsc(san)} →</button>${otherBtns}`;
       } else {
         fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct.</span>`;
         setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, 600);
@@ -28471,7 +28484,10 @@ function ccRenderGrid(){
       <div class="acad-hero-badge">REPERTOIRE</div>
       <h1>Build your <em>own</em> repertoire</h1>
       <p>Explore any opening on a full analysis board with Stockfish 18 Lite evaluation and real game stats. Play moves to build your repertoire tree, add your own notes, and save it as a course you can review and train.</p>
-      <button class="acad-cta-btn" style="max-width:260px;margin:0 auto" onclick="ccNewCourse()">+ New Course</button>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="acad-cta-btn" style="max-width:260px;margin:0" onclick="ccNewCourse()">+ New Course</button>
+        ${courses.some(c=>ccCourseLines(c.tree).length) ? `<button class="acad-cta-btn" style="max-width:260px;margin:0" onclick="ccStartDrill()"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Drill repertoire</button>` : ''}
+      </div>
     </div>
     ${courses.length?`<div class="cc-grid">${courses.map(c=>{
       const moves=ccCountNodes(c.tree);
@@ -28480,6 +28496,7 @@ function ccRenderGrid(){
         <div class="cc-card-meta">${moves} move${moves===1?'':'s'} saved${c.notesCount?` · ${c.notesCount} notes`:''}</div>
         <div class="cc-card-actions">
           <button class="nop-mini-btn gold" onclick="ccEditCourse('${c.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 6.81a1 1 0 0 0-3.98-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></svg></span> Open</button>
+          ${ccCourseLines(c.tree).length ? `<button class="nop-mini-btn" onclick="ccStartDrill('${c.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> Drill</button>` : ''}
           <button class="nop-mini-btn" onclick="ccDeleteCourse('${c.id}')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></span></button>
         </div>
       </div>`;
@@ -28487,6 +28504,81 @@ function ccRenderGrid(){
 }
 function ccCountNodes(node){ let c=0; (node.children||[]).forEach(ch=>{c+=1+ccCountNodes(ch);}); return c; }
 window.ccDeleteCourse = function(id){ ccStore(ccLoad().filter(c=>c.id!==id)); ccRenderGrid(); };
+
+// ─── DRILL YOUR REPERTOIRE — the openings mixed drill, fed by the user's own courses ───
+// Every root→leaf path of a course tree is one drillable line.
+function ccCourseLines(tree){
+  const lines = [];
+  (function walk(node, path){
+    const kids = (node && node.children) || [];
+    if(!kids.length){ if(path.length >= 2) lines.push(path.slice()); return; }
+    kids.forEach(ch => { path.push(ch.san); walk(ch, path); path.pop(); });
+  })(tree || { children: [] }, []);
+  return lines;
+}
+
+// Setup screen: pick which course(s) to drill (shown even with one course) + side.
+window.ccStartDrill = function(preId){
+  const courses = ccLoad();
+  if(!courses.length){ ccRenderGrid(); return; }
+  window._ccDrillSel = window._ccDrillSel || {};
+  const pre = courses.find(c => c.id === preId);
+  const side0 = _ccDrillSel.side || (((pre || courses[0]).playAs === 'black') ? 'b' : 'w');
+  _ccDrillSel.side = side0;
+  document.getElementById('olearn-title').innerHTML = `Your repertoire<small>Mixed drill — choose your courses</small>`;
+  const pill = document.getElementById('olearn-mode-pill');
+  pill.className = 'nlearn-mode-pill nlearn-mode-drill'; pill.textContent = 'DRILL';
+  showSection('olearn');
+  olSetProgress(0,1);
+  const host = document.getElementById('olearn-host');
+  host.innerHTML = `
+    <div class="ndrill-pick" style="max-width:660px;margin:0 auto;text-align:left">
+      <h3 style="text-align:center">Drill your repertoire</h3>
+      <p style="text-align:center">Tick the courses you want to be tested on, pick your colour, and go.</p>
+      <div class="olp-scope" style="max-height:44vh;overflow-y:auto">
+        ${courses.map(c => {
+          const n = ccCourseLines(c.tree).length;
+          const checked = preId ? (c.id === preId) : true;
+          return `<label class="olp-op-row">
+            <input type="checkbox" class="ccdx-c" value="${ccEsc(c.id)}" ${checked ? 'checked' : ''} ${n ? '' : 'disabled'}>
+            <span>${ccEsc(c.name || 'Untitled Course')} <em>${n} line${n===1?'':'s'}${n ? '' : ' — add moves first'}</em></span>
+          </label>`;
+        }).join('')}
+      </div>
+      <div class="ndrill-side-row" style="margin-top:18px">
+        <div class="ndrill-side-card olmx-side ${side0==='w'?'sel':''}" data-side="w" onclick="olMixPickSide('w');window._ccDrillSel.side='w'"><div class="ndrill-side-icon">♔</div><div class="ndrill-side-label">Play White</div></div>
+        <div class="ndrill-side-card olmx-side ${side0==='b'?'sel':''}" data-side="b" onclick="olMixPickSide('b');window._ccDrillSel.side='b'"><div class="ndrill-side-icon">♚</div><div class="ndrill-side-label">Play Black</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:18px">
+        <button class="btn btn-outline btn-sm" onclick="showSection('creator')">← Back</button>
+        <button class="btn btn-gold" onclick="ccDrillBegin()">Start drill →</button>
+      </div>
+    </div>`;
+  window.scrollTo(0,0);
+};
+
+window.ccDrillBegin = function(){
+  const ids = [...document.querySelectorAll('.ccdx-c')].filter(c => c.checked).map(c => c.value);
+  const courses = ccLoad().filter(c => ids.includes(c.id));
+  if(!courses.length) return;
+  const queue = [];
+  courses.forEach(c => {
+    ccCourseLines(c.tree).forEach((sans, li) => {
+      const built = olBuildStates(sans);
+      if(built.sans.length >= 2) queue.push({ op:null, cc: c.name || 'Course', lineNo: li + 1,
+        vIdx: 'cc:' + c.id + '#' + li, sans: built.sans, states: built.states });
+    });
+  });
+  if(!queue.length) return;
+  const side = (window._ccDrillSel && _ccDrillSel.side) || 'w';
+  oldrill = { op:null, opIdx:null, mode:'mixed', drillMode:'zen', ccDrill:true, queue, qi:0,
+    sans: queue[0].sans, states: queue[0].states, idx:0, side, mistakes:0, score:0, doneVids:{} };
+  document.getElementById('olearn-title').innerHTML = `Your repertoire<small>Mixed drill · ${queue.length} line${queue.length===1?'':'s'} · you play ${side==='w'?'White':'Black'}</small>`;
+  const pill = document.getElementById('olearn-mode-pill');
+  pill.className = 'nlearn-mode-pill nlearn-mode-drill'; pill.textContent = 'DRILL';
+  olDrillBegin(side);
+  window.scrollTo(0,0);
+};
 
 // ── new / edit course ──
 window.ccNewCourse = function(){
