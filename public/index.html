@@ -4014,6 +4014,30 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* chessable-style coach card pieces */
 .ol-opp-ctx{ color:var(--text2); margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border); }
 .ol-play-cmd{ margin-top:14px; font-weight:800; font-size:16px; color:var(--gold); }
+/* drill feedback: ✓/✗ stamp on the destination square (chessable-style) */
+.sq-badge{
+  position:absolute; top:2px; right:2px; width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:800; line-height:1; color:#fff;
+  z-index:6; box-shadow:0 2px 6px rgba(0,0,0,.35); pointer-events:none;
+  animation:sqBadgePop .22s cubic-bezier(.34,1.56,.64,1) both;
+}
+.sq-badge.ok{ background:#15781B; }
+.sq-badge.bad{ background:#c0392b; }
+@keyframes sqBadgePop{ from{ transform:scale(.4); opacity:0 } to{ transform:scale(1); opacity:1 } }
+@media (prefers-reduced-motion: reduce){ .sq-badge{ animation:none } }
+
+/* drill coach card: verdict, recommendation, the lesson's note, actions */
+.old-coach{ background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:14px 16px; animation:coachIn .22s cubic-bezier(.4,0,.2,1) both; }
+.old-coach-verdict{ font-weight:800; font-size:15px; }
+.old-coach-verdict.bad{ color:#c0392b; }
+.old-coach-verdict.ok{ color:var(--green, #15781B); }
+.old-coach-body{ margin-top:6px; color:var(--text); font-size:14px; line-height:1.55; }
+.old-coach-note{ margin-top:10px; padding-top:10px; border-top:1px solid var(--border); color:var(--text2); font-size:13.5px; line-height:1.55; }
+.old-coach-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+@keyframes coachIn{ from{ opacity:0; transform:translateY(6px) } to{ opacity:1; transform:none } }
+@media (prefers-reduced-motion: reduce){ .old-coach{ animation:none } }
+
 /* mixed-drill setup: selected side card + chapter groups + fork notices */
 .ndrill-side-card.sel{ border-color:var(--green) !important; box-shadow:inset 0 0 0 1px var(--green); }
 .olmx-fam{ margin-bottom:10px; }
@@ -26767,10 +26791,14 @@ function olDrillUserMove(from, to, newState, san){
       const allHitDone = hit.qis.every(qi2 => oldrill.doneVids[oldrill.queue[qi2].vIdx]);
       const fresh = cands.find(c => c !== hit && c.qis.some(qi2 => !oldrill.doneVids[oldrill.queue[qi2].vIdx]));
       if(allHitDone && fresh && !hit.qis.includes(oldrill.qi)){
-        renderBoardEl('old-board','old-ranks','old-files', state, idx>0?olLastHL(oldrill,idx):[], null);
-        makeBoardInteractive('old-board', state, olDrillUserMove);   // stay on this move
-        fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} is correct — but you've already drilled that line.</span>
-          <div class="olp-fork">This time play <b>${olEsc(fresh.san)}</b> — your <i>${olEsc(olDrillLineName(fresh.qis[0]))}</i> pick.</div>`;
+        oldrill.awaiting = false;
+        renderBoardEl('old-board','old-ranks','old-files', newState, [from, to], null);
+        olSqBadge(to, true);
+        fb.innerHTML = `<div class="old-coach">
+          <div class="old-coach-verdict ok">✓ ${olEsc(san)} is correct — but you've already drilled that line.</div>
+          <div class="olp-fork">This time play <b>${olEsc(fresh.san)}</b> — your <i>${olEsc(olDrillLineName(fresh.qis[0]))}</i> pick.</div>
+          <div class="old-coach-actions"><button class="btn btn-gold btn-sm" onclick="olDrillTryAgain()">Try again</button></div>
+        </div>`;
         return;
       }
       oldrill.awaiting = false;
@@ -26783,27 +26811,26 @@ function olDrillUserMove(from, to, newState, san){
         const q = oldrill.queue[tqi];
         oldrill.qi = tqi; oldrill.sans = q.sans; oldrill.states = q.states;
       }
+      // the user's move stays on the board, stamped correct
+      renderBoardEl('old-board','old-ranks','old-files', newState, [from, to], null);
+      olSqBadge(to, true);
       // other selected lines diverge here → tell the user the OTHER move awaits them
       const others = cands.filter(c => c !== hit);
-      const extra = others.map(o => {
-        const allDone = o.qis.every(qi2 => oldrill.doneVids[oldrill.queue[qi2].vIdx]);
-        return `<div class="olp-fork">Also correct here: <b>${olEsc(o.san)}</b> — your <i>${olEsc(olDrillLineName(o.qis[0]))}</i> pick.${allDone ? ' Already drilled ✓' : ` When that line comes up, play <b>${olEsc(o.san)}</b> instead.`}</div>`;
-      }).join('');
-      fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct (<i>${olEsc(olDrillLineName(oldrill.qi))}</i>).</span>${extra}`;
-      setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, others.length ? 1900 : 420);
+      if(others.length){
+        const extra = others.map(o => {
+          const allDone = o.qis.every(qi2 => oldrill.doneVids[oldrill.queue[qi2].vIdx]);
+          return `<div class="olp-fork">Also correct here: <b>${olEsc(o.san)}</b> — your <i>${olEsc(olDrillLineName(o.qis[0]))}</i> pick.${allDone ? ' Already drilled ✓' : ` When that line comes up, play <b>${olEsc(o.san)}</b> instead.`}</div>`;
+        }).join('');
+        // a fork is worth reading — no clock; continue when ready
+        fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct (<i>${olEsc(olDrillLineName(oldrill.qi))}</i>).</span>${extra}`;
+        actions.innerHTML = `<button class="btn btn-gold btn-sm" onclick="olDrillContinue()">Continue →</button>`;
+      } else {
+        fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)} — correct.</span>`;
+        setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, 600);
+      }
       return;
     }
-    // wrong: show WHICH of their selected lines' moves were expected, with green arrows
-    oldrill.mistakes++; oldrill.lineMistakes = (oldrill.lineMistakes||0) + 1;
-    oldrill.awaiting = false;
-    renderBoardEl('old-board','old-ranks','old-files', state, idx>0?olLastHL(oldrill,idx):[], null);
-    const mvs = cands.map(c => { try{ const m = sanToMove(c.san, state); return m ? { u: m.from+m.to } : null; }catch(e){ return null; } }).filter(Boolean);
-    if(mvs.length) olDrawMoveArrows(mvs, state, 'green', 'old-arrows');
-    fb.innerHTML = `<span class="nlearn-fb-wrong">✗ ${olEsc(san)} isn't in your selected lines.</span>`;
-    const candsEl = document.getElementById('old-cands');
-    if(candsEl) candsEl.innerHTML = `<div class="ol-pop-title"><span style="color:#15781B">⬤</span> Your moves here:</div>` +
-      cands.map(c => `<div class="ol-cand"><div class="ol-cand-head"><span class="ol-pop-move">${olEsc(c.san)}</span> <span style="color:var(--text3);font-size:12px">${olEsc(olDrillLineName(c.qis[0]))}</span></div></div>`).join('');
-    actions.innerHTML = `<button class="nop-mini-btn gold" onclick="olDrillReveal()">Show me &amp; continue →</button>`;
+    olDrillWrong(from, to, newState, san, cands);
     return;
   }
 
@@ -26815,9 +26842,11 @@ function olDrillUserMove(from, to, newState, san){
     oldrill.awaiting = false;
     oldrill.score = (oldrill.score || 0) + 1;
     const sc = document.getElementById('old-score'); if(sc) sc.textContent = oldrill.score;
+    renderBoardEl('old-board','old-ranks','old-files', newState, [from, to], null);
+    olSqBadge(to, true);
     const rank = matchTop ? (top3.indexOf(matchTop)+1) : 1;
     fb.innerHTML = `<span class="nlearn-fb-ok">✓ ${olEsc(san)}${oldrill.drillMode==='blitz'?'':' — accepted (popular move #'+rank+')'}.</span>`;
-    setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, oldrill.drillMode==='blitz' ? 140 : 380);
+    setTimeout(()=>{ if(oldrill){ oldrill.idx++; olDrillStep(); } }, oldrill.drillMode==='blitz' ? 140 : 600);
   } else if(oldrill.drillMode === 'blitz'){
     // Challenge under the clock: no lectures — flash the right move and keep going
     oldrill.mistakes++; oldrill.lineMistakes = (oldrill.lineMistakes||0) + 1;
@@ -26827,24 +26856,108 @@ function olDrillUserMove(from, to, newState, san){
     renderBoardEl('old-board','old-ranks','old-files', state, idx>0?olLastHL(oldrill,idx):[], null);
     setTimeout(()=>{ if(oldrill && oldrill.clock){ oldrill.idx++; olDrillStep(); } }, 700);
   } else {
-    oldrill.mistakes++; oldrill.lineMistakes = (oldrill.lineMistakes||0) + 1;
-    fb.innerHTML = `<span class="nlearn-fb-wrong">✗ Not a main move here. The popular choices are shown in green.</span>`;
-    // draw green candidate arrows + explanations
-    if(top3.length){
-      olDrawMoveArrows(top3, state, 'green', 'old-arrows');
-      const cands = document.getElementById('old-cands');
-      cands.innerHTML = `<div class="ol-pop-title"><span style="color:#6ec882">⬤</span> Candidate moves &amp; why:</div>` + top3.map((m,i)=>`
-        <div class="ol-cand">
-          <div class="ol-cand-head"><span class="ol-pop-rank">#${i+1}</span> <span class="ol-pop-move">${olEsc(m.san)}</span> <span class="ol-pop-pct">${m.pct}%</span></div>
-          <div class="ol-cand-text">${olCandidateText(m, state, idx)}</div>
-        </div>`).join('');
-    }
-    actions.innerHTML = `<button class="nop-mini-btn gold" onclick="olDrillReveal()">Show me &amp; continue →</button>`;
-    oldrill.awaiting = false;
-    renderBoardEl('old-board','old-ranks','old-files', state, idx>0?olLastHL(oldrill,idx):[], null);
-    if(top3.length) olDrawMoveArrows(top3, state, 'green', 'old-arrows');
+    olDrillWrong(from, to, newState, san, [{ san: oldrill.sans[idx], qis: [oldrill.qi] }]);
   }
 }
+
+// ── Wrong move: chessable-style coach card ──
+// The wrong move STAYS on the board with a ✗ stamp. The card gives the verdict
+// ("This loses a knight" when it hangs a piece), the course recommendation, and
+// the SAME teaching note the Learn section shows for the expected move.
+// No clock — the user reads, then chooses Try again or Show the move(s).
+function olDrillWrong(from, to, newState, san, cands){
+  oldrill.mistakes++; oldrill.lineMistakes = (oldrill.lineMistakes||0) + 1;
+  oldrill.awaiting = false;
+  oldrill.wrongCands = cands;
+  const idx = oldrill.idx, state = oldrill.states[idx];
+  renderBoardEl('old-board','old-ranks','old-files', newState, [from, to], null);
+  olSqBadge(to, false);
+  clearArrows('old-arrows');
+  // quick severity check: does the wrong move hang the piece that just moved?
+  let lossTxt = '';
+  try{
+    const moved = newState.board[to];
+    if(moved && moved[1] !== 'K' && (PIECE_VALUES[moved[1]]||0) >= 3 && isPieceHanging(newState, to)){
+      lossTxt = `This loses a ${OL_PIECE_NAME[moved[1]] || 'piece'}. `;
+    }
+  }catch(e){}
+  const rec = olRecPhrase(oldrill.sans[idx], state);
+  const note = olDrillNoteFor(idx);
+  const fb = document.getElementById('old-fb');
+  const actions = document.getElementById('old-actions');
+  const candsEl = document.getElementById('old-cands');
+  if(candsEl) candsEl.innerHTML = '';
+  if(actions) actions.innerHTML = '';
+  fb.innerHTML = `<div class="old-coach">
+    <div class="old-coach-verdict bad">✗ You made an incorrect move.</div>
+    <div class="old-coach-body">${lossTxt ? `<b>${lossTxt}</b>` : 'While fine, '}this course recommends ${rec}.</div>
+    ${note ? `<div class="old-coach-note">${note}</div>` : ''}
+    <div class="old-coach-actions">
+      <button class="btn btn-gold btn-sm" onclick="olDrillTryAgain()">Try again</button>
+      <button class="btn btn-outline btn-sm" onclick="olDrillShowMoves()">Show the move${cands.length>1?'s':''}</button>
+    </div>
+  </div>`;
+}
+
+// "playing knight to f5" / "taking the bishop on d4 with your knight" / "castling kingside"
+function olRecPhrase(san, state){
+  const s = (san||'').replace(/[+#!?]/g,'');
+  if(s === 'O-O') return 'castling kingside';
+  if(s === 'O-O-O') return 'castling queenside';
+  let mv = null; try{ mv = sanToMove(san, state); }catch(e){}
+  if(!mv) return 'playing ' + san;
+  const names = {P:'pawn',N:'knight',B:'bishop',R:'rook',Q:'queen',K:'king'};
+  const pn = names[(state.board[mv.from]||' P')[1]] || 'piece';
+  const victim = state.board[mv.to];
+  return victim ? `taking the ${names[victim[1]]} on ${mv.to} with your ${pn}` : `playing ${pn} to ${mv.to}`;
+}
+
+// The Learn section's teaching note for the expected move (curated note, else generator)
+function olDrillNoteFor(idx){
+  try{
+    const q = oldrill.queue[oldrill.qi];
+    const v = q && q.op && q.op.v[q.vIdx];
+    const note = v && v.notes && v.notes[idx];
+    if(note) return olEsc(note).replace(/^([\dO][^—]*—)/, '<strong>$1</strong>');
+    return olExplainMove(oldrill.sans[idx], idx, oldrill.sans, oldrill.op, oldrill.side === 'w');
+  }catch(e){ return ''; }
+}
+
+// ✓ / ✗ stamp on the destination square (chessable-style)
+function olSqBadge(sq, ok){
+  try{
+    const el = document.querySelector(`#old-board .sq[data-sq="${sq}"]`);
+    if(!el) return;
+    const b = document.createElement('div');
+    b.className = 'sq-badge ' + (ok ? 'ok' : 'bad');
+    b.textContent = ok ? '✓' : '✗';
+    el.appendChild(b);
+  }catch(e){}
+}
+
+// Try again: back to the prompt state (board reset + input re-armed by olDrillStep)
+window.olDrillTryAgain = function(){ if(oldrill) olDrillStep(); };
+// Continue: acknowledge a fork notice and let the line move on
+window.olDrillContinue = function(){ if(oldrill){ oldrill.idx++; olDrillStep(); } };
+// Show the move(s): green arrows + names — then the user still plays it themselves
+window.olDrillShowMoves = function(){
+  if(!oldrill) return;
+  const idx = oldrill.idx, state = oldrill.states[idx];
+  const cands = (oldrill.wrongCands && oldrill.wrongCands.length) ? oldrill.wrongCands
+              : [{ san: oldrill.sans[idx], qis: [oldrill.qi] }];
+  renderBoardEl('old-board','old-ranks','old-files', state, idx>0?olLastHL(oldrill,idx):[], null);
+  const mvs = cands.map(c => { try{ const m = sanToMove(c.san, state); return m ? { u: m.from+m.to } : null; }catch(e){ return null; } }).filter(Boolean);
+  if(mvs.length) olDrawMoveArrows(mvs, state, 'green', 'old-arrows');
+  const candsEl = document.getElementById('old-cands');
+  if(candsEl) candsEl.innerHTML = `<div class="ol-pop-title"><span style="color:#15781B">⬤</span> Your move${cands.length>1?'s':''} here:</div>` +
+    cands.map(c => `<div class="ol-cand"><div class="ol-cand-head"><span class="ol-pop-move">${olEsc(c.san)}</span>${oldrill.mode==='mixed' ? ` <span style="color:var(--text3);font-size:12px">${olEsc(olDrillLineName(c.qis[0]))}</span>` : ''}</div></div>`).join('');
+  const fb = document.getElementById('old-fb');
+  if(fb) fb.innerHTML = `<span style="color:var(--text2)">Green arrow${mvs.length>1?'s':''} = your line${mvs.length>1?'s':''}. Now play ${mvs.length>1?'one of them':'it'} on the board.</span>`;
+  const actions = document.getElementById('old-actions');
+  if(actions) actions.innerHTML = '';
+  makeBoardInteractive('old-board', state, olDrillUserMove);
+  oldrill.awaiting = true;
+};
 
 // short explanation for a candidate move in the drill
 function olCandidateText(m, state, idx){
