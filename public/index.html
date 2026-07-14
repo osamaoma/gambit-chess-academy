@@ -3684,7 +3684,32 @@ body{ padding-top:90px; }
 .bsboard .bscoord.f{ height:16px; }
 
 /* ═══════════ LANDING — editorial broadsheet ═══════════ */
-#landing{ background:var(--paper) !important; color:var(--ink); }
+#landing{ background:var(--paper) !important; color:var(--ink); overflow-y:auto; overflow-x:hidden; }
+/* ── Landing feature explainer (Direction B · Swiss) ── */
+.lpf{ width:min(1180px, calc(100% - 72px)); margin:0 auto; padding:8px 0 88px; border-top:1px solid var(--rule); }
+.lpf-head{ max-width:720px; margin:56px 0 40px; }
+.lpf-title{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.7rem,3vw,2.6rem); line-height:1.04; letter-spacing:-.02em; color:var(--ink); margin:12px 0 0; text-wrap:balance; }
+.lpf-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:0; border-top:1px solid var(--rule); }
+.lpf-card{ position:relative; padding:30px 28px 34px; border-bottom:1px solid var(--rule); border-right:1px solid var(--rule); cursor:pointer; background:transparent; transition:background .25s var(--smooth); }
+.lpf-grid .lpf-card:nth-child(2n){ border-right:0; }
+@media(min-width:900px){ .lpf-grid{ grid-template-columns:repeat(4,1fr); } .lpf-grid .lpf-card:nth-child(2n){ border-right:1px solid var(--rule); } .lpf-grid .lpf-card:last-child{ border-right:0; } }
+.lpf-card:hover{ background:var(--inset-bg); }
+.lpf-num{ font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; color:var(--ink-3); }
+.lpf-ic{ display:flex; width:34px; height:34px; margin:16px 0 14px; color:var(--green); }
+.lpf-ic svg{ width:100%; height:100%; }
+.lpf-card h3{ font-family:var(--font-display) !important; font-weight:700; font-size:19px; letter-spacing:-.01em; color:var(--ink) !important; margin:0 0 8px; }
+.lpf-card p{ font-family:var(--font-ui); font-size:14px; line-height:1.6; color:var(--ink-2); margin:0 0 16px; }
+.lpf-go{ font-family:var(--font-ui); font-size:13.5px; font-weight:700; color:var(--green); display:inline-flex; transition:gap .2s var(--smooth), transform .2s var(--smooth); }
+.lpf-card:hover .lpf-go{ transform:translateX(3px); }
+.lpf-foot{ display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; margin-top:52px; }
+.lpf-note{ font-family:var(--font-ui); font-size:13px; color:var(--ink-3); margin:0; }
+@media (prefers-reduced-motion: no-preference){
+  #landing .lpf-card.reveal{ opacity:0; transform:translateY(22px); filter:blur(4px); transition:opacity .7s var(--smooth), transform .7s var(--smooth), filter .7s var(--smooth); }
+  #landing .lpf-card.reveal.in{ opacity:1; transform:none; filter:blur(0); }
+  #landing .lpf-card:nth-child(1){ transition-delay:0ms } #landing .lpf-card:nth-child(2){ transition-delay:80ms }
+  #landing .lpf-card:nth-child(3){ transition-delay:160ms } #landing .lpf-card:nth-child(4){ transition-delay:240ms }
+}
+@media(max-width:760px){ .lpf, .lpf-head{ width:auto; } .lpf{ width:calc(100% - 40px); } }
 #landing .lp-floor, #landing .lp-vignette{ display:none !important; }
 .bslp-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; width:min(1240px, calc(100% - 72px)); margin:0 auto; padding:26px 0 0; }
 .bslp-brand{ display:flex; align-items:baseline; gap:10px; text-decoration:none; }
@@ -3695,11 +3720,11 @@ body{ padding-top:90px; }
 .bslp-login:hover{ color:var(--ink); }
 .bslp-start{ background:var(--green); border:0; color:#F3F1E9; font-family:var(--font-ui); font-size:14px; font-weight:700; border-radius:8px; padding:11px 20px; cursor:pointer; transition:background .18s var(--ease), transform .18s var(--ease); }
 .bslp-start:hover{ background:var(--green-ink); transform:translateY(-1px); }
-.bslp-hero{ width:min(1240px, calc(100% - 72px)); margin:0 auto; flex:1; display:grid; grid-template-columns:1.02fr .98fr; align-items:center; gap:clamp(32px,5vw,80px); padding:12px 0 40px; }
+.bslp-hero{ width:min(1240px, calc(100% - 72px)); margin:0 auto; min-height:calc(100vh - 120px); flex:none; display:grid; grid-template-columns:1.02fr .98fr; align-items:center; gap:clamp(32px,5vw,80px); padding:12px 0 48px; }
 .bslp-copy{ max-width:36ch; }
 .bslp-kicker{ display:inline-flex; align-items:center; gap:10px; margin-bottom:22px; }
 .bslp-kicker::before{ content:''; width:26px; height:1px; background:var(--green-2); }
-.bslp-title{ font-family:var(--font-display); font-weight:900; font-size:clamp(3rem,6.6vw,6rem); line-height:.98; letter-spacing:-.028em; color:var(--ink); }
+.bslp-title{ font-family:var(--font-display); font-weight:900; font-size:clamp(2.5rem,5vw,4.4rem); line-height:.98; letter-spacing:-.03em; color:var(--ink); text-wrap:balance; }
 .bslp-title em{ font-style:italic; color:var(--green); }
 .bslp-sub{ margin-top:26px; max-width:44ch; font-family:var(--font-ui); font-size:clamp(15px,1.2vw,18px); line-height:1.62; color:var(--ink-2); }
 .bslp-ctas{ display:flex; align-items:center; gap:22px; margin-top:38px; }
@@ -3983,18 +4008,18 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
    chess.com-style fit: square size is budgeted from the REAL vertical space —
    100vh minus nav + title row + two player bars + controls — so the whole
    board column (bars and controls included) sits above the fold on any screen. */
-#sec-review .page-wrap{ max-width:calc(100vw - 24px); padding-top:14px; }
+#sec-review .page-wrap{ max-width:calc(100vw - 16px); padding-top:12px; }
 /* svh = small viewport height: the honest visible height, immune to the 100vh
    overshoot some embedded/mobile viewports report */
-#sec-review{ --rvsq: clamp(44px, calc((min(100vh, 100svh) - 288px) / 8), 116px); }
+#sec-review{ --rvsq: clamp(44px, calc((min(100vh, 100svh) - 282px) / 8), 122px); }
 /* tighter player bars + header so the board can claim the vertical space */
-#sec-review .rv-player{ min-height:30px !important; padding:4px 10px !important; margin:3px 0 !important; }
-/* three-column app grid on wide screens: analysis rail | board | review sidebar —
-   the side margins go to work, and no column needs a scrollbar to show itself */
+#sec-review .rv-player{ min-height:28px !important; padding:3px 10px !important; margin:2px 0 !important; }
+/* three-column app grid: analysis rail hugs the LEFT edge, review sidebar hugs the
+   RIGHT edge (space-between), and the bigger board sits centred between them */
 #sec-review .review-layout{
-  grid-template-columns:minmax(206px, 262px) auto minmax(268px, 312px);
+  grid-template-columns:minmax(200px, 250px) auto minmax(262px, 300px);
   grid-template-areas:"rail board side";
-  gap:22px; justify-content:center; align-items:start;
+  gap:20px; justify-content:space-between; align-items:start;
 }
 #sec-review .rv-boardcol{ grid-area:board; }
 #sec-review .rv-leftrail{ grid-area:rail; }
@@ -4233,17 +4258,17 @@ document.addEventListener('DOMContentLoaded', function(){
     <a class="bslp-brand" href="#" onclick="enterApp();return false;"><b>Gambit</b><span>Chess Academy</span></a>
     <nav class="bslp-actions">
       <button type="button" class="bslp-login" onclick="gambitGate('Sign in to save your progress.')">Log in</button>
-      <button type="button" class="bslp-start" onclick="enterApp()">Enter the academy</button>
+      <button type="button" class="bslp-start" onclick="enterApp()">Get started</button>
     </nav>
   </header>
   <main class="bslp-hero">
     <div class="bslp-copy">
-      <span class="bslp-kicker bs-eyebrow">Opening theory, explained</span>
+      <span class="bslp-kicker bs-eyebrow">Learn chess openings the way they're actually understood</span>
       <h1 class="bslp-title">Play the opening like you <em>wrote the book</em>.</h1>
-      <p class="bslp-sub">Deeply annotated opening lines, honest Stockfish game review, and a repertoire builder. Understand every move instead of memorizing it.</p>
+      <p class="bslp-sub">Four tools, one board. Learn annotated opening lines, build a repertoire, review your games with Stockfish, and let a coach find your weak spots — so you understand every move instead of memorizing it.</p>
       <div class="bslp-ctas">
-        <button type="button" class="bslp-cta" onclick="enterApp()">Enter the academy <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
-        <button type="button" class="bslp-link" onclick="sessionStorage.setItem('gambit_entered','1');location.hash='review';enterApp()">Review a game</button>
+        <button type="button" class="bslp-cta" onclick="sessionStorage.setItem('gambit_entered','1');location.hash='review';enterApp()">Review a game <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+        <button type="button" class="bslp-link" onclick="enterApp()">Explore the openings</button>
       </div>
     </div>
     <div class="bslp-asset">
@@ -4251,6 +4276,47 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="bslp-caption"><b>Italian Game</b> · 1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5</div>
     </div>
   </main>
+
+  <section class="lpf" aria-labelledby="lpf-h">
+    <div class="lpf-head">
+      <span class="bs-eyebrow">Everything in one place</span>
+      <h2 id="lpf-h" class="lpf-title">Four tools that turn games into understanding.</h2>
+    </div>
+    <div class="lpf-grid">
+      <article class="lpf-card reveal" onclick="enterApp()">
+        <span class="lpf-num">01</span>
+        <span class="lpf-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+        <h3>Opening Academy</h3>
+        <p>Curated lines with a plain-English idea on every move. Play them yourself, see the popular replies, and drill until they're automatic.</p>
+        <span class="lpf-go">Learn openings →</span>
+      </article>
+      <article class="lpf-card reveal" onclick="sessionStorage.setItem('gambit_entered','1');location.hash='creator';enterApp()">
+        <span class="lpf-num">02</span>
+        <span class="lpf-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/><path d="M2 2l7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg></span>
+        <h3>Repertoire</h3>
+        <p>Build your own opening tree on a full analysis board, add notes, then drill it fork-by-fork with saved-line arrows guiding you.</p>
+        <span class="lpf-go">Build a repertoire →</span>
+      </article>
+      <article class="lpf-card reveal" onclick="sessionStorage.setItem('gambit_entered','1');location.hash='review';enterApp()">
+        <span class="lpf-num">03</span>
+        <span class="lpf-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg></span>
+        <h3>Game Review</h3>
+        <p>Depth-16 Stockfish grades every move chess.com-style — Brilliant to Blunder — with accuracy, an eval graph, and one-click key moments.</p>
+        <span class="lpf-go">Review a game →</span>
+      </article>
+      <article class="lpf-card reveal" onclick="sessionStorage.setItem('gambit_entered','1');location.hash='coach';enterApp()">
+        <span class="lpf-num">04</span>
+        <span class="lpf-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
+        <h3>Coach</h3>
+        <p>Connect your Chess.com or Lichess account and the coach finds your recurring mistakes, then tells you exactly what to study next.</p>
+        <span class="lpf-go">Analyse my games →</span>
+      </article>
+    </div>
+    <div class="lpf-foot">
+      <button type="button" class="bslp-cta" onclick="enterApp()">Start learning free <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+      <p class="lpf-note">Free to start · no account needed to review a game or explore an opening.</p>
+    </div>
+  </section>
 </div>
 <script>
 (function(){
@@ -4279,9 +4345,15 @@ document.addEventListener('DOMContentLoaded', function(){
     'abcdefgh'.split('').forEach(function(c){ html+='<div class="bscoord f">'+c+'</div>'; });
     host.innerHTML=html;
   }
+  function armReveal(lp){
+    if(!('IntersectionObserver' in window)){ lp.querySelectorAll('.reveal').forEach(function(n){ n.classList.add('in'); }); return; }
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, { root:lp, threshold:.15 });
+    lp.querySelectorAll('.reveal').forEach(function(n){ io.observe(n); });
+  }
   function initLanding(){
     var lp=document.getElementById('landing'); if(!lp) return;
     renderLandingBoard();
+    armReveal(lp);
     var deep = location.hash && /academy|creator|review/i.test(location.hash);
     var entered=false; try{ entered=sessionStorage.getItem('gambit_entered')==='1'; }catch(e){}
     if(deep || entered){ lp.style.display='none'; }
@@ -12293,8 +12365,12 @@ async function analyseGame(white, black, username){
           const netInvested = movedVal - capturedVal;                    // > 0 only if real material is risked
           // A trade (capture of >= equal value) is never a sacrifice or a hang.
           if(movedVal >= 3 && netInvested >= 2 && isPieceHanging(stateAfter, mv.to)){
-            if((wasBestMove || wDrop < 3) && playerAfter >= 0.3 && i > 6) isSacrifice = true;  // sound sacrifice
-            else if(wDrop >= 8) hangsPiece = true;                                              // just hung material
+            // A brilliant sacrifice is one the opponent ACCEPTS — their actual next
+            // move captures the offered piece — and you're still fine afterwards.
+            const nextMv = reviewHistory[i + 1];
+            const accepted = !!(nextMv && nextMv.to === mv.to);
+            if(accepted && (wasBestMove || wDrop < 2.5) && playerAfter >= 0.3 && wpAfter >= 48 && wpBefore <= 90 && i > 6) isSacrifice = true;
+            else if(wDrop >= 8) hangsPiece = true;   // just hung material
           }
         }
       }
@@ -13644,7 +13720,11 @@ async function analyzeBranchMove(idx){
         if(movedPiece && movedPiece[1] !== 'K'){
           const movedVal = PIECE_VALUES[movedPiece[1]] || 0;
           if(movedVal >= 3 && isPieceHanging(stateAfter, m.to)){
-            if((wasBestMove || wDrop < 3) && playerAfter >= 1.0) isSacrifice = true;
+            // brilliant only if the sacrifice is ACCEPTED — the next branch move
+            // captures the offered piece (so a hanging-looking last move isn't "brilliant")
+            const nextM = branchState.moves[idx + 1];
+            const accepted = !!(nextM && nextM.to === m.to);
+            if(accepted && (wasBestMove || wDrop < 2.5) && playerAfter >= 0.5) isSacrifice = true;
             else if(wDrop >= 8) hangsPiece = true;
           }
         }
