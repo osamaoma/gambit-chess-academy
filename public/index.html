@@ -5362,7 +5362,15 @@ function renderBoardEl(boardId, ranksId, filesId, state, highlights = [], fromSq
 // (lichess/chess.com style). Works on any board element by id.
 // ════════════════════════════════════════════════════════
 const boardAnnotations = new Map();   // boardId -> { arrows:[{from,to,color}], squares:{sq:color} }
-const ANNOT_DEFAULT = 'rgba(21,120,27,.8)';   // orange (matches the theme)
+const ANNOT_DEFAULT = 'rgba(21,120,27,.85)';
+// fancyground palette — arrows @0.85, squares @0.65; modifiers: none=green, shift=red, alt/ctrl=blue, shift+alt=yellow/orange
+function annotColors(e){
+  const alt = e.altKey || e.ctrlKey, shift = e.shiftKey;
+  if(shift && alt) return { arrow:'rgba(255,194,14,.85)',  square:'rgba(230,144,0,.65)' };
+  if(shift)        return { arrow:'rgba(198,11,11,.85)',   square:'rgba(153,0,24,.65)' };
+  if(alt)          return { arrow:'rgba(0,128,198,.85)',   square:'rgba(0,48,136,.65)' };
+  return              { arrow:'rgba(21,120,27,.85)',   square:'rgba(18,87,64,.65)' };
+}
 function annotState(boardId){ if(!boardAnnotations.has(boardId)) boardAnnotations.set(boardId,{arrows:[],squares:{}}); return boardAnnotations.get(boardId); }
 
 function makeBoardAnnotatable(boardId){
@@ -5397,14 +5405,14 @@ function makeBoardAnnotatable(boardId){
     const to=sqFromEvent(e);
     if(!dragFrom||!to){ dragFrom=null; return; }
     const st=annotState(boardId);
-    const color = e.shiftKey ? 'rgba(136,32,32,.8)' : (e.ctrlKey||e.altKey ? 'rgba(0,48,136,.8)' : ANNOT_DEFAULT);
+    const cols=annotColors(e);   // fancyground modifier → {arrow, square}
     if(dragFrom===to){
-      // toggle square highlight
-      if(st.squares[to]) delete st.squares[to]; else st.squares[to]=color;
+      // toggle FULL-SQUARE highlight (fancyground: squares, not circles)
+      if(st.squares[to]) delete st.squares[to]; else st.squares[to]=cols.square;
     } else {
       // toggle arrow (same from/to removes it)
       const idx=st.arrows.findIndex(a=>a.from===dragFrom&&a.to===to);
-      if(idx>=0) st.arrows.splice(idx,1); else st.arrows.push({from:dragFrom,to,color});
+      if(idx>=0) st.arrows.splice(idx,1); else st.arrows.push({from:dragFrom,to,color:cols.arrow});
     }
     dragFrom=null;
     renderAnnotations(boardId);
@@ -5418,28 +5426,20 @@ function renderAnnotations(boardId){
   const st=annotState(boardId);
   const flipped = boardFlippedState.get(boardId)===true;
   let svg='';
-  // square highlights — lichess-style rings (chessground circles), not filled squares
-  for(const sq in st.squares){ const p=squareToSVG(sq,flipped); svg+=`<circle cx="${p.x}" cy="${p.y}" r="23.5" fill="none" stroke="${st.squares[sq]}" stroke-width="9" opacity="0.95"/>`; }
-  // arrows — one clean proportional shape (tapered shaft + triangular head); knight moves bend into an L
+  // fancyground: FULL-SQUARE highlights (not circles); opacity baked into the rgba
+  for(const sq in st.squares){ const p=squareToSVG(sq,flipped); svg+=`<rect x="${(p.x-28).toFixed(1)}" y="${(p.y-28).toFixed(1)}" width="56" height="56" fill="${st.squares[sq]}"/>`; }
+  // fancyground: straight arrows that start OFF the origin square so the piece stays
+  // visible, with a triangular head stopping short of the destination centre
   st.arrows.forEach(a=>{
     const p1=squareToSVG(a.from,flipped), p2=squareToSVG(a.to,flipped);
-    const fc=a.from.charCodeAt(0)-97, fr=+a.from[1], tc=a.to.charCodeAt(0)-97, tr=+a.to[1];
-    const knight=(Math.abs(tc-fc)===1&&Math.abs(tr-fr)===2)||(Math.abs(tc-fc)===2&&Math.abs(tr-fr)===1);
-    const w=11, headW=18, headL=20;
-    let corner=null, fx, fy;
-    if(knight){
-      if(Math.abs(p2.x-p1.x)>Math.abs(p2.y-p1.y)) corner={x:p2.x,y:p1.y}; else corner={x:p1.x,y:p2.y};
-      fx=p2.x-corner.x; fy=p2.y-corner.y;
-    } else { fx=p2.x-p1.x; fy=p2.y-p1.y; }
-    const flen=Math.hypot(fx,fy)||1, ux=fx/flen, uy=fy/flen, px=-uy, py=ux;
-    const tipX=p2.x-ux*7, tipY=p2.y-uy*7;
+    const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1, ux=dx/len, uy=dy/len, px=-uy, py=ux;
+    const w=12, headL=22, headW=15;
+    const sx=p1.x+ux*20, sy=p1.y+uy*20;               // clear the origin piece
+    const tipX=p2.x-ux*8, tipY=p2.y-uy*8;
     const baseX=tipX-ux*headL, baseY=tipY-uy*headL;
-    let d='M '+p1.x+' '+p1.y+' ';
-    if(knight) d+='L '+corner.x+' '+corner.y+' ';
-    d+='L '+baseX.toFixed(1)+' '+baseY.toFixed(1);
-    const head=tipX.toFixed(1)+','+tipY.toFixed(1)+' '+(baseX+px*headW).toFixed(1)+','+(baseY+py*headW).toFixed(1)+' '+(baseX-px*headW).toFixed(1)+','+(baseY-py*headW).toFixed(1);
-    svg+='<path d="'+d+'" fill="none" stroke="'+a.color+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round"/>';
-    svg+='<polygon points="'+head+'" fill="'+a.color+'"/>';
+    const head=`${tipX.toFixed(1)},${tipY.toFixed(1)} ${(baseX+px*headW).toFixed(1)},${(baseY+py*headW).toFixed(1)} ${(baseX-px*headW).toFixed(1)},${(baseY-py*headW).toFixed(1)}`;
+    svg+=`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${baseX.toFixed(1)}" y2="${baseY.toFixed(1)}" stroke="${a.color}" stroke-width="${w}" stroke-linecap="butt"/>`;
+    svg+=`<polygon points="${head}" fill="${a.color}"/>`;
   });
   ov.innerHTML=svg;
 }
@@ -12315,44 +12315,44 @@ async function analyseGame(white, black, username){
       // Great: the one move that converts the opponent's blunder into an advantage
       ann = 'great';
       note = 'A great find — this is exactly how to punish the opponent\'s mistake.';
-    } else if(wasBestMove){
+    } else if(wasBestMove || wDrop < 0.6){
+      // Best: the engine's top move (or a move that gives up essentially nothing)
       ann = 'best';
       note = 'The engine\'s top recommended move.';
-    } else if(wasSecondBest && wDrop < 10){
-      ann = 'excellent';
-      note = 'An excellent move — the engine\'s second-best choice here.';
-    } else if(wasThirdBest && wDrop < 10){
-      ann = 'good';
-      note = 'A good move — the engine\'s third-best choice here.';
-    } else if(wDrop >= 10 && wpBefore >= 65 && wpAfter >= 35 && (wpAfter < 60 || prevAnn === 'blunder' || prevAnn === 'mistake')){
-      // Miss: there was a winning move here and it wasn't played
+    } else if(wDrop >= 10 && wpBefore >= 62 && wpAfter >= 30 && (wpAfter < 62 || prevAnn === 'blunder' || prevAnn === 'mistake' || prevAnn === 'miss')){
+      // Miss: you were winning and let a much stronger (often winning) continuation slip
       ann = 'miss';
       note = 'A miss — there was a winning move here that slipped by.';
-    } else if(wDrop >= 15 && wpBefore >= 40 && wpBefore <= 60 && wpAfter < 30){
-      // Miss: the drawing resource existed and wasn't found — the game is now losing
+    } else if(wDrop >= 15 && wpBefore >= 42 && wpBefore <= 58 && wpAfter < 28){
+      // Miss: a drawing resource existed and wasn't found — the game is now losing
       ann = 'miss';
       note = 'A miss — there was a move here that held the draw.';
-    } else if(hangsPiece && wDrop >= 10){
-      // Blunder: loses a piece outright
-      ann = 'blunder';
-      note = 'Hangs a piece — material is given away for nothing.';
-    } else if(wDrop >= 20){
-      // Blunder: throws away the advantage (or walks into mate)
-      ann = 'blunder';
-      note = (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
-                                          : 'A serious error that swings the game — a much better move was available.';
-    } else if(wDrop >= 10){
-      ann = 'mistake';
-      note = 'A mistake — this worsens your position long-term and gives up part of the advantage.';
-    } else if(wDrop >= 5){
-      ann = 'inaccuracy';
-      note = 'An inaccuracy — not good or bad, but a better move was available.';
-    } else if(wDrop >= 2){
-      ann = 'good';
-      note = 'A good move — nothing wrong, though a slightly stronger option existed.';
     } else {
-      ann = 'excellent';
-      note = 'An excellent move — practically as strong as the engine\'s best.';
+      // ── chess.com's win%-loss buckets (their actual method, not engine-rank) ──
+      // A move is judged purely by how much winning chance it gave up vs. best play.
+      // Excellent < 2 · Good < 5 · Inaccuracy < 10 · Mistake < 20 · Blunder ≥ 20.
+      // Lost-position cap: when you're already losing badly there's little left to
+      // blunder, so severe drops are softened to a mistake (as chess.com does).
+      const alreadyLost = wpBefore < 15;
+      const freshHang = hangsPiece && wpBefore >= 25;   // hanging a piece while still in the game
+      if((wDrop >= 20 || freshHang) && !alreadyLost){
+        ann = 'blunder';
+        note = freshHang ? 'Hangs a piece — material is given away for nothing.'
+             : (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
+             : 'A serious error that swings the game — a much better move was available.';
+      } else if(wDrop >= 10){
+        ann = 'mistake';
+        note = 'A mistake — this worsens your position and gives up part of the advantage.';
+      } else if(wDrop >= 5){
+        ann = 'inaccuracy';
+        note = 'An inaccuracy — not the best, but nothing serious.';
+      } else if(wDrop >= 2){
+        ann = 'good';
+        note = 'A good move — solid, though a slightly stronger option existed.';
+      } else {
+        ann = 'excellent';
+        note = 'An excellent move — practically as strong as the engine\'s best.';
+      }
     }
 
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
