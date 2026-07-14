@@ -2957,12 +2957,12 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
    ════════════════════════════════════════════════════════════════ */
 #sec-review{
   /* broadsheet analyst report — light editorial (remapped from Brass Observatory) */
-  --ob-brass:#E0332B; --ob-brass-2:#A11A14;
+  --ob-brass:#1B6E45; --ob-brass-2:#104A2E;
   --ob-panel:#E9E9E2; --ob-panel-2:#F3F3EE;
   --ob-line:#D7D6CC; --ob-tx:#17181A; --ob-tx2:#55564F; --ob-tx3:#8B8C83;
   --ob-mono:'DM Mono','Fira Code',ui-monospace,monospace;
   /* green accent replaces every gold reference inside the review screen */
-  --gold:#E0332B; --gold2:#A11A14; --gold3:rgba(224,51,43,.1); --gold-glow:rgba(224,51,43,.28);
+  --gold:#1B6E45; --gold2:#104A2E; --gold3:rgba(46,125,91,.1); --gold-glow:rgba(46,125,91,.28);
   /* remap the global dark-theme tokens to light so generic components
      (cards, inputs, platform tabs, game list) read correctly on porcelain */
   --text:#17181A; --text2:#55564F; --text3:#8B8C83;
@@ -3058,8 +3058,11 @@ input:focus,select:focus,textarea:focus{ border-color:var(--gold) !important; bo
 #sec-review .rv-cap-side{ display:flex; align-items:center; gap:7px; }
 #sec-review .rv-cap-name{ font-family:var(--ob-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ob-tx3); }
 #sec-review .rv-cap-pcs{ display:inline-flex; align-items:center; min-height:16px; }
-#sec-review .cap-pc{ width:16px; height:16px; display:inline-block; margin-right:-3px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.45)); }
-#sec-review .cap-pc svg{ width:16px; height:16px; display:block; }
+#sec-review .cap-pc{ width:16px; height:16px; display:inline-block; margin-right:-3px; overflow:hidden; filter:drop-shadow(0 1px 1px rgba(0,0,0,.45)); }
+#sec-review .cap-pc svg, #sec-review .cap-pc img{ width:16px; height:16px; display:block; object-fit:contain; }
+/* captured pieces are <img> now — clamp them everywhere so they can't overflow */
+.cap-pc{ display:inline-block; width:16px; height:16px; overflow:hidden; vertical-align:middle; }
+.cap-pc img{ width:100%; height:100%; object-fit:contain; display:block; }
 #sec-review .rv-cap-adv{ font-family:var(--ob-mono); font-weight:700; font-size:13px; color:var(--ob-brass-2); margin-left:3px; }
 
 /* ── Player panels flanking the board (name + captures + live clock) ── */
@@ -3140,7 +3143,7 @@ body::before{
   content:''; position:fixed; inset:0; z-index:-2; pointer-events:none;
   background:
     radial-gradient(120% 80% at 50% -10%, var(--bg2) 0%, var(--bg) 55%),
-    radial-gradient(60% 50% at 85% 8%, rgba(224,51,43,.05), transparent 60%);
+    radial-gradient(60% 50% at 85% 8%, rgba(46,125,91,.05), transparent 60%);
 }
 
 /* ── Display type: clean bold grotesque ── */
@@ -3238,15 +3241,15 @@ body{ padding-top:90px; }
   --ob-panel:var(--paper-2) !important; --ob-panel-2:var(--paper-3) !important;
   --ob-line:var(--rule) !important;
   --ob-tx:var(--ink) !important; --ob-tx2:var(--ink-2) !important; --ob-tx3:var(--ink-3) !important;
-  --gold:var(--green-2) !important; --gold2:var(--green) !important; --gold3:rgba(224,51,43,.1) !important; --gold-glow:rgba(224,51,43,.28) !important;
+  --gold:var(--green-2) !important; --gold2:var(--green) !important; --gold3:rgba(46,125,91,.1) !important; --gold-glow:rgba(46,125,91,.28) !important;
   --text:var(--ink) !important; --text2:var(--ink-2) !important; --text3:var(--ink-3) !important;
   --bg:var(--paper) !important; --bg2:var(--paper-2) !important; --bg3:var(--paper-3) !important; --bg4:var(--paper-3) !important;
   --border:var(--rule) !important; --border2:var(--rule-2) !important;
   color:var(--ink) !important;   /* body{color:var(--text)} computes to the theme text above; reset it in-scope */
 }
 #sec-review::before{ display:none !important; }
-#sec-review .btn-gold{ background:linear-gradient(135deg,#E0332B,#A11A14) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
-#sec-review .btn-gold:hover{ background:#A11A14 !important; }
+#sec-review .btn-gold{ background:linear-gradient(135deg,#1B6E45,#104A2E) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-review .btn-gold:hover{ background:#104A2E !important; }
 
 /* ════════════ PREMIUM ICONS + ALIVE MOTION ════════════ */
 .ic{ display:inline-flex; align-items:center; justify-content:center; width:1.06em; height:1.06em; vertical-align:-0.16em; flex:none; line-height:0; }
@@ -3620,22 +3623,22 @@ body{ padding-top:90px; }
   --paper:#F4F4F1; --paper-2:#ECEBE6; --paper-3:#E2E0DA;
   --ink:#141414; --ink-2:#56554F; --ink-3:#8B8A80;
   --rule:#DBD9D1; --rule-2:#C9C7BD;
-  --green:#E0332B; --green-2:#C31D16; --green-ink:#A11A14;   /* brand accent = red (semantic greens kept elsewhere) */
+  --green:#1B6E45; --green-2:#22935C; --green-ink:#104A2E;   /* brand accent = green (on Swiss neutrals) */
   --walnut:#6B4E3A; --bs-cream:#eedcb8; --bs-board-dark:#b18763;
   /* tinted insets that flip with the theme (ink tint on light, white tint on dark) */
   --inset-bg:rgba(20,20,20,.045); --inset-bd:rgba(20,20,20,.10);
   /* Swiss flatness — shadows are quiet, glow barely there */
   --lux-shadow:0 12px 30px -18px rgba(20,20,20,.22), 0 2px 6px -4px rgba(20,20,20,.10);
-  --lux-glow:0 8px 22px -12px rgba(224,51,43,.32);
+  --lux-glow:0 8px 22px -12px rgba(34,147,92,.32);
   --spring:cubic-bezier(.34,1.56,.64,1); --smooth:cubic-bezier(.4,0,.2,1);
   /* global legacy tokens flipped so the WHOLE site themes as one */
   --bg:#F4F4F1; --bg2:#FBFBF9; --bg3:#ECEBE6; --bg4:#E2E0DA;
   --text:#141414; --text2:#56554F; --text3:#8B8A80;
   --border:#DBD9D1; --border2:#C9C7BD;
-  --gold:#E0332B; --gold2:#C31D16; --gold3:rgba(224,51,43,.10);
+  --gold:#1B6E45; --gold2:#22935C; --gold3:rgba(34,147,92,.10);
   /* Game Review eval-graph colors (used via style="...:var()" so they flip) */
   --rvg-ground:rgba(20,20,20,.04); --rvg-zero:rgba(20,20,20,.16); --rvg-div:rgba(20,20,20,.14);
-  --rvg-line:rgba(20,20,20,.72); --rvg-marker:#E0332B; --rvg-bar-w:rgba(20,20,20,.30); --rvg-bar-b:rgba(20,20,20,.74);
+  --rvg-line:rgba(27,110,69,.85); --rvg-marker:#1B6E45; --rvg-bar-w:rgba(20,20,20,.30); --rvg-bar-b:rgba(34,147,92,.78);
   color-scheme:light;
 }
 /* ═══ DARK THEME — "midnight tournament hall" (whole-site) ═══ */
@@ -3643,23 +3646,23 @@ body{ padding-top:90px; }
   --paper:#141312; --paper-2:#1C1B19; --paper-3:#262523;
   --ink:#F4F3EF; --ink-2:#A8A79F; --ink-3:#777669;
   --rule:#2B2A27; --rule-2:#3B3A35;
-  --green:#F04A42; --green-2:#FF6A62; --green-ink:#C9302A;   /* brand accent = red (dark) */
+  --green:#43B579; --green-2:#5FCE93; --green-ink:#2E8F5C;   /* brand accent = green (dark) */
   --inset-bg:rgba(255,255,255,.05); --inset-bd:rgba(255,255,255,.10);
   --lux-shadow:0 22px 54px -30px rgba(0,0,0,.7), 0 3px 10px -6px rgba(0,0,0,.5);
-  --lux-glow:0 10px 30px -14px rgba(240,74,66,.45);
+  --lux-glow:0 10px 30px -14px rgba(67,181,121,.45);
   --bg:#141312; --bg2:#1C1B19; --bg3:#262523; --bg4:#302E2A;
   --text:#F4F3EF; --text2:#A8A79F; --text3:#777669;
   --border:#2B2A27; --border2:#3B3A35;
-  --gold:#F04A42; --gold2:#FF6A62; --gold3:rgba(240,74,66,.16);
+  --gold:#43B579; --gold2:#5FCE93; --gold3:rgba(67,181,121,.16);
   --rvg-ground:rgba(255,255,255,.04); --rvg-zero:rgba(255,255,255,.22); --rvg-div:rgba(255,255,255,.16);
-  --rvg-line:rgba(255,255,255,.78); --rvg-marker:#F04A42; --rvg-bar-w:rgba(255,255,255,.34); --rvg-bar-b:rgba(255,255,255,.78);
+  --rvg-line:#5FCE93; --rvg-marker:#86E7B0; --rvg-bar-w:rgba(255,255,255,.34); --rvg-bar-b:rgba(95,206,147,.82);
   color-scheme:dark;
 }
 /* nav brand mark: ink on light, bone on dark */
 :root[data-theme="dark"] .nav .gb-mark{ filter:saturate(0) brightness(1.85) !important; }
 /* theme toggle button in the nav */
 .nav-theme-toggle{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:100%; flex:none; background:none; border:0; color:var(--ink-2); cursor:pointer; transition:color .18s var(--ease), background .18s var(--ease); }
-.nav-theme-toggle:hover{ color:var(--green); background:rgba(224,51,43,.07); }
+.nav-theme-toggle:hover{ color:var(--green); background:rgba(46,125,91,.07); }
 .nav-theme-toggle svg{ width:18px; height:18px; }
 
 /* ── shared editorial primitives ── */
@@ -3701,7 +3704,7 @@ body{ padding-top:90px; }
 .bslp-sub{ margin-top:26px; max-width:44ch; font-family:var(--font-ui); font-size:clamp(15px,1.2vw,18px); line-height:1.62; color:var(--ink-2); }
 .bslp-ctas{ display:flex; align-items:center; gap:22px; margin-top:38px; }
 .bslp-cta{ display:inline-flex; align-items:center; gap:10px; background:var(--green); border:0; color:#F3F1E9; font-family:var(--font-ui); font-size:16px; font-weight:700; border-radius:11px; padding:16px 28px; cursor:pointer; box-shadow:var(--lux-glow); transition:background .2s var(--smooth), transform .3s var(--spring), box-shadow .3s var(--smooth); }
-.bslp-cta:hover{ background:var(--green-ink); transform:translateY(-3px) scale(1.02); box-shadow:0 22px 54px -14px rgba(224,51,43,.7); }
+.bslp-cta:hover{ background:var(--green-ink); transform:translateY(-3px) scale(1.02); box-shadow:0 22px 54px -14px rgba(46,125,91,.7); }
 .bslp-cta svg{ width:18px; height:18px; transition:transform .2s var(--ease); }
 .bslp-cta:hover svg{ transform:translateX(3px); }
 .bslp-link{ background:none; border:0; color:var(--ink); font-family:var(--font-ui); font-size:15px; font-weight:600; cursor:pointer; padding:6px 0; border-bottom:1.5px solid var(--ink); transition:color .18s var(--ease), border-color .18s var(--ease); }
@@ -3718,7 +3721,7 @@ body{ padding-top:90px; }
 }
 /* cinematic radial spotlight behind the hero (theme-aware, very subtle) */
 #landing::before{ content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:radial-gradient(70% 60% at 68% 34%, rgba(224,51,43,.10), transparent 62%); }
+  background:radial-gradient(70% 60% at 68% 34%, rgba(46,125,91,.10), transparent 62%); }
 :root[data-theme="dark"] #landing::before{ background:radial-gradient(72% 62% at 68% 34%, rgba(67,181,121,.14), transparent 60%); }
 #landing .bslp-top, #landing .bslp-hero{ position:relative; z-index:1; }
 @media (prefers-reduced-motion: no-preference){
@@ -3770,8 +3773,8 @@ body{ padding-top:0 !important; }
 /* toolbar */
 #sec-openings .ol-toolbar{ margin:32px 0 22px; padding-bottom:0; border:0; }
 #sec-openings .ol-toolbar-stat{ font-family:var(--font-mono); font-size:13px; color:var(--ink-2); }
-#sec-openings .ol-review-pill{ background:rgba(224,51,43,.1); border:1px solid rgba(224,51,43,.4); color:var(--green); }
-#sec-openings .ol-review-pill:hover{ background:rgba(224,51,43,.16); }
+#sec-openings .ol-review-pill{ background:rgba(46,125,91,.1); border:1px solid rgba(46,125,91,.4); color:var(--green); }
+#sec-openings .ol-review-pill:hover{ background:rgba(46,125,91,.16); }
 #sec-openings .ol-review-dot{ background:var(--green-2); box-shadow:0 0 8px var(--green-2); }
 #sec-openings .ol-review-clear{ font-family:var(--font-mono); color:var(--ink-3); }
 #sec-openings .ol-toolbar-btn{ background:var(--paper); border:1px solid var(--rule-2); color:var(--ink); font-family:var(--font-ui); border-radius:9px; }
@@ -3799,7 +3802,7 @@ body{ padding-top:0 !important; }
 #sec-openings .ol-rcard-cta:hover{ color:var(--green-ink); }
 #sec-openings .ol-rcard-cta.due{ color:var(--green); }
 #sec-openings .ol-due-badge{ background:var(--green); color:#F3F1E9; box-shadow:none; font-family:var(--font-mono); }
-#sec-openings .ol-fin-badge{ background:rgba(224,51,43,.12); border:1px solid rgba(224,51,43,.4); color:var(--green); font-family:var(--font-mono); }
+#sec-openings .ol-fin-badge{ background:rgba(46,125,91,.12); border:1px solid rgba(46,125,91,.4); color:var(--green); font-family:var(--font-mono); }
 #sec-openings .ol-rec{ background:rgba(28,78,58,.1); border:1px solid rgba(28,78,58,.35); color:var(--green); }
 #sec-openings .ol-empty{ font-family:var(--font-ui); color:var(--ink-3); padding:40px 0; }
 @media(max-width:640px){
@@ -3821,7 +3824,7 @@ body{ padding-top:0 !important; }
 #sec-review{ background:var(--paper); min-height:100vh; }
 #sec-review::before{ display:none !important; }
 #sec-review .rv-accp-num, #sec-review .rvr-elo-n{ text-shadow:none !important; color:var(--green) !important; }
-#sec-review .btn-gold{ background:linear-gradient(135deg,#E0332B,#A11A14) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-review .btn-gold{ background:linear-gradient(135deg,#1B6E45,#104A2E) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
 #sec-review .rvr-title, #sec-review .mdb-head-label{ font-family:var(--font-display) !important; color:var(--ink) !important; }
 #sec-review h1, #sec-review h2, #sec-review h3, #sec-review #rv-players{ font-family:var(--font-display) !important; color:var(--ink) !important; }
 #sec-review .rvr-title::before{ background:var(--green) !important; box-shadow:none !important; }
@@ -3830,8 +3833,8 @@ body{ padding-top:0 !important; }
 #sec-review .rvr-row{ border-bottom-color:var(--rule) !important; }
 #sec-review .chess-board{ box-shadow:0 14px 34px -16px rgba(23,24,26,.5) !important; }
 #sec-review .eval-bar-vertical{ box-shadow:inset 0 0 0 1px var(--rule-2), 0 6px 16px -10px rgba(23,24,26,.4) !important; }
-#sec-review .move-cell:hover{ background:rgba(224,51,43,.1) !important; }
-#sec-review .move-cell.cur{ background:rgba(224,51,43,.16) !important; box-shadow:inset 0 0 0 1px rgba(224,51,43,.4) !important; }
+#sec-review .move-cell:hover{ background:rgba(46,125,91,.1) !important; }
+#sec-review .move-cell.cur{ background:rgba(46,125,91,.16) !important; box-shadow:inset 0 0 0 1px rgba(46,125,91,.4) !important; }
 #sec-review .learn-panel{ background:var(--paper-2) !important; border-color:var(--rule) !important; }
 #sec-review .rv-player-dot{ box-shadow:0 0 0 1px var(--rule-2) !important; }
 #sec-review .rv-eg-phases span{ border-right-color:var(--rule) !important; }
@@ -3839,46 +3842,46 @@ body{ padding-top:0 !important; }
 #sec-review .rv-eg-tabs button.active{ background:var(--green) !important; color:#F3F1E9 !important; border-color:transparent !important; }
 #sec-review .card{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; box-shadow:0 10px 26px -16px rgba(23,24,26,.35) !important; }
 #sec-review .ptab{ background:var(--paper-2) !important; border-color:var(--rule-2) !important; color:var(--ink-2) !important; }
-#sec-review .ptab.active{ background:rgba(224,51,43,.12) !important; border-color:var(--green) !important; color:var(--green) !important; box-shadow:inset 0 0 0 1px rgba(224,51,43,.25) !important; }
+#sec-review .ptab.active{ background:rgba(46,125,91,.12) !important; border-color:var(--green) !important; color:var(--green) !important; box-shadow:inset 0 0 0 1px rgba(46,125,91,.25) !important; }
 #sec-review .ptab.active .ic{ color:var(--green) !important; }
-#sec-review .rv-pgn-input:focus{ border-color:var(--green) !important; box-shadow:0 0 0 3px rgba(224,51,43,.16) !important; }
+#sec-review .rv-pgn-input:focus{ border-color:var(--green) !important; box-shadow:0 0 0 3px rgba(46,125,91,.16) !important; }
 #sec-review .rv-player{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.5) !important; }
 #sec-review .move-list-panel, #sec-review .move-detail-box, #sec-review .user-moves-list, #sec-review #rv-live-eval, #sec-review .play-mode-bar{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; }
 #sec-review .move-row{ border-bottom-color:var(--rule) !important; }
-#sec-review .move-row:hover .move-cell{ background:rgba(224,51,43,.06) !important; }
+#sec-review .move-row:hover .move-cell{ background:rgba(46,125,91,.06) !important; }
 
 /* ═══════════ COACH — broadsheet (token-based so it adapts to the theme) ═══════════ */
 #sec-coach{
   --text:var(--ink); --text2:var(--ink-2); --text3:var(--ink-3);
   --bg:var(--paper); --bg2:var(--paper-2); --bg3:var(--paper-2); --bg4:var(--paper-3);
   --border:var(--rule); --border2:var(--rule-2);
-  --gold:var(--green); --gold2:var(--green-ink); --gold3:rgba(224,51,43,.1); --gold-glow:rgba(224,51,43,.28);
+  --gold:var(--green); --gold2:var(--green-ink); --gold3:rgba(46,125,91,.1); --gold-glow:rgba(46,125,91,.28);
   color:var(--ink); background:var(--paper); min-height:100vh;
 }
 #sec-coach h1, #sec-coach h2, #sec-coach h3, #sec-coach .coach-page-title, #sec-coach .gai-name, #sec-coach .pc-hero h1{ font-family:var(--font-display) !important; color:var(--ink) !important; }
 #sec-coach .pc-hero h1 em, #sec-coach .coach-page-eyebrow{ color:var(--green) !important; }
-#sec-coach .btn-gold{ background:linear-gradient(135deg,#E0332B,#A11A14) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
-#sec-coach .btn-gold:hover{ background:#A11A14 !important; }
+#sec-coach .btn-gold{ background:linear-gradient(135deg,#1B6E45,#104A2E) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-coach .btn-gold:hover{ background:#104A2E !important; }
 #sec-coach .pc-user{ background:var(--paper) !important; border:1px solid var(--rule-2) !important; color:var(--ink) !important; }
 #sec-coach .pc-user:focus{ border-color:var(--green) !important; }
 #sec-coach .pc-prog-track{ background:var(--paper-3) !important; }
-#sec-coach .pc-say{ background:rgba(224,51,43,.1) !important; border-color:rgba(224,51,43,.28) !important; }
-#sec-coach .pc-banner{ background:linear-gradient(120deg, rgba(224,51,43,.12), rgba(224,51,43,.05)) !important; border-color:var(--rule) !important; }
+#sec-coach .pc-say{ background:rgba(46,125,91,.1) !important; border-color:rgba(46,125,91,.28) !important; }
+#sec-coach .pc-banner{ background:linear-gradient(120deg, rgba(46,125,91,.12), rgba(46,125,91,.05)) !important; border-color:var(--rule) !important; }
 #sec-coach .coach-study, #sec-coach .gai-card{ background:var(--paper-2) !important; border-color:var(--rule) !important; }
-#sec-coach .coach-next{ background:linear-gradient(135deg,#E0332B,#A11A14) !important; color:#F3F1E9 !important; }
+#sec-coach .coach-next{ background:linear-gradient(135deg,#1B6E45,#104A2E) !important; color:#F3F1E9 !important; }
 
 /* ═══════════ REPERTOIRE — broadsheet study surface (token-based, theme-ready) ═══════════ */
 #sec-creator{
   --text:var(--ink); --text2:var(--ink-2); --text3:var(--ink-3);
   --bg:var(--paper); --bg2:var(--paper-2); --bg3:var(--paper-2); --bg4:var(--paper-3);
   --border:var(--rule); --border2:var(--rule-2);
-  --gold:var(--green); --gold2:var(--green-ink); --gold3:rgba(224,51,43,.1); --gold-glow:rgba(224,51,43,.28);
+  --gold:var(--green); --gold2:var(--green-ink); --gold3:rgba(46,125,91,.1); --gold-glow:rgba(46,125,91,.28);
   color:var(--ink); background:var(--paper); min-height:100vh;
 }
 #sec-creator h1, #sec-creator h2, #sec-creator h3, #sec-creator .cc-hero h1, #sec-creator .acad-cc-name, #sec-creator .cc-name-input{ font-family:var(--font-display) !important; color:var(--ink) !important; }
 #sec-creator .cc-hero h1 em{ color:var(--green) !important; }
-#sec-creator .acad-hero-badge{ color:var(--green) !important; background:rgba(224,51,43,.1) !important; }
-#sec-creator .btn-gold, #sec-creator .acad-cta-btn{ background:linear-gradient(135deg,#E0332B,#A11A14) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-creator .acad-hero-badge{ color:var(--green) !important; background:rgba(46,125,91,.1) !important; }
+#sec-creator .btn-gold, #sec-creator .acad-cta-btn{ background:linear-gradient(135deg,#1B6E45,#104A2E) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
 #sec-creator .nop-mini-btn.gold{ background:var(--green) !important; color:#fff !important; }
 /* saved-course cards: warm paper, not the legacy deep-space navy */
 #sec-creator .cc-card{ background:var(--paper-2) !important; border:1px solid var(--rule) !important; backdrop-filter:none !important; }
@@ -3888,10 +3891,10 @@ body{ padding-top:0 !important; }
 #sec-creator .cc-title-row .cc-tool-icon, #sec-creator .cc-tool-icon{ color:var(--green) !important; }
 #sec-creator .cc-name-input:focus{ border-bottom-color:var(--green) !important; }
 #sec-creator .cc-engine-tag, #sec-creator .cc-stats-head, #sec-creator .cc-st-bar, #sec-creator .cc-stats-foot{ background:var(--inset-bg) !important; }
-#sec-creator .cc-st-bar i.pop{ background:linear-gradient(90deg,#E0332B,#A11A14) !important; }
-#sec-creator .cc-stat-row:hover{ background:rgba(224,51,43,.07) !important; }
+#sec-creator .cc-st-bar i.pop{ background:linear-gradient(90deg,#1B6E45,#104A2E) !important; }
+#sec-creator .cc-stat-row:hover{ background:rgba(46,125,91,.07) !important; }
 #sec-creator .cc-engine-tag{ border-color:var(--rule) !important; color:var(--ink-3) !important; }
-#sec-creator .cc-setup-icon, #sec-creator .rep-root{ background:rgba(224,51,43,.12) !important; color:var(--green) !important; }
+#sec-creator .cc-setup-icon, #sec-creator .rep-root{ background:rgba(46,125,91,.12) !important; color:var(--green) !important; }
 #sec-creator .cc-analysis-toggle{ color:var(--ink-2) !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -3958,7 +3961,7 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
   nav.nav .nav-tabs{ position:absolute; top:60px; left:0; right:0; flex-direction:column; align-items:stretch; background:var(--paper); border-bottom:1px solid var(--rule); box-shadow:0 20px 44px -20px rgba(0,0,0,.35); max-height:0; overflow:hidden; transition:max-height .32s var(--smooth); z-index:200; }
   nav.nav[data-menu="open"] .nav-tabs{ max-height:78vh; overflow:auto; }
   nav.nav .nav-tab{ height:52px; justify-content:flex-start; gap:12px; padding:0 22px; border-bottom:1px solid var(--rule) !important; border-left:3px solid transparent; }
-  nav.nav .nav-tab.active{ border-bottom-color:var(--rule) !important; border-left-color:var(--green); background:rgba(224,51,43,.07); }
+  nav.nav .nav-tab.active{ border-bottom-color:var(--rule) !important; border-left-color:var(--green); background:rgba(46,125,91,.07); }
   /* Game Review stacks to one column */
   #sec-review .review-layout{ grid-template-columns:1fr !important; grid-template-areas:"board" "side" "rail" !important; }
   /* landing can scroll on short screens */
@@ -3983,11 +3986,13 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 #sec-review .page-wrap{ max-width:calc(100vw - 24px); padding-top:14px; }
 /* svh = small viewport height: the honest visible height, immune to the 100vh
    overshoot some embedded/mobile viewports report */
-#sec-review{ --rvsq: clamp(42px, calc((min(100vh, 100svh) - 296px) / 8), 106px); }
+#sec-review{ --rvsq: clamp(44px, calc((min(100vh, 100svh) - 288px) / 8), 116px); }
+/* tighter player bars + header so the board can claim the vertical space */
+#sec-review .rv-player{ min-height:30px !important; padding:4px 10px !important; margin:3px 0 !important; }
 /* three-column app grid on wide screens: analysis rail | board | review sidebar —
    the side margins go to work, and no column needs a scrollbar to show itself */
 #sec-review .review-layout{
-  grid-template-columns:minmax(230px, 300px) auto minmax(288px, 340px);
+  grid-template-columns:minmax(206px, 262px) auto minmax(268px, 312px);
   grid-template-areas:"rail board side";
   gap:22px; justify-content:center; align-items:start;
 }
@@ -12295,62 +12300,58 @@ async function analyseGame(white, black, username){
       }
     } catch(e){}
 
-    // ─── Classification ladder ───
-    // Book = theory · Brilliant = sound PIECE sacrifice for advantage · Great = the one
-    // move that takes/keeps the advantage · Best = engine #1 · Excellent = #2 · Good = #3 ·
-    // Inaccuracy = neither good nor bad · Mistake = worsens the position, loses advantage ·
-    // Miss = failed to play a winning/drawing move · Blunder = loses a piece/the advantage/mated.
+    // ─── Classification ladder (priority: Book → Brilliant → Great → Miss → Best
+    //     → Excellent → Good → Inaccuracy → Mistake → Blunder) ───
+    // EPL = Expected Points Lost = win%(best) − win%(played) = wDrop.
+    // Excellent 0–2 · Good 2–5 · Inaccuracy 5–10 · Mistake 10–20 · Blunder 20+.
+    const onlyMove   = gap2Win !== null && gap2Win >= 12;                 // every alternative drops a lot
+    const swingUp    = wpBefore <= 40 && wpAfter >= 47;                   // turned losing/worse → equal+
+    const eqToWin    = wpBefore >= 42 && wpBefore <= 60 && wpAfter >= 66; // turned equal → winning
+    const oppErred   = prevAnn === 'mistake' || prevAnn === 'blunder';
     if(isBookMove){
       ann = 'book';
       note = openingName ? ('Opening theory — ' + openingName) : 'A known opening theory move.';
     } else if(isSacrifice && (wasBestMove || wDrop < 2) && wpAfter >= 45 && wpBefore <= 93){
-      // Brilliant: sacrificing a piece (not a pawn — PIECE_VALUES ≥ 3 enforced upstream)
-      // for a real advantage, while the position stays sound
+      // Brilliant: a sound PIECE sacrifice (not a pawn) that keeps you at least equal
       ann = 'brilliant';
       note = 'A brilliant sacrifice — a piece is given up for a clearly stronger position.';
       bestLine = '';
-    } else if(wasBestMove && gap2Win !== null && gap2Win >= 12 && wpBefore >= 25 && wpBefore <= 93 && i > 6){
-      // Great: THE one move that takes the advantage — every alternative gives it away
+    } else if(wasBestMove && (onlyMove || swingUp || eqToWin) && wpBefore >= 20 && wpBefore <= 94 && i > 6){
+      // Great: the critical move — the only move, or one that dramatically swings the
+      // evaluation (losing → equal, or equal → winning)
       ann = 'great';
-      note = 'A great move — the one move that takes the advantage in this position.';
-    } else if(wasBestMove && (prevAnn === 'blunder' || prevAnn === 'miss') && wpAfter >= 65 && i > 6){
-      // Great: the one move that converts the opponent's blunder into an advantage
-      ann = 'great';
-      note = 'A great find — this is exactly how to punish the opponent\'s mistake.';
+      note = swingUp ? 'A great move — it rescues a position that was slipping away.'
+           : eqToWin ? 'A great move — it turns a level game into a winning one.'
+           : 'A great move — the only move that holds the position together.';
+    } else if(!wasBestMove && wDrop >= 8 && wpBefore >= 55 && wpAfter >= 25 && (oppErred || wpBefore >= 65)){
+      // Miss: there was a clear win/punishment here (often after the opponent erred) and
+      // it wasn't taken — you were doing well and let it slip
+      ann = 'miss';
+      note = oppErred ? 'A miss — the opponent slipped and this was the moment to punish it.'
+                      : 'A miss — there was a winning move here that got away.';
     } else if(wasBestMove || wDrop < 0.6){
-      // Best: the engine's top move (or a move that gives up essentially nothing)
+      // Best: the engine's #1 move (≈ 0 EPL / CPL)
       ann = 'best';
       note = 'The engine\'s top recommended move.';
-    } else if(wDrop >= 10 && wpBefore >= 62 && wpAfter >= 30 && (wpAfter < 62 || prevAnn === 'blunder' || prevAnn === 'mistake' || prevAnn === 'miss')){
-      // Miss: you were winning and let a much stronger (often winning) continuation slip
-      ann = 'miss';
-      note = 'A miss — there was a winning move here that slipped by.';
-    } else if(wDrop >= 15 && wpBefore >= 42 && wpBefore <= 58 && wpAfter < 28){
-      // Miss: a drawing resource existed and wasn't found — the game is now losing
-      ann = 'miss';
-      note = 'A miss — there was a move here that held the draw.';
     } else {
-      // ── chess.com's win%-loss buckets (their actual method, not engine-rank) ──
-      // A move is judged purely by how much winning chance it gave up vs. best play.
-      // Excellent < 2 · Good < 5 · Inaccuracy < 10 · Mistake < 20 · Blunder ≥ 20.
-      // Lost-position cap: when you're already losing badly there's little left to
-      // blunder, so severe drops are softened to a mistake (as chess.com does).
+      // ── Expected-Points-Lost buckets, with a lost-position cap (you can't blunder
+      //    away a game you've already lost, so severe drops soften to a mistake). ──
       const alreadyLost = wpBefore < 15;
-      const freshHang = hangsPiece && wpBefore >= 25;   // hanging a piece while still in the game
+      const freshHang = hangsPiece && wpBefore >= 25;   // hung a piece while still in the game
       if((wDrop >= 20 || freshHang) && !alreadyLost){
         ann = 'blunder';
         note = freshHang ? 'Hangs a piece — material is given away for nothing.'
              : (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
-             : 'A serious error that swings the game — a much better move was available.';
+             : 'A blunder — a game-changing error that throws away the advantage.';
       } else if(wDrop >= 10){
         ann = 'mistake';
-        note = 'A mistake — this worsens your position and gives up part of the advantage.';
+        note = 'A mistake — it substantially worsens the position and shifts the evaluation.';
       } else if(wDrop >= 5){
         ann = 'inaccuracy';
-        note = 'An inaccuracy — not the best, but nothing serious.';
+        note = 'An inaccuracy — a minor slip that hands over a little of your edge.';
       } else if(wDrop >= 2){
         ann = 'good';
-        note = 'A good move — solid, though a slightly stronger option existed.';
+        note = 'A good move — solid, though a slightly stronger continuation existed.';
       } else {
         ann = 'excellent';
         note = 'An excellent move — practically as strong as the engine\'s best.';
@@ -12715,7 +12716,7 @@ function renderEvalGraph(){
       + dividers + bars + ttMarks
       + '<line id="rv-eval-marker" x1="'+mx+'" y1="0" x2="'+mx+'" y2="'+H+'" style="stroke:var(--rvg-marker)" stroke-width="1.6"/>';
   } else {
-    body = '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(224,51,43,.22)"/><stop offset="1" stop-color="rgba(224,51,43,.05)"/></linearGradient></defs>'
+    body = '<defs><linearGradient id="rvWhiteGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(46,125,91,.22)"/><stop offset="1" stop-color="rgba(46,125,91,.05)"/></linearGradient></defs>'
       + '<rect x="0" y="0" width="'+W+'" height="'+H+'" style="fill:var(--rvg-ground)"/>'
       + '<path d="'+area+'" fill="url(#rvWhiteGrad)"/>'
       + '<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" style="stroke:var(--rvg-zero)" stroke-width="1"/>'
