@@ -3985,9 +3985,9 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 /* three-column app grid on wide screens: analysis rail | board | review sidebar —
    the side margins go to work, and no column needs a scrollbar to show itself */
 #sec-review .review-layout{
-  grid-template-columns:minmax(250px, 340px) auto minmax(330px, 440px);
+  grid-template-columns:minmax(230px, 300px) auto minmax(288px, 340px);
   grid-template-areas:"rail board side";
-  gap:24px; justify-content:center; align-items:start;
+  gap:22px; justify-content:center; align-items:start;
 }
 #sec-review .rv-boardcol{ grid-area:board; }
 #sec-review .rv-leftrail{ grid-area:rail; }
@@ -4004,13 +4004,21 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
   }
   body.app-screen #sec-review .review-layout > div{ max-height:none; overflow:visible; position:static; }
 }
-/* compact report card — its saved space goes to the board column */
-#sec-review .rv-accp-num{ font-size:26px; }
-#sec-review .rvr-title{ font-size:13.5px; }
-#sec-review .rvr-elo-cell{ padding:7px 5px; }
-#sec-review .rvr-elo-n{ font-size:20px; }
-#sec-review .rvr-row{ padding:4.5px 4px; font-size:12.5px; }
-#sec-review .rvr-row .rvr-ico{ transform:scale(.9); }
+/* compact report card — the board is the hero, so the sidebar stays tight and
+   the full 10-row report fits without a scrollbar */
+#sec-review .rv-accp-num{ font-size:24px; }
+#sec-review .acc-wrap{ margin-bottom:10px; }
+#sec-review .rv-pl-grid{ padding:9px 11px; gap:5px 9px; }
+#sec-review .rv-pl-acc{ font-size:14px; padding:3px 0; }
+#sec-review .rvr-title{ font-size:13px; }
+#sec-review .rvr-elo{ margin:8px 0 4px; gap:8px; }
+#sec-review .rvr-elo-cell{ padding:6px 5px; }
+#sec-review .rvr-elo-n{ font-size:18px; }
+#sec-review .rvr-elo-l{ font-size:8px; }
+#sec-review .rvr-head{ padding:4px 4px; }
+#sec-review .rvr-row{ padding:3.5px 4px; font-size:12px; }
+#sec-review .rvr-row .rvr-ico{ transform:scale(.82); }
+#sec-review .rv-report{ padding:12px 13px; }
 #sec-review #board-r .sq{ width:var(--rvsq) !important; height:var(--rvsq) !important; }
 #sec-review #eval-bar-r{ height:calc(var(--rvsq) * 8) !important; align-self:flex-start; }
 /* accuracy dials live in the right panel now (chess.com layout) — compact them */
@@ -13368,8 +13376,9 @@ function rvAnimatePieces(boardId, oldS, newS){
       piece.style.transition='none';
       piece.style.transform='translate('+dx+'px,'+dy+'px)';
       piece.style.zIndex='6';
+      const slide = window._rvFast ? '.13s' : '.24s';   // quicker glide during fast-play
       requestAnimationFrame(function(){ requestAnimationFrame(function(){
-        piece.style.transition='transform .24s cubic-bezier(.22,1,.36,1)';
+        piece.style.transition='transform '+slide+' cubic-bezier(.22,1,.36,1)';
         piece.style.transform='translate(0,0)';
         const done=function(){ piece.style.transition=''; piece.style.transform=''; piece.style.zIndex=''; piece.removeEventListener('transitionend', done); };
         piece.addEventListener('transitionend', done);
@@ -13852,7 +13861,7 @@ function rvScrollMove(el){
   else if(er.bottom > cr.bottom) cont.scrollTop += (er.bottom - cr.bottom) + 6;
 }
 window.rvNext = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
   if(viewingBranch && branchState){
     if(branchPly < branchState.moves.length){ branchPly++; renderReviewBoard(); }
   } else if(reviewIdx < reviewHistory.length - 1){
@@ -13861,7 +13870,7 @@ window.rvNext = function(){
   }
 };
 window.rvPrev = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
   if(viewingBranch && branchState){
     if(branchPly > 0){ branchPly--; renderReviewBoard(); }
     else { /* at branch start — could exit branch here, but keep branch view to allow re-entry */ }
@@ -13870,12 +13879,12 @@ window.rvPrev = function(){
   }
 };
 window.rvStart = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
   if(viewingBranch && branchState){ branchPly = 0; renderReviewBoard(); }
   else { reviewIdx = 0; renderReviewBoard(); }
 };
 window.rvEnd = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
   if(viewingBranch && branchState){
     branchPly = branchState.moves.length;
     renderReviewBoard();
@@ -13910,7 +13919,7 @@ window.rvSee = function(){
   const total = reviewHistory.length - 1;
   if(total < 1 || !moveAnnotations || !moveAnnotations.length) return;
   viewingBranch = false;                                   // leave any branch we're exploring
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; }
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; }
   const start = (typeof reviewIdx === 'number') ? reviewIdx : 0;
   let found = -1;
   for(let step = 1; step <= total; step++){
@@ -13926,17 +13935,17 @@ window.rvSee = function(){
   if(found <= reviewIdx){ reviewIdx = 0; renderReviewBoard(); }   // wrapped — restart the reel
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduce){ reviewIdx = found; renderReviewBoard(); document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'}); return; }
+  window._rvFast = true;                                   // shortens the piece glide (see rvAnimatePieces)
+  const stopFast = () => { clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; };
   window._rvFastTimer = setInterval(() => {
-    if(typeof reviewIdx !== 'number' || reviewIdx >= found || viewingBranch){
-      clearInterval(window._rvFastTimer); window._rvFastTimer = null; return;
-    }
+    if(typeof reviewIdx !== 'number' || reviewIdx >= found || viewingBranch){ stopFast(); return; }
     reviewIdx++;
-    renderReviewBoard();                                   // each render slides the piece
+    renderReviewBoard();                                   // each render slides the piece (fast glide)
     if(reviewIdx >= found){
-      clearInterval(window._rvFastTimer); window._rvFastTimer = null;
+      stopFast();
       document.getElementById(`mc-${reviewIdx}`)?.scrollIntoView({block:'nearest'});
     }
-  }, 230);
+  }, 150);
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -28838,6 +28847,7 @@ function ccOpenWorkspace(){
           <div class="expl-board-wrap">
             <div style="display:flex"><div class="board-ranks" id="cc-ranks"></div>
               <div style="position:relative"><div id="cc-board" class="chess-board"></div>
+                <svg class="arrow-overlay" id="cc-saved-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3"></svg>
                 <svg class="arrow-overlay" id="cc-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
               </div>
             </div>
@@ -28968,9 +28978,30 @@ function ccRender(){
     if(CC.uci.length === 0){ note.placeholder='Course introduction…'; note.value = CC.description||''; }
     else { note.placeholder='Explain what move the player should make next…'; note.value = CC.notes[ccFenKey()]||''; }
   }
+  ccDrawSavedArrows(state);   // saved-line arrows always show (own overlay, under engine arrows)
   if(CC.analysisOn){ ccRunEngine(); }
   else { document.getElementById('cc-analysis-lines').innerHTML='<div class="cc-explorer-off">Turn on Analysis to see the engine evaluation.</div>'; clearArrows('cc-arrows'); }
   ccRenderStats();
+}
+
+// Green arrows for every saved continuation from the current node — so opening a
+// saved course and stepping through it shows exactly which moves are in your lines.
+function ccDrawSavedArrows(state){
+  const ov = document.getElementById('cc-saved-arrows'); if(!ov) return;
+  const kids = (CC.node && CC.node.children) || [];
+  if(!kids.length){ ov.innerHTML=''; return; }
+  const flipped = boardFlippedState.get('cc-board') === true;
+  let svg = `<defs><marker id="cc-saved-m" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#15781B"/></marker></defs>`;
+  let n = 0;
+  kids.forEach(ch => {
+    let mv = null; try{ mv = sanToMove(ch.san, state); }catch(e){}
+    if(!mv) return;
+    // the mainline (first child) gets a solid arrow; alternatives a lighter one
+    const op = n === 0 ? '#15781B' : 'rgba(21,120,27,.55)';
+    svg += arrowSVG(mv.from, mv.to, op, 11, 'cc-saved-m', flipped);
+    n++;
+  });
+  ov.innerHTML = svg;
 }
 
 // ── move stats table: popularity from explorer_stats.json + live winrates from
@@ -29056,9 +29087,12 @@ function ccOnMove(from,to,newState,san){
   const mv=sanToMove(san,prev);
   const uci=mv?mv.from+mv.to+(mv.promotion||''):from+to;
   CC.uci.push(uci);
-  // add to tree
-  let child=(CC.node.children||[]).find(c=>c.uci===uci);
+  // navigate into the saved tree if this move already exists (match by uci, or by
+  // san for courses saved/imported without uci), else create a new branch
+  const nsan=(s)=>(s||'').replace(/[+#!?]/g,'');
+  let child=(CC.node.children||[]).find(c=>c.uci===uci) || (CC.node.children||[]).find(c=>nsan(c.san)===nsan(san));
   if(!child){ child={uci,san,children:[]}; CC.node.children.push(child); }
+  else if(!child.uci){ child.uci=uci; }              // backfill missing uci
   CC.node=child;
   ccRender();
 }
