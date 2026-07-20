@@ -12418,6 +12418,33 @@ async function analyseGame(white, black, username){
       }
     } catch(e){}
 
+    // ── Difficulty score (0–100): how hard was the BEST move here to find? ──
+    // sharpness (did finding it matter — PV1↔PV2 win% gap) × non-obviousness
+    // (quiet moves, retreats, and sacrifices are hard; captures and forced
+    // recaptures are easy). Drives "Great" gating + shown in the move detail.
+    let difficulty = 0;
+    try {
+      const stB = reviewHistory[i - 1] && reviewHistory[i - 1].state;
+      const bu = bestMoveUCI || '';
+      if(stB && bu.length >= 4){
+        const bFrom = bu.slice(0, 2), bTo = bu.slice(2, 4);
+        let nonObvious = 30;                                           // a quiet move
+        const isCap = !!stB.board[bTo];
+        const oppJustLandedHere = reviewHistory[i - 1] && reviewHistory[i - 1].to === bTo;
+        if(isCap && oppJustLandedHere) nonObvious = 4;                 // forced-looking recapture
+        else if(isCap) nonObvious = 12;                                // a capture: easy to spot
+        const dRank = (+bTo[1]) - (+bFrom[1]);
+        if((isWhiteMove && dRank < 0) || (!isWhiteMove && dRank > 0)) nonObvious += 12;  // retreat
+        try {
+          const nsB = applyMove(stB, { from: bFrom, to: bTo });
+          const mp = nsB.board[bTo];
+          if(mp && mp[1] !== 'K' && (PIECE_VALUES[mp[1]] || 0) >= 3 && isPieceHanging(nsB, bTo)) nonObvious += 28;  // it's a sacrifice
+        } catch(e){}
+        const sharpNorm = Math.min(1, (gap2Win || 0) / 25);
+        difficulty = Math.round(100 * sharpNorm * Math.min(1, nonObvious / 70));
+      }
+    } catch(e){}
+
     // ─── Classification ladder (priority: Book → Brilliant → Great → Miss → Best
     //     → Excellent → Good → Inaccuracy → Mistake → Blunder) ───
     // EPL = Expected Points Lost = win%(best) − win%(played) = wDrop.
@@ -12434,13 +12461,15 @@ async function analyseGame(white, black, username){
       ann = 'brilliant';
       note = 'A brilliant sacrifice — a piece is given up for a clearly stronger position.';
       bestLine = '';
-    } else if(wasBestMove && (onlyMove || swingUp || eqToWin) && wpBefore >= 20 && wpBefore <= 94 && i > 6){
+    } else if(wasBestMove && (onlyMove || swingUp || eqToWin) && difficulty >= 20 && wpBefore >= 20 && wpBefore <= 94 && i > 6){
       // Great: the critical move — the only move, or one that dramatically swings the
-      // evaluation (losing → equal, or equal → winning)
+      // evaluation. The difficulty gate keeps forced recaptures and other obvious
+      // must-plays from being flattered as "Great".
       ann = 'great';
       note = swingUp ? 'A great move — it rescues a position that was slipping away.'
            : eqToWin ? 'A great move — it turns a level game into a winning one.'
            : 'A great move — the only move that holds the position together.';
+      if(difficulty >= 45) note += ` A genuinely hard find (difficulty ${difficulty}/100).`;
     } else if(!wasBestMove && wDrop >= 8 && wpBefore >= 55 && wpAfter >= 25 && (oppErred || wpBefore >= 65)){
       // Miss: there was a clear win/punishment here (often after the opponent erred) and
       // it wasn't taken — you were doing well and let it slip
@@ -12497,6 +12526,7 @@ async function analyseGame(white, black, username){
       ply: i,
       rawScore: after,
       tags,
+      difficulty,
       isMate: evals[i]?.isMate || false,
       mateIn: evals[i]?.mateIn || null,
       // NEW: data for learning from mistakes
@@ -13070,6 +13100,17 @@ window.selectReviewMove = function(idx){
       <span class="mdb-time-k">Time</span>
       <span class="mdb-time-spent">${rvFmtSpent(reviewMoveTimes[idx])} spent</span>
       ${reviewClocks[idx] != null ? `<span class="mdb-time-left">· ${rvFmtClock(reviewClocks[idx])} left</span>` : ''}
+    </div>`;
+  }
+
+  // Difficulty: how hard the best move in THIS position was to find (0–100)
+  if(typeof ann.difficulty === 'number' && ann.difficulty >= 12){
+    const dLab = ann.difficulty >= 70 ? 'Very hard' : ann.difficulty >= 45 ? 'Hard' : ann.difficulty >= 20 ? 'Tricky' : 'Easy';
+    const dCol = ann.difficulty >= 45 ? '#d06b7a' : ann.difficulty >= 20 ? '#e6b450' : 'var(--text3)';
+    html += `<div class="mdb-time">
+      <span class="mdb-time-k">Position</span>
+      <span class="mdb-time-spent" style="color:${dCol}">${dLab} to get right</span>
+      <span class="mdb-time-left">· difficulty ${ann.difficulty}/100</span>
     </div>`;
   }
 
