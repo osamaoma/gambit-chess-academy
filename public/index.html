@@ -4051,6 +4051,14 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 #sec-review .rvr-row{ padding:3.5px 4px; font-size:12px; }
 #sec-review .rvr-row .rvr-ico{ transform:scale(.82); }
 #sec-review .rv-report{ padding:12px 13px; }
+/* Coach's advice — recurring-mistake patterns in plain English */
+.rvr-advice{ margin-top:10px; padding-top:10px; border-top:1px solid var(--rule); }
+.rvr-adv-t{ font-family:var(--font-mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--green); margin-bottom:7px; }
+.rvr-adv-row{ display:flex; gap:8px; align-items:flex-start; font-size:12px; line-height:1.5; color:var(--text2); margin-bottom:7px; }
+.rvr-adv-row:last-child{ margin-bottom:0; }
+.rvr-adv-who{ flex:none; max-width:76px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:var(--font-mono); font-size:10.5px; color:var(--text3); padding-top:1px; }
+.rvr-adv-body b{ color:var(--text); font-weight:700; }
+.rvr-adv-recur{ color:var(--green); font-weight:700; }
 #sec-review #board-r .sq{ width:var(--rvsq) !important; height:var(--rvsq) !important; }
 #sec-review #eval-bar-r{ height:calc(var(--rvsq) * 8) !important; align-self:flex-start; }
 /* accuracy dials live in the right panel now (chess.com layout) — compact them */
@@ -12255,6 +12263,40 @@ function winPct(pawns){
   return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
 }
 
+// ─── Personalized-advice bank + cross-game mistake profile (localStorage) ───
+const RV_ADVICE = {
+  'hung-piece':      { label:'Hanging pieces',    tip:'Before committing a move, do one scan: which of my pieces are undefended, and what did my move just stop protecting?' },
+  'missed-win':      { label:'Missed wins',       tip:'When the opponent errs, slow down. Ask "what changed?" and hunt for the punishment before playing the natural move.' },
+  'threw-advantage': { label:'Letting wins slip', tip:'From a winning position, prefer the forcing, simplifying continuation over the ambitious one.' },
+  'walked-into-mate':{ label:'King safety',       tip:'In sharp positions, check every check the opponent has next move before you commit.' },
+  'early-drift':     { label:'Opening drift',     tip:'Errors are creeping in inside the first ten moves — drill your openings in the Academy until they are automatic.' },
+  'endgame-slip':    { label:'Endgame slips',     tip:'Accuracy drops late in the game — in endgames, count tempi and check every pawn race before committing.' },
+  'time-trouble':    { label:'Time trouble',      tip:'These mistakes came with under 30 seconds left — bank time earlier so the critical moments get real thought.' },
+};
+// A stable id for this game so re-reviewing it never double-counts the profile
+function rvGameId(){
+  try{
+    const s = reviewHistory.map(h => h.san || '').join(' ');
+    let h = 0; for(let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return 'g' + (h >>> 0).toString(36) + '_' + (reviewHistory.length - 1);
+  }catch(e){ return 'g' + Date.now(); }
+}
+// Profile: per player name, the last 20 reviewed games' pattern counts
+function rvUpdateProfile(name, counts, gameId){
+  try{
+    const key = String(name || '').trim().toLowerCase();
+    if(!key) return null;
+    const store = JSON.parse(localStorage.getItem('gambit_mistake_profile') || '{}');
+    const p = store[key] = store[key] || { games: [] };
+    if(!p.games.some(g => g.id === gameId)){
+      p.games.push({ id: gameId, t: Date.now(), c: counts });
+      while(p.games.length > 20) p.games.shift();
+      localStorage.setItem('gambit_mistake_profile', JSON.stringify(store));
+    }
+    return p;
+  }catch(e){ return null; }
+}
+
 async function analyseGame(white, black, username){
   moveAnnotations = [];
   const total = reviewHistory.length - 1;
@@ -12434,11 +12476,27 @@ async function analyseGame(white, black, username){
       }
     }
 
+    // ── Pattern tags — the raw material for personalized "what keeps going wrong" advice ──
+    const tags = [];
+    if(!isBookMove){
+      if(ann === 'blunder' && /Hangs a piece/i.test(note)) tags.push('hung-piece');
+      if(ann === 'miss') tags.push('missed-win');
+      if((ann === 'blunder' || ann === 'mistake') && wpBefore >= 65 && wpAfter < 50) tags.push('threw-advantage');
+      if((ann === 'blunder' || ann === 'mistake') && isMate2 && playerAfter < 0) tags.push('walked-into-mate');
+      if((ann === 'inaccuracy' || ann === 'mistake' || ann === 'blunder') && i <= 20) tags.push('early-drift');
+      if((ann === 'mistake' || ann === 'blunder') && i >= 60) tags.push('endgame-slip');
+      try{
+        if(reviewHasClocks && (ann === 'mistake' || ann === 'blunder' || ann === 'miss')
+           && typeof reviewClocks[i] === 'number' && reviewClocks[i] < 30) tags.push('time-trouble');
+      }catch(e){}
+    }
+
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
     moveAnnotations.push({
       san: mv.san, ann, eval: evalStr, note, bestLine,
       ply: i,
       rawScore: after,
+      tags,
       isMate: evals[i]?.isMate || false,
       mateIn: evals[i]?.mateIn || null,
       // NEW: data for learning from mistakes
@@ -12523,6 +12581,27 @@ async function analyseGame(white, black, username){
         <span class="rvr-n${bc ? '' : ' z'}"${bc ? ` style="color:${col}"` : ''}>${bc}</span>
       </div>`;
   }).join('');
+  // ─── Personalized advice: recurring mistake patterns, tracked across reviews ───
+  const gameId = rvGameId();
+  const adviceHtml = ['w','b'].map(side => {
+    const moves = side === 'w' ? wMoves : bMoves;
+    const name  = side === 'w' ? white : black;
+    const counts = {};
+    moves.forEach(m => (m.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
+    const profile = rvUpdateProfile(name, counts, gameId);
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 2);
+    if(!top.length) return '';
+    return top.map(([tag, n]) => {
+      const a = RV_ADVICE[tag]; if(!a) return '';
+      let recur = '';
+      if(profile && profile.games.length >= 2){
+        const hits = profile.games.filter(g => g.c && g.c[tag]).length;
+        if(hits >= 2) recur = ` <b class="rvr-adv-recur">${hits} of your last ${profile.games.length} reviewed games</b> show this.`;
+      }
+      return `<div class="rvr-adv-row"><span class="rvr-adv-who">${shortName(name)}</span><span class="rvr-adv-body"><b>${a.label}</b> (${n}×). ${a.tip}${recur}</span></div>`;
+    }).join('');
+  }).join('');
+
   const repEl = document.getElementById('rv-report');
   if(repEl) repEl.innerHTML = `
     <div class="rvr-title">Game Review</div>
@@ -12534,7 +12613,8 @@ async function analyseGame(white, black, username){
     <div class="rvr-table">
       <div class="rvr-head"><span>Move type</span><span title="${white}">${shortName(white)}</span><span title="${black}">${shortName(black)}</span></div>
       ${repRows}
-    </div>`;
+    </div>
+    ${adviceHtml ? `<div class="rvr-advice"><div class="rvr-adv-t">Coach's advice</div>${adviceHtml}</div>` : ''}`;
 
   try{ rvAnimateReport(); }catch(e){}
 
