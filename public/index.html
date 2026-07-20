@@ -3531,6 +3531,19 @@ body{ padding-top:90px; }
 #cc-workspace #cc-stats-rows{ max-height:clamp(76px, 14vh, 150px); overflow:auto }
 #cc-workspace .cc-nav-arrows button{ width:42px; height:34px; font-size:20px }
 #cc-workspace #cc-repviz{ display:none; }   /* visualisation removed for now */
+/* ── play-course drill: the board dominates (own, larger budget — the quiz panel is thin) ── */
+#cc-workspace{ --cctsq: clamp(48px, calc(12.5vh - 17px), 126px); }
+#cc-workspace #cct-board .sq{ width:var(--cctsq); height:var(--cctsq); }
+#cc-workspace .cct-side{ height:auto; min-height:0; align-self:center; gap:12px; }
+#cc-workspace .cct-side .acad-lesson-text{ font-size:16px; }
+#cc-workspace .cct-stage{ grid-template-columns:auto minmax(300px, 400px); }
+.cct-multi{ display:inline-block; margin-top:6px; font-size:13px; font-weight:400; color:var(--text2); }
+/* pre-drill side picker */
+.cct-pick{ max-width:520px; margin:9vh auto 0; text-align:center; display:flex; flex-direction:column; gap:14px; }
+.cct-pick-title{ font-size:24px; font-weight:700; letter-spacing:-.02em; }
+.cct-pick-sub{ font-size:14.5px; color:var(--text2); line-height:1.55; }
+.cct-pick-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px; }
+.cct-pick-row .cc-playas-btn{ padding:18px; font-size:16px; }
 #cc-repviz .rep-tree{ max-height:min(160px, 19vh); }
 @media(max-width:900px){
   #cc-workspace .cc-stage{ grid-template-columns:1fr; grid-template-areas:"board" "side"; justify-items:stretch; }
@@ -4692,11 +4705,13 @@ document.addEventListener('DOMContentLoaded', function(){
               <div class="eval-bar-score" id="eval-bar-score-r" style="top:50%;margin-top:-7px">0.0</div>
             </div>
             <div style="display:inline-flex;flex-direction:column;position:relative">
-              <div style="display:flex;gap:0;position:relative">
+              <div style="display:flex;gap:0">
                 <div class="board-ranks" id="board-ranks-r"></div>
-                <div id="board-r" class="chess-board"></div>
-                <svg class="arrow-overlay" id="rv-cand-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:18px;width:calc(100% - 18px);height:100%;pointer-events:none;z-index:3"></svg>
-                <svg class="arrow-overlay" id="arrow-overlay-r" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:18px;width:calc(100% - 18px);height:100%;pointer-events:none;z-index:4"></svg>
+                <div style="position:relative">
+                  <div id="board-r" class="chess-board"></div>
+                  <svg class="arrow-overlay" id="rv-cand-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3"></svg>
+                  <svg class="arrow-overlay" id="arrow-overlay-r" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg>
+                </div>
               </div>
               <div class="board-files" id="board-files-r"></div>
             </div>
@@ -5480,11 +5495,18 @@ function makeBoardAnnotatable(boardId){
     e.preventDefault();
     dragFrom=sqFromEvent(e);
   });
+  // lichess-style live preview: while the right button is held, the arrow follows
+  // the cursor square-to-square (interruptible drag, not an after-the-fact pop)
+  boardEl.addEventListener('mousemove', e=>{
+    if(!dragFrom) return;
+    const over=sqFromEvent(e);
+    renderAnnotations(boardId, (over && over!==dragFrom) ? { from:dragFrom, to:over, color:annotColors(e).arrow } : null);
+  });
   boardEl.addEventListener('mouseup', e=>{
     if(e.button!==2) return;
     e.preventDefault();
     const to=sqFromEvent(e);
-    if(!dragFrom||!to){ dragFrom=null; return; }
+    if(!dragFrom||!to){ dragFrom=null; renderAnnotations(boardId); return; }
     const st=annotState(boardId);
     const cols=annotColors(e);   // fancyground modifier → {arrow, square}
     if(dragFrom===to){
@@ -5502,23 +5524,30 @@ function makeBoardAnnotatable(boardId){
   boardEl.addEventListener('mousedown', e=>{ if(e.button===0){ const st=annotState(boardId); if(st.arrows.length||Object.keys(st.squares).length){ st.arrows=[]; st.squares={}; renderAnnotations(boardId); } } });
   renderAnnotations(boardId);
 }
-function renderAnnotations(boardId){
+function renderAnnotations(boardId, preview){
   const ov=document.getElementById(boardId+'-annot'); if(!ov) return;
   const st=annotState(boardId);
   const flipped = boardFlippedState.get(boardId)===true;
   // chessground annotations: square = a stroke CIRCLE just inside the square,
-  // arrow = the shared chessground arrow (centre→centre, round cap, scaled head)
+  // arrow = the shared chessground arrow (centre→centre, round cap, scaled head).
+  // Rendered at reduced opacity so user marks stay readable without shouting.
   const BRUSHES=['#15781B','#882020','#003088','#e68f00'];
   let svg='<defs>'+BRUSHES.map((c,i)=>`<marker id="${boardId}-ann-m${i}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${c}"/></marker>`).join('')+'</defs>';
   const brushIdx=c=>{ const k=BRUSHES.indexOf(c); return k>=0?k:0; };
+  let body='';
   for(const sq in st.squares){
     const p=squareToSVG(sq,flipped);
-    svg+=`<circle cx="${p.x}" cy="${p.y}" r="23.6" fill="none" stroke="${st.squares[sq]}" stroke-width="8.75"/>`;
+    body+=`<circle cx="${p.x}" cy="${p.y}" r="23.6" fill="none" stroke="${st.squares[sq]}" stroke-width="8.75"/>`;
   }
   st.arrows.forEach(a=>{
-    svg+=arrowSVG(a.from, a.to, a.color, 8.75, boardId+'-ann-m'+brushIdx(a.color), flipped);
+    body+=arrowSVG(a.from, a.to, a.color, 8.75, boardId+'-ann-m'+brushIdx(a.color), flipped);
   });
-  ov.innerHTML=svg;
+  // the in-flight arrow follows the cursor a touch lighter than committed marks
+  let pv='';
+  if(preview && preview.from && preview.to){
+    pv=`<g opacity=".42">${arrowSVG(preview.from, preview.to, preview.color, 8.75, boardId+'-ann-m'+brushIdx(preview.color), flipped)}</g>`;
+  }
+  ov.innerHTML=svg+`<g opacity=".55">${body}</g>`+pv;
 }
 function clearAnnotations(boardId){ const st=annotState(boardId); st.arrows=[]; st.squares={}; renderAnnotations(boardId); }
 
@@ -12266,7 +12295,7 @@ async function analyseGame(white, black, username){
     if(stat) stat.textContent = `Analysing move ${i}/${analyseLimit}…`;
 
     // MultiPV 3 so classification knows the 2nd/3rd-best moves (Excellent/Good) and the only-move gap (Great)
-    const result = await evalPosition(positions[i].fen, 16, 3, 600);
+    const result = await evalPosition(positions[i].fen, 18, 3, 600);
     evals[i] = result;
 
     // CRITICAL: yield to the event loop between positions so the browser
@@ -12407,32 +12436,34 @@ async function analyseGame(white, black, username){
       ann = 'miss';
       note = oppErred ? 'A miss — the opponent slipped and this was the moment to punish it.'
                       : 'A miss — there was a winning move here that got away.';
-    } else if(wasBestMove || wDrop < 0.6){
-      // Best: the engine's #1 move (≈ 0 EPL / CPL)
+    } else if(wasBestMove){
+      // Best: exactly the engine's #1 move (Δ Ev = 0)
       ann = 'best';
       note = 'The engine\'s top recommended move.';
     } else {
-      // ── Expected-Points-Lost buckets, with a lost-position cap (you can't blunder
-      //    away a game you've already lost, so severe drops soften to a mistake). ──
+      // ── Δ-eval buckets (in pawns): Excellent <0.2 · Good 0.2–0.5 · Inaccuracy
+      //    0.5–1.0 · Mistake 1.0–2.0 · Blunder ≥2.0. Lost-position cap: you can't
+      //    blunder away a game you've already lost, so severe drops soften. ──
+      const evDrop = Math.max(0, loss);                 // pawns the mover gave up vs. best play
       const alreadyLost = wpBefore < 15;
       const freshHang = hangsPiece && wpBefore >= 25;   // hung a piece while still in the game
-      if((wDrop >= 20 || freshHang) && !alreadyLost){
+      if((evDrop >= 2.0 || freshHang) && !alreadyLost){
         ann = 'blunder';
         note = freshHang ? 'Hangs a piece — material is given away for nothing.'
              : (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
              : 'A blunder — a game-changing error that throws away the advantage.';
-      } else if(wDrop >= 10){
+      } else if(evDrop >= 1.0){
         ann = 'mistake';
-        note = 'A mistake — it substantially worsens the position and shifts the evaluation.';
-      } else if(wDrop >= 5){
+        note = 'A mistake — it forfeits a clear part of the advantage.';
+      } else if(evDrop >= 0.5){
         ann = 'inaccuracy';
-        note = 'An inaccuracy — a minor slip that hands over a little of your edge.';
-      } else if(wDrop >= 2){
+        note = 'An inaccuracy — a sub-optimal choice that slightly worsens the position.';
+      } else if(evDrop >= 0.2){
         ann = 'good';
-        note = 'A good move — solid, though a slightly stronger continuation existed.';
+        note = 'A good move — the position stays stable and playable.';
       } else {
         ann = 'excellent';
-        note = 'An excellent move — practically as strong as the engine\'s best.';
+        note = 'An excellent move — a highly accurate alternative to the engine\'s best.';
       }
     }
 
@@ -13266,12 +13297,10 @@ function drawReviewArrows(ann, idx){
   // ALWAYS draw the engine's best-move arrow, regardless of classification.
   // For sub-best moves, also draw a red arrow showing what the user actually played.
 
-  // Determine the colour of the best-move arrow based on classification:
-  //   - For best/brilliant/good: GREEN (the move played WAS effectively the engine's recommendation,
-  //     or close enough — the green arrow confirms "this was the right idea")
-  //   - For sub-best (inaccuracy/mistake/blunder): YELLOW, to contrast with the red user-move arrow
-  const bestColor = isSubBest ? 'rgba(21,120,27,.9)' : 'rgba(21,120,27,.9)';
-  const bestMarkerId = isSubBest ? 'ah-best-yellow' : 'ah-best-green';
+  // The "move you should have played / should play" arrow is BLUE (chessground
+  // #003088) so it can never be confused with the green rank-1 candidate arrow.
+  const bestColor = 'rgba(0,48,136,.9)';
+  const bestMarkerId = 'ah-best-blue';
 
   // Get the user's actual move
   const userMove = reviewHistory[idx];
@@ -13283,11 +13312,8 @@ function drawReviewArrows(ann, idx){
   const bestUCI = ann.bestMoveUCI;
 
   let svg = `<defs>
-    <marker id="ah-best-green" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
-      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/>
-    </marker>
-    <marker id="ah-best-yellow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
-      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/>
+    <marker id="ah-best-blue" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(0,48,136,.9)"/>
     </marker>
     <marker id="ah-bad" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
       <path d="M0,0 V4 L3,2 Z" fill="rgba(220,80,80,.85)"/>
@@ -13557,10 +13583,10 @@ function renderReviewBoard(){
         }
       }
     }
-    // Green arrow for best move
+    // Blue arrow for the best move (blue ≠ the green rank-1 candidate arrow)
     if(displayedBestUCI && /^[a-h][1-8][a-h][1-8]/.test(displayedBestUCI)){
-      let svg = `<defs><marker id="rv-best-arrow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.95)"/></marker></defs>`;
-      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(21,120,27,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
+      let svg = `<defs><marker id="rv-best-arrow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(0,48,136,.95)"/></marker></defs>`;
+      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(0,48,136,.88)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
       if(overlay) overlay.innerHTML = svg;
     }
   }
@@ -13593,13 +13619,14 @@ function drawBestMoveArrow(idx){
   if(!/^[a-h][1-8]$/.test(bestFrom) || !/^[a-h][1-8]$/.test(bestTo)){
     overlay.innerHTML = ''; return;
   }
-  // Build SVG with green arrow + arrowhead marker
+  // Build SVG with a BLUE arrow + arrowhead marker (blue = "play this"; green stays
+  // reserved for the rank-1 candidate so the two can't be confused)
   let svg = `<defs>
     <marker id="rv-best-arrow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
-      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.95)"/>
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(0,48,136,.95)"/>
     </marker>
   </defs>`;
-  svg += arrowSVG(bestFrom, bestTo, 'rgba(21,120,27,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
+  svg += arrowSVG(bestFrom, bestTo, 'rgba(0,48,136,.88)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
   overlay.innerHTML = svg;
 }
 
@@ -29259,9 +29286,8 @@ async function ccRunEngine(){
     updateEvalBar('cc-evalbar-black','cc-evalbar-score', r.score, r.isMate, r.mateIn);
     if(inline) inline.textContent=formatEval(r.score,r.isMate,r.mateIn);
     const alts=(r.alternatives&&r.alternatives.length)?r.alternatives:[{pv:r.pv,score:r.score,isMate:r.isMate,mateIn:r.mateIn}];
-    // candidate arrows: up to 5 ranked moves, best = green fading toward red
-    CC._lastAlts = alts;
-    ccDrawCandArrows();
+    // no persistent candidate arrows here — the ranked engine lines below are enough
+    clearArrows('cc-arrows');
     if(linesHost){
       const startPly = CC.sans.length;
       CC._pvLines = alts.slice(0,5).map(a => ((a&&a.pv)||'').trim().split(/\s+/).filter(Boolean));
@@ -29347,7 +29373,7 @@ window.ccPvHover=function(el){
   let top=r.bottom+8; if(top+sz>window.innerHeight-8) top=r.top-sz-8;
   pop.style.left=Math.max(8,left)+'px'; pop.style.top=Math.max(8,top)+'px';
 };
-window.ccPvHoverOut=function(){ const pop=document.getElementById('cc-pv-preview'); if(pop) pop.style.display='none'; try{ ccDrawCandArrows(); }catch(e){} };
+window.ccPvHoverOut=function(){ const pop=document.getElementById('cc-pv-preview'); if(pop) pop.style.display='none'; try{ clearArrows('cc-arrows'); }catch(e){} };
 // Click an engine-line move → play that line up to (and including) the clicked move on the big board
 window.ccPlayLine=function(li, mi){
   const line=(CC._pvLines||[])[li]; if(!line) return;
@@ -29367,22 +29393,6 @@ window.ccPlayLine=function(li, mi){
   }
   ccRender();
 };
-// Persistent candidate arrows on the repertoire board — same ranked palette as
-// Game Review: best = bright green fading toward red, up to 5.
-function ccDrawCandArrows(){
-  const ov=document.getElementById('cc-arrows'); if(!ov) return;
-  const alts=CC._lastAlts||[]; const fl=isBoardFlipped('cc-board');
-  const COL=['#15781B','#7cb342','#d3a11f','#df6f1e','#c33a2e'], OP=[1,.85,.72,.62,.55];
-  let defs='<defs>', body='', n=0;
-  for(let i=0;i<alts.length&&n<5;i++){
-    const u=String(alts[i].pv||'').trim().split(/\s+/)[0]||'';
-    if(!/^[a-h][1-8][a-h][1-8]/.test(u)) continue;
-    defs+=`<marker id="cc-cand-m${n}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${COL[n]}" fill-opacity="${OP[n]}"/></marker>`;
-    body=`<g opacity="${OP[n]}">`+arrowSVG(u.slice(0,2),u.slice(2,4),COL[n],8.75,'cc-cand-m'+n,fl)+`</g>`+body;
-    n++;
-  }
-  ov.innerHTML = n ? defs+'</defs>'+body : '';
-}
 
 // Clean, proportional analysis arrows (shaft + triangular head as polygons).
 // Knight moves bend into an L, like lichess / chessreps.
@@ -29554,25 +29564,45 @@ function ccUpdateCoverage(){
 let ccTrain=null;
 window.ccPlayCourse = function(){
   if(!CC.courseLines.length){ alert('Add at least one line to the course first (use “End line & add to course”).'); return; }
-  // collect test positions: every position where it's the course-author's turn to move.
-  // author side = side to move at ply 0 of the first move of each line's first move's mover.
-  // We treat the course as the author's repertoire for whichever side makes the ODD plies (White) by default,
-  // but infer per line: the author's moves are the ones they chose — we test ALL plies the author would play.
-  // Simplest correct model: author plays the moves at even indices if line starts as White repertoire.
-  // We test every ply: present position before the move, ask for that move.
-  const tests=[];
+  // side picker first — the drill quizzes only the chosen side's moves
+  const ws=document.getElementById('cc-workspace');
+  const pre = CC.playAs==='black' ? 'black' : 'white';
+  ws.innerHTML=`<div class="cc-top">
+      <button class="acad-learn-back" onclick="ccExitTrain()">←</button>
+      <span class="cc-tool-icon">▶</span>
+      <div class="cc-name-input" style="flex:1;border:none;background:none">Play: ${ccEsc(CC.name)}</div>
+    </div>
+    <div class="cct-pick">
+      <div class="cct-pick-title">Which side do you want to test?</div>
+      <div class="cct-pick-sub">You'll be shown every position where it's that side's turn and asked to find your course move — including every alternative you added from the same position.</div>
+      <div class="cct-pick-row">
+        <button type="button" class="cc-playas-btn ${pre==='white'?'active':''}" onclick="ccStartTrain('white')"><span class="cc-king-w">${CC_KING_SVG}</span> White</button>
+        <button type="button" class="cc-playas-btn ${pre==='black'?'active':''}" onclick="ccStartTrain('black')"><span class="cc-king-b">${CC_KING_SVG}</span> Black</button>
+      </div>
+    </div>`;
+};
+window.ccStartTrain = function(side){
+  // one test per unique position (FEN-keyed, so shared prefixes and transpositions
+  // are asked once), holding ALL course candidates playable from it
+  const parity = side==='black' ? 1 : 0;
+  const norm=s=>(s||'').replace(/[+#!?]/g,'');
+  const seen=new Map(), tests=[];
   CC.courseLines.forEach(line=>{
     let st=parseFEN(startFEN());
     for(let i=0;i<line.sans.length;i++){
-      tests.push({ path: line.sans.slice(0,i), expect: line.sans[i], ply:i });
+      if(i%2===parity){
+        let key; try{ key=stateToFEN(st).split(' ').slice(0,4).join(' '); }catch(e){ break; }
+        let t=seen.get(key);
+        if(!t){ t={ path:line.sans.slice(0,i), ply:i, expects:[] }; seen.set(key,t); tests.push(t); }
+        if(!t.expects.some(x=>x.norm===norm(line.sans[i]))) t.expects.push({ san:line.sans[i], norm:norm(line.sans[i]), found:false });
+      }
       try{ const mv=sanToMove(line.sans[i],st); st=applyMove(st,mv); }catch(e){ break; }
     }
   });
-  // test only the author's moves: assume the author is the side moving on even plies (White) unless
-  // a majority of lines look like Black. Heuristic: test plies where (ply % 2 === authorParity).
-  // Default authorParity=0 (White). Keep it simple & predictable.
-  ccTrain={ tests: tests.filter(t=>t.ply%2===0), i:0, correct:0, wrong:0, wrongList:[] };
-  if(!ccTrain.tests.length) ccTrain.tests=tests; // fallback
+  if(!tests.length){ alert('No course moves for that side yet — add some lines first.'); return; }
+  const units=tests.reduce((s,t)=>s+t.expects.length,0);
+  ccTrain={ side, tests, units, i:0, correct:0, wrong:0, wrongList:[] };
+  const ws=document.getElementById('cc-workspace'); if(ws) ws.innerHTML='';
   ccRenderTrain();
 };
 function ccRenderTrain(){
@@ -29586,32 +29616,41 @@ function ccRenderTrain(){
     ws.innerHTML=`<div class="cc-top">
         <button class="acad-learn-back" onclick="ccExitTrain()">←</button>
         <span class="cc-tool-icon">▶</span>
-        <div class="cc-name-input" style="flex:1;border:none;background:none">Playing: ${ccEsc(CC.name)}</div>
+        <div class="cc-name-input" style="flex:1;border:none;background:none">Playing: ${ccEsc(CC.name)} · as ${ccTrain.side==='black'?'Black':'White'}</div>
       </div>
       <div class="acad-learn-progressbar"><div id="cct-prog"></div></div>
-      <div class="cc-stage">
+      <div class="cc-stage cct-stage">
         <div class="cc-board-col">
           <div class="expl-board-wrap"><div style="display:flex"><div class="board-ranks" id="cct-ranks"></div>
             <div style="position:relative"><div id="cct-board" class="chess-board"></div>
               <svg class="arrow-overlay" id="cct-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg></div></div>
             <div class="board-files" id="cct-files"></div></div>
         </div>
-        <div class="cc-side">
+        <div class="cc-side cct-side">
           <div class="acad-lesson-counter" id="cct-counter"></div>
           <div class="acad-lesson-badge" id="cct-badge"></div>
           <div class="acad-lesson-text" id="cct-msg"></div>
           <div class="acad-lesson-fb" id="cct-fb"></div>
         </div>
       </div>`;
-    if(CC.flipped){ try{ if(!isBoardFlipped('cct-board')) flipBoard('cct-board'); }catch(e){} }
+    try{
+      const wantFlip = ccTrain.side==='black';
+      if(isBoardFlipped('cct-board')!==wantFlip) flipBoard('cct-board');
+    }catch(e){}
   }
-  const prog=document.getElementById('cct-prog'); if(prog) prog.style.width=`${Math.round(100*ccTrain.i/total)}%`;
+  const answered=ccTrain.correct+ccTrain.wrong;
+  const prog=document.getElementById('cct-prog'); if(prog) prog.style.width=`${Math.round(100*answered/(ccTrain.units||1))}%`;
   clearArrows('cct-arrows');
   renderBoardEl('cct-board','cct-ranks','cct-files', st, [], null);
   makeBoardInteractive('cct-board', st, ccTrainMove);
   document.getElementById('cct-counter').textContent=`Position ${ccTrain.i+1} of ${total}`;
   document.getElementById('cct-badge').textContent=`Move ${Math.floor(t.ply/2)+1}`;
-  document.getElementById('cct-msg').innerHTML=`<strong>What's your course move here?</strong>`;
+  const remaining=t.expects.filter(x=>!x.found).length;
+  document.getElementById('cct-msg').innerHTML = t.expects.length>1
+    ? (remaining===t.expects.length
+        ? `<strong>What's your course move here?</strong><br><span class="cct-multi">This position has ${t.expects.length} course moves — you'll be asked for each one.</span>`
+        : `<strong>Same position — find another course move.</strong><br><span class="cct-multi">${remaining} of ${t.expects.length} candidate${t.expects.length>1?'s':''} still to play.</span>`)
+    : `<strong>What's your course move here?</strong>`;
   document.getElementById('cct-fb').innerHTML='';
   ccTrain.awaiting=true;
 }
@@ -29619,20 +29658,35 @@ function ccTrainMove(from,to,ns,san){
   if(!ccTrain.awaiting) return;
   const t=ccTrain.tests[ccTrain.i], norm=s=>(s||'').replace(/[+#!?]/g,'');
   const fb=document.getElementById('cct-fb'); ccTrain.awaiting=false;
-  if(norm(san)===norm(t.expect)){
-    ccTrain.correct++; fb.innerHTML=`<span class="nlearn-fb-ok">✓ ${ccEsc(t.expect)} — correct!</span>`;
-    setTimeout(()=>{ if(ccTrain){ ccTrain.i++; ccRenderTrain(); } },350);
+  const played=norm(san);
+  const hit=t.expects.find(x=>!x.found && x.norm===played);
+  const already=t.expects.find(x=>x.found && x.norm===played);
+  const advance=()=>{ if(!ccTrain) return; if(!t.expects.some(x=>!x.found)) ccTrain.i++; ccRenderTrain(); };
+  if(hit){
+    hit.found=true; ccTrain.correct++;
+    const left=t.expects.filter(x=>!x.found).length;
+    fb.innerHTML = left
+      ? `<span class="nlearn-fb-ok">✓ ${ccEsc(san)} — correct! The board resets: this position has ${left} more course move${left>1?'s':''}.</span>`
+      : `<span class="nlearn-fb-ok">✓ ${ccEsc(san)} — correct!</span>`;
+    setTimeout(advance, left?1000:350);
+  } else if(already){
+    // a candidate they already gave — reset and keep asking for the rest
+    fb.innerHTML=`<span class="nlearn-fb-wrong">You already played <strong>${ccEsc(san)}</strong> — find the other course move.</span>`;
+    setTimeout(advance, 900);
   } else {
-    ccTrain.wrong++; ccTrain.wrongList.push({expect:t.expect,played:san,ply:t.ply});
-    fb.innerHTML=`<span class="nlearn-fb-wrong">✗ Your course says <strong>${ccEsc(t.expect)}</strong>.</span>`;
-    const mv=sanToMove(t.expect, ccTrain.curState); if(mv) ccArrowOn('cct-arrows','cct-board', mv.from+mv.to, 'rgba(239,157,43,.9)');
-    setTimeout(()=>{ if(ccTrain){ ccTrain.i++; ccRenderTrain(); } },1200);
+    // wrong: reveal one unfound candidate, score it as missed, keep asking for any others
+    const miss=t.expects.find(x=>!x.found);
+    if(miss){ miss.found=true; ccTrain.wrong++; ccTrain.wrongList.push({expect:miss.san,played:san,ply:t.ply}); }
+    const left=t.expects.filter(x=>!x.found).length;
+    fb.innerHTML=`<span class="nlearn-fb-wrong">✗ Your course says <strong>${miss?ccEsc(miss.san):''}</strong>${left?` — and ${left} more candidate${left>1?'s':''} remain${left>1?'':'s'} here`:''}.</span>`;
+    if(miss){ const mv=sanToMove(miss.san, ccTrain.curState); if(mv) ccArrowOn('cct-arrows','cct-board', mv.from+mv.to, 'rgba(239,157,43,.9)'); }
+    setTimeout(advance, 1300);
   }
 }
 function ccArrowOn(ovId,boardId,uci,color){ const ov=document.getElementById(ovId); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped(boardId); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="${ovId}-mk" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${ovId}-mk)"/>`; }
 function ccTrainResults(){
   const ws=document.getElementById('cc-workspace');
-  const total=ccTrain.tests.length, acc=total?Math.round(100*ccTrain.correct/total):0;
+  const total=ccTrain.units||ccTrain.tests.length, acc=total?Math.round(100*ccTrain.correct/total):0;
   ws.innerHTML=`<div class="acad-lesson-wrap"><div class="rt-results">
     <div class="rt-results-acc ${acc>=90?'great':acc>=70?'ok':'low'}">${acc}%</div>
     <div class="rt-results-sub">Course recall</div>
