@@ -4051,14 +4051,6 @@ input::placeholder, textarea::placeholder{ color:var(--ink-3); opacity:1; }
 #sec-review .rvr-row{ padding:3.5px 4px; font-size:12px; }
 #sec-review .rvr-row .rvr-ico{ transform:scale(.82); }
 #sec-review .rv-report{ padding:12px 13px; }
-/* Coach's advice — recurring-mistake patterns in plain English */
-.rvr-advice{ margin-top:10px; padding-top:10px; border-top:1px solid var(--rule); }
-.rvr-adv-t{ font-family:var(--font-mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--green); margin-bottom:7px; }
-.rvr-adv-row{ display:flex; gap:8px; align-items:flex-start; font-size:12px; line-height:1.5; color:var(--text2); margin-bottom:7px; }
-.rvr-adv-row:last-child{ margin-bottom:0; }
-.rvr-adv-who{ flex:none; max-width:76px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:var(--font-mono); font-size:10.5px; color:var(--text3); padding-top:1px; }
-.rvr-adv-body b{ color:var(--text); font-weight:700; }
-.rvr-adv-recur{ color:var(--green); font-weight:700; }
 #sec-review #board-r .sq{ width:var(--rvsq) !important; height:var(--rvsq) !important; }
 #sec-review #eval-bar-r{ height:calc(var(--rvsq) * 8) !important; align-self:flex-start; }
 /* accuracy dials live in the right panel now (chess.com layout) — compact them */
@@ -4703,6 +4695,7 @@ document.addEventListener('DOMContentLoaded', function(){
               <div style="display:flex;gap:0;position:relative">
                 <div class="board-ranks" id="board-ranks-r"></div>
                 <div id="board-r" class="chess-board"></div>
+                <svg class="arrow-overlay" id="rv-cand-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:18px;width:calc(100% - 18px);height:100%;pointer-events:none;z-index:3"></svg>
                 <svg class="arrow-overlay" id="arrow-overlay-r" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:18px;width:calc(100% - 18px);height:100%;pointer-events:none;z-index:4"></svg>
               </div>
               <div class="board-files" id="board-files-r"></div>
@@ -5449,14 +5442,15 @@ function renderBoardEl(boardId, ranksId, filesId, state, highlights = [], fromSq
 // (lichess/chess.com style). Works on any board element by id.
 // ════════════════════════════════════════════════════════
 const boardAnnotations = new Map();   // boardId -> { arrows:[{from,to,color}], squares:{sq:color} }
-const ANNOT_DEFAULT = 'rgba(21,120,27,.85)';
-// fancyground palette — arrows @0.85, squares @0.65; modifiers: none=green, shift=red, alt/ctrl=blue, shift+alt=yellow/orange
+const ANNOT_DEFAULT = '#15781B';
+// chessground brushes (lichess-org/chessground): green / red / blue / yellow at full
+// opacity; modifiers: none=green, shift=red, alt/ctrl=blue, shift+alt=yellow
 function annotColors(e){
   const alt = e.altKey || e.ctrlKey, shift = e.shiftKey;
-  if(shift && alt) return { arrow:'rgba(255,194,14,.85)',  square:'rgba(230,144,0,.65)' };
-  if(shift)        return { arrow:'rgba(198,11,11,.85)',   square:'rgba(153,0,24,.65)' };
-  if(alt)          return { arrow:'rgba(0,128,198,.85)',   square:'rgba(0,48,136,.65)' };
-  return              { arrow:'rgba(21,120,27,.85)',   square:'rgba(18,87,64,.65)' };
+  if(shift && alt) return { arrow:'#e68f00', square:'#e68f00' };
+  if(shift)        return { arrow:'#882020', square:'#882020' };
+  if(alt)          return { arrow:'#003088', square:'#003088' };
+  return              { arrow:'#15781B', square:'#15781B' };
 }
 function annotState(boardId){ if(!boardAnnotations.has(boardId)) boardAnnotations.set(boardId,{arrows:[],squares:{}}); return boardAnnotations.get(boardId); }
 
@@ -5512,21 +5506,17 @@ function renderAnnotations(boardId){
   const ov=document.getElementById(boardId+'-annot'); if(!ov) return;
   const st=annotState(boardId);
   const flipped = boardFlippedState.get(boardId)===true;
-  let svg='';
-  // fancyground: FULL-SQUARE highlights (not circles); opacity baked into the rgba
-  for(const sq in st.squares){ const p=squareToSVG(sq,flipped); svg+=`<rect x="${(p.x-28).toFixed(1)}" y="${(p.y-28).toFixed(1)}" width="56" height="56" fill="${st.squares[sq]}"/>`; }
-  // fancyground: straight arrows that start OFF the origin square so the piece stays
-  // visible, with a triangular head stopping short of the destination centre
+  // chessground annotations: square = a stroke CIRCLE just inside the square,
+  // arrow = the shared chessground arrow (centre→centre, round cap, scaled head)
+  const BRUSHES=['#15781B','#882020','#003088','#e68f00'];
+  let svg='<defs>'+BRUSHES.map((c,i)=>`<marker id="${boardId}-ann-m${i}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${c}"/></marker>`).join('')+'</defs>';
+  const brushIdx=c=>{ const k=BRUSHES.indexOf(c); return k>=0?k:0; };
+  for(const sq in st.squares){
+    const p=squareToSVG(sq,flipped);
+    svg+=`<circle cx="${p.x}" cy="${p.y}" r="23.6" fill="none" stroke="${st.squares[sq]}" stroke-width="8.75"/>`;
+  }
   st.arrows.forEach(a=>{
-    const p1=squareToSVG(a.from,flipped), p2=squareToSVG(a.to,flipped);
-    const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1, ux=dx/len, uy=dy/len, px=-uy, py=ux;
-    const w=12, headL=22, headW=15;
-    const sx=p1.x+ux*20, sy=p1.y+uy*20;               // clear the origin piece
-    const tipX=p2.x-ux*8, tipY=p2.y-uy*8;
-    const baseX=tipX-ux*headL, baseY=tipY-uy*headL;
-    const head=`${tipX.toFixed(1)},${tipY.toFixed(1)} ${(baseX+px*headW).toFixed(1)},${(baseY+py*headW).toFixed(1)} ${(baseX-px*headW).toFixed(1)},${(baseY-py*headW).toFixed(1)}`;
-    svg+=`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${baseX.toFixed(1)}" y2="${baseY.toFixed(1)}" stroke="${a.color}" stroke-width="${w}" stroke-linecap="butt"/>`;
-    svg+=`<polygon points="${head}" fill="${a.color}"/>`;
+    svg+=arrowSVG(a.from, a.to, a.color, 8.75, boardId+'-ann-m'+brushIdx(a.color), flipped);
   });
   ov.innerHTML=svg;
 }
@@ -10518,7 +10508,7 @@ function triggerEngineAnalysis(state){
   document.getElementById('ep-alt-o').style.display = 'none';
 
   // multipv=3 to get top 3 candidate moves (for arrows)
-  evalPosition(fen, 16, 3, 700).then(result => {
+  evalPosition(fen, 16, 5, 700).then(result => {
     // Discard if a newer request superseded this one
     if(myToken !== analysisToken) return;
     renderEngineAnalysis(result, state);
@@ -10643,33 +10633,19 @@ function drawAnalysisArrows(overlayId, alternatives){
   // Derive the parent board ID from the overlay ID (arrow-overlay-r → board-r, etc.)
   const boardIdForOverlay = overlayId.replace('arrow-overlay-', 'board-');
 
-  // Distinct shades of green per rank for crystal-clear hierarchy:
-  // #1 best = thick deep green, #2/#3/#4 = progressively lighter green.
-  // The eye can instantly tell which arrow is the engine's TOP choice.
-  overlay.innerHTML += `<defs>
-    <marker id="ah-best" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
-    </marker>
-    <marker id="ah-alt1" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.75)"/>
-    </marker>
-    <marker id="ah-alt2" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.55)"/>
-    </marker>
-    <marker id="ah-alt3" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.35)"/>
-    </marker>
-  </defs>`;
+  // Candidate arrows, ranked by strength: best = bright green, weaker options
+  // fading toward red — the whole picture, not just one answer. Up to 5.
+  const AH_COL = ['#15781B', '#7cb342', '#d3a11f', '#df6f1e', '#c33a2e'];
+  const AH_OP  = [1, .85, .72, .62, .55];
+  let defs = '<defs>';
+  AH_COL.forEach((c, k) => {
+    defs += `<marker id="${overlayId}-ah${k}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${c}" fill-opacity="${AH_OP[k]}"/></marker>`;
+  });
+  defs += '</defs>';
 
-  const colors = [
-    {stroke: 'rgba(21,120,27,.9)',   marker: 'ah-best', width: 13},  // best — deep green
-    {stroke: 'rgba(21,120,27,.7)',   marker: 'ah-alt1', width: 8},   // 2nd — medium green
-    {stroke: 'rgba(21,120,27,.5)', marker: 'ah-alt2', width: 5},   // 3rd — light green
-    {stroke: 'rgba(21,120,27,.3)', marker: 'ah-alt3', width: 3},   // 4th — pale green (quiz only)
-  ];
-
-  let drawn = 0;
-  for(let i = 0; i < alternatives.length && drawn < 4; i++){
+  const flipped = boardFlippedState.get(boardIdForOverlay) === true;
+  let body = '', drawn = 0;
+  for(let i = 0; i < alternatives.length && drawn < 5; i++){
     const pv = (alternatives[i].pv || '').trim();
     if(!pv) continue;
     const firstMove = pv.split(/\s+/)[0];
@@ -10677,22 +10653,11 @@ function drawAnalysisArrows(overlayId, alternatives){
     const from = firstMove.slice(0, 2);
     const to = firstMove.slice(2, 4);
     if(!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) continue;
-
-    const flipped = boardFlippedState.get(boardIdForOverlay) === true;
-    const p1 = squareToSVG(from, flipped);
-    const p2 = squareToSVG(to, flipped);
-    const color = colors[drawn] || colors[2];
-
-    // Shorten the arrow slightly so it terminates inside the destination square
-    const dx = p2.x - p1.x, dy = p2.y - p1.y;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    const shrink = 14;  // pixels to pull back from destination
-    const endX = p2.x - (dx / len) * shrink;
-    const endY = p2.y - (dy / len) * shrink;
-
-    overlay.innerHTML += `<line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="${color.stroke}" stroke-width="${color.width}" stroke-linecap="round" marker-end="url(#${color.marker})" />`;
+    // weakest-first so the best (green) arrow renders on top
+    body = `<g opacity="${AH_OP[drawn]}">` + arrowSVG(from, to, AH_COL[drawn], 8.75, overlayId + '-ah' + drawn, flipped) + `</g>` + body;
     drawn++;
   }
+  overlay.innerHTML = drawn ? defs + body : '';
 }
 
 window.oBoardNext = function(){ if(oMoveIdx < oBoardHistory.length - 1){ oMoveIdx++; renderBoardO(); } };
@@ -12263,40 +12228,6 @@ function winPct(pawns){
   return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
 }
 
-// ─── Personalized-advice bank + cross-game mistake profile (localStorage) ───
-const RV_ADVICE = {
-  'hung-piece':      { label:'Hanging pieces',    tip:'Before committing a move, do one scan: which of my pieces are undefended, and what did my move just stop protecting?' },
-  'missed-win':      { label:'Missed wins',       tip:'When the opponent errs, slow down. Ask "what changed?" and hunt for the punishment before playing the natural move.' },
-  'threw-advantage': { label:'Letting wins slip', tip:'From a winning position, prefer the forcing, simplifying continuation over the ambitious one.' },
-  'walked-into-mate':{ label:'King safety',       tip:'In sharp positions, check every check the opponent has next move before you commit.' },
-  'early-drift':     { label:'Opening drift',     tip:'Errors are creeping in inside the first ten moves — drill your openings in the Academy until they are automatic.' },
-  'endgame-slip':    { label:'Endgame slips',     tip:'Accuracy drops late in the game — in endgames, count tempi and check every pawn race before committing.' },
-  'time-trouble':    { label:'Time trouble',      tip:'These mistakes came with under 30 seconds left — bank time earlier so the critical moments get real thought.' },
-};
-// A stable id for this game so re-reviewing it never double-counts the profile
-function rvGameId(){
-  try{
-    const s = reviewHistory.map(h => h.san || '').join(' ');
-    let h = 0; for(let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-    return 'g' + (h >>> 0).toString(36) + '_' + (reviewHistory.length - 1);
-  }catch(e){ return 'g' + Date.now(); }
-}
-// Profile: per player name, the last 20 reviewed games' pattern counts
-function rvUpdateProfile(name, counts, gameId){
-  try{
-    const key = String(name || '').trim().toLowerCase();
-    if(!key) return null;
-    const store = JSON.parse(localStorage.getItem('gambit_mistake_profile') || '{}');
-    const p = store[key] = store[key] || { games: [] };
-    if(!p.games.some(g => g.id === gameId)){
-      p.games.push({ id: gameId, t: Date.now(), c: counts });
-      while(p.games.length > 20) p.games.shift();
-      localStorage.setItem('gambit_mistake_profile', JSON.stringify(store));
-    }
-    return p;
-  }catch(e){ return null; }
-}
-
 async function analyseGame(white, black, username){
   moveAnnotations = [];
   const total = reviewHistory.length - 1;
@@ -12505,27 +12436,11 @@ async function analyseGame(white, black, username){
       }
     }
 
-    // ── Pattern tags — the raw material for personalized "what keeps going wrong" advice ──
-    const tags = [];
-    if(!isBookMove){
-      if(ann === 'blunder' && /Hangs a piece/i.test(note)) tags.push('hung-piece');
-      if(ann === 'miss') tags.push('missed-win');
-      if((ann === 'blunder' || ann === 'mistake') && wpBefore >= 65 && wpAfter < 50) tags.push('threw-advantage');
-      if((ann === 'blunder' || ann === 'mistake') && isMate2 && playerAfter < 0) tags.push('walked-into-mate');
-      if((ann === 'inaccuracy' || ann === 'mistake' || ann === 'blunder') && i <= 20) tags.push('early-drift');
-      if((ann === 'mistake' || ann === 'blunder') && i >= 60) tags.push('endgame-slip');
-      try{
-        if(reviewHasClocks && (ann === 'mistake' || ann === 'blunder' || ann === 'miss')
-           && typeof reviewClocks[i] === 'number' && reviewClocks[i] < 30) tags.push('time-trouble');
-      }catch(e){}
-    }
-
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
     moveAnnotations.push({
       san: mv.san, ann, eval: evalStr, note, bestLine,
       ply: i,
       rawScore: after,
-      tags,
       difficulty,
       isMate: evals[i]?.isMate || false,
       mateIn: evals[i]?.mateIn || null,
@@ -12611,27 +12526,6 @@ async function analyseGame(white, black, username){
         <span class="rvr-n${bc ? '' : ' z'}"${bc ? ` style="color:${col}"` : ''}>${bc}</span>
       </div>`;
   }).join('');
-  // ─── Personalized advice: recurring mistake patterns, tracked across reviews ───
-  const gameId = rvGameId();
-  const adviceHtml = ['w','b'].map(side => {
-    const moves = side === 'w' ? wMoves : bMoves;
-    const name  = side === 'w' ? white : black;
-    const counts = {};
-    moves.forEach(m => (m.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
-    const profile = rvUpdateProfile(name, counts, gameId);
-    const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 2);
-    if(!top.length) return '';
-    return top.map(([tag, n]) => {
-      const a = RV_ADVICE[tag]; if(!a) return '';
-      let recur = '';
-      if(profile && profile.games.length >= 2){
-        const hits = profile.games.filter(g => g.c && g.c[tag]).length;
-        if(hits >= 2) recur = ` <b class="rvr-adv-recur">${hits} of your last ${profile.games.length} reviewed games</b> show this.`;
-      }
-      return `<div class="rvr-adv-row"><span class="rvr-adv-who">${shortName(name)}</span><span class="rvr-adv-body"><b>${a.label}</b> (${n}×). ${a.tip}${recur}</span></div>`;
-    }).join('');
-  }).join('');
-
   const repEl = document.getElementById('rv-report');
   if(repEl) repEl.innerHTML = `
     <div class="rvr-title">Game Review</div>
@@ -12643,8 +12537,7 @@ async function analyseGame(white, black, username){
     <div class="rvr-table">
       <div class="rvr-head"><span>Move type</span><span title="${white}">${shortName(white)}</span><span title="${black}">${shortName(black)}</span></div>
       ${repRows}
-    </div>
-    ${adviceHtml ? `<div class="rvr-advice"><div class="rvr-adv-t">Coach's advice</div>${adviceHtml}</div>` : ''}`;
+    </div>`;
 
   try{ rvAnimateReport(); }catch(e){}
 
@@ -13390,14 +13283,14 @@ function drawReviewArrows(ann, idx){
   const bestUCI = ann.bestMoveUCI;
 
   let svg = `<defs>
-    <marker id="ah-best-green" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
+    <marker id="ah-best-green" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/>
     </marker>
-    <marker id="ah-best-yellow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
+    <marker id="ah-best-yellow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/>
     </marker>
-    <marker id="ah-bad" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.85)"/>
+    <marker id="ah-bad" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(220,80,80,.85)"/>
     </marker>
   </defs>`;
 
@@ -13417,9 +13310,9 @@ function drawReviewArrows(ann, idx){
 }
 
 // Build SVG <line> markup for an arrow from→to using board square coordinates.
-// Lichess/chessground geometry: flat (butt) shaft start, triangle head that scales
-// with the stroke (markerUnits=strokeWidth on the markers), tip pulled just short
-// of the destination centre, no glow.
+// chessground geometry (lichess-org/chessground): shaft runs square-centre to
+// square-centre minus a margin, round linecap, and a 3×4 triangle head in
+// stroke-width units (markerUnits=strokeWidth) whose tip lands near the centre.
 function arrowSVG(from, to, color, width, markerId, flipped = false){
   if(!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) return '';
   const p1 = squareToSVG(from, flipped);
@@ -13427,15 +13320,11 @@ function arrowSVG(from, to, color, width, markerId, flipped = false){
   const dx = p2.x - p1.x, dy = p2.y - p1.y;
   const len = Math.sqrt(dx*dx + dy*dy);
   if(len < 0.1) return '';
-  // shaft starts a little OUT of the from-square centre (lichess leaves the piece visible)
-  const startOff = 10;
-  const sX = p1.x + (dx / len) * startOff;
-  const sY = p1.y + (dy / len) * startOff;
-  // shaft ends short of the target centre; the marker head extends from there
-  const shrink = 12 + width * 1.1;
+  // shaft ends short of the target centre; the head (tip ≈ +1 stroke) finishes it
+  const shrink = 10;
   const endX = p2.x - (dx / len) * shrink;
   const endY = p2.y - (dy / len) * shrink;
-  return `<line x1="${sX}" y1="${sY}" x2="${endX}" y2="${endY}" stroke="${color}" stroke-width="${width}" stroke-linecap="butt" marker-end="url(#${markerId})" />`;
+  return `<line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" marker-end="url(#${markerId})" />`;
 }
 
 // Draw arrows on the quiz board to visualize the theory move (green) + user's wrong move (red)
@@ -13444,11 +13333,11 @@ function drawQuizArrows(theoryMoveUCI, userMoveUCI){
   const overlay = document.getElementById('arrow-overlay-q');
   if(!overlay){ return; }
   let svg = `<defs>
-    <marker id="qz-ah-best" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
+    <marker id="qz-ah-best" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
-    <marker id="qz-ah-bad" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.9)"/>
+    <marker id="qz-ah-bad" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(220,80,80,.9)"/>
     </marker>
   </defs>`;
   // User's wrong move in red (drawn first so the theory move sits on top)
@@ -13471,11 +13360,11 @@ function drawAllCandidateArrows(q, playedMove){
   const overlay = document.getElementById('arrow-overlay-q');
   if(!overlay) return;
   let svg = `<defs>
-    <marker id="qzc-main" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
+    <marker id="qzc-main" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
-    <marker id="qzc-alt" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.6)"/>
+    <marker id="qzc-alt" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.6)"/>
     </marker>
   </defs>`;
   // All candidates: q.correct + q.alsoOK
@@ -13513,8 +13402,8 @@ function drawSingleArrow(uciMove){
   const endY = p2.y - (dy / len) * 14;
   overlay.innerHTML = `
     <defs>
-      <marker id="ah-yellow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/>
+      <marker id="ah-yellow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+        <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/>
       </marker>
     </defs>
     <line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="rgba(246,218,90,.9)" stroke-width="10" stroke-linecap="round" marker-end="url(#ah-yellow)" />`;
@@ -13670,7 +13559,7 @@ function renderReviewBoard(){
     }
     // Green arrow for best move
     if(displayedBestUCI && /^[a-h][1-8][a-h][1-8]/.test(displayedBestUCI)){
-      let svg = `<defs><marker id="rv-best-arrow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/></marker></defs>`;
+      let svg = `<defs><marker id="rv-best-arrow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.95)"/></marker></defs>`;
       svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(21,120,27,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
       if(overlay) overlay.innerHTML = svg;
     }
@@ -13706,8 +13595,8 @@ function drawBestMoveArrow(idx){
   }
   // Build SVG with green arrow + arrowhead marker
   let svg = `<defs>
-    <marker id="rv-best-arrow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
+    <marker id="rv-best-arrow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+      <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.95)"/>
     </marker>
   </defs>`;
   svg += arrowSVG(bestFrom, bestTo, 'rgba(21,120,27,.85)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
@@ -13995,11 +13884,12 @@ let reviewAnalysisToken = 0;
 function triggerEngineAnalysisR(state){
   const myToken = ++reviewAnalysisToken;
   if(!sfWorker || !sfReady) return;
+  try{ clearArrows('rv-cand-arrows'); }catch(e){}   // stale candidates off while the new position computes
   const fen = stateToFEN(state);
-  evalPosition(fen, 16, 3, 700).then(result => {
+  evalPosition(fen, 16, 5, 700).then(result => {
     if(myToken !== reviewAnalysisToken) return;
 
-    // Update the live engine panel — the engine's TOP THREE lines, each move
+    // Update the live engine panel — the engine's TOP FIVE lines, each move
     // hoverable for a mini-board preview and clickable to play the line out.
     const liveEl = document.getElementById('rv-live-eval');
     if(liveEl){
@@ -14007,7 +13897,7 @@ function triggerEngineAnalysisR(state){
         ? (mIn > 0 ? `M${Math.abs(mIn)}` : `-M${Math.abs(mIn)}`)
         : (sc > 0 ? '+' : '') + sc.toFixed(2);
       const lines = (result.alternatives && result.alternatives.length)
-        ? result.alternatives.slice(0, 3)
+        ? result.alternatives.slice(0, 5)
         : [{ score: result.score, pv: result.pv, isMate: result.isMate, mateIn: result.mateIn }];
       window._rvLivePvs = [];
       const rows = lines.map((ln, li) => {
@@ -14037,16 +13927,34 @@ function triggerEngineAnalysisR(state){
 
     updateEvalBar('eval-bar-black-r', 'eval-bar-score-r', result.score, result.isMate, result.mateIn);
 
-    // When exploring a branch, draw a BLUE arrow for the move you SHOULD play here now.
-    if(viewingBranch && result.bestMove && /^[a-h][1-8][a-h][1-8]/.test(result.bestMove)){
-      const ov = document.getElementById('arrow-overlay-r');
-      if(ov){
-        let svg = `<defs><marker id="rv-blue-arrow" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(0,48,136,.85)"/></marker></defs>`;
-        svg += arrowSVG(result.bestMove.slice(0,2), result.bestMove.slice(2,4), 'rgba(0,48,136,.8)', 9, 'rv-blue-arrow', boardFlippedState.get('board-r') === true);
-        ov.innerHTML = svg;
-      }
-    }
+    // ── CANDIDATE ARROWS — the whole picture, not just one answer ──
+    // Up to 5 engine candidates drawn on the board, ranked by strength:
+    // best = bright green, weaker options fading toward red.
+    rvDrawCandidateArrows(result);
   });
+}
+
+const RV_CAND_COLORS = ['#15781B', '#7cb342', '#d3a11f', '#df6f1e', '#c33a2e'];
+const RV_CAND_OPACITY = [1, .85, .72, .62, .55];
+function rvDrawCandidateArrows(result){
+  const ov = document.getElementById('rv-cand-arrows');
+  if(!ov) return;
+  const flipped = boardFlippedState.get('board-r') === true;
+  const alts = (result.alternatives && result.alternatives.length)
+    ? result.alternatives
+    : (result.pv ? [{ pv: result.pv }] : []);
+  let defs = '<defs>', body = '';
+  let n = 0;
+  for(let i = 0; i < alts.length && n < 5; i++){
+    const u = String(alts[i].pv || '').trim().split(/\s+/)[0] || '';
+    if(!/^[a-h][1-8][a-h][1-8]/.test(u)) continue;
+    const col = RV_CAND_COLORS[n], op = RV_CAND_OPACITY[n];
+    defs += `<marker id="rv-cand-m${n}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${col}" fill-opacity="${op}"/></marker>`;
+    // ranked candidates drawn weakest-first so the best arrow sits on top
+    body = `<g opacity="${op}">` + arrowSVG(u.slice(0,2), u.slice(2,4), col, 8.75, 'rv-cand-m' + n, flipped) + `</g>` + body;
+    n++;
+  }
+  ov.innerHTML = n ? defs + '</defs>' + body : '';
 }
 
 // Scroll a move cell into view WITHIN its own scroll container only —
@@ -18549,11 +18457,11 @@ function renderMistakeBoard(idx, ex){
     const overlay = document.getElementById(overlayId);
     if(!overlay) return;
     let svg = `<defs>
-      <marker id="we-m-best-${idx}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.95)"/>
+      <marker id="we-m-best-${idx}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+        <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.95)"/>
       </marker>
-      <marker id="we-m-bad-${idx}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
-        <path d="M0,0 L10,5 L0,10 Z" fill="rgba(220,80,80,.92)"/>
+      <marker id="we-m-bad-${idx}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+        <path d="M0,0 V4 L3,2 Z" fill="rgba(220,80,80,.92)"/>
       </marker>
     </defs>`;
     // Red arrow for what user played (drawn first, sits behind)
@@ -25248,9 +25156,9 @@ function nlearnDrawBlueArrows(alternatives){
   const overlay = document.getElementById('arrow-overlay-nl');
   if(!overlay) return;
   overlay.innerHTML = `<defs>
-    <marker id="nlb-1" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker>
-    <marker id="nlb-2" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(90,180,110,.75)"/></marker>
-    <marker id="nlb-3" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(140,205,160,.55)"/></marker>
+    <marker id="nlb-1" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/></marker>
+    <marker id="nlb-2" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(90,180,110,.75)"/></marker>
+    <marker id="nlb-3" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(140,205,160,.55)"/></marker>
   </defs>`;
   const styles = [
     { stroke:'rgba(21,120,27,.85)',  marker:'nlb-1', width:13 }, // best — bold blue
@@ -26649,8 +26557,8 @@ function olGuidedArrows(state, san){
   const flipped = boardFlippedState.get('ol-board') === true;
   let mv = null; try{ mv = sanToMove(san, state); }catch(e){}
   let svg = `<defs>
-    <marker id="olg-go" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#15781B"/></marker>
-    <marker id="olg-th" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(136,32,32,.85)"/></marker>
+    <marker id="olg-go" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="#15781B"/></marker>
+    <marker id="olg-th" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(136,32,32,.85)"/></marker>
   </defs>`;
   const exp = mv ? mv.from + mv.to : '';
   for(const t of olFindThreats(state)){
@@ -26676,7 +26584,7 @@ function olPlanVisuals(planText){
     const sqs = [...new Set(txt.match(/\b[a-h][1-8]\b/g) || [])].filter(s => !inArrows[s]).slice(0, 6);
     sqs.forEach(s => { const el = boardEl.querySelector(`[data-sq="${s}"]`); if(el) el.classList.add('hl-plan'); });
     if(overlay && arrows.length){
-      let svg = `<defs><marker id="olg-plan" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#15781B"/></marker></defs>`;
+      let svg = `<defs><marker id="olg-plan" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="#15781B"/></marker></defs>`;
       arrows.forEach(a => { svg += arrowSVG(a[0], a[1], '#15781B', 11, 'olg-plan', flipped); });
       overlay.innerHTML = svg;
     }
@@ -26697,7 +26605,7 @@ function olDrawMoveArrows(moves, state, color, overlayId){
   const boardId = overlayId==='ol-arrows' ? 'ol-board' : 'old-board';
   const flipped = boardFlippedState.get(boardId) === true;
   let defs = '<defs>';
-  palette.forEach((c,i)=>{ defs += `<marker id="${overlayId}-m${i}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`; });
+  palette.forEach((c,i)=>{ defs += `<marker id="${overlayId}-m${i}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${c}"/></marker>`; });
   defs += '</defs>';
   let svg = defs;
   moves.slice(0,3).forEach((m,i)=>{
@@ -27638,7 +27546,7 @@ function explDrawArrows(alts){
   const widths = [13,8,6];
   const flipped = isBoardFlipped('expl-board');
   let defs = '<defs>';
-  palette.forEach((c,i)=>{ defs += `<marker id="expla-m${i}" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`; });
+  palette.forEach((c,i)=>{ defs += `<marker id="expla-m${i}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${c}"/></marker>`; });
   defs += '</defs>';
   let svg = defs;
   alts.slice(0,3).forEach((a,i)=>{
@@ -27887,7 +27795,7 @@ function revRender(){
   const children = rev.node.children || [];
   if(overlay){
     const flipped = isBoardFlipped('rev-board');
-    let svg = `<defs><marker id="revb-m" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.85)"/></marker></defs>`;
+    let svg = `<defs><marker id="revb-m" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.85)"/></marker></defs>`;
     children.forEach(ch => {
       const u = ch.uci; if(!u||u.length<4) return;
       const from=u.slice(0,2), to=u.slice(2,4);
@@ -28047,7 +27955,7 @@ function rtrainUserMove(from, to, newState, san){
       const p1=squareToSVG(from2,flipped), p2=squareToSVG(to2,flipped);
       const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.sqrt(dx*dx+dy*dy)||1;
       const ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
-      overlay.innerHTML = `<defs><marker id="rtok" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="rgba(21,120,27,.9)"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(239,157,43,.9)" stroke-width="12" stroke-linecap="round" marker-end="url(#rtok)"/>`;
+      overlay.innerHTML = `<defs><marker id="rtok" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="rgba(239,157,43,.9)" stroke-width="12" stroke-linecap="round" marker-end="url(#rtok)"/>`;
     }
     // re-render board at the position (undo wrong move) and show the correct move highlighted
     renderBoardEl('rt-board','rt-ranks','rt-files', rtrain.curState, [], null);
@@ -28453,7 +28361,7 @@ function acadDrawArrow(overlayId, boardId, uci, color){
   const flipped=isBoardFlipped(boardId);
   const p1=squareToSVG(from,flipped), p2=squareToSVG(to,flipped);
   const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1, ex=p2.x-(dx/len)*14, ey=p2.y-(dy/len)*14;
-  ov.innerHTML=`<defs><marker id="${overlayId}-mk" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${overlayId}-mk)"/>`;
+  ov.innerHTML=`<defs><marker id="${overlayId}-mk" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${overlayId}-mk)"/>`;
 }
 function acadFinishLesson(){
   acadMarkDone(alesson.step.id, null);
@@ -29195,7 +29103,7 @@ function ccDrawSavedArrows(state){
   const kids = (CC.node && CC.node.children) || [];
   if(!kids.length){ ov.innerHTML=''; return; }
   const flipped = boardFlippedState.get('cc-board') === true;
-  let svg = `<defs><marker id="cc-saved-m" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#15781B"/></marker></defs>`;
+  let svg = `<defs><marker id="cc-saved-m" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="#15781B"/></marker></defs>`;
   let n = 0;
   kids.forEach(ch => {
     let mv = null; try{ mv = sanToMove(ch.san, state); }catch(e){}
@@ -29346,17 +29254,18 @@ async function ccRunEngine(){
   if(typeof evalPosition!=='function'){ if(linesHost) linesHost.innerHTML=''; return; }
   const state=ccCurrentState(); let fen; try{ fen=stateToFEN(state); }catch(e){ return; }
   try {
-    const r=await evalPosition(fen, 16, 3, 700);
+    const r=await evalPosition(fen, 16, 5, 700);
     if(token!==CC.evalToken) return;
     updateEvalBar('cc-evalbar-black','cc-evalbar-score', r.score, r.isMate, r.mateIn);
     if(inline) inline.textContent=formatEval(r.score,r.isMate,r.mateIn);
     const alts=(r.alternatives&&r.alternatives.length)?r.alternatives:[{pv:r.pv,score:r.score,isMate:r.isMate,mateIn:r.mateIn}];
-    // no persistent arrows — one appears on hover over a line's first move (ChessReps style)
-    clearArrows('cc-arrows');
+    // candidate arrows: up to 5 ranked moves, best = green fading toward red
+    CC._lastAlts = alts;
+    ccDrawCandArrows();
     if(linesHost){
       const startPly = CC.sans.length;
-      CC._pvLines = alts.slice(0,3).map(a => ((a&&a.pv)||'').trim().split(/\s+/).filter(Boolean));
-      linesHost.innerHTML=alts.slice(0,3).map((a,li)=>{
+      CC._pvLines = alts.slice(0,5).map(a => ((a&&a.pv)||'').trim().split(/\s+/).filter(Boolean));
+      linesHost.innerHTML=alts.slice(0,5).map((a,li)=>{
         const ev=formatEval(a.score,a.isMate,a.mateIn);
         const cls=a.isMate?(a.mateIn>0?'pos':'neg'):(a.score>0.3?'pos':(a.score<-0.3?'neg':'eq'));
         const toks=ccPvTokens(a.pv, state, 8, startPly);
@@ -29438,7 +29347,7 @@ window.ccPvHover=function(el){
   let top=r.bottom+8; if(top+sz>window.innerHeight-8) top=r.top-sz-8;
   pop.style.left=Math.max(8,left)+'px'; pop.style.top=Math.max(8,top)+'px';
 };
-window.ccPvHoverOut=function(){ const pop=document.getElementById('cc-pv-preview'); if(pop) pop.style.display='none'; try{ clearArrows('cc-arrows'); }catch(e){} };
+window.ccPvHoverOut=function(){ const pop=document.getElementById('cc-pv-preview'); if(pop) pop.style.display='none'; try{ ccDrawCandArrows(); }catch(e){} };
 // Click an engine-line move → play that line up to (and including) the clicked move on the big board
 window.ccPlayLine=function(li, mi){
   const line=(CC._pvLines||[])[li]; if(!line) return;
@@ -29458,6 +29367,23 @@ window.ccPlayLine=function(li, mi){
   }
   ccRender();
 };
+// Persistent candidate arrows on the repertoire board — same ranked palette as
+// Game Review: best = bright green fading toward red, up to 5.
+function ccDrawCandArrows(){
+  const ov=document.getElementById('cc-arrows'); if(!ov) return;
+  const alts=CC._lastAlts||[]; const fl=isBoardFlipped('cc-board');
+  const COL=['#15781B','#7cb342','#d3a11f','#df6f1e','#c33a2e'], OP=[1,.85,.72,.62,.55];
+  let defs='<defs>', body='', n=0;
+  for(let i=0;i<alts.length&&n<5;i++){
+    const u=String(alts[i].pv||'').trim().split(/\s+/)[0]||'';
+    if(!/^[a-h][1-8][a-h][1-8]/.test(u)) continue;
+    defs+=`<marker id="cc-cand-m${n}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${COL[n]}" fill-opacity="${OP[n]}"/></marker>`;
+    body=`<g opacity="${OP[n]}">`+arrowSVG(u.slice(0,2),u.slice(2,4),COL[n],8.75,'cc-cand-m'+n,fl)+`</g>`+body;
+    n++;
+  }
+  ov.innerHTML = n ? defs+'</defs>'+body : '';
+}
+
 // Clean, proportional analysis arrows (shaft + triangular head as polygons).
 // Knight moves bend into an L, like lichess / chessreps.
 function ccDrawArrows(arrows){
@@ -29491,7 +29417,7 @@ function ccDrawArrows(arrows){
   });
   ov.innerHTML=svg;
 }
-function ccArrow(uci,color){ const ov=document.getElementById('cc-arrows'); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped('cc-board'); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="cc-mk" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="11" stroke-linecap="round" marker-end="url(#cc-mk)"/>`; }
+function ccArrow(uci,color){ const ov=document.getElementById('cc-arrows'); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped('cc-board'); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="cc-mk" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="11" stroke-linecap="round" marker-end="url(#cc-mk)"/>`; }
 
 // ── Explorer: live Lichess stats (token via server) OR offline book fallback ──
 let CC_BOOK = null;
@@ -29703,7 +29629,7 @@ function ccTrainMove(from,to,ns,san){
     setTimeout(()=>{ if(ccTrain){ ccTrain.i++; ccRenderTrain(); } },1200);
   }
 }
-function ccArrowOn(ovId,boardId,uci,color){ const ov=document.getElementById(ovId); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped(boardId); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="${ovId}-mk" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${ovId}-mk)"/>`; }
+function ccArrowOn(ovId,boardId,uci,color){ const ov=document.getElementById(ovId); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped(boardId); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="${ovId}-mk" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${ovId}-mk)"/>`; }
 function ccTrainResults(){
   const ws=document.getElementById('cc-workspace');
   const total=ccTrain.tests.length, acc=total?Math.round(100*ccTrain.correct/total):0;
@@ -30113,7 +30039,7 @@ function pcoachRenderReview(k){
 function pcoachDrawArrows(m){
   const ov = document.getElementById('coach-arrows'); if(!ov) return;
   const flipped = boardFlippedState.get('coach-board') === true;
-  const mk = (id, color) => `<marker id="${id}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4.6" markerHeight="4.6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${color}"/></marker>`;
+  const mk = (id, color) => `<marker id="${id}" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4.6" markerHeight="4.6" orient="auto"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker>`;
   const line = (uci, color, mid) => {
     const p1 = squareToSVG(uci.slice(0,2), flipped), p2 = squareToSVG(uci.slice(2,4), flipped);
     const dx = p2.x-p1.x, dy = p2.y-p1.y, len = Math.sqrt(dx*dx+dy*dy)||1, ex = p2.x-(dx/len)*18, ey = p2.y-(dy/len)*18;
