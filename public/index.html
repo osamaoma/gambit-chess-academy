@@ -4384,6 +4384,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <button class="nav-tab" onclick="showSection('creator')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span> Repertoire</button>
     <button class="nav-tab" onclick="showSection('review')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="11" cy="11" r="3"/><path d="m21 21-2.5-2.5"/></svg></span> Game Review</button>
     <button class="nav-tab" onclick="showSection('coach')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span> Coach</button>
+    <button class="nav-tab" onclick="showSection('puzzles')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 7.9c-.05.32.06.65.29.88l1.57 1.57c.47.47.7 1.09.7 1.7s-.23 1.24-.7 1.7l-1.61 1.62a.98.98 0 0 1-.84.27c-.47-.07-.8-.48-.97-.92a2.5 2.5 0 1 0-3.21 3.21c.44.17.85.5.92.97a.98.98 0 0 1-.27.84l-1.62 1.61a2.4 2.4 0 0 1-1.7.7 2.4 2.4 0 0 1-1.7-.7l-1.57-1.57a1.03 1.03 0 0 0-.88-.29c-.49.07-.84.5-1.02.97a2.5 2.5 0 1 1-3.24-3.24c.46-.18.9-.53.97-1.02a1.03 1.03 0 0 0-.29-.88L2.7 13.7a2.4 2.4 0 0 1-.7-1.7c0-.62.24-1.24.71-1.7L4.23 8.77c.24-.24.58-.35.92-.3.51.08.88.53 1.07 1.01a2.5 2.5 0 1 0 3.26-3.26c-.48-.19-.93-.56-1.01-1.07a1.03 1.03 0 0 1 .3-.92l1.53-1.52A2.4 2.4 0 0 1 12 2c.62 0 1.23.24 1.7.71l1.57 1.57c.23.23.56.34.88.29.49-.07.84-.5 1.02-.97a2.5 2.5 0 1 1 3.24 3.24c-.47.18-.9.53-.97 1.02Z"/></svg></span> Puzzles</button>
     <!-- Quizzes tab hidden from main nav — only reachable via "Test yourself" at end of each opening -->
   </div>
   <button class="nav-theme-toggle" onclick="gambitToggleTheme()" aria-label="Toggle theme" title="Toggle light / dark"></button>
@@ -4768,6 +4769,87 @@ document.addEventListener('DOMContentLoaded', function(){
 <div id="sec-coach" class="section">
   <div class="page-wrap">
     <div id="coach-host"></div>
+  </div>
+</div>
+
+<style>
+/* ══════════ PUZZLES — Editorial-Luxe skin (token-remap mirrors #sec-coach) ══════════ */
+#sec-puzzles{
+  --text:var(--ink); --text2:var(--ink-2); --text3:var(--ink-3);
+  --bg:var(--paper); --bg2:var(--paper-2); --bg3:var(--paper-2); --bg4:var(--paper-3);
+  --border:var(--rule); --border2:var(--rule-2);
+  --gold:var(--green); --gold2:var(--green-ink); --gold3:rgba(46,125,91,.1); --gold-glow:rgba(46,125,91,.28);
+  color:var(--ink); background:var(--paper); min-height:100vh;
+}
+#sec-puzzles .pc-hero h1{ font-family:var(--font-display) !important; color:var(--ink) !important; }
+#sec-puzzles .pc-hero h1 em{ color:var(--green) !important; }
+#sec-puzzles .btn-gold{ background:linear-gradient(135deg,#1B6E45,#104A2E) !important; color:#F3F1E9 !important; box-shadow:0 6px 18px -8px rgba(28,78,58,.5) !important; }
+#sec-puzzles .btn-gold:hover{ background:#104A2E !important; }
+#sec-puzzles .pc-user{ background:var(--paper) !important; border:1px solid var(--rule-2) !important; color:var(--ink) !important; }
+#sec-puzzles .pc-user:focus{ border-color:var(--green) !important; }
+#sec-puzzles .pc-plat button.active{ border-color:var(--green) !important; color:var(--green) !important; background:rgba(46,125,91,.08) !important; }
+
+/* feature strip (empty state) */
+#sec-puzzles .pz-feats{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; max-width:720px; margin:22px auto 0; }
+#sec-puzzles .pz-feat{ background:var(--paper-2); border:1px solid var(--rule); border-radius:14px; padding:16px 14px; text-align:center; }
+#sec-puzzles .pz-feat .ic{ font-size:22px; }
+#sec-puzzles .pz-feat h4{ margin:8px 0 4px; font-size:13.5px; color:var(--ink); font-family:var(--font-display); }
+#sec-puzzles .pz-feat p{ font-size:12.5px; color:var(--ink-2); line-height:1.5; margin:0; }
+@media(max-width:640px){ #sec-puzzles .pz-feats{ grid-template-columns:1fr; } }
+
+/* progress (loading) */
+#sec-puzzles .pz-prog-track{ height:8px; border-radius:6px; background:var(--paper-3); overflow:hidden; margin:16px 0 8px; }
+#sec-puzzles .pz-prog-fill{ height:100%; width:0; border-radius:6px; background:linear-gradient(90deg,#1B6E45,#104A2E); transition:width .3s ease; }
+#sec-puzzles .pz-prog-text{ text-align:center; font-size:13px; color:var(--ink-2); }
+#sec-puzzles .pz-found-live{ text-align:center; font-size:13px; margin-top:6px; color:var(--green); font-weight:700; min-height:18px; }
+
+/* solve layout — board dominates, thin quiz panel beside it */
+#sec-puzzles .pz-solve{ --pzsq:clamp(46px, calc(12.5vh - 12px), 118px); display:grid; grid-template-columns:auto minmax(300px,380px); gap:26px; align-items:start; justify-content:center; padding-top:6px; }
+#sec-puzzles #pz-board .sq{ width:var(--pzsq); height:var(--pzsq); position:relative; }
+#sec-puzzles .pz-board-col{ position:relative; }
+#sec-puzzles .pz-topbar{ display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+#sec-puzzles .pz-count{ font-size:13px; color:var(--ink-2); font-family:'DM Mono',monospace; }
+#sec-puzzles .pz-scorechip{ margin-left:auto; font-size:14px; font-weight:800; font-family:'DM Mono',monospace; }
+#sec-puzzles .pz-side{ background:var(--paper-2); border:1px solid var(--rule); border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:14px; align-self:center; }
+#sec-puzzles .pz-tomove{ display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700; color:var(--ink); font-family:var(--font-display); }
+#sec-puzzles .pz-tomove .chip{ width:18px; height:18px; border-radius:5px; border:1px solid var(--rule-2); flex-shrink:0; }
+#sec-puzzles .pz-ctx{ font-size:13.5px; color:var(--ink-2); line-height:1.6; }
+#sec-puzzles .pz-ctx b{ color:var(--ink); }
+#sec-puzzles .pz-cat{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:10.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; margin-right:4px; vertical-align:middle; }
+#sec-puzzles .pz-cat.blunder{ background:rgba(224,82,78,.14); color:#c9302c; }
+#sec-puzzles .pz-cat.mistake{ background:rgba(230,138,60,.16); color:#c56a1a; }
+#sec-puzzles .pz-fb{ min-height:24px; font-size:14.5px; font-weight:700; }
+#sec-puzzles .pz-fb .ok{ color:#1f8a58; }
+#sec-puzzles .pz-fb .no{ color:#c9302c; }
+#sec-puzzles .pz-fb .line{ color:var(--ink-2); font-weight:500; font-size:12.5px; margin-top:5px; font-family:'DM Mono',monospace; }
+#sec-puzzles .pz-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+#sec-puzzles .pz-btn{ flex:1; padding:11px; border-radius:11px; border:1px solid var(--rule-2); background:var(--paper); color:var(--ink); font-weight:600; font-size:13.5px; cursor:pointer; transition:border-color .15s, transform .12s; }
+#sec-puzzles .pz-btn:hover{ border-color:var(--green); }
+#sec-puzzles .pz-btn:active{ transform:translateY(1px); }
+#sec-puzzles .pz-btn.primary{ background:linear-gradient(135deg,#1B6E45,#104A2E); color:#F3F1E9; border:none; }
+#sec-puzzles .pz-btn.primary:hover{ filter:brightness(1.06); }
+#sec-puzzles .pz-gamelink{ font-size:12px; color:var(--ink-2); text-decoration:none; align-self:flex-start; }
+#sec-puzzles .pz-gamelink:hover{ color:var(--green); }
+
+/* feedback motion */
+@keyframes pzShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+#sec-puzzles .pz-shake{ animation:pzShake .4s var(--smooth,ease); }
+
+/* completion */
+#sec-puzzles .pz-done{ max-width:460px; margin:5vh auto 0; text-align:center; background:var(--paper-2); border:1px solid var(--rule); border-radius:20px; padding:32px 26px; }
+#sec-puzzles .pz-ring{ width:132px; height:132px; margin:0 auto 14px; display:block; }
+#sec-puzzles .pz-done h2{ font-size:24px; margin:0 0 6px; color:var(--ink); font-family:var(--font-display); }
+#sec-puzzles .pz-done p{ color:var(--ink-2); font-size:13.5px; line-height:1.6; margin:0 0 8px; }
+#sec-puzzles .pz-done-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+#sec-puzzles .pz-done-stats .n{ font-size:26px; font-weight:800; font-family:'DM Mono',monospace; color:var(--ink); }
+#sec-puzzles .pz-done-stats .l{ font-size:11px; color:var(--ink-2); text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+
+@media(max-width:860px){ #sec-puzzles .pz-solve{ grid-template-columns:1fr; } #sec-puzzles .pz-side{ align-self:stretch; } }
+@media(prefers-reduced-motion:reduce){ #sec-puzzles .pz-shake{ animation:none; } }
+</style>
+<div id="sec-puzzles" class="section">
+  <div class="page-wrap">
+    <div id="pz-host"></div>
   </div>
 </div>
 
@@ -14151,12 +14233,14 @@ window.showSection = function(id){
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, review:2, coach:3, quizzes:-1};
+  const tabs = {academy:0, creator:1, openings:0, nlearn:0, olearn:0, explorer:0, train:0, 'rep-review':0, review:2, coach:3, puzzles:4, quizzes:-1};
   document.querySelectorAll('.nav-tab')[tabs[id]]?.classList.add('active');
   // Openings library loads lazily on first visit (ChessReps-style grid)
   if(id === 'openings'){ try{ if(!OL){ olInit(); } else { olRenderGrid(); } }catch(e){ console.warn('ol lazy init', e); } }
   // Personal Coach renders its current step lazily
   if(id === 'coach'){ try{ pcoachInit(); }catch(e){ console.warn('coach init', e); } }
+  // Puzzles-from-your-games renders its current step lazily
+  if(id === 'puzzles'){ try{ pzInit(); }catch(e){ console.warn('puzzles init', e); } }
   // When entering Quizzes, render the opening picker (with current progress)
   if(id === 'quizzes' && typeof renderQuizOpenings === 'function'){
     // Show the home picker, not any active quiz
@@ -30232,11 +30316,388 @@ window.pcoachStudy = function(name){
 };
 window.pcoachReset = function(){ pcoach = { step:'connect', platform: pcoach.platform, username: pcoach.username, busy:false, games:[], mistakes:[], patterns:[], curIdx:0, style:null, recs:[], summary:null }; pcoachRenderConnect(); };
 
+// ════════════════════════════════════════════════════════
+// PUZZLES FROM YOUR GAMES — Stockfish scans the user's recent games,
+// finds their blunders/mistakes, and turns each into a "find the move
+// you missed" puzzle. Reuses the coach's fetchers + engine + board helpers.
+// ════════════════════════════════════════════════════════
+let PZ = { platform:'chesscom', username:'', busy:false, puzzles:[], idx:0,
+  solved:0, failed:0, attempts:0, view:'connect',
+  curState:null, curSolved:false, curFailed:false, curTries:0, checking:false, revealed:false };
+
+function pzEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pzLoad(){ try { return JSON.parse(localStorage.getItem('gambit_puzzles')||'null'); } catch(e){ return null; } }
+function pzStore(o){ try { localStorage.setItem('gambit_puzzles', JSON.stringify(o)); } catch(e){} }
+
+window.pzInit = function(){
+  const host = document.getElementById('pz-host'); if(!host) return;
+  if(PZ.busy) return;                       // a scan is running — leave its UI alone
+  if(PZ.view === 'solve'){ pzRenderSolve(); return; }
+  if(PZ.view === 'done'){ pzRenderDone(); return; }
+  const saved = pzLoad();
+  if(saved && saved.puzzles && saved.puzzles.length){
+    PZ.username = saved.username || PZ.username;
+    PZ.platform = saved.platform || PZ.platform;
+    pzRenderReady(saved, false);
+  } else {
+    pzRenderConnect();
+  }
+};
+
+// ── Connect screen ──
+function pzRenderConnect(msg){
+  PZ.view = 'connect';
+  const host = document.getElementById('pz-host'); if(!host) return;
+  host.innerHTML = `
+    <div class="pc-wrap">
+      <div class="pc-hero">
+        <h1>Puzzles from <em>your own games</em></h1>
+        <p>Connect your Chess.com or Lichess account. Stockfish replays your recent games, finds the moments you blundered or went wrong, and turns each one into a “find the better move” puzzle — so you drill the exact mistakes you actually make.</p>
+      </div>
+      <div class="pz-feats">
+        <div class="pz-feat"><div class="ic">🔍</div><h4>Scanned by Stockfish&nbsp;18</h4><p>Every move you played, checked for blunders and mistakes.</p></div>
+        <div class="pz-feat"><div class="ic">🎯</div><h4>Your real weaknesses</h4><p>Positions you misplayed — not generic tactics trainers.</p></div>
+        <div class="pz-feat"><div class="ic">♟</div><h4>Find the fix</h4><p>Solve the move you missed, then see the engine's whole line.</p></div>
+      </div>
+      <div class="pc-card">
+        <div class="pc-plat">
+          <button class="${PZ.platform==='chesscom'?'active':''}" onclick="pzSetPlatform('chesscom')">♟ Chess.com</button>
+          <button class="${PZ.platform==='lichess'?'active':''}" onclick="pzSetPlatform('lichess')">♞ Lichess</button>
+        </div>
+        <input id="pz-user" class="pc-user" placeholder="Your ${PZ.platform==='chesscom'?'Chess.com':'Lichess'} username" autocomplete="off" onkeydown="if(event.key==='Enter')pzStart()">
+        <button class="btn btn-gold" style="width:100%" onclick="pzStart()">Make puzzles from my games</button>
+        ${msg ? `<div class="error-box" style="margin-top:12px">${pzEsc(msg)}</div>` : ''}
+        <div class="pc-fine">Rated games only · analysis runs in your browser with Stockfish 18 · nothing is uploaded.</div>
+      </div>
+    </div>`;
+  const u = document.getElementById('pz-user'); if(u && PZ.username) u.value = PZ.username;
+}
+window.pzSetPlatform = function(p){ PZ.platform = p; pzRenderConnect(); };
+
+// ── Loading screen ──
+function pzRenderLoading(){
+  PZ.view = 'loading';
+  const host = document.getElementById('pz-host'); if(!host) return;
+  host.innerHTML = `
+    <div class="pc-wrap"><div class="pc-card" style="max-width:520px">
+      <div style="text-align:center;font-family:var(--font-display,'Helvetica Neue',Arial);font-size:19px;margin-bottom:4px">Building your puzzles</div>
+      <div class="pz-prog-track"><div class="pz-prog-fill" id="pz-pf"></div></div>
+      <div class="pz-prog-text" id="pz-pt">Fetching your recent games…</div>
+      <div class="pz-found-live" id="pz-found"></div>
+      <div class="pc-fine">Stockfish is replaying your games move by move to catch every slip. This takes a minute or two — keep this tab open.</div>
+    </div></div>`;
+}
+
+// ── Generate: scan games, collect the user's mistakes as puzzles ──
+async function pzGenerate(games, username, setP){
+  const uname = username.toLowerCase();
+  let book = {};
+  try { book = await (await fetch('/book_moves.json',{cache:'force-cache'})).json(); } catch(e){}
+  const cache = Object.create(null);
+  let evals = 0;
+  const TARGET = 18, MAX_EVALS = 700;
+  async function ev(fen){
+    if(cache[fen]) return cache[fen];
+    const r = await evalPosition(fen, 12, 1, 240);
+    cache[fen] = r; evals++;
+    await new Promise(rr => setTimeout(rr, 0));   // keep the UI responsive
+    return r;
+  }
+  const puzzles = [], seen = new Set();
+  for(let gi = 0; gi < games.length; gi++){
+    if(puzzles.length >= TARGET || evals >= MAX_EVALS) break;
+    setP(6 + (gi / games.length) * 90, `Game ${gi + 1} / ${games.length} · ${evals} positions checked`, puzzles.length);
+    const game = games[gi];
+    let moveSANs;
+    try { ({ moveSANs } = parsePGN(game.pgn)); } catch(e){ continue; }
+    if(!moveSANs || moveSANs.length < 8) continue;
+    const isWhite = (game.white||'').toLowerCase() === uname;
+    let hist;
+    try { hist = buildHistory(moveSANs); } catch(e){ continue; }
+    const plies = hist.length - 1;
+    const ucis = hist.slice(1).map(h => (h.from||'')+(h.to||''));
+    let prev = await ev(stateToFEN(hist[0].state));
+    for(let i = 1; i <= plies; i++){
+      if(puzzles.length >= TARGET || evals >= MAX_EVALS) break;
+      const cur = await ev(stateToFEN(hist[i].state));
+      const userMove = ((i % 2 === 1) === isWhite);
+      if(userMove && prev.bestMove){
+        const pb = isWhite ? (prev.score||0) : -(prev.score||0);   // user-perspective eval before the move
+        const pa = isWhite ? (cur.score||0)  : -(cur.score||0);    // …and after
+        const wDrop = winPct(pb) - winPct(pa);
+        const fenB = stateToFEN(hist[i-1].state);
+        const prefix = ucis.slice(0, i-1).join(',');
+        const inBook = !!(book[prefix] && book[prefix][ucis[i-1]]);
+        const bestIsPlayed = (prev.bestMove||'').slice(0,4) === ucis[i-1];
+        // Quality gates: a real mistake, not already lost, not already trivially won,
+        // a clear engine improvement exists, and we haven't used this exact position.
+        if(!inBook && wDrop >= 12 && pb > -3.0 && pb < 8.0 && !bestIsPlayed && !seen.has(fenB)){
+          seen.add(fenB);
+          puzzles.push({
+            fen: fenB, userWhite: isWhite,
+            solUci: prev.bestMove,
+            solSan: uciToSAN(fenB, prev.bestMove) || prev.bestMove,
+            pv: prev.pv || '',
+            bestEval: pb,
+            played: hist[i].san, playedUci: ucis[i-1],
+            wDrop, cat: wDrop >= 20 ? 'blunder' : 'mistake',
+            moveNo: Math.ceil(i/2),
+            opp: isWhite ? (game.black||'?') : (game.white||'?'),
+            result: game.result, url: game.url,
+            opening: (typeof normalizeOpeningName === 'function' ? normalizeOpeningName(game.opening||'Unknown') : (game.opening||'Unknown'))
+          });
+        }
+      }
+      prev = cur;
+    }
+  }
+  // biggest, most instructive first
+  puzzles.sort((a,b) => (b.wDrop - a.wDrop));
+  return puzzles;
+}
+
+window.pzStart = async function(){
+  const input = document.getElementById('pz-user');
+  const username = (input && input.value || '').trim();
+  if(!username){ if(input) input.focus(); return; }
+  if(!window.gambitGate('Create a free account to turn your games into puzzles.', function(){ window.pzStart(); })) return;
+  if(PZ.busy) return;
+  PZ.busy = true; PZ.username = username;
+  pzRenderLoading();
+  const setP = (pct, txt, found) => {
+    const f = document.getElementById('pz-pf'), t = document.getElementById('pz-pt'), fo = document.getElementById('pz-found');
+    if(f) f.style.width = Math.round(pct) + '%';
+    if(t) t.textContent = txt;
+    if(fo && typeof found === 'number') fo.textContent = found ? `${found} puzzle${found===1?'':'s'} found so far` : '';
+  };
+  try {
+    const maxGames = 50;
+    let games;
+    if(PZ.platform === 'chesscom'){
+      games = await fetchChessComGames(username, maxGames * 2, 'all');
+      games = games.filter(g => g.rated !== false).slice(0, maxGames);
+    } else {
+      games = await fetchLichessGames(username, maxGames, 'all', { rated: true });
+    }
+    const uname = username.toLowerCase();
+    games = games.filter(g => g.pgn && ((g.white||'').toLowerCase() === uname || (g.black||'').toLowerCase() === uname));
+    if(games.length < 3) throw new Error(`Only found ${games.length} rated games for "${username}" — need at least 3.`);
+    setP(4, 'Waking up Stockfish 18…', 0);
+    try { if(!sfWorker) await initStockfish(); } catch(e){}
+    if(!sfWorker || !sfReady) throw new Error('The Stockfish engine failed to load in this browser. Try reloading the page.');
+    const puzzles = await pzGenerate(games, username, setP);
+    PZ.busy = false;
+    if(!puzzles.length){
+      pzRenderConnect(`We scanned ${games.length} games but didn't find clear tactical mistakes to turn into puzzles — you may have been playing cleanly! Try a different account.`);
+      return;
+    }
+    PZ.puzzles = puzzles;
+    const rec = { username, platform: PZ.platform, generatedAt: Date.now(), puzzles };
+    pzStore(rec);
+    pzRenderReady(rec, true);
+  } catch(e){
+    PZ.busy = false;
+    pzRenderConnect(e && e.message || 'Something went wrong. Try again.');
+  }
+};
+
+// ── Ready screen (fresh set or resuming a saved one) ──
+function pzRenderReady(saved, fresh){
+  PZ.view = 'ready';
+  const host = document.getElementById('pz-host'); if(!host) return;
+  const list = (saved && saved.puzzles) || PZ.puzzles || [];
+  PZ.puzzles = list;
+  const total = list.length;
+  const bl = list.filter(p => p.cat === 'blunder').length, mi = total - bl;
+  const when = saved && saved.generatedAt ? new Date(saved.generatedAt).toLocaleDateString() : '';
+  host.innerHTML = `
+    <div class="pc-wrap"><div class="pc-card" style="max-width:520px;text-align:center">
+      <div style="font-size:34px;margin-bottom:6px">${fresh?'🎉':'🎮'}</div>
+      <div style="font-family:var(--font-display,'Helvetica Neue',Arial);font-size:22px;margin-bottom:8px">${fresh?'Your puzzles are ready':'Puzzles from your games'}</div>
+      <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px">
+        ${total} puzzle${total===1?'':'s'} built from <b style="color:var(--text)">${pzEsc(saved&&saved.username||PZ.username)}</b>'s games —
+        <b style="color:#e0524e">${bl} blunder${bl===1?'':'s'}</b> and <b style="color:#e08a3c">${mi} mistake${mi===1?'':'s'}</b> to fix.
+        ${when?`<br><span style="font-size:12px;color:var(--text3,var(--text2))">Generated ${when}</span>`:''}
+      </p>
+      <button class="btn btn-gold" style="width:100%;margin-bottom:8px" onclick="pzBeginSolving()">${fresh?'Start solving →':'Solve again →'}</button>
+      <button class="pz-btn" style="width:100%" onclick="pzRegenerate()">↻ Scan new games</button>
+    </div></div>`;
+}
+window.pzRegenerate = function(){ pzRenderConnect(); };
+window.pzBeginSolving = function(){
+  if(!PZ.puzzles.length){ pzRenderConnect(); return; }
+  PZ.idx = 0; PZ.solved = 0; PZ.failed = 0; PZ.attempts = 0; PZ.view = 'solve';
+  pzRenderSolve();
+};
+
+// ── Solve screen ──
+function pzRenderSolve(){
+  PZ.view = 'solve';
+  const host = document.getElementById('pz-host'); if(!host) return;
+  const p = PZ.puzzles[PZ.idx];
+  if(!p){ pzRenderDone(); return; }
+  let st; try { st = parseFEN(p.fen); } catch(e){ PZ.idx++; return pzRenderSolve(); }
+  PZ.curState = st; PZ.curSolved = false; PZ.curFailed = false; PZ.curTries = 0; PZ.checking = false; PZ.revealed = false;
+  const total = PZ.puzzles.length;
+  const sideName = p.userWhite ? 'White' : 'Black';
+  const chipCol = p.userWhite ? '#f2ead6' : '#2a2a2a';
+  host.innerHTML = `
+    <div class="pz-topbar">
+      <button class="back-btn" style="margin:0" onclick="pzExit()">← Exit</button>
+      <span class="pz-count">Puzzle ${PZ.idx+1} / ${total}</span>
+      <span class="pz-scorechip" style="color:var(--gold)">✓ ${PZ.solved}</span>
+    </div>
+    <div class="acad-learn-progressbar"><div id="pz-prog" style="width:${Math.round(100*PZ.idx/total)}%"></div></div>
+    <div class="pz-solve">
+      <div class="pz-board-col">
+        <div class="expl-board-wrap"><div style="display:flex"><div class="board-ranks" id="pz-ranks"></div>
+          <div style="position:relative"><div id="pz-board" class="chess-board"></div>
+            <svg class="arrow-overlay" id="pz-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg></div></div>
+          <div class="board-files" id="pz-files"></div></div>
+      </div>
+      <div class="pz-side">
+        <div class="pz-tomove"><span class="chip" style="background:${chipCol}"></span> ${sideName} to move — find the best move</div>
+        <div class="pz-ctx"><span class="pz-cat ${p.cat}">${p.cat}</span> From your game vs <b>${pzEsc(p.opp)}</b> · move ${p.moveNo}. You played <b>${pzEsc(p.played)}</b>, which let your position slip. What should you have played instead?</div>
+        <div class="pz-fb" id="pz-fb"></div>
+        <div class="pz-actions" id="pz-actions">
+          <button class="pz-btn" onclick="pzReveal()">Reveal</button>
+          <button class="pz-btn" onclick="pzSkip()">Skip →</button>
+        </div>
+        ${p.url?`<a class="pz-gamelink" href="${pzEsc(p.url)}" target="_blank" rel="noopener">Open the full game ↗</a>`:''}
+      </div>
+    </div>`;
+  try { const wantFlip = !p.userWhite; if(isBoardFlipped('pz-board') !== wantFlip) flipBoard('pz-board'); } catch(e){}
+  renderBoardEl('pz-board','pz-ranks','pz-files', st, [], null);
+  makeBoardInteractive('pz-board', st, pzOnMove);
+}
+
+function pzLineSAN(p){
+  if(!p.pv) return '';
+  try {
+    let st = parseFEN(p.fen);
+    const ms = p.pv.trim().split(/\s+/), out = []; let cnt = 0;
+    for(const u of ms){
+      if(cnt >= 6 || u.length < 4) break;
+      const from=u.slice(0,2), to=u.slice(2,4), promo=u.length>4?u[4].toUpperCase():null;
+      let san; try { san = moveToSAN(st, from, to, promo); } catch(e){ break; } if(!san) break;
+      out.push(san);
+      try { st = applyMove(st, {from, to, promotion:promo}); } catch(e){ break; }
+      cnt++;
+    }
+    return out.join(' ');
+  } catch(e){ return ''; }
+}
+
+function pzArrow(uci, color){
+  const ov = document.getElementById('pz-arrows'); if(!ov || !uci || uci.length < 4) return;
+  const from = uci.slice(0,2), to = uci.slice(2,4);
+  if(!/^[a-h][1-8]$/.test(from) || !/^[a-h][1-8]$/.test(to)) return;
+  const fl = isBoardFlipped('pz-board');
+  const p1 = squareToSVG(from, fl), p2 = squareToSVG(to, fl);
+  const dx = p2.x-p1.x, dy = p2.y-p1.y, len = Math.sqrt(dx*dx+dy*dy)||1, ex = p2.x-(dx/len)*14, ey = p2.y-(dy/len)*14;
+  ov.innerHTML = `<defs><marker id="pz-mk" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#pz-mk)"/>`;
+}
+
+async function pzOnMove(from, to, ns, san){
+  if(PZ.curSolved || PZ.checking || PZ.revealed) return;
+  const p = PZ.puzzles[PZ.idx];
+  const fb = document.getElementById('pz-fb');
+  const uci = from + to;
+  PZ.curTries++; PZ.attempts++;
+  const exact = (p.solUci||'').slice(0,4) === uci;
+  let accept = exact, alsoGood = false;
+  if(!exact){
+    PZ.checking = true;
+    if(fb) fb.innerHTML = `<span class="line">Checking your move…</span>`;
+    let res = null; try { res = await evalPosition(stateToFEN(ns), 12, 1, 240); } catch(e){}
+    PZ.checking = false;
+    if(res){
+      const userEvalAfter = p.userWhite ? (res.score||0) : -(res.score||0);
+      if(userEvalAfter >= (p.bestEval||0) - 0.5){ accept = true; alsoGood = true; }
+    }
+  }
+  if(accept) pzSolved(alsoGood, san, ns);
+  else pzWrong(san);
+}
+
+function pzSolved(alsoGood, san, ns){
+  const p = PZ.puzzles[PZ.idx];
+  PZ.curSolved = true;
+  if(!PZ.curFailed) PZ.solved++;
+  renderBoardEl('pz-board','pz-ranks','pz-files', ns || PZ.curState, [], null);
+  pzArrow(p.solUci, 'rgba(31,157,99,.92)');
+  const fb = document.getElementById('pz-fb');
+  const line = pzLineSAN(p);
+  if(fb) fb.innerHTML = `<span class="ok">✓ ${alsoGood ? `${pzEsc(san)} works too — the engine's pick was ${pzEsc(p.solSan)}` : `${pzEsc(p.solSan)} — correct!`}</span>`
+    + (line ? `<div class="line">Best line: ${pzEsc(line)}</div>` : '');
+  const scoreChip = document.querySelector('.pz-scorechip'); if(scoreChip) scoreChip.textContent = `✓ ${PZ.solved}`;
+  const actions = document.getElementById('pz-actions');
+  if(actions) actions.innerHTML = `<button class="pz-btn primary" onclick="pzNext()">${PZ.idx+1 >= PZ.puzzles.length ? 'See results →' : 'Next puzzle →'}</button>`;
+}
+
+function pzWrong(san){
+  if(!PZ.curFailed){ PZ.curFailed = true; PZ.failed++; }
+  const fb = document.getElementById('pz-fb');
+  if(fb) fb.innerHTML = `<span class="no">✗ ${pzEsc(san)} isn't it — try again, or hit Reveal.</span>`;
+  const col = document.querySelector('.pz-board-col');
+  if(col){ col.classList.remove('pz-shake'); void col.offsetWidth; col.classList.add('pz-shake'); }
+  // interactive board doesn't commit a rejected move, but re-render to restore a clean, playable position
+  renderBoardEl('pz-board','pz-ranks','pz-files', PZ.curState, [], null);
+  makeBoardInteractive('pz-board', PZ.curState, pzOnMove);
+}
+
+window.pzReveal = function(){
+  if(PZ.curSolved) return;
+  const p = PZ.puzzles[PZ.idx];
+  if(!PZ.curFailed){ PZ.curFailed = true; PZ.failed++; }
+  PZ.revealed = true; PZ.curSolved = true;
+  pzArrow(p.solUci, 'rgba(31,157,99,.92)');
+  const fb = document.getElementById('pz-fb');
+  const line = pzLineSAN(p);
+  if(fb) fb.innerHTML = `<span class="ok">Solution: ${pzEsc(p.solSan)}</span>` + (line ? `<div class="line">Best line: ${pzEsc(line)}</div>` : '');
+  const actions = document.getElementById('pz-actions');
+  if(actions) actions.innerHTML = `<button class="pz-btn primary" onclick="pzNext()">${PZ.idx+1 >= PZ.puzzles.length ? 'See results →' : 'Next puzzle →'}</button>`;
+};
+
+window.pzSkip = function(){ if(!PZ.curSolved && !PZ.curFailed){ PZ.curFailed = true; PZ.failed++; } pzNext(); };
+window.pzNext = function(){ PZ.idx++; if(PZ.idx >= PZ.puzzles.length){ pzRenderDone(); } else { pzRenderSolve(); } };
+window.pzExit = function(){ const saved = pzLoad(); pzRenderReady(saved || { username:PZ.username, platform:PZ.platform, puzzles:PZ.puzzles }, false); };
+
+// ── Completion screen ──
+function pzRenderDone(){
+  PZ.view = 'done';
+  const host = document.getElementById('pz-host'); if(!host) return;
+  const total = PZ.puzzles.length;
+  const acc = total ? Math.round(100 * PZ.solved / total) : 0;
+  const C = 2 * Math.PI * 54, off = C * (1 - acc/100);
+  const col = acc >= 80 ? '#1f9d63' : acc >= 50 ? '#e08a3c' : '#e0524e';
+  host.innerHTML = `
+    <div class="pz-done">
+      <svg class="pz-ring" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="var(--inset-bg)" stroke-width="11"/>
+        <circle cx="60" cy="60" r="54" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round"
+          stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1s var(--smooth,ease)"/>
+        <text x="60" y="68" text-anchor="middle" font-size="27" font-weight="800" fill="var(--text)" font-family="'DM Mono',monospace">${acc}%</text>
+      </svg>
+      <h2>${acc>=80?'Sharp work.':acc>=50?'Good session.':'Keep grinding.'}</h2>
+      <p>You worked through the mistakes from your own games — the fastest way to stop repeating them.</p>
+      <div class="pz-done-stats">
+        <div><div class="n" style="color:#1f9d63">${PZ.solved}</div><div class="l">Solved</div></div>
+        <div><div class="n" style="color:#e0524e">${PZ.failed}</div><div class="l">Missed</div></div>
+        <div><div class="n">${total}</div><div class="l">Total</div></div>
+      </div>
+      <div class="pz-actions" style="margin-top:6px">
+        <button class="pz-btn primary" onclick="pzBeginSolving()">Solve again</button>
+        <button class="pz-btn" onclick="pzRegenerate()">Scan new games</button>
+      </div>
+    </div>`;
+}
+
 </script>
 <script>
 /* App-shell flag: working screens get the slim nav + no-scroll treatment */
 (function(){
-  const APP = ['creator','olearn','review','explorer'];
+  const APP = ['creator','olearn','review','explorer','puzzles'];
   function arm(){
     const orig = window.showSection;
     if(typeof orig !== 'function'){ setTimeout(arm, 200); return; }
