@@ -1454,6 +1454,8 @@ input:focus, select:focus, textarea:focus {
   .ann-mist{background:#e89e3c;color:#fff}
   .ann-blun{background:#d6535b;color:#fff}
   .ann-miss{background:#b85a8f;color:#fff}
+  .ann-forced{background:#8b98a8;color:#fff}
+  .ann .rv-ic-svg{ width:13px; height:13px; }
   /* Hide the badge entirely for unannotated moves */
   .ann:empty{display:none}
   /* Legacy fallback classes (kept so any old references still render) */
@@ -1492,6 +1494,16 @@ input:focus, select:focus, textarea:focus {
   .mcb-mist {background:#e89e3c}
   .mcb-blun {background:#d6535b}
   .mcb-miss {background:#b85a8f}
+  .mcb-forced{background:#8b98a8}
+  /* icon badges: a coloured disc with a white SVG glyph (chess.com-style) */
+  .rv-badge{ display:inline-flex; align-items:center; justify-content:center; border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.28); flex-shrink:0; vertical-align:middle; }
+  .rv-ic-svg{ width:66%; height:66%; display:block; }
+  /* when a badge sits on the board, keep the disc + a dark ring */
+  .mc-badge.mc-icon{ background:transparent !important; border:none !important; box-shadow:none !important; padding:0; min-width:0; }
+  .mc-badge.mc-icon .rv-badge{ width:23px; height:23px; border:2px solid rgba(20,20,20,.55); box-shadow:0 2px 6px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.25); }
+  .rv-mute{ display:inline-flex; align-items:center; justify-content:center; padding:0 9px; }
+  .rv-mute.muted{ opacity:.5; }
 
 
   /* ════════ USER BRANCH PANEL (alternative move analysis) ════════ */
@@ -4729,6 +4741,7 @@ document.addEventListener('DOMContentLoaded', function(){
           <div id="rv-player-bot" class="rv-player"></div>
           <div class="board-controls">
             <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
+            <button class="btn btn-outline btn-sm rv-mute" id="rv-mute-btn" onclick="rvToggleMute()" title="Toggle move sounds" aria-label="Toggle move sounds"></button>
             <button class="btn btn-gold btn-sm" id="rv-btg" onclick="returnToGameLine()" title="Leave this exploration branch and return to the game" style="display:none">↶ Back to game</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
@@ -12420,6 +12433,151 @@ function winPct(pawns){
   return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
 }
 
+// ── Classification helpers ported from Razamindset/chess-com-game-review ──
+// A "potential sacrifice" exists when the side to move could capture a
+// higher-value piece with a lower-value one (findPotentialSacrifices); it's the
+// signal the repo uses for a brilliant move. "Forced" = only one legal move.
+function rvHasSacrifice(state){
+  if(!state || !state.board) return false;
+  try {
+    const turn = state.turn;
+    for(const sq in state.board){
+      const pc = state.board[sq]; if(!pc || pc[0] !== turn) continue;
+      const capVal = PIECE_VALUES[pc[1]] || 0;
+      const dests = legalMovesFor(state, sq) || [];
+      for(const d of dests){
+        const tgt = state.board[d];
+        if(tgt && tgt[0] !== turn && (PIECE_VALUES[tgt[1]] || 0) > capVal) return true;
+      }
+    }
+  } catch(e){}
+  return false;
+}
+function rvLegalMoveCount(state){
+  let n = 0;
+  if(!state || !state.board) return n;
+  try {
+    const turn = state.turn;
+    for(const sq in state.board){
+      const pc = state.board[sq]; if(!pc || pc[0] !== turn) continue;
+      n += (legalMovesFor(state, sq) || []).length;
+      if(n > 1) return n;
+    }
+  } catch(e){}
+  return n;
+}
+
+// ── Single source of truth for move-classification badges (label + disc colour) ──
+const RV_META = {
+  brilliant :{lab:'Brilliant',  col:'#26c6a4'},
+  great     :{lab:'Great',      col:'#5b8def'},
+  best      :{lab:'Best',       col:'#7bbf6a'},
+  excellent :{lab:'Excellent',  col:'#95c95f'},
+  good      :{lab:'Good',       col:'#a9b884'},
+  book      :{lab:'Book',       col:'#c79a5b'},
+  forced    :{lab:'Forced',     col:'#8b98a8'},
+  inaccuracy:{lab:'Inaccuracy', col:'#e6b450'},
+  mistake   :{lab:'Mistake',    col:'#e08a3c'},
+  miss      :{lab:'Miss',       col:'#d06b7a'},
+  blunder   :{lab:'Blunder',    col:'#e0524e'},
+};
+// Original chess.com-style badge icons (white shapes on the coloured disc)
+function RV_ICON(cat){
+  const w = '#fff';
+  const svg = (inner) => `<svg viewBox="0 0 24 24" class="rv-ic-svg" aria-hidden="true">${inner}</svg>`;
+  const check = (sw) => `<path d="M5 12.6l4.3 4.3L19 7.1" fill="none" stroke="${w}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const txt = (s, fs) => `<text x="12" y="12.5" text-anchor="middle" dominant-baseline="central" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="800" font-size="${fs}" fill="${w}">${s}</text>`;
+  switch(cat){
+    case 'brilliant': return svg(`<path fill="${w}" d="M8.4 3.1l1.25 3.15L12.8 7.5 9.65 8.75 8.4 11.9 7.15 8.75 4 7.5l3.15-1.25z"/><path fill="${w}" d="M16.6 11l.95 2.35L19.9 14.3l-2.35.95-.95 2.35-.95-2.35L13.3 14.3l2.35-.95z"/>`);
+    case 'great':     return svg(`<rect x="10.6" y="3.7" width="2.8" height="9.6" rx="1.4" fill="${w}"/><circle cx="12" cy="18.3" r="1.9" fill="${w}"/>`);
+    case 'best':      return svg(`<path fill="${w}" d="M12 3l2.5 5.6 6.1.55-4.6 4.05 1.4 6-5.4-3.2-5.4 3.2 1.4-6L3.4 9.15 9.5 8.6z"/>`);
+    case 'excellent': return svg(check(2.9));
+    case 'good':      return svg(check(2.2));
+    case 'book':      return svg(`<path fill="${w}" d="M11 5.3C9.6 4.5 7.9 4.1 6 4.1H4.3C3.6 4.1 3 4.6 3 5.3V18c0 .7.6 1.2 1.3 1.2H6c1.9 0 3.6.4 5 1.2z"/><path fill="${w}" opacity=".82" d="M13 5.3C14.4 4.5 16.1 4.1 18 4.1h1.7c.7 0 1.3.5 1.3 1.2V18c0 .7-.6 1.2-1.3 1.2H18c-1.9 0-3.6.4-5 1.2z"/>`);
+    case 'forced':    return svg(`<rect x="5.6" y="10.6" width="12.8" height="8.4" rx="1.6" fill="${w}"/><path d="M8 10.6V8a4 4 0 0 1 8 0v2.6" fill="none" stroke="${w}" stroke-width="2.1"/>`);
+    case 'inaccuracy':return svg(txt('?!', 10));
+    case 'mistake':   return svg(txt('?', 13));
+    case 'miss':      return svg(`<path d="M7 7l10 10M17 7L7 17" stroke="${w}" stroke-width="2.8" stroke-linecap="round"/>`);
+    case 'blunder':   return svg(txt('??', 10));
+    default:          return svg(txt('•', 13));
+  }
+}
+// Coloured disc + icon, ready to drop anywhere. size in px.
+function RV_BADGE(cat, size){
+  const m = RV_META[cat]; if(!m) return '';
+  const s = size || 20;
+  return `<span class="rv-badge" style="width:${s}px;height:${s}px;background:${m.col}">${RV_ICON(cat)}</span>`;
+}
+
+// ── Move sounds (synthesized with Web Audio — no files, works offline) ──
+let _rvAudioCtx = null, _rvMuted = false;
+try { _rvMuted = localStorage.getItem('gambit_rv_muted') === '1'; } catch(e){}
+const RV_SOUND_ICON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const RV_MUTE_ICON  = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg>';
+function rvAudioCtx(){
+  if(_rvAudioCtx) return _rvAudioCtx;
+  try { _rvAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ _rvAudioCtx = null; }
+  return _rvAudioCtx;
+}
+function rvBeep(freq, dur, type, gain, delay){
+  const ctx = rvAudioCtx(); if(!ctx) return;
+  const t0 = ctx.currentTime + (delay || 0);
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t0);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(gain || 0.14, t0 + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(t0); o.stop(t0 + dur + 0.03);
+}
+function rvNoise(dur, gain){
+  const ctx = rvAudioCtx(); if(!ctx) return;
+  const n = Math.max(1, Math.floor(ctx.sampleRate * dur));
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0);
+  for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2.2);
+  const src = ctx.createBufferSource(); src.buffer = buf;
+  const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2000;
+  const g = ctx.createGain(); g.gain.value = gain || 0.12;
+  src.connect(f); f.connect(g); g.connect(ctx.destination); src.start();
+}
+function rvPlaySound(kind){
+  if(_rvMuted || !kind) return;
+  const ctx = rvAudioCtx(); if(!ctx) return;
+  if(ctx.state === 'suspended'){ try { ctx.resume(); } catch(e){} }
+  switch(kind){
+    case 'capture': rvNoise(0.085, 0.17); rvBeep(190, 0.06, 'triangle', 0.09); break;
+    case 'check':   rvBeep(680, 0.11, 'square', 0.09); rvBeep(920, 0.10, 'square', 0.07, 0.06); break;
+    case 'castle':  rvBeep(300, 0.08, 'sine', 0.11); rvBeep(360, 0.09, 'sine', 0.10, 0.07); break;
+    case 'promote': rvBeep(520, 0.09, 'sine', 0.11); rvBeep(820, 0.11, 'sine', 0.10, 0.08); break;
+    case 'gameend': rvBeep(440, 0.14, 'sine', 0.11); rvBeep(294, 0.20, 'sine', 0.10, 0.13); break;
+    default:        rvBeep(300, 0.075, 'sine', 0.12);   // 'move'
+  }
+}
+function rvSoundForMove(m){
+  if(!m) return null;
+  const san = m.san || '';
+  if(/#/.test(san)) return 'gameend';        // checkmate
+  if(/\+/.test(san)) return 'check';
+  if(/^O-O/.test(san)) return 'castle';
+  if(/=/.test(san)) return 'promote';
+  if(/x/.test(san)) return 'capture';
+  return 'move';
+}
+window.rvToggleMute = function(){
+  _rvMuted = !_rvMuted;
+  try { localStorage.setItem('gambit_rv_muted', _rvMuted ? '1' : '0'); } catch(e){}
+  const btn = document.getElementById('rv-mute-btn');
+  if(btn){ btn.innerHTML = _rvMuted ? RV_MUTE_ICON : RV_SOUND_ICON; btn.title = _rvMuted ? 'Sound off' : 'Sound on'; btn.classList.toggle('muted', _rvMuted); }
+  if(!_rvMuted) rvPlaySound('move');   // little confirmation blip
+};
+function rvSyncMuteBtn(){
+  const b = document.getElementById('rv-mute-btn'); if(!b || b.dataset.init) return;
+  b.innerHTML = _rvMuted ? RV_MUTE_ICON : RV_SOUND_ICON;
+  b.title = _rvMuted ? 'Sound off' : 'Sound on';
+  b.classList.toggle('muted', _rvMuted);
+  b.dataset.init = '1';
+}
+
 async function analyseGame(white, black, username){
   moveAnnotations = [];
   const total = reviewHistory.length - 1;
@@ -12568,66 +12726,82 @@ async function analyseGame(white, black, username){
       }
     } catch(e){}
 
-    // ─── Classification ladder (priority: Book → Brilliant → Great → Miss → Best
-    //     → Excellent → Good → Inaccuracy → Mistake → Blunder) ───
-    // EPL = Expected Points Lost = win%(best) − win%(played) = wDrop.
-    // Excellent 0–2 · Good 2–5 · Inaccuracy 5–10 · Mistake 10–20 · Blunder 20+.
-    const onlyMove   = gap2Win !== null && gap2Win >= 12;                 // every alternative drops a lot
-    const swingUp    = wpBefore <= 40 && wpAfter >= 47;                   // turned losing/worse → equal+
-    const eqToWin    = wpBefore >= 42 && wpBefore <= 60 && wpAfter >= 66; // turned equal → winning
+    // ─── Classification — ported from Razamindset/chess-com-game-review ───
+    // Buckets keyed on centipawn loss (the repo's eval-loss gate is the same
+    // quantity ×100, so the cp gate binds): best ≤20 · excellent ≤30 · good ≤80
+    // · inaccuracy ≤150 · mistake ≤300 (or still winning by 3+) · else blunder.
+    // Order: book → forced → brilliant → great → miss → best → buckets. Brilliant
+    // = the repo's "opponent could grab a higher piece with a lower one after your
+    // (best/excellent, non-trade) move". Great/Miss kept as bonus categories.
+    const onlyMove   = gap2Win !== null && gap2Win >= 12;
+    const swingUp    = wpBefore <= 40 && wpAfter >= 47;
+    const eqToWin    = wpBefore >= 42 && wpBefore <= 60 && wpAfter >= 66;
     const oppErred   = prevAnn === 'mistake' || prevAnn === 'blunder';
+
+    const evalLoss = Math.max(0, loss);
+    const cpLoss   = Math.round(evalLoss * 100);
+    const isBestBucket      = wasBestMove || cpLoss <= 20;
+    const isExcellentBucket = cpLoss <= 30;
+    // equal trade — the played move captured a piece of roughly equal value
+    let wasEqualTrade = false;
+    try {
+      const stB = reviewHistory[i - 1] && reviewHistory[i - 1].state;
+      const stA = reviewHistory[i] && reviewHistory[i].state;
+      const capd = stB && mv.to ? stB.board[mv.to] : null;   // piece captured (was on the target)
+      const movd = stA && mv.to ? stA.board[mv.to] : null;   // the capturing piece, now on the target
+      if(capd && movd){
+        const cv = PIECE_VALUES[capd[1]] || 0, mvv = PIECE_VALUES[movd[1]] || 0;
+        if(Math.abs(cv - mvv) <= 1) wasEqualTrade = true;
+      }
+    } catch(e){}
+    const stateAfterMv  = reviewHistory[i] && reviewHistory[i].state;
+    const stateBeforeMv = reviewHistory[i - 1] && reviewHistory[i - 1].state;
+    const repoBrilliant = rvHasSacrifice(stateAfterMv) && !wasEqualTrade && (isBestBucket || isExcellentBucket);
+    const isForced      = rvLegalMoveCount(stateBeforeMv) === 1;
+    const hadMate       = !!(evals[i - 1] && evals[i - 1].isMate && (evals[i - 1].mateIn || 0) > 0 && (evals[i - 1].mateIn || 0) <= 5);
+    const missedMate    = hadMate && !wasBestMove && cpLoss > 30;
+
     if(isBookMove){
       ann = 'book';
       note = openingName ? ('Opening theory — ' + openingName) : 'A known opening theory move.';
-    } else if(isSacrifice && (wasBestMove || wDrop < 2) && wpAfter >= 45 && wpBefore <= 93){
-      // Brilliant: a sound PIECE sacrifice (not a pawn) that keeps you at least equal
+    } else if(isForced){
+      ann = 'forced';
+      note = 'Forced — the only legal move in the position.';
+    } else if(repoBrilliant){
       ann = 'brilliant';
-      note = 'A brilliant sacrifice — a piece is given up for a clearly stronger position.';
+      note = 'A brilliant move — the strongest continuation leaves material on offer.';
       bestLine = '';
     } else if(wasBestMove && (onlyMove || swingUp || eqToWin) && difficulty >= 20 && wpBefore >= 20 && wpBefore <= 94 && i > 6){
-      // Great: the critical move — the only move, or one that dramatically swings the
-      // evaluation. The difficulty gate keeps forced recaptures and other obvious
-      // must-plays from being flattered as "Great".
       ann = 'great';
       note = swingUp ? 'A great move — it rescues a position that was slipping away.'
            : eqToWin ? 'A great move — it turns a level game into a winning one.'
            : 'A great move — the only move that holds the position together.';
       if(difficulty >= 45) note += ` A genuinely hard find (difficulty ${difficulty}/100).`;
-    } else if(!wasBestMove && wDrop >= 8 && wpBefore >= 55 && wpAfter >= 25 && (oppErred || wpBefore >= 65)){
-      // Miss: there was a clear win/punishment here (often after the opponent erred) and
-      // it wasn't taken — you were doing well and let it slip
+    } else if(missedMate || (!wasBestMove && wDrop >= 8 && wpBefore >= 55 && wpAfter >= 25 && (oppErred || wpBefore >= 65))){
       ann = 'miss';
-      note = oppErred ? 'A miss — the opponent slipped and this was the moment to punish it.'
+      note = missedMate ? 'A miss — a forced mate was on the board and went unplayed.'
+           : oppErred ? 'A miss — the opponent slipped and this was the moment to punish it.'
                       : 'A miss — there was a winning move here that got away.';
-    } else if(wasBestMove){
-      // Best: exactly the engine's #1 move (Δ Ev = 0)
+    } else if(isBestBucket){
       ann = 'best';
-      note = 'The engine\'s top recommended move.';
+      note = wasBestMove ? 'The engine\'s top recommended move.' : 'As strong as the engine\'s top move.';
+    } else if(isExcellentBucket){
+      ann = 'excellent';
+      note = 'An excellent move — practically as good as the best.';
+    } else if(cpLoss <= 80){
+      ann = 'good';
+      note = 'A good move — the position stays stable and playable.';
+    } else if(cpLoss <= 150){
+      ann = 'inaccuracy';
+      note = 'An inaccuracy — a sub-optimal choice that slightly worsens the position.';
+    } else if(cpLoss <= 300 || playerAfter >= 3){
+      ann = 'mistake';
+      note = playerAfter >= 3 ? 'A mistake — still winning, but a chunk of the advantage slipped away.'
+                              : 'A mistake — it forfeits a clear part of the advantage.';
     } else {
-      // ── Δ-eval buckets (in pawns): Excellent <0.2 · Good 0.2–0.5 · Inaccuracy
-      //    0.5–1.0 · Mistake 1.0–2.0 · Blunder ≥2.0. Lost-position cap: you can't
-      //    blunder away a game you've already lost, so severe drops soften. ──
-      const evDrop = Math.max(0, loss);                 // pawns the mover gave up vs. best play
-      const alreadyLost = wpBefore < 15;
-      const freshHang = hangsPiece && wpBefore >= 25;   // hung a piece while still in the game
-      if((evDrop >= 2.0 || freshHang) && !alreadyLost){
-        ann = 'blunder';
-        note = freshHang ? 'Hangs a piece — material is given away for nothing.'
-             : (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
-             : 'A blunder — a game-changing error that throws away the advantage.';
-      } else if(evDrop >= 1.0){
-        ann = 'mistake';
-        note = 'A mistake — it forfeits a clear part of the advantage.';
-      } else if(evDrop >= 0.5){
-        ann = 'inaccuracy';
-        note = 'An inaccuracy — a sub-optimal choice that slightly worsens the position.';
-      } else if(evDrop >= 0.2){
-        ann = 'good';
-        note = 'A good move — the position stays stable and playable.';
-      } else {
-        ann = 'excellent';
-        note = 'An excellent move — a highly accurate alternative to the engine\'s best.';
-      }
+      ann = 'blunder';
+      note = (isMate2 && playerAfter < 0) ? 'Walked into a forced mate — the defence collapsed.'
+           : 'A blunder — a game-changing error that throws away the advantage.';
     }
 
     const evalStr = after >= 0 ? `+${after.toFixed(2)}` : after.toFixed(2);
@@ -12683,10 +12857,10 @@ async function analyseGame(white, black, username){
   const bAcc = accOf(bMoves);
 
   // ─── Per-side classification breakdown (chess.com-style report) ───
-  const RV_CATS = ['brilliant','great','best','excellent','good','book','inaccuracy','mistake','miss','blunder'];
-  const RV_CAT_LAB = {brilliant:'Brilliant',great:'Great',best:'Best',excellent:'Excellent',good:'Good',book:'Book',inaccuracy:'Inaccuracy',mistake:'Mistake',miss:'Miss',blunder:'Blunder'};
+  const RV_CATS = ['brilliant','great','best','excellent','good','book','forced','inaccuracy','mistake','miss','blunder'];
+  const RV_CAT_LAB = {brilliant:'Brilliant',great:'Great',best:'Best',excellent:'Excellent',good:'Good',book:'Book',forced:'Forced',inaccuracy:'Inaccuracy',mistake:'Mistake',miss:'Miss',blunder:'Blunder'};
   const RV_CAT_GLY = {brilliant:'!!',great:'!',best:'★',excellent:'✓',good:'✓',book:'B',inaccuracy:'?!',mistake:'?',miss:'×',blunder:'??'};
-  const RV_CAT_COL = {brilliant:'#34c6a8',great:'#6aa6ff',best:'#7bbf6a',excellent:'#9ccc65',good:'#b9c08f',book:'#c79a5b',inaccuracy:'#e6b450',mistake:'#e08a3c',miss:'#d06b7a',blunder:'#e0524e'};
+  const RV_CAT_COL = {brilliant:'#34c6a8',great:'#6aa6ff',best:'#7bbf6a',excellent:'#9ccc65',good:'#b9c08f',book:'#c79a5b',forced:'#8b98a8',inaccuracy:'#e6b450',mistake:'#e08a3c',miss:'#d06b7a',blunder:'#e0524e'};
   const cntOf = (arr, a) => arr.filter(m => m.ann === a).length;
   // Fitted to chess.com-like anchors: 60%→~850, 80%→~2100, 95%→~2900
   const estElo = acc => Math.max(250, Math.min(3200, Math.round(-0.262*acc*acc + 99.2*acc - 4157)));
@@ -12715,7 +12889,7 @@ async function analyseGame(white, black, username){
   const repRows = RV_CATS.map((c, i) => {
     const wc = cntOf(wMoves, c), bc = cntOf(bMoves, c), col = RV_CAT_COL[c];
     return `<div class="rvr-row" data-cat="${c}" style="--ri:${i}">
-        <span class="rvr-cat"><i class="rvr-ico" style="background:${col}">${RV_CAT_GLY[c]}</i>${RV_CAT_LAB[c]}</span>
+        <span class="rvr-cat"><i class="rvr-ico" style="background:${col}">${RV_ICON(c)}</i>${RV_CAT_LAB[c]}</span>
         <span class="rvr-n${wc ? '' : ' z'}"${wc ? ` style="color:${col}"` : ''}>${wc}</span>
         <span class="rvr-n${bc ? '' : ' z'}"${bc ? ` style="color:${col}"` : ''}>${bc}</span>
       </div>`;
@@ -13075,13 +13249,13 @@ function renderMoveList(){
   };
   const annClass = {
     brilliant:'ann-brill', great:'ann-great', best:'ann-best', excellent:'ann-excel',
-    good:'ann-good', book:'ann-book', inaccuracy:'ann-inacc',
+    good:'ann-good', book:'ann-book', forced:'ann-forced', inaccuracy:'ann-inacc',
     mistake:'ann-mist', blunder:'ann-blun', miss:'ann-miss'
   };
 
   // Helper: build a move-cell HTML fragment for a given (move, annotation, idx)
   function cellHTML(mv, ann, idx, onClickHandler){
-    const sym = ann ? (annSym[ann.ann] || '') : '';
+    const sym = (ann && RV_META[ann.ann]) ? RV_ICON(ann.ann) : '';
     const cls = ann ? (annClass[ann.ann] || 'ann-g') : 'ann-g';
     const evChip = ann ? `<span class="eval-chip">${parseFloat(ann.eval) > 0 ? '+' : ''}${ann.eval}</span>` : '';
     return `<div class="move-cell" id="mc-${idx}" onclick="${onClickHandler}">
@@ -13149,9 +13323,9 @@ window.selectReviewMove = function(idx){
   // "Show better move" to step back and see the recommendation in its proper context.
   drawReviewArrows(ann, idx);
   // Full 10-category coaching header — matches the report badges (chess.com format)
-  const RVD_LAB = {brilliant:'Brilliant',great:'Great',best:'Best move',excellent:'Excellent',good:'Good',book:'Book move',inaccuracy:'Inaccuracy',mistake:'Mistake',miss:'Miss',blunder:'Blunder'};
+  const RVD_LAB = {brilliant:'Brilliant',great:'Great',best:'Best move',excellent:'Excellent',good:'Good',book:'Book move',forced:'Forced',inaccuracy:'Inaccuracy',mistake:'Mistake',miss:'Miss',blunder:'Blunder'};
   const RVD_GLY = {brilliant:'!!',great:'!',best:'★',excellent:'✓',good:'✓',book:'B',inaccuracy:'?!',mistake:'?',miss:'×',blunder:'??'};
-  const RVD_COL = {brilliant:'#34c6a8',great:'#6aa6ff',best:'#7bbf6a',excellent:'#9ccc65',good:'#b9c08f',book:'#c79a5b',inaccuracy:'#e6b450',mistake:'#e08a3c',miss:'#d06b7a',blunder:'#e0524e'};
+  const RVD_COL = {brilliant:'#34c6a8',great:'#6aa6ff',best:'#7bbf6a',excellent:'#9ccc65',good:'#b9c08f',book:'#c79a5b',forced:'#8b98a8',inaccuracy:'#e6b450',mistake:'#e08a3c',miss:'#d06b7a',blunder:'#e0524e'};
   const _ac = RVD_COL[ann.ann] || '#b9c08f';
   const evalNum = parseFloat(ann.eval);
   const evalPct = Math.min(90, Math.max(10, 50 + evalNum * 5));
@@ -13169,7 +13343,7 @@ window.selectReviewMove = function(idx){
   // Build the chess.com-style coaching header
   let html = `
     <div class="mdb-head">
-      <i class="mdb-badge" style="background:${_ac}">${RVD_GLY[ann.ann] || '•'}</i>
+      <i class="mdb-badge mdb-badge-icon" style="background:${_ac}">${RV_ICON(ann.ann) || '•'}</i>
       <div class="mdb-head-main">
         <div class="mdb-head-label" style="color:${_ac}">${RVD_LAB[ann.ann] || 'Move'}</div>
         <div class="mdb-head-move">${moveStr}</div>
@@ -13728,22 +13902,15 @@ function renderReviewBoard(){
         sq.classList.add('hl-last');
       }
     });
-    // Badge on destination square
-    if(displayedAnn && displayedMove.to){
-      const sym = {brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
-                   book:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'}[displayedAnn];
-      const cls = {brilliant:'mcb-brill', great:'mcb-great', best:'mcb-best', excellent:'mcb-excel',
-                   good:'mcb-good', book:'mcb-book', inaccuracy:'mcb-inacc',
-                   mistake:'mcb-mist', blunder:'mcb-blun', miss:'mcb-miss'}[displayedAnn];
-      if(sym && cls){
-        const destSq = document.querySelector(`#board-r .sq[data-sq="${displayedMove.to}"]`);
-        if(destSq){
-          const badge = document.createElement('div');
-          badge.className = `mc-badge ${cls}`;
-          badge.innerHTML = sym;
-          badge.title = displayedAnn.charAt(0).toUpperCase() + displayedAnn.slice(1);
-          destSq.appendChild(badge);
-        }
+    // Badge on destination square (chess.com-style icon disc)
+    if(displayedAnn && displayedMove.to && RV_META[displayedAnn]){
+      const destSq = document.querySelector(`#board-r .sq[data-sq="${displayedMove.to}"]`);
+      if(destSq){
+        const badge = document.createElement('div');
+        badge.className = 'mc-badge mc-icon';
+        badge.innerHTML = RV_BADGE(displayedAnn, 23);
+        badge.title = RV_META[displayedAnn].lab;
+        destSq.appendChild(badge);
       }
     }
     // (Best-move arrow intentionally NOT drawn here: displayedBestUCI is the best
@@ -13758,6 +13925,20 @@ function renderReviewBoard(){
   makeBoardInteractive('board-r', displayState, onUserMoveR);
   updateInteractiveState('board-r', displayState);
   renderUserVariationPanel();
+
+  try { rvSyncMuteBtn(); } catch(e){}
+  // Move sound on navigation — only when the shown position actually changes, not
+  // during fast-play, and only while Game Review is on screen.
+  try {
+    const posKey = viewingBranch ? ('b' + branchPly) : ('m' + reviewIdx);
+    if(posKey !== window._rvSoundKey){
+      const secR = document.getElementById('sec-review');
+      if(displayedMove && !window._rvFastTimer && secR && secR.classList.contains('active')){
+        rvPlaySound(rvSoundForMove(displayedMove));
+      }
+      window._rvSoundKey = posKey;
+    }
+  } catch(e){}
 
   // All board arrows come from the live engine on the CURRENT position (correctly
   // aligned): rank-1 = blue "play this", ranks 2-5 fade green→red.
@@ -13795,24 +13976,14 @@ function drawMoveClassificationBadge(idx){
   if(idx === 0) return;
   const ann = moveAnnotations[idx - 1];
   const mv  = reviewHistory[idx];
-  if(!ann || !mv || !mv.to) return;
-  const sym = {
-    brilliant:'!!', great:'!', best:'★', excellent:'✓', good:'✓',
-    book:'<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>', inaccuracy:'?!', mistake:'?', blunder:'??', miss:'×'
-  }[ann.ann];
-  if(!sym) return;
-  const cls = {
-    brilliant:'mcb-brill', great:'mcb-great', best:'mcb-best', excellent:'mcb-excel',
-    good:'mcb-good', book:'mcb-book', inaccuracy:'mcb-inacc',
-    mistake:'mcb-mist', blunder:'mcb-blun', miss:'mcb-miss'
-  }[ann.ann] || 'mcb-good';
+  if(!ann || !mv || !mv.to || !RV_META[ann.ann]) return;
   // Find the destination square on the review board and append the badge
   const destSq = document.querySelector(`#board-r .sq[data-sq="${mv.to}"]`);
   if(!destSq) return;
   const badge = document.createElement('div');
-  badge.className = `mc-badge ${cls}`;
-  badge.innerHTML = sym;
-  badge.title = ann.ann.charAt(0).toUpperCase() + ann.ann.slice(1);
+  badge.className = 'mc-badge mc-icon';
+  badge.innerHTML = RV_BADGE(ann.ann, 23);
+  badge.title = RV_META[ann.ann].lab;
   destSq.appendChild(badge);
 }
 
@@ -13990,12 +14161,12 @@ function renderUserVariationPanel(){
   // Main row = the move the game actually played (bold). Your exploration line sits
   // beneath it, indented with a rule and wrapped in parentheses — like lichess/chess.com
   // analysis move lists. Move numbers use REAL chess numbering (half-move → move no.).
-  const annCls = {brilliant:'ann-brill',great:'ann-great',best:'ann-best',excellent:'ann-excel',good:'ann-good',book:'ann-book',inaccuracy:'ann-inacc',mistake:'ann-mist',blunder:'ann-blun',miss:'ann-miss'};
+  const annCls = {brilliant:'ann-brill',great:'ann-great',best:'ann-best',excellent:'ann-excel',good:'ann-good',book:'ann-book',forced:'ann-forced',inaccuracy:'ann-inacc',mistake:'ann-mist',blunder:'ann-blun',miss:'ann-miss'};
   const plyNum = h => Math.ceil(h / 2);
   const moveTok = (m, i) => {
     const h = branchState.startIdx + i + 1;             // absolute half-move of this branch move
     const isCur = viewingBranch && branchPly === i + 1;
-    const badge = m.ann ? `<span class="ann ${annCls[m.ann]||''}">${sym[m.ann]||''}</span>` : '';
+    const badge = m.ann ? `<span class="ann ${annCls[m.ann]||''}">${RV_ICON(m.ann)}</span>` : '';
     const num = (m.isWhiteMove || i === 0) ? `<span class="ubv-num">${plyNum(h)}${m.isWhiteMove ? '.' : '…'}</span>` : '';
     const ev = (m.eval !== null && m.eval !== undefined) ? `<span class="ubp-mini-eval">${fmtEval(m.eval, m.isMate, m.mateIn)}</span>` : '';
     return `${num}<button class="ubv-mv${isCur ? ' ubv-cur' : ''}" onclick="selectBranchPly(${i + 1})">${m.san}${badge}${ev}</button>`;
@@ -14011,7 +14182,7 @@ function renderUserVariationPanel(){
   </div>`;
 
   if(gameMv){
-    const gBadge = (gameAnn && gameAnn.ann) ? `<span class="ann ${annCls[gameAnn.ann]||''}">${sym[gameAnn.ann]||''}</span>` : '';
+    const gBadge = (gameAnn && gameAnn.ann) ? `<span class="ann ${annCls[gameAnn.ann]||''}">${RV_ICON(gameAnn.ann)}</span>` : '';
     html_out += `<div class="ubv-main">
       <span class="ubv-num">${plyNum(h0)}${isW0 ? '.' : '…'}</span>
       <button class="ubv-mv ubv-game" onclick="returnToGameLine()" title="Return to the game move">${gameMv.san || '?'}${gBadge}
