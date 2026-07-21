@@ -4667,6 +4667,7 @@ document.addEventListener('DOMContentLoaded', function(){
           <button class="ptab active" id="rpt-cc" onclick="setRP('chesscom')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3"/><path d="M10.5 4.5h3"/><path d="M12 8c2.8 0 4.5 1.8 4.5 4.2 0 2.4-1.7 3.9-4.5 3.9s-4.5-1.5-4.5-3.9C7.5 9.8 9.2 8 12 8z"/><path d="M6.5 20.5c0-2.3 2.5-3.6 5.5-3.6s5.5 1.3 5.5 3.6"/></svg></span> Chess.com</button>
           <button class="ptab" id="rpt-li" onclick="setRP('lichess')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21h10"/><path d="M9 21c-1-4-.3-6 1.7-8.2"/><path d="M16 21v-7c0-3.2-1.2-5.6-3.6-7.2L11 4.5 9.3 7l-2 1.3c-.9.6-1 1.8-.2 2.4.7.5 1.7.3 2.2-.4"/></svg></span> Lichess</button>
           <button class="ptab" id="rpt-pgn" onclick="setRP('pgn')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></span> PGN</button>
+          <button class="ptab" id="rpt-fide" onclick="setRP('fide')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8"/><path d="M9 4c0 3 1.5 4.5 3 6 1.5-1.5 3-3 3-6"/><path d="M6 20h12"/><path d="M8 20c0-3 1.5-4.5 4-4.5s4 1.5 4 4.5"/><path d="M12 10v5"/></svg></span> FIDE ID</button>
         </div>
         <div class="input-row" id="rv-user-row">
           <input id="rv-user" placeholder="Your username…" onkeydown="if(event.key==='Enter')loadReviewGames()">
@@ -4676,6 +4677,14 @@ document.addEventListener('DOMContentLoaded', function(){
           <textarea id="rv-pgn" class="rv-pgn-input" rows="6" placeholder="Paste a PGN from Chess.com or Lichess (moves included)…"></textarea>
           <button class="btn btn-gold" onclick="loadReviewPGN()" style="margin-top:10px;width:100%">Review this game →</button>
           <div style="font-size:11px;color:var(--text3);margin-top:8px">Same full Stockfish review — only the player photos are skipped (a PGN has no profile pictures).</div>
+        </div>
+        <div id="rv-fide-row" style="display:none">
+          <div class="input-row">
+            <input id="rv-fide" placeholder="Your FIDE ID (e.g. 1503014)" inputmode="numeric" onkeydown="if(event.key==='Enter')loadReviewFide()">
+            <button class="btn btn-gold" onclick="loadReviewFide()">Look up →</button>
+          </div>
+          <div id="rv-fide-result"></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:8px">FIDE publishes official ratings, not game archives. To review a game, use Chess.com, Lichess, or paste a PGN.</div>
         </div>
       </div>
       <div id="rv-games-area" style="display:none;max-width:560px">
@@ -4830,6 +4839,12 @@ document.addEventListener('DOMContentLoaded', function(){
 #sec-puzzles .pz-btn.primary:hover{ filter:brightness(1.06); }
 #sec-puzzles .pz-gamelink{ font-size:12px; color:var(--ink-2); text-decoration:none; align-self:flex-start; }
 #sec-puzzles .pz-gamelink:hover{ color:var(--green); }
+/* eval bar (shown once a puzzle is solved/revealed) + post-reveal explore hint */
+#sec-puzzles .pz-evalbar{ width:20px; height:calc(var(--pzsq) * 8); background:var(--ws,#eedcb8); border:1px solid var(--rule-2); border-radius:5px; position:relative; overflow:hidden; flex-shrink:0; }
+#sec-puzzles .pz-evalbar-black{ position:absolute; top:0; left:0; right:0; background:#171717; transition:height .5s cubic-bezier(.4,0,.2,1); }
+#sec-puzzles .pz-evalbar-score{ position:absolute; left:0; right:0; text-align:center; font-family:'DM Mono',monospace; font-size:9.5px; font-weight:700; color:#e8e8e8; z-index:3; }
+#sec-puzzles .pz-evalbar-score.white-bg{ color:#141414; }
+#sec-puzzles .pz-explore-hint{ margin-top:9px; font-size:12px; color:var(--ink-2); line-height:1.5; padding-top:9px; border-top:1px solid var(--rule); }
 
 /* feedback motion */
 @keyframes pzShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
@@ -4846,6 +4861,20 @@ document.addEventListener('DOMContentLoaded', function(){
 
 @media(max-width:860px){ #sec-puzzles .pz-solve{ grid-template-columns:1fr; } #sec-puzzles .pz-side{ align-self:stretch; } }
 @media(prefers-reduced-motion:reduce){ #sec-puzzles .pz-shake{ animation:none; } }
+
+/* ── FIDE official-rating card (used in Coach + Game Review) ── */
+.fide-card{ border:1px solid var(--border,rgba(255,255,255,.12)); background:var(--bg3,rgba(255,255,255,.04)); border-radius:12px; padding:14px 16px; margin-top:12px; text-align:left; }
+.fide-head{ font-size:15px; margin-bottom:2px; }
+.fide-head .fide-title{ color:var(--gold); font-weight:800; }
+.fide-fed{ font-size:12px; color:var(--text2); font-family:'DM Mono',monospace; }
+.fide-id{ font-size:11.5px; color:var(--text3,var(--text2)); font-family:'DM Mono',monospace; margin-bottom:10px; }
+.fide-rates{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+.fide-rt{ flex:1; min-width:84px; background:var(--inset-bg,rgba(0,0,0,.15)); border:1px solid var(--border,rgba(255,255,255,.1)); border-radius:9px; padding:8px 10px; }
+.fide-rt-l{ display:block; font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text3,var(--text2)); }
+.fide-rt-v{ font-size:19px; font-weight:800; font-family:'DM Mono',monospace; color:var(--text); }
+.fide-link{ display:inline-block; font-size:13px; font-weight:600; color:var(--gold); text-decoration:none; margin-bottom:8px; }
+.fide-link:hover{ text-decoration:underline; }
+.fide-note{ font-size:11.5px; color:var(--text3,var(--text2)); line-height:1.5; }
 </style>
 <div id="sec-puzzles" class="section">
   <div class="page-wrap">
@@ -10887,6 +10916,42 @@ function rebuildMoveDisplay(){
 function jumpToMoveO(n){ oMoveIdx = Math.min(n, oBoardHistory.length - 1); renderBoardO(); }
 
 // ════════════════════════════════════════════════════════
+// FIDE ID — official rating lookup (FIDE has no games archive, so this shows
+// the player's official ratings + profile; game analysis stays on Chess.com/Lichess)
+// ════════════════════════════════════════════════════════
+function fideEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+window.fideLookup = async function(id){
+  const clean = String(id||'').replace(/\D/g,'');
+  if(clean.length < 4) throw new Error('Enter a valid FIDE ID — the number shown on your FIDE profile page.');
+  let data = null;
+  try {
+    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
+    const r = await fetch(`https://fide-api.vercel.app/player_info?fide_id=${clean}&history=false`, { signal: ctl.signal });
+    clearTimeout(t);
+    if(r.ok) data = await r.json();
+  } catch(e){ /* enrichment failed — the official profile link below still works */ }
+  return { id: clean, data, profile: `https://ratings.fide.com/profile/${clean}` };
+};
+window.fideCardHTML = function(res){
+  const d = res.data || {};
+  const name  = d.name || d.player_name || d.player || '';
+  const fed   = d.federation || d.country || d.fed || '';
+  const std   = d.standard_rating || d.standard || d.rating || (d.ratings && d.ratings.standard) || '';
+  const rapid = d.rapid_rating || d.rapid || (d.ratings && d.ratings.rapid) || '';
+  const blitz = d.blitz_rating || d.blitz || (d.ratings && d.ratings.blitz) || '';
+  const title = d.title || d.fide_title || '';
+  const rt = (lbl, v) => v ? `<div class="fide-rt"><span class="fide-rt-l">${lbl}</span><span class="fide-rt-v">${fideEsc(String(v))}</span></div>` : '';
+  const rates = rt('Standard', std) + rt('Rapid', rapid) + rt('Blitz', blitz);
+  return `<div class="fide-card">
+    <div class="fide-head">${title?`<span class="fide-title">${fideEsc(title)}</span> `:''}${name?`<strong>${fideEsc(name)}</strong>`:'FIDE player'}${fed?` <span class="fide-fed">${fideEsc(fed)}</span>`:''}</div>
+    <div class="fide-id">FIDE ID ${fideEsc(res.id)}</div>
+    ${rates ? `<div class="fide-rates">${rates}</div>` : `<div class="fide-note">Couldn't load ratings automatically — open your official profile to see them.</div>`}
+    <a class="fide-link" href="${res.profile}" target="_blank" rel="noopener">Official FIDE profile ↗</a>
+    <div class="fide-note">FIDE publishes ratings, not game archives — so game analysis and puzzles use your Chess.com or Lichess account.</div>
+  </div>`;
+};
+
+// ════════════════════════════════════════════════════════
 // ANALYSIS — Real Chess.com / Lichess API
 // ════════════════════════════════════════════════════════
 
@@ -12212,9 +12277,25 @@ window.setRP = function(p){
   document.getElementById('rpt-cc').classList.toggle('active', p === 'chesscom');
   document.getElementById('rpt-li').classList.toggle('active', p === 'lichess');
   const pgnTab = document.getElementById('rpt-pgn'); if(pgnTab) pgnTab.classList.toggle('active', p === 'pgn');
+  const fideTab = document.getElementById('rpt-fide'); if(fideTab) fideTab.classList.toggle('active', p === 'fide');
   const userRow = document.getElementById('rv-user-row'); const pgnRow = document.getElementById('rv-pgn-row');
-  if(userRow) userRow.style.display = (p === 'pgn') ? 'none' : 'flex';
+  const fideRow = document.getElementById('rv-fide-row');
+  if(userRow) userRow.style.display = (p === 'pgn' || p === 'fide') ? 'none' : 'flex';
   if(pgnRow) pgnRow.style.display = (p === 'pgn') ? 'block' : 'none';
+  if(fideRow) fideRow.style.display = (p === 'fide') ? 'block' : 'none';
+};
+window.loadReviewFide = async function(){
+  const input = document.getElementById('rv-fide');
+  const id = (input && input.value || '').trim();
+  const out = document.getElementById('rv-fide-result');
+  if(!id){ if(input) input.focus(); return; }
+  if(out) out.innerHTML = `<div style="font-size:12px;color:var(--text3);margin-top:12px">Looking up FIDE ${id.replace(/\D/g,'')}…</div>`;
+  try {
+    const res = await window.fideLookup(id);
+    if(out) out.innerHTML = window.fideCardHTML(res);
+  } catch(e){
+    if(out) out.innerHTML = `<div class="error-box" style="margin-top:12px">${(e && e.message || 'Lookup failed.')}</div>`;
+  }
 };
 
 // Load a pasted PGN straight into the same Game Review (no profile pictures)
@@ -13402,16 +13483,14 @@ function drawReviewArrows(ann, idx){
     </marker>
   </defs>`;
 
-  // For sub-best moves, draw red arrow for what the user played
+  // For sub-best moves, draw a red arrow for what the user played (aligned: the
+  // played move IS the last move on this board). No blue best arrow here — the
+  // pre-move best would misplace on this post-move board; the live engine draws
+  // the aligned blue best, and "Rewind & show" reveals it in the right position.
+  const _rvFlip = boardFlippedState.get('board-r') === true;
   if(isSubBest && userFromTo && userFromTo.length === 4){
     svg += arrowSVG(userFromTo.slice(0, 2), userFromTo.slice(2, 4),
-                    'rgba(220,80,80,.7)', 7, 'ah-bad');
-  }
-
-  // ALWAYS draw the engine's best-move arrow (green if move was good, gold if it was sub-best)
-  if(bestUCI && bestUCI.length >= 4){
-    svg += arrowSVG(bestUCI.slice(0, 2), bestUCI.slice(2, 4),
-                    bestColor, 10, bestMarkerId);
+                    'rgba(220,80,80,.7)', 7, 'ah-bad', _rvFlip);
   }
 
   overlay.innerHTML = svg;
@@ -13502,19 +13581,21 @@ function drawSingleArrow(uciMove){
   const to = uciMove.slice(2, 4);
   const overlay = document.getElementById('arrow-overlay-r');
   if(!overlay) return;
-  const p1 = squareToSVG(from);
-  const p2 = squareToSVG(to);
+  const _flip = boardFlippedState.get('board-r') === true;
+  const p1 = squareToSVG(from, _flip);
+  const p2 = squareToSVG(to, _flip);
   const dx = p2.x - p1.x, dy = p2.y - p1.y;
   const len = Math.sqrt(dx*dx + dy*dy);
   const endX = p2.x - (dx / len) * 14;
   const endY = p2.y - (dy / len) * 14;
+  // BLUE = the move you should have played (drawn on the correctly-aligned pre-move board)
   overlay.innerHTML = `
     <defs>
-      <marker id="ah-yellow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
-        <path d="M0,0 V4 L3,2 Z" fill="rgba(21,120,27,.9)"/>
+      <marker id="ah-best-blue2" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible">
+        <path d="M0,0 V4 L3,2 Z" fill="rgba(0,48,136,.92)"/>
       </marker>
     </defs>
-    <line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="rgba(246,218,90,.9)" stroke-width="10" stroke-linecap="round" marker-end="url(#ah-yellow)" />`;
+    <line x1="${p1.x}" y1="${p1.y}" x2="${endX}" y2="${endY}" stroke="rgba(0,48,136,.9)" stroke-width="10" stroke-linecap="round" marker-end="url(#ah-best-blue2)" />`;
 }
 
 // Actually play the recommended move on the review board (branches the game)
@@ -13665,12 +13746,9 @@ function renderReviewBoard(){
         }
       }
     }
-    // Blue arrow for the best move (blue ≠ the green rank-1 candidate arrow)
-    if(displayedBestUCI && /^[a-h][1-8][a-h][1-8]/.test(displayedBestUCI)){
-      let svg = `<defs><marker id="rv-best-arrow" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="rgba(0,48,136,.95)"/></marker></defs>`;
-      svg += arrowSVG(displayedBestUCI.slice(0,2), displayedBestUCI.slice(2,4), 'rgba(0,48,136,.88)', 8, 'rv-best-arrow', boardFlippedState.get('board-r') === true);
-      if(overlay) overlay.innerHTML = svg;
-    }
+    // (Best-move arrow intentionally NOT drawn here: displayedBestUCI is the best
+    // move for the PREVIOUS position and would land on the wrong squares on this
+    // post-move board. The aligned blue best arrow comes from the live engine below.)
   }
 
   document.getElementById('rv-move-idx').textContent = labelText;
@@ -13681,10 +13759,8 @@ function renderReviewBoard(){
   updateInteractiveState('board-r', displayState);
   renderUserVariationPanel();
 
-  // Game Review: show ONE clear green arrow for the best move at this position
-  // (no multi-candidate clutter — user wants pure simplicity here)
-  drawBestMoveArrow(reviewIdx);
-  // Live continuous engine analysis (separate from this arrow logic)
+  // All board arrows come from the live engine on the CURRENT position (correctly
+  // aligned): rank-1 = blue "play this", ranks 2-5 fade green→red.
   triggerEngineAnalysisR(displayState);
 }
 
@@ -14043,7 +14119,8 @@ function triggerEngineAnalysisR(state){
   });
 }
 
-const RV_CAND_COLORS = ['#15781B', '#7cb342', '#d3a11f', '#df6f1e', '#c33a2e'];
+// rank-1 = BLUE ("play this" / the best move); ranks 2-5 fade green→red.
+const RV_CAND_COLORS = ['#2560c8', '#15781B', '#7cb342', '#d3a11f', '#df6f1e'];
 const RV_CAND_OPACITY = [1, .85, .72, .62, .55];
 function rvDrawCandidateArrows(result){
   const ov = document.getElementById('rv-cand-arrows');
@@ -29665,36 +29742,82 @@ window.ccPlayCourse = function(){
       </div>
     </div>`;
 };
-window.ccStartTrain = function(side){
-  // one test per unique position (FEN-keyed, so shared prefixes and transpositions
-  // are asked once), holding ALL course candidates playable from it
-  const parity = side==='black' ? 1 : 0;
-  const norm=s=>(s||'').replace(/[+#!?]/g,'');
-  const seen=new Map(), tests=[];
-  CC.courseLines.forEach(line=>{
-    let st=parseFEN(startFEN());
-    for(let i=0;i<line.sans.length;i++){
-      if(i%2===parity){
-        let key; try{ key=stateToFEN(st).split(' ').slice(0,4).join(' '); }catch(e){ break; }
-        let t=seen.get(key);
-        if(!t){ t={ path:line.sans.slice(0,i), ply:i, expects:[] }; seen.set(key,t); tests.push(t); }
-        if(!t.expects.some(x=>x.norm===norm(line.sans[i]))) t.expects.push({ san:line.sans[i], norm:norm(line.sans[i]), found:false });
-      }
-      try{ const mv=sanToMove(line.sans[i],st); st=applyMove(st,mv); }catch(e){ break; }
+// ── Drill = a branch-by-branch walk of the course tree ──
+// Rebuild a move tree from the committed lines (forks = a node with >1 child),
+// then walk it with a stack. When you play a candidate at a fork we drill THAT
+// candidate's whole line immediately, then return to the fork for the others —
+// so no candidate is a privileged "first move".
+function ccUci2mv(u){ return { from:u.slice(0,2), to:u.slice(2,4), promotion: u.length>4 ? u[4].toUpperCase() : null }; }
+function ccLinesToTree(lines){
+  const root = { children:[] };
+  for(const line of (lines||[])){
+    const ucis = line.uci||[], sans = line.sans||[];
+    let node = root;
+    for(let i=0;i<ucis.length;i++){
+      const u = ucis[i], s = sans[i]||u;
+      let child = node.children.find(c => c.uci === u);
+      if(!child){ child = { uci:u, san:s, children:[] }; node.children.push(child); }
+      node = child;
     }
-  });
-  if(!tests.length){ alert('No course moves for that side yet — add some lines first.'); return; }
-  const units=tests.reduce((s,t)=>s+t.expects.length,0);
-  ccTrain={ side, tests, units, i:0, correct:0, wrong:0, wrongList:[] };
+  }
+  return root;
+}
+function ccCountTested(node, ply, parity){
+  let n = 0;
+  for(const c of (node.children||[])){
+    if(ply % 2 === parity) n++;
+    n += ccCountTested(c, ply+1, parity);
+  }
+  return n;
+}
+window.ccStartTrain = function(side){
+  const parity = side==='black' ? 1 : 0;
+  const tree = ccLinesToTree(CC.courseLines);
+  const units = ccCountTested(tree, 0, parity);
+  if(!units){ alert('No course moves for that side yet — add some lines first.'); return; }
+  ccTrain = { side, parity, units, correct:0, wrong:0, wrongList:[], stack:[], cur:null, awaiting:false, curState:null };
+  ccTrain.stack.push({ type:'branch', node:tree, path:[], state:parseFEN(startFEN()), ply:0 });
   const ws=document.getElementById('cc-workspace'); if(ws) ws.innerHTML='';
-  ccRenderTrain();
+  ccAdvanceTrain();
 };
-function ccRenderTrain(){
+// Expand a subtree root: quiz the tested side's candidates here, or auto-descend
+// through the opponent's prepared replies (each becomes its own branch to drill).
+function ccExpandBranch(entry){
+  const children = entry.node.children || [];
+  if(!children.length) return;
+  const tested = (entry.ply % 2 === ccTrain.parity);
+  if(tested){
+    const cands = children.map(c => {
+      const mv = ccUci2mv(c.uci);
+      let san = c.san; try { san = moveToSAN(entry.state, mv.from, mv.to, mv.promotion) || c.san; } catch(e){}
+      return { uci:c.uci, san, node:c, found:false, missed:false };
+    });
+    ccTrain.stack.push({ type:'quiz', path:entry.path, state:entry.state, ply:entry.ply, cands });
+  } else {
+    // opponent to move — push each reply in reverse so they drill in natural order
+    for(let k=children.length-1;k>=0;k--){
+      const c = children[k], mv = ccUci2mv(c.uci);
+      let ns; try { ns = applyMove(entry.state, mv); } catch(e){ continue; }
+      let san = c.san; try { san = moveToSAN(entry.state, mv.from, mv.to, mv.promotion) || c.san; } catch(e){}
+      ccTrain.stack.push({ type:'branch', node:c, path:entry.path.concat(san), state:ns, ply:entry.ply+1 });
+    }
+  }
+}
+function ccAdvanceTrain(){
+  if(!ccTrain) return;
+  while(ccTrain.stack.length){
+    const top = ccTrain.stack[ccTrain.stack.length-1];
+    if(top.type === 'branch'){ ccTrain.stack.pop(); ccExpandBranch(top); continue; }
+    // quiz
+    if(top.cands.some(c => !c.found)){ ccTrain.cur = top; ccRenderTrainQuiz(); return; }
+    ccTrain.stack.pop();   // fork fully answered and every branch drilled
+  }
+  ccTrainResults();
+}
+function ccRenderTrainQuiz(){
   const ws=document.getElementById('cc-workspace');
-  const t=ccTrain.tests[ccTrain.i], total=ccTrain.tests.length;
-  if(ccTrain.i>=total){ ccTrainResults(); return; }
-  // build position
-  let st=parseFEN(startFEN()); for(const s of t.path){ try{const mv=sanToMove(s,st); st=applyMove(st,mv);}catch(e){} }
+  const cur=ccTrain.cur; if(!cur){ ccTrainResults(); return; }
+  const st=cur.state;
   ccTrain.curState=st;
   if(!document.getElementById('cct-board')){
     ws.innerHTML=`<div class="cc-top">
@@ -29727,44 +29850,51 @@ function ccRenderTrain(){
   clearArrows('cct-arrows');
   renderBoardEl('cct-board','cct-ranks','cct-files', st, [], null);
   makeBoardInteractive('cct-board', st, ccTrainMove);
-  document.getElementById('cct-counter').textContent=`Position ${ccTrain.i+1} of ${total}`;
-  document.getElementById('cct-badge').textContent=`Move ${Math.floor(t.ply/2)+1}`;
-  const remaining=t.expects.filter(x=>!x.found).length;
-  document.getElementById('cct-msg').innerHTML = t.expects.length>1
-    ? (remaining===t.expects.length
-        ? `<strong>What's your course move here?</strong><br><span class="cct-multi">This position has ${t.expects.length} course moves — you'll be asked for each one.</span>`
-        : `<strong>Same position — find another course move.</strong><br><span class="cct-multi">${remaining} of ${t.expects.length} candidate${t.expects.length>1?'s':''} still to play.</span>`)
+  const counter=document.getElementById('cct-counter'); if(counter) counter.textContent=`${answered} of ${ccTrain.units} moves`;
+  const badge=document.getElementById('cct-badge'); if(badge) badge.textContent=`Move ${Math.floor(cur.ply/2)+1}`;
+  const total=cur.cands.length, remaining=cur.cands.filter(c=>!c.found).length, doneHere=total-remaining;
+  const msg=document.getElementById('cct-msg');
+  if(msg) msg.innerHTML = total>1
+    ? (doneHere===0
+        ? `<strong>What's your move here?</strong><br><span class="cct-multi">This position has ${total} course moves — play any one; we'll drill its line, then come back here for the rest.</span>`
+        : `<strong>Back to this position — play another move.</strong><br><span class="cct-multi">${remaining} of ${total} moves here still to play.</span>`)
     : `<strong>What's your course move here?</strong>`;
-  document.getElementById('cct-fb').innerHTML='';
+  const fb=document.getElementById('cct-fb'); if(fb) fb.innerHTML='';
   ccTrain.awaiting=true;
 }
 function ccTrainMove(from,to,ns,san){
-  if(!ccTrain.awaiting) return;
-  const t=ccTrain.tests[ccTrain.i], norm=s=>(s||'').replace(/[+#!?]/g,'');
+  if(!ccTrain || !ccTrain.awaiting || !ccTrain.cur) return;
+  const cur=ccTrain.cur, norm=s=>(s||'').replace(/[+#!?]/g,'');
   const fb=document.getElementById('cct-fb'); ccTrain.awaiting=false;
   const played=norm(san);
-  const hit=t.expects.find(x=>!x.found && x.norm===played);
-  const already=t.expects.find(x=>x.found && x.norm===played);
-  const advance=()=>{ if(!ccTrain) return; if(!t.expects.some(x=>!x.found)) ccTrain.i++; ccRenderTrain(); };
+  const hit=cur.cands.find(c=>!c.found && norm(c.san)===played);
+  const already=cur.cands.find(c=>c.found && norm(c.san)===played);
   if(hit){
     hit.found=true; ccTrain.correct++;
-    const left=t.expects.filter(x=>!x.found).length;
-    fb.innerHTML = left
-      ? `<span class="nlearn-fb-ok">✓ ${ccEsc(san)} — correct! The board resets: this position has ${left} more course move${left>1?'s':''}.</span>`
+    // drill this candidate's line NOW (pushed on top → processed before the fork's rest)
+    const mv=ccUci2mv(hit.uci); let cs; try{ cs=applyMove(cur.state, mv); }catch(e){ cs=ns; }
+    ccTrain.stack.push({ type:'branch', node:hit.node, path:cur.path.concat(hit.san), state:cs, ply:cur.ply+1 });
+    const left=cur.cands.filter(c=>!c.found).length;
+    if(fb) fb.innerHTML = left
+      ? `<span class="nlearn-fb-ok">✓ ${ccEsc(san)} — correct! We'll drill this line, then return here for the other ${left===1?'move':left+' moves'}.</span>`
       : `<span class="nlearn-fb-ok">✓ ${ccEsc(san)} — correct!</span>`;
-    setTimeout(advance, left?1000:350);
+    setTimeout(()=>{ if(ccTrain) ccAdvanceTrain(); }, left?900:350);
   } else if(already){
-    // a candidate they already gave — reset and keep asking for the rest
-    fb.innerHTML=`<span class="nlearn-fb-wrong">You already played <strong>${ccEsc(san)}</strong> — find the other course move.</span>`;
-    setTimeout(advance, 900);
+    // a candidate they already played from here — let them retry, no penalty
+    if(fb) fb.innerHTML=`<span class="nlearn-fb-wrong">You already played <strong>${ccEsc(san)}</strong> here — try a different move.</span>`;
+    setTimeout(()=>{ if(ccTrain){ ccRenderTrainQuiz(); const f=document.getElementById('cct-fb'); if(f) f.innerHTML=`<span class="nlearn-fb-wrong">You already played <strong>${ccEsc(san)}</strong> here — play a different course move.</span>`; } }, 850);
   } else {
-    // wrong: reveal one unfound candidate, score it as missed, keep asking for any others
-    const miss=t.expects.find(x=>!x.found);
-    if(miss){ miss.found=true; ccTrain.wrong++; ccTrain.wrongList.push({expect:miss.san,played:san,ply:t.ply}); }
-    const left=t.expects.filter(x=>!x.found).length;
-    fb.innerHTML=`<span class="nlearn-fb-wrong">✗ Your course says <strong>${miss?ccEsc(miss.san):''}</strong>${left?` — and ${left} more candidate${left>1?'s':''} remain${left>1?'':'s'} here`:''}.</span>`;
-    if(miss){ const mv=sanToMove(miss.san, ccTrain.curState); if(mv) ccArrowOn('cct-arrows','cct-board', mv.from+mv.to, 'rgba(239,157,43,.9)'); }
-    setTimeout(advance, 1300);
+    // wrong: reveal one unfound candidate as the answer (arrow), drill its line too
+    const miss=cur.cands.find(c=>!c.found);
+    if(miss){
+      miss.found=true; miss.missed=true; ccTrain.wrong++; ccTrain.wrongList.push({expect:miss.san,played:san,ply:cur.ply});
+      const mv=ccUci2mv(miss.uci); let cs; try{ cs=applyMove(cur.state, mv); }catch(e){}
+      if(cs) ccTrain.stack.push({ type:'branch', node:miss.node, path:cur.path.concat(miss.san), state:cs, ply:cur.ply+1 });
+      const amv=sanToMove(miss.san, cur.state); if(amv) ccArrowOn('cct-arrows','cct-board', amv.from+amv.to, 'rgba(239,157,43,.9)');
+    }
+    const left=cur.cands.filter(c=>!c.found).length;
+    if(fb) fb.innerHTML=`<span class="nlearn-fb-wrong">✗ Here your course plays <strong>${miss?ccEsc(miss.san):''}</strong>${left?` — ${left} more move${left>1?'s':''} here after this line`:''}.</span>`;
+    setTimeout(()=>{ if(ccTrain) ccAdvanceTrain(); }, 1300);
   }
 }
 function ccArrowOn(ovId,boardId,uci,color){ const ov=document.getElementById(ovId); if(!ov||!uci||uci.length<4)return; const from=uci.slice(0,2),to=uci.slice(2,4); if(!/^[a-h][1-8]$/.test(from)||!/^[a-h][1-8]$/.test(to))return; const fl=isBoardFlipped(boardId); const p1=squareToSVG(from,fl),p2=squareToSVG(to,fl); const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.sqrt(dx*dx+dy*dy)||1,ex=p2.x-(dx/len)*14,ey=p2.y-(dy/len)*14; ov.innerHTML=`<defs><marker id="${ovId}-mk" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#${ovId}-mk)"/>`; }
@@ -29898,17 +30028,39 @@ function pcoachRenderConnect(msg){
         <div class="pc-plat">
           <button id="coach-p-cc" class="${pcoach.platform==='chesscom'?'active':''}" onclick="pcoachSetPlatform('chesscom')">♟ Chess.com</button>
           <button id="coach-p-li" class="${pcoach.platform==='lichess'?'active':''}" onclick="pcoachSetPlatform('lichess')">♞ Lichess</button>
+          <button id="coach-p-fide" class="${pcoach.platform==='fide'?'active':''}" onclick="pcoachSetPlatform('fide')">♛ FIDE ID</button>
         </div>
-        <input id="pc-user" class="pc-user" placeholder="Your ${pcoach.platform==='chesscom'?'Chess.com':'Lichess'} username" autocomplete="off" onkeydown="if(event.key==='Enter')pcoachStart()">
-        <button class="btn btn-gold" style="width:100%" onclick="pcoachStart()">Analyse my last 50 games</button>
-        ${msg ? `<div class="error-box" style="margin-top:12px">${pcEsc(msg)}</div>` : ''}
-        <div class="pc-fine">Rated games only · analysis runs in your browser with Stockfish 18 · nothing is uploaded anywhere.</div>
+        ${pcoach.platform==='fide' ? `
+          <input id="pc-user" class="pc-user" placeholder="Your FIDE ID (e.g. 1503014)" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter')pcoachFideLookup()">
+          <button class="btn btn-gold" style="width:100%" onclick="pcoachFideLookup()">Show my official rating</button>
+          <div id="pc-fide-result"></div>
+          ${msg ? `<div class="error-box" style="margin-top:12px">${pcEsc(msg)}</div>` : ''}
+          <div class="pc-fine">FIDE publishes official ratings, not games. To analyse your games, pick Chess.com or Lichess.</div>
+        ` : `
+          <input id="pc-user" class="pc-user" placeholder="Your ${pcoach.platform==='chesscom'?'Chess.com':'Lichess'} username" autocomplete="off" onkeydown="if(event.key==='Enter')pcoachStart()">
+          <button class="btn btn-gold" style="width:100%" onclick="pcoachStart()">Analyse my last 50 games</button>
+          ${msg ? `<div class="error-box" style="margin-top:12px">${pcEsc(msg)}</div>` : ''}
+          <div class="pc-fine">Rated games only · analysis runs in your browser with Stockfish 18 · nothing is uploaded anywhere.</div>
+        `}
       </div>
     </div>`;
   const u = document.getElementById('pc-user');
   if(u && pcoach.username) u.value = pcoach.username;
 }
 window.pcoachSetPlatform = function(p){ pcoach.platform = p; pcoachRenderConnect(); };
+window.pcoachFideLookup = async function(){
+  const input = document.getElementById('pc-user');
+  const id = (input && input.value || '').trim();
+  const out = document.getElementById('pc-fide-result');
+  if(!id){ if(input) input.focus(); return; }
+  if(out) out.innerHTML = `<div class="pc-fine" style="margin-top:12px">Looking up FIDE ${pcEsc(id.replace(/\D/g,''))}…</div>`;
+  try {
+    const res = await window.fideLookup(id);
+    if(out) out.innerHTML = window.fideCardHTML(res);
+  } catch(e){
+    if(out) out.innerHTML = `<div class="error-box" style="margin-top:12px">${pcEsc(e && e.message || 'Lookup failed.')}</div>`;
+  }
+};
 
 window.pcoachStart = async function(){
   const input = document.getElementById('pc-user');
@@ -30323,7 +30475,8 @@ window.pcoachReset = function(){ pcoach = { step:'connect', platform: pcoach.pla
 // ════════════════════════════════════════════════════════
 let PZ = { platform:'chesscom', username:'', busy:false, puzzles:[], idx:0,
   solved:0, failed:0, attempts:0, view:'connect',
-  curState:null, curSolved:false, curFailed:false, curTries:0, checking:false, revealed:false };
+  curState:null, curSolved:false, curFailed:false, curTries:0, checking:false, revealed:false,
+  explore:false, exploreState:null, evalToken:0 };
 
 function pzEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function pzLoad(){ try { return JSON.parse(localStorage.getItem('gambit_puzzles')||'null'); } catch(e){ return null; } }
@@ -30538,6 +30691,7 @@ function pzRenderSolve(){
   if(!p){ pzRenderDone(); return; }
   let st; try { st = parseFEN(p.fen); } catch(e){ PZ.idx++; return pzRenderSolve(); }
   PZ.curState = st; PZ.curSolved = false; PZ.curFailed = false; PZ.curTries = 0; PZ.checking = false; PZ.revealed = false;
+  PZ.explore = false; PZ.exploreState = null;
   const total = PZ.puzzles.length;
   const sideName = p.userWhite ? 'White' : 'Black';
   const chipCol = p.userWhite ? '#f2ead6' : '#2a2a2a';
@@ -30549,7 +30703,11 @@ function pzRenderSolve(){
     </div>
     <div class="acad-learn-progressbar"><div id="pz-prog" style="width:${Math.round(100*PZ.idx/total)}%"></div></div>
     <div class="pz-solve">
-      <div class="pz-board-col">
+      <div class="pz-board-col" style="display:flex;gap:8px;align-items:flex-start">
+        <div class="pz-evalbar" id="pz-evalbar" style="visibility:hidden">
+          <div class="pz-evalbar-black" id="pz-evalbar-black" style="height:50%"></div>
+          <div class="pz-evalbar-score" id="pz-evalbar-score" style="top:calc(100% - 16px)"></div>
+        </div>
         <div class="expl-board-wrap"><div style="display:flex"><div class="board-ranks" id="pz-ranks"></div>
           <div style="position:relative"><div id="pz-board" class="chess-board"></div>
             <svg class="arrow-overlay" id="pz-arrows" viewBox="0 0 448 448" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4"></svg></div></div>
@@ -30598,7 +30756,33 @@ function pzArrow(uci, color){
   ov.innerHTML = `<defs><marker id="pz-mk" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${color}"/></marker></defs><line x1="${p1.x}" y1="${p1.y}" x2="${ex}" y2="${ey}" stroke="${color}" stroke-width="12" stroke-linecap="round" marker-end="url(#pz-mk)"/>`;
 }
 
+// After a puzzle is solved/revealed the board becomes a free analysis board.
+function pzExploreMove(from, to, ns, san){
+  PZ.exploreState = ns;
+  clearArrows('pz-arrows');
+  renderBoardEl('pz-board','pz-ranks','pz-files', ns, [], null);
+  makeBoardInteractive('pz-board', ns, pzOnMove);
+  pzShowEval(ns);
+}
+async function pzShowEval(state){
+  const bar = document.getElementById('pz-evalbar'); if(bar) bar.style.visibility = 'visible';
+  const tok = ++PZ.evalToken;
+  let r = null; try { r = await evalPosition(stateToFEN(state), 12, 1, 260); } catch(e){}
+  if(tok !== PZ.evalToken) return;
+  if(r) updateEvalBar('pz-evalbar-black', 'pz-evalbar-score', r.score, r.isMate, r.mateIn);
+}
+window.pzResetExplore = function(){
+  const p = PZ.puzzles[PZ.idx]; if(!p) return;
+  PZ.exploreState = PZ.curState;
+  clearArrows('pz-arrows');
+  renderBoardEl('pz-board','pz-ranks','pz-files', PZ.curState, [], null);
+  makeBoardInteractive('pz-board', PZ.curState, pzOnMove);
+  pzArrow(p.solUci, PZ.revealed ? 'rgba(0,48,136,.92)' : 'rgba(31,157,99,.92)');
+  pzShowEval(PZ.curState);
+};
+
 async function pzOnMove(from, to, ns, san){
+  if(PZ.explore){ pzExploreMove(from, to, ns, san); return; }
   if(PZ.curSolved || PZ.checking || PZ.revealed) return;
   const p = PZ.puzzles[PZ.idx];
   const fb = document.getElementById('pz-fb');
@@ -30622,17 +30806,21 @@ async function pzOnMove(from, to, ns, san){
 
 function pzSolved(alsoGood, san, ns){
   const p = PZ.puzzles[PZ.idx];
-  PZ.curSolved = true;
+  PZ.curSolved = true; PZ.explore = true; PZ.exploreState = ns || PZ.curState;
   if(!PZ.curFailed) PZ.solved++;
-  renderBoardEl('pz-board','pz-ranks','pz-files', ns || PZ.curState, [], null);
+  const shown = ns || PZ.curState;
+  renderBoardEl('pz-board','pz-ranks','pz-files', shown, [], null);
+  makeBoardInteractive('pz-board', shown, pzOnMove);   // free analysis from here
   pzArrow(p.solUci, 'rgba(31,157,99,.92)');
+  pzShowEval(shown);
   const fb = document.getElementById('pz-fb');
   const line = pzLineSAN(p);
   if(fb) fb.innerHTML = `<span class="ok">✓ ${alsoGood ? `${pzEsc(san)} works too — the engine's pick was ${pzEsc(p.solSan)}` : `${pzEsc(p.solSan)} — correct!`}</span>`
-    + (line ? `<div class="line">Best line: ${pzEsc(line)}</div>` : '');
+    + (line ? `<div class="line">Best line: ${pzEsc(line)}</div>` : '')
+    + `<div class="pz-explore-hint">Keep playing to explore the position — the eval bar updates as you go.</div>`;
   const scoreChip = document.querySelector('.pz-scorechip'); if(scoreChip) scoreChip.textContent = `✓ ${PZ.solved}`;
   const actions = document.getElementById('pz-actions');
-  if(actions) actions.innerHTML = `<button class="pz-btn primary" onclick="pzNext()">${PZ.idx+1 >= PZ.puzzles.length ? 'See results →' : 'Next puzzle →'}</button>`;
+  if(actions) actions.innerHTML = `<button class="pz-btn primary" onclick="pzNext()">${PZ.idx+1 >= PZ.puzzles.length ? 'See results →' : 'Next puzzle →'}</button><button class="pz-btn" onclick="pzResetExplore()">↺ Reset</button>`;
 }
 
 function pzWrong(san){
@@ -30650,13 +30838,17 @@ window.pzReveal = function(){
   if(PZ.curSolved) return;
   const p = PZ.puzzles[PZ.idx];
   if(!PZ.curFailed){ PZ.curFailed = true; PZ.failed++; }
-  PZ.revealed = true; PZ.curSolved = true;
-  pzArrow(p.solUci, 'rgba(31,157,99,.92)');
+  PZ.revealed = true; PZ.curSolved = true; PZ.explore = true; PZ.exploreState = PZ.curState;
+  renderBoardEl('pz-board','pz-ranks','pz-files', PZ.curState, [], null);
+  makeBoardInteractive('pz-board', PZ.curState, pzOnMove);   // explore freely after revealing
+  pzArrow(p.solUci, 'rgba(0,48,136,.92)');   // BLUE = the best move
+  pzShowEval(PZ.curState);
   const fb = document.getElementById('pz-fb');
   const line = pzLineSAN(p);
-  if(fb) fb.innerHTML = `<span class="ok">Solution: ${pzEsc(p.solSan)}</span>` + (line ? `<div class="line">Best line: ${pzEsc(line)}</div>` : '');
+  if(fb) fb.innerHTML = `<span class="ok">Solution: ${pzEsc(p.solSan)}</span>` + (line ? `<div class="line">Best line: ${pzEsc(line)}</div>` : '')
+    + `<div class="pz-explore-hint">Play the moves out to explore — the eval bar shows how each line evaluates. ↺ Reset returns to the puzzle.</div>`;
   const actions = document.getElementById('pz-actions');
-  if(actions) actions.innerHTML = `<button class="pz-btn primary" onclick="pzNext()">${PZ.idx+1 >= PZ.puzzles.length ? 'See results →' : 'Next puzzle →'}</button>`;
+  if(actions) actions.innerHTML = `<button class="pz-btn primary" onclick="pzNext()">${PZ.idx+1 >= PZ.puzzles.length ? 'See results →' : 'Next puzzle →'}</button><button class="pz-btn" onclick="pzResetExplore()">↺ Reset</button>`;
 };
 
 window.pzSkip = function(){ if(!PZ.curSolved && !PZ.curFailed){ PZ.curFailed = true; PZ.failed++; } pzNext(); };
