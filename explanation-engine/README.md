@@ -41,16 +41,23 @@ in which case the host falls back to the classifier's stock note).
 | `HangingPieceDetector` | `src/detectors/hanging-piece.ts` | Concrete detector (tier `verified`): hangs created by the played move (moved piece or piece left behind), and missed captures of free enemy material. Beginner-friendly wording + a counting habit as the coaching tip. Pure signals via `computeHangingSignals`. |
 | `MaterialDetector` | `src/detectors/material.ts` | Concrete detector (tier `verified`): grades the move's trade with SEE — win-material / favorable / equal / unfavorable / lose-material — and splits an intentional **sacrifice** from a **blunder** using the engine's verdict (a brilliant/great classification, or a negligible win% drop). Pure signals via `computeMaterialSignals`. |
 | `KingSafetyDetector` | `src/detectors/king-safety.ts` | Concrete detector (tier `heuristic`): missed castling, unnecessary king moves, weakened pawn shield, files opened beside the king, and a rising king-"danger" score — explained through their strategic consequences. King-safety model exposed as `analyzeKingSafety`; pure signals via `computeKingSafetySignals`. |
+| tactics core | `src/tactics.ts` | `detectTactics` — pure motif geometry over two board snapshots, no move generation (mates come from the engine's score). Finds fork, pin, skewer, discovered attack/check, double attack, x-ray, back-rank, mate/mating-net (`verified`) and overloaded / deflection / decoy (`heuristic`). Each finding carries its own tier. |
+| `TacticalDetector` + `TacticalMotifDetector` | `src/detectors/tactical.ts` | The tactic in the **engine's best move**, so it both praises a tactic you found and coaches one you missed. Split by tier into a `verified` detector and a `heuristic` one (register both with `tacticalDetectors()`) so a soft pattern can never speak over a proven tactic. |
 
 ### Detector roster
 
 | Detector | Tier | Priority | Classifications |
 |---|---|---|---|
+| `tactics` | `verified` | 30 | brilliant, great, best, good, inaccuracy, mistake, blunder, miss |
+| `material` | `verified` | 22 | brilliant, great, best, good, inaccuracy, mistake, blunder |
 | `hanging-piece` | `verified` | 20 | inaccuracy, mistake, blunder, miss |
+| `tactics-pattern` | `heuristic` | 9 | brilliant, great, best, good, inaccuracy, mistake, blunder, miss |
+| `king-safety` | `heuristic` | 8 | inaccuracy, mistake |
 | `development` | `heuristic` | 5 | inaccuracy, mistake, good |
 
-Because tier beats everything, a material fact always leads the explanation and
-a principle note rides along as supporting text — never the other way round.
+Because tier beats everything, a proven tactic or material fact always leads the
+explanation and a principle/pattern note rides along as supporting text — never
+the other way round.
 
 ### The priority system (why a heuristic can never “win”)
 

@@ -136,6 +136,45 @@ export function kingZone(square: string): string[] {
   return out;
 }
 
+/** Is `color`'s king currently attacked? (No move generation — just geometry.) */
+export function isInCheck(board: Board, color: Color): boolean {
+  const ks = kingSquareOf(board, color);
+  return !!ks && attackersOfSquares(board.squares, ks, otherColor(color)).length > 0;
+}
+
+/**
+ * Apply an (assumed-legal) UCI move and return the resulting board. Handles
+ * captures, promotion, castling (the rook hop) and en passant. Castling rights
+ * are not tracked precisely — detectors that follow an engine line only need
+ * accurate piece placement, not rights.
+ */
+export function applyUciMove(board: Board, uci: string): Board {
+  const { from, to, promotion } = parseUciMove(uci);
+  const piece = board.squares.get(from);
+  if (!piece) return board;
+  const squares = new Map(board.squares);
+  squares.delete(from);
+
+  // en passant: a pawn moving diagonally onto an empty square captures behind it
+  if (piece.type === 'p' && from.charAt(0) !== to.charAt(0) && !board.squares.get(to)) {
+    squares.delete(to.charAt(0) + from.charAt(1));
+  }
+  squares.set(to, promotion ? { color: piece.color, type: promotion } : piece);
+
+  // castling: the king moved two files, so hop the rook to its side
+  if (piece.type === 'k' && Math.abs(from.charCodeAt(0) - to.charCodeAt(0)) === 2) {
+    const rank = from.charAt(1);
+    if (to.charAt(0) === 'g') {
+      squares.delete('h' + rank);
+      squares.set('f' + rank, { color: piece.color, type: 'r' });
+    } else if (to.charAt(0) === 'c') {
+      squares.delete('a' + rank);
+      squares.set('d' + rank, { color: piece.color, type: 'r' });
+    }
+  }
+  return { squares, sideToMove: otherColor(board.sideToMove), castling: board.castling };
+}
+
 /** Does the colour still hold at least one castling right? */
 export function canCastle(board: Board, color: Color): boolean {
   return color === 'white'

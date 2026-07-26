@@ -51,6 +51,7 @@ export {
 export { ExplanationEngine, type UserExplanation } from './engine';
 
 export {
+  applyUciMove,
   attacks,
   attackersOf,
   attackersOfSquares,
@@ -62,6 +63,7 @@ export {
   isCastlingUci,
   isDevelopingUci,
   isHomeSquare,
+  isInCheck,
   kingOnHome,
   kingSquareOf,
   kingZone,
@@ -109,3 +111,16 @@ export {
   type KingSafety,
   type KingSafetySignals,
 } from './detectors/king-safety';
+
+export {
+  detectTactics,
+  type MotifId,
+  type TacticEngineInfo,
+  type TacticFinding,
+} from './tactics';
+
+export {
+  TacticalDetector,
+  TacticalMotifDetector,
+  tacticalDetectors,
+} from './detectors/tactical';
