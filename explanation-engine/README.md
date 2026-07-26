@@ -1,9 +1,9 @@
 # @gambit/explanation-engine
 
 A modular engine that explains **why** a chess move was good or bad using chess
-principles — not free-form AI text. This package is the **architecture core**:
-interfaces, base classes, registry, selector and orchestrator. It ships with
-**no concrete detectors** by design; chess knowledge is added incrementally by
+principles — not free-form AI text. This package contains the **architecture
+core** (interfaces, base classes, registry, selector, orchestrator) plus the
+first concrete detector; further chess knowledge is added incrementally by
 registering detectors.
 
 ## Where it sits in the pipeline
@@ -36,6 +36,8 @@ in which case the host falls back to the classifier's stock note).
 | `DetectorRegistry` | `src/registry.ts` | The extensibility point: `register()` one call per new detector. Enforces unique ids, filters by move classification, guarantees deterministic ordering. |
 | `ExplanationSelector` | `src/selector.ts` | The priority system. Ranks all `DetectionResult`s: **tier → priority → confidence → id**. Picks one primary + N supporting. |
 | `ExplanationEngine` | `src/engine.ts` | Pure plumbing: registry → detectors → selector → shaped `UserExplanation`. Contains no chess knowledge and no ranking logic. |
+| board utilities | `src/board.ts` | Dependency-free FEN/UCI structural facts shared by all detectors (home squares, undeveloped minors, capture/castle/develop tests). Not an engine — legality and search stay upstream. |
+| `DevelopmentDetector` | `src/detectors/development.ts` | First concrete detector (tier `heuristic`): opening-phase gate, missed development, wasted tempo, delayed castling — with confidence scoring and coaching tips. Its pure signal function `computeDevelopmentSignals` is exported for reuse. |
 
 ### The priority system (why a heuristic can never “win”)
 

@@ -49,3 +49,29 @@ export {
 } from './selector';
 
 export { ExplanationEngine, type UserExplanation } from './engine';
+
+export {
+  canCastle,
+  describePiece,
+  isCaptureUci,
+  isCastlingUci,
+  isDevelopingUci,
+  isHomeSquare,
+  kingOnHome,
+  parseFen,
+  parseUciMove,
+  pieceName,
+  undevelopedMinors,
+  type Board,
+  type Piece,
+  type PieceType,
+  type UciMove,
+} from './board';
+
+export {
+  computeDevelopmentSignals,
+  DEFAULT_DEVELOPMENT_CONFIG,
+  DevelopmentDetector,
+  type DevelopmentDetectorConfig,
+  type DevelopmentSignals,
+} from './detectors/development';
