@@ -1503,7 +1503,7 @@ input:focus, select:focus, textarea:focus {
   .mc-badge.mc-icon{ background:transparent !important; border:none !important; box-shadow:none !important; padding:0; min-width:0; }
   .mc-badge.mc-icon .rv-badge{ width:23px; height:23px; border:2px solid rgba(20,20,20,.55); box-shadow:0 2px 6px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.25); }
   .rv-mute{ display:inline-flex; align-items:center; justify-content:center; padding:0 9px; }
-  .rv-mute.muted{ opacity:.5; }
+  .rv-mute.muted, .rv-mute.off{ opacity:.5; }
 
 
   /* ════════ USER BRANCH PANEL (alternative move analysis) ════════ */
@@ -4742,6 +4742,7 @@ document.addEventListener('DOMContentLoaded', function(){
           <div class="board-controls">
             <button class="btn btn-outline btn-sm" onclick="flipBoard('board-r')" title="Flip board">⇅ Flip</button>
             <button class="btn btn-outline btn-sm rv-mute" id="rv-mute-btn" onclick="rvToggleMute()" title="Toggle move sounds" aria-label="Toggle move sounds"></button>
+            <button class="btn btn-outline btn-sm rv-mute" id="rv-arrows-btn" onclick="rvToggleArrows()" title="Toggle engine arrows" aria-label="Toggle engine arrows"></button>
             <button class="btn btn-gold btn-sm" id="rv-btg" onclick="returnToGameLine()" title="Leave this exploration branch and return to the game" style="display:none">↶ Back to game</button>
             <span id="rv-move-idx" style="font-size:12px;color:var(--text3);margin-left:6px"></span>
           </div>
@@ -4840,6 +4841,7 @@ document.addEventListener('DOMContentLoaded', function(){
 #sec-puzzles .pz-cat{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:10.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; margin-right:4px; vertical-align:middle; }
 #sec-puzzles .pz-cat.blunder{ background:rgba(224,82,78,.14); color:#c9302c; }
 #sec-puzzles .pz-cat.mistake{ background:rgba(230,138,60,.16); color:#c56a1a; }
+#sec-puzzles .pz-theme{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:10.5px; font-weight:700; letter-spacing:.03em; margin-right:4px; vertical-align:middle; background:rgba(46,125,91,.14); color:var(--green,#1f8a58); }
 #sec-puzzles .pz-fb{ min-height:24px; font-size:14.5px; font-weight:700; }
 #sec-puzzles .pz-fb .ok{ color:#1f8a58; }
 #sec-puzzles .pz-fb .no{ color:#c9302c; }
@@ -12577,6 +12579,26 @@ function rvSyncMuteBtn(){
   b.classList.toggle('muted', _rvMuted);
   b.dataset.init = '1';
 }
+// ── Engine-line arrows toggle (show/hide the candidate arrows on the board) ──
+let _rvArrowsOn = true;
+try { _rvArrowsOn = localStorage.getItem('gambit_rv_arrows') !== '0'; } catch(e){}
+const RV_ARROWS_ON_ICON  = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
+const RV_ARROWS_OFF_ICON = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/><path d="M3 3l18 18"/></svg>';
+window.rvToggleArrows = function(){
+  _rvArrowsOn = !_rvArrowsOn;
+  try { localStorage.setItem('gambit_rv_arrows', _rvArrowsOn ? '1' : '0'); } catch(e){}
+  const btn = document.getElementById('rv-arrows-btn');
+  if(btn){ btn.innerHTML = _rvArrowsOn ? RV_ARROWS_ON_ICON : RV_ARROWS_OFF_ICON; btn.title = _rvArrowsOn ? 'Engine arrows on' : 'Engine arrows off'; btn.classList.toggle('off', !_rvArrowsOn); }
+  if(!_rvArrowsOn){ try { clearArrows('rv-cand-arrows'); } catch(e){} }
+  else { try { if(typeof renderReviewBoard === 'function') renderReviewBoard(); } catch(e){} }   // redraw to bring arrows back
+};
+function rvSyncArrowsBtn(){
+  const b = document.getElementById('rv-arrows-btn'); if(!b || b.dataset.init) return;
+  b.innerHTML = _rvArrowsOn ? RV_ARROWS_ON_ICON : RV_ARROWS_OFF_ICON;
+  b.title = _rvArrowsOn ? 'Engine arrows on' : 'Engine arrows off';
+  b.classList.toggle('off', !_rvArrowsOn);
+  b.dataset.init = '1';
+}
 
 async function analyseGame(white, black, username){
   moveAnnotations = [];
@@ -13926,7 +13948,7 @@ function renderReviewBoard(){
   updateInteractiveState('board-r', displayState);
   renderUserVariationPanel();
 
-  try { rvSyncMuteBtn(); } catch(e){}
+  try { rvSyncMuteBtn(); rvSyncArrowsBtn(); } catch(e){}
   // Move sound on navigation — only when the shown position actually changes, not
   // during fast-play, and only while Game Review is on screen.
   try {
@@ -14296,6 +14318,7 @@ const RV_CAND_OPACITY = [1, .85, .72, .62, .55];
 function rvDrawCandidateArrows(result){
   const ov = document.getElementById('rv-cand-arrows');
   if(!ov) return;
+  if(_rvArrowsOn === false){ ov.innerHTML = ''; return; }   // engine-arrow toggle is off
   const flipped = boardFlippedState.get('board-r') === true;
   const alts = (result.alternatives && result.alternatives.length)
     ? result.alternatives
@@ -27196,6 +27219,7 @@ function olEnterDrill(title){
 window.olRenderDrillPicker = olRenderDrillPicker;   // inline onclick needs it on window (module scope)
 function olRenderDrillPicker(){
   // mixed drills restart into their own setup screen (line + side selection)
+  if(oldrill && oldrill.ccCurLines){ ccPlayCourse(); return; }   // single-course "Play course" restart
   if(oldrill && oldrill.ccDrill){ ccStartDrill(); return; }
   if(oldrill && oldrill.mode === 'mixed'){ olStartMixedDrill(oldrill.opIdx, window._olMixSel && window._olMixSel.fi); return; }
   olDrillStopClock();
@@ -29894,24 +29918,35 @@ function ccUpdateCoverage(){
 
 // ── "Play" the course: drill against your committed lines ──
 let ccTrain=null;
+// "Play course" now runs the SAME drill engine as the Opening Academy (the ol*
+// drill), scoped to the current course — one unified drill system.
 window.ccPlayCourse = function(){
-  if(!CC.courseLines.length){ alert('Add at least one line to the course first (use “End line & add to course”).'); return; }
-  // side picker first — the drill quizzes only the chosen side's moves
-  const ws=document.getElementById('cc-workspace');
-  const pre = CC.playAs==='black' ? 'black' : 'white';
-  ws.innerHTML=`<div class="cc-top">
-      <button class="acad-learn-back" onclick="ccExitTrain()">←</button>
-      <span class="cc-tool-icon">▶</span>
-      <div class="cc-name-input" style="flex:1;border:none;background:none">Play: ${ccEsc(CC.name)}</div>
-    </div>
-    <div class="cct-pick">
-      <div class="cct-pick-title">Which side do you want to test?</div>
-      <div class="cct-pick-sub">You'll be shown every position where it's that side's turn and asked to find your course move — including every alternative you added from the same position.</div>
-      <div class="cct-pick-row">
-        <button type="button" class="cc-playas-btn ${pre==='white'?'active':''}" onclick="ccStartTrain('white')"><span class="cc-king-w">${CC_KING_SVG}</span> White</button>
-        <button type="button" class="cc-playas-btn ${pre==='black'?'active':''}" onclick="ccStartTrain('black')"><span class="cc-king-b">${CC_KING_SVG}</span> Black</button>
+  if(!CC.courseLines || !CC.courseLines.length){ alert('Add at least one line to the course first (use “End line & add to course”).'); return; }
+  const queue = [];
+  CC.courseLines.forEach((line, li) => {
+    const built = olBuildStates(line.sans || []);
+    if(built && built.sans.length >= 2) queue.push({ op:null, cc: CC.name || 'Course', lineNo: li+1, vIdx:'cc:cur#'+li, sans: built.sans, states: built.states });
+  });
+  if(!queue.length){ alert('This course has no drillable lines yet — add a few moves first.'); return; }
+  const side0 = CC.playAs === 'black' ? 'b' : 'w';
+  window._ccDrillSel = window._ccDrillSel || {}; _ccDrillSel.side = side0;
+  oldrill = { op:null, opIdx:null, mode:'mixed', drillMode:'zen', ccDrill:true, ccCurLines:true, queue, qi:0,
+    sans: queue[0].sans, states: queue[0].states, idx:0, side:side0, mistakes:0, score:0, doneVids:{},
+    ccConclusions: CC.conclusion ? [CC.conclusion] : [] };
+  document.getElementById('olearn-title').innerHTML = `${ccEsc(CC.name || 'Course')}<small>Drill · ${queue.length} line${queue.length===1?'':'s'}</small>`;
+  const pill = document.getElementById('olearn-mode-pill'); if(pill){ pill.className = 'nlearn-mode-pill nlearn-mode-drill'; pill.textContent = 'DRILL'; }
+  showSection('olearn');
+  const host = document.getElementById('olearn-host');
+  host.innerHTML = `
+    <div class="ndrill-pick">
+      <h3>Choose your side</h3>
+      <p>Play your course lines from memory — any of your prepared moves is accepted.</p>
+      <div class="ndrill-side-row">
+        <div class="ndrill-side-card" onclick="olDrillBegin('w')"><div class="ndrill-side-icon">♔</div><div class="ndrill-side-label">Play White</div></div>
+        <div class="ndrill-side-card" onclick="olDrillBegin('b')"><div class="ndrill-side-icon">♚</div><div class="ndrill-side-label">Play Black</div></div>
       </div>
     </div>`;
+  window.scrollTo(0,0);
 };
 // ── Drill = a branch-by-branch walk of the course tree ──
 // Rebuild a move tree from the committed lines (forks = a node with >1 child),
@@ -30676,7 +30711,7 @@ function pzRenderConnect(msg){
     <div class="pc-wrap">
       <div class="pc-hero">
         <h1>Puzzles from <em>your own games</em></h1>
-        <p>Connect your Chess.com or Lichess account. Stockfish replays your recent games, finds the moments you blundered or went wrong, and turns each one into a “find the better move” puzzle — so you drill the exact mistakes you actually make.</p>
+        <p>Connect your Chess.com or Lichess account. Stockfish replays your last 200 games, finds the <strong>tactical</strong> blunders and mistakes you made (skipping anything you played in time trouble), and turns each one into a “find the better move” puzzle — so you drill the exact tactics you actually miss.</p>
       </div>
       <div class="pz-feats">
         <div class="pz-feat"><div class="ic">🔍</div><h4>Scanned by Stockfish&nbsp;18</h4><p>Every move you played, checked for blunders and mistakes.</p></div>
@@ -30708,9 +30743,156 @@ function pzRenderLoading(){
       <div class="pz-prog-track"><div class="pz-prog-fill" id="pz-pf"></div></div>
       <div class="pz-prog-text" id="pz-pt">Fetching your recent games…</div>
       <div class="pz-found-live" id="pz-found"></div>
-      <div class="pc-fine">Stockfish is replaying your games move by move to catch every slip. This takes a minute or two — keep this tab open.</div>
+      <div class="pc-fine">Stockfish is replaying up to your last 200 games move by move, keeping only tactical mistakes you made outside time trouble. This takes a few minutes — keep this tab open.</div>
     </div></div>`;
 }
+
+// ════════════════════════════════════════════════════════
+// TACTICAL DETECTOR — identifies the motifs a move creates.
+// HIGH-confidence detectors are pure board geometry (fork, pin, skewer,
+// discovered attack/check, double attack, x-ray, back-rank, mate/mating-net).
+// HEURISTIC detectors (overloaded, deflection, decoy) are best-effort and gated
+// LOW so they never outrank a high-confidence hit. tdDetect() returns motifs
+// with a confidence 0..1 and a tier, sorted strongest-first.
+// ════════════════════════════════════════════════════════
+const TD_PV = { P:1, N:3, B:3, R:5, Q:9, K:100 };
+const TD_LABELS = {
+  fork:'Fork', pin:'Pin', skewer:'Skewer', 'discovered-attack':'Discovered attack',
+  'discovered-check':'Discovered check', 'double-attack':'Double attack', 'xray':'X-ray attack',
+  'mate':'Mate', 'mating-net':'Mating net', 'back-rank':'Back-rank motif',
+  'overloaded':'Overloaded defender', 'deflection':'Deflection', 'decoy':'Decoy'
+};
+function tdFi(sq){ return FILES.indexOf(sq[0]); }
+function tdRi(sq){ return +sq[1]; }
+// does the piece on `from` control (attack/defend) square `to`? (pawns diagonal)
+function tdControls(board, from, to){
+  const p = board[from]; if(!p) return false;
+  const type = p[1], color = p[0];
+  const fi=tdFi(from), ri=tdRi(from), ti=tdFi(to), tr=tdRi(to), df=ti-fi, dr=tr-ri;
+  if(fi===ti && ri===tr) return false;
+  if(type==='P'){ const dir = color==='w'?1:-1; return dr===dir && Math.abs(df)===1; }
+  if(type==='N'){ const a=Math.abs(df), b=Math.abs(dr); return (a===2&&b===1)||(a===1&&b===2); }
+  if(type==='K'){ return Math.abs(df)<=1 && Math.abs(dr)<=1; }
+  const straight=(df===0||dr===0), diag=(Math.abs(df)===Math.abs(dr));
+  const ok = type==='R' ? straight : type==='B' ? diag : (straight||diag);
+  return ok && slidesClear(board, from, to, fi, ri, df, dr);
+}
+function tdAttackers(board, sq, color){
+  const out=[]; for(const f in board){ const p=board[f]; if(p && p[0]===color && f!==sq && tdControls(board,f,sq)) out.push(f); } return out;
+}
+function tdTargetsFrom(board, from){
+  const p=board[from]; if(!p) return []; const enemy = p[0]==='w'?'b':'w'; const out=[];
+  for(const s in board){ const q=board[s]; if(q && q[0]===enemy && tdControls(board,from,s)) out.push(s); }
+  return out;
+}
+const TD_R_DIRS=[[1,0],[-1,0],[0,1],[0,-1]], TD_B_DIRS=[[1,1],[1,-1],[-1,1],[-1,-1]];
+function tdDirs(type){ return type==='R'?TD_R_DIRS : type==='B'?TD_B_DIRS : type==='Q'?TD_R_DIRS.concat(TD_B_DIRS) : []; }
+function tdRayHits(board, from, dx, dy){   // up to first two occupied squares
+  const hits=[]; let f=tdFi(from)+dx, r=tdRi(from)+dy;
+  while(f>=0&&f<8&&r>=1&&r<=8){ const sq=FILES[f]+r; if(board[sq]){ hits.push(sq); if(hits.length>=2) break; } f+=dx; r+=dy; }
+  return hits;
+}
+function tdRayPath(board, from, dx, dy){    // squares up to & including the first blocker
+  const path=[]; let f=tdFi(from)+dx, r=tdRi(from)+dy;
+  while(f>=0&&f<8&&r>=1&&r<=8){ const sq=FILES[f]+r; path.push(sq); if(board[sq]) break; f+=dx; r+=dy; }
+  return path;
+}
+function tdNoLegalMoves(state, color){
+  for(const sq in state.board){ const p=state.board[sq]; if(p && p[0]===color && (legalMovesFor(state,sq)||[]).length>0) return false; }
+  return true;
+}
+function tdDetect(sB, uci, sA, engine){
+  const motifs=[];
+  const add=(id,conf,tier)=>{ const ex=motifs.find(m=>m.id===id); if(ex){ if(conf>ex.confidence) ex.confidence=conf; } else motifs.push({id, label:TD_LABELS[id]||id, confidence:conf, tier}); };
+  try {
+    if(!sB || !sA || !uci || uci.length<4) return { motifs:[], primary:null };
+    const from=uci.slice(0,2), to=uci.slice(2,4);
+    const mover=sB.turn, enemy = mover==='w'?'b':'w';
+    const moved=sA.board[to]; if(!moved) return { motifs:[], primary:null };
+    const movedVal=TD_PV[moved[1]]||0;
+    let enemyKingSq=null; for(const s in sA.board){ if(sA.board[s]===enemy+'K'){ enemyKingSq=s; break; } }
+    const winnable=(board,sq,attackerVal)=>{ const q=board[sq]; if(!q) return false; if(q[1]==='K') return true;
+      const v=TD_PV[q[1]]||0; if(v>attackerVal) return true; return tdAttackers(board,sq,enemy).length===0; };
+
+    // ── MATE / MATING NET (high) ──
+    const givesCheck = isKingInCheck(sA, enemy);
+    if(givesCheck && tdNoLegalMoves(sA, enemy)) add('mate', 1.0, 'high');
+    else if(engine && engine.isMate && typeof engine.mateIn==='number' && engine.mateIn>0 && engine.mateIn<=6) add('mating-net', 0.75, 'high');
+
+    // ── FORK (high): moved piece now hits ≥2 winnable enemy pieces ──
+    const movedTargets = tdTargetsFrom(sA.board, to).filter(t => winnable(sA.board, t, movedVal));
+    if(movedTargets.length>=2){ add('fork', movedTargets.some(t=>sA.board[t][1]==='K')?0.95:0.9, 'high'); }
+
+    // ── PIN / SKEWER / X-RAY (high): a mover slider sees two enemy pieces in a row ──
+    for(const s in sA.board){ const p=sA.board[s]; if(!p||p[0]!==mover) continue; const t=p[1]; if(t!=='R'&&t!=='B'&&t!=='Q') continue;
+      for(const [dx,dy] of tdDirs(t)){
+        const hits=tdRayHits(sA.board, s, dx, dy); if(hits.length<2) continue;
+        const f1=sA.board[hits[0]], f2=sA.board[hits[1]]; if(!f1||!f2||f1[0]!==enemy||f2[0]!==enemy) continue;
+        const v1=TD_PV[f1[1]]||0, v2=TD_PV[f2[1]]||0;
+        if(f2[1]==='K' || v2>v1) add('pin', f2[1]==='K'?0.92:0.82, 'high');
+        else if(f1[1]==='K' || v1>v2) add('skewer', 0.9, 'high');
+        add('xray', 0.68, 'high');
+      }
+    }
+
+    // ── DISCOVERED ATTACK / CHECK (high): the vacated square unblocks a slider ──
+    let discovered=0;
+    for(const s in sA.board){ const p=sA.board[s]; if(!p||p[0]!==mover||s===to) continue; const t=p[1]; if(t!=='R'&&t!=='B'&&t!=='Q') continue;
+      for(const [dx,dy] of tdDirs(t)){
+        const path=tdRayPath(sA.board, s, dx, dy); if(!path.length || !path.includes(from)) continue;
+        const last=path[path.length-1], tp=sA.board[last]; if(!tp || tp[0]!==enemy) continue;
+        if(tp[1]==='K') add('discovered-check', 0.95, 'high');
+        else { add('discovered-attack', 0.9, 'high'); discovered++; }
+      }
+    }
+
+    // ── DOUBLE ATTACK (high): two separate threats at once ──
+    if(movedTargets.length>=1 && discovered>=1) add('double-attack', 0.82, 'high');
+    else if(movedTargets.length>=2) add('double-attack', 0.72, 'high');
+
+    // ── BACK RANK (high) ──
+    if(givesCheck && (moved[1]==='R'||moved[1]==='Q') && enemyKingSq){
+      const backRank = enemy==='w' ? 1 : 8, fwd = enemy==='w' ? 1 : -1;
+      if(tdRi(to)===backRank && tdRi(enemyKingSq)===backRank){
+        const kf=tdFi(enemyKingSq), kr=tdRi(enemyKingSq); let boxed=true, any=false;
+        for(const dfk of [-1,0,1]){ const nf=kf+dfk, nr=kr+fwd; if(nf<0||nf>7||nr<1||nr>8) continue; const sq=FILES[nf]+nr; any=true; const occ=sA.board[sq]; if(!(occ && occ[0]===enemy && occ[1]==='P')) boxed=false; }
+        if(any && boxed) add('back-rank', tdNoLegalMoves(sA,enemy)?0.9:0.78, 'high');
+      }
+    }
+
+    // ── HEURISTICS (low, best-effort, never override high) ──
+    try {   // overloaded defender: capturing a piece whose lone defender also solely guards another attacked piece
+      const cap=sB.board[to];
+      if(cap && cap[0]===enemy){
+        const defs=tdAttackers(sB.board, to, enemy);
+        if(defs.length===1){ const D=defs[0];
+          for(const s in sB.board){ const q=sB.board[s]; if(!q||q[0]!==enemy||s===to) continue;
+            const d2=tdAttackers(sB.board, s, enemy);
+            if(d2.length===1 && d2[0]===D && tdAttackers(sB.board, s, mover).length>0){ add('overloaded', 0.5, 'heuristic'); break; }
+          }
+        }
+      }
+    } catch(e){}
+    try {   // deflection / decoy: read the engine PV three plies deep
+      const pv=(engine && engine.pv || '').trim().split(/\s+/).filter(Boolean);
+      if(pv.length>=3){
+        let st=sB; const mvs=[];
+        for(let k=0;k<3;k++){ const u=pv[k]; if(!u||u.length<4){ mvs.length=0; break; } const mv={from:u.slice(0,2),to:u.slice(2,4),promotion:u.length>4?u[4].toUpperCase():null}; try{ st=applyMove(st,mv); mvs.push(mv); }catch(e){ mvs.length=0; break; } }
+        if(mvs.length===3){
+          const sacFirst = mvs[1].to===mvs[0].to;                 // enemy recaptured on move-1's square
+          const check1 = isKingInCheck(applyMove(sB, mvs[0]), enemy);
+          const m3=mvs[2].to, p3=st.board[m3];
+          const wins3 = p3 && p3[0]===mover && tdTargetsFrom(st.board, m3).filter(x=>winnable(st.board,x,TD_PV[p3[1]]||0)).length>=2;
+          if(sacFirst && wins3) add('decoy', 0.45, 'heuristic');
+          else if(check1 && wins3) add('deflection', 0.45, 'heuristic');
+        }
+      }
+    } catch(e){}
+  } catch(e){}
+  motifs.sort((a,b)=> b.confidence - a.confidence);
+  return { motifs, primary: motifs[0] || null };
+}
+window.tdDetect = tdDetect;
 
 // ── Generate: scan games, collect the user's mistakes as puzzles ──
 async function pzGenerate(games, username, setP){
@@ -30719,7 +30901,7 @@ async function pzGenerate(games, username, setP){
   try { book = await (await fetch('/book_moves.json',{cache:'force-cache'})).json(); } catch(e){}
   const cache = Object.create(null);
   let evals = 0;
-  const TARGET = 18, MAX_EVALS = 700;
+  const TARGET = 25, MAX_EVALS = 1000, TIME_TROUBLE = 20;   // <20s left = time trouble → excluded
   async function ev(fen){
     if(cache[fen]) return cache[fen];
     const r = await evalPosition(fen, 12, 1, 240);
@@ -30728,10 +30910,16 @@ async function pzGenerate(games, username, setP){
     return r;
   }
   const puzzles = [], seen = new Set();
+  let scanned = 0, skippedNoClock = 0;
   for(let gi = 0; gi < games.length; gi++){
     if(puzzles.length >= TARGET || evals >= MAX_EVALS) break;
-    setP(6 + (gi / games.length) * 90, `Game ${gi + 1} / ${games.length} · ${evals} positions checked`, puzzles.length);
     const game = games[gi];
+    // Only games with clock data — the <20s time-trouble filter needs it.
+    let clocks = [];
+    try { clocks = extractMoveTimes(game.pgn) || []; } catch(e){ clocks = []; }
+    if(!clocks.length){ skippedNoClock++; continue; }
+    scanned++;
+    setP(6 + (gi / games.length) * 90, `Game ${gi + 1} / ${games.length} · ${evals} positions checked`, puzzles.length);
     let moveSANs;
     try { ({ moveSANs } = parsePGN(game.pgn)); } catch(e){ continue; }
     if(!moveSANs || moveSANs.length < 8) continue;
@@ -30745,7 +30933,10 @@ async function pzGenerate(games, username, setP){
       if(puzzles.length >= TARGET || evals >= MAX_EVALS) break;
       const cur = await ev(stateToFEN(hist[i].state));
       const userMove = ((i % 2 === 1) === isWhite);
-      if(userMove && prev.bestMove){
+      // skip moves the user played in time trouble (clock remaining after the move < 20s)
+      const clkAfter = clocks[i-1];
+      const inTimeTrouble = (typeof clkAfter === 'number' && clkAfter < TIME_TROUBLE);
+      if(userMove && !inTimeTrouble && prev.bestMove){
         const pb = isWhite ? (prev.score||0) : -(prev.score||0);   // user-perspective eval before the move
         const pa = isWhite ? (cur.score||0)  : -(cur.score||0);    // …and after
         const wDrop = winPct(pb) - winPct(pa);
@@ -30753,30 +30944,38 @@ async function pzGenerate(games, username, setP){
         const prefix = ucis.slice(0, i-1).join(',');
         const inBook = !!(book[prefix] && book[prefix][ucis[i-1]]);
         const bestIsPlayed = (prev.bestMove||'').slice(0,4) === ucis[i-1];
-        // Quality gates: a real mistake, not already lost, not already trivially won,
-        // a clear engine improvement exists, and we haven't used this exact position.
+        // A real mistake, not already lost/won, a clear engine improvement, unseen position…
         if(!inBook && wDrop >= 12 && pb > -3.0 && pb < 8.0 && !bestIsPlayed && !seen.has(fenB)){
-          seen.add(fenB);
-          puzzles.push({
-            fen: fenB, userWhite: isWhite,
-            solUci: prev.bestMove,
-            solSan: uciToSAN(fenB, prev.bestMove) || prev.bestMove,
-            pv: prev.pv || '',
-            bestEval: pb,
-            played: hist[i].san, playedUci: ucis[i-1],
-            wDrop, cat: wDrop >= 20 ? 'blunder' : 'mistake',
-            moveNo: Math.ceil(i/2),
-            opp: isWhite ? (game.black||'?') : (game.white||'?'),
-            result: game.result, url: game.url,
-            opening: (typeof normalizeOpeningName === 'function' ? normalizeOpeningName(game.opening||'Unknown') : (game.opening||'Unknown'))
-          });
+          // …and TACTICAL: the move the user missed must be a real tactic.
+          let sAfterBest = null;
+          try { const bu = prev.bestMove; sAfterBest = applyMove(hist[i-1].state, { from:bu.slice(0,2), to:bu.slice(2,4), promotion: bu.length>4?bu[4].toUpperCase():null }); } catch(e){}
+          const tac = sAfterBest ? tdDetect(hist[i-1].state, prev.bestMove, sAfterBest, { isMate:prev.isMate, mateIn:prev.mateIn, pv:prev.pv }) : { motifs:[], primary:null };
+          const qualifies = tac.motifs.some(m => m.confidence >= 0.6);
+          if(qualifies){
+            seen.add(fenB);
+            puzzles.push({
+              fen: fenB, userWhite: isWhite,
+              solUci: prev.bestMove,
+              solSan: uciToSAN(fenB, prev.bestMove) || prev.bestMove,
+              pv: prev.pv || '',
+              bestEval: pb,
+              played: hist[i].san, playedUci: ucis[i-1],
+              wDrop, cat: wDrop >= 20 ? 'blunder' : 'mistake',
+              themes: tac.motifs.map(m => m.label),
+              primaryTheme: tac.primary ? tac.primary.label : null,
+              moveNo: Math.ceil(i/2),
+              opp: isWhite ? (game.black||'?') : (game.white||'?'),
+              result: game.result, url: game.url,
+              opening: (typeof normalizeOpeningName === 'function' ? normalizeOpeningName(game.opening||'Unknown') : (game.opening||'Unknown'))
+            });
+          }
         }
       }
       prev = cur;
     }
   }
-  // biggest, most instructive first
   puzzles.sort((a,b) => (b.wDrop - a.wDrop));
+  puzzles._scanned = scanned; puzzles._skippedNoClock = skippedNoClock;
   return puzzles;
 }
 
@@ -30795,7 +30994,7 @@ window.pzStart = async function(){
     if(fo && typeof found === 'number') fo.textContent = found ? `${found} puzzle${found===1?'':'s'} found so far` : '';
   };
   try {
-    const maxGames = 50;
+    const maxGames = 200;
     let games;
     if(PZ.platform === 'chesscom'){
       games = await fetchChessComGames(username, maxGames * 2, 'all');
@@ -30812,7 +31011,11 @@ window.pzStart = async function(){
     const puzzles = await pzGenerate(games, username, setP);
     PZ.busy = false;
     if(!puzzles.length){
-      pzRenderConnect(`We scanned ${games.length} games but didn't find clear tactical mistakes to turn into puzzles — you may have been playing cleanly! Try a different account.`);
+      const noClock = puzzles._skippedNoClock || 0;
+      const msg = (puzzles._scanned || 0) === 0 && noClock > 0
+        ? `None of your ${games.length} games have move-clock data, so the time-trouble filter can't run. Games from Lichess (or Chess.com with clocks) work best.`
+        : `We scanned your games but didn't find tactical blunders played outside time trouble — you may have been playing cleanly! Try a different account.`;
+      pzRenderConnect(msg);
       return;
     }
     PZ.puzzles = puzzles;
@@ -30886,7 +31089,7 @@ function pzRenderSolve(){
       </div>
       <div class="pz-side">
         <div class="pz-tomove"><span class="chip" style="background:${chipCol}"></span> ${sideName} to move — find the best move</div>
-        <div class="pz-ctx"><span class="pz-cat ${p.cat}">${p.cat}</span> From your game vs <b>${pzEsc(p.opp)}</b> · move ${p.moveNo}. You played <b>${pzEsc(p.played)}</b>, which let your position slip. What should you have played instead?</div>
+        <div class="pz-ctx"><span class="pz-cat ${p.cat}">${p.cat}</span>${(p.themes&&p.themes.length)?p.themes.slice(0,3).map(t=>`<span class="pz-theme">${pzEsc(t)}</span>`).join(''):''} From your game vs <b>${pzEsc(p.opp)}</b> · move ${p.moveNo}. You played <b>${pzEsc(p.played)}</b>, missing a tactic. What should you have played instead?</div>
         <div class="pz-fb" id="pz-fb"></div>
         <div class="pz-actions" id="pz-actions">
           <button class="pz-btn" onclick="pzReveal()">Reveal</button>
@@ -30933,14 +31136,18 @@ function pzExploreMove(from, to, ns, san){
   clearArrows('pz-arrows');
   renderBoardEl('pz-board','pz-ranks','pz-files', ns, [], null);
   makeBoardInteractive('pz-board', ns, pzOnMove);
-  pzShowEval(ns);
+  pzShowEval(ns, true);   // eval bar + blue best-move arrow for the new position
 }
-async function pzShowEval(state){
+async function pzShowEval(state, drawBest){
   const bar = document.getElementById('pz-evalbar'); if(bar) bar.style.visibility = 'visible';
   const tok = ++PZ.evalToken;
   let r = null; try { r = await evalPosition(stateToFEN(state), 12, 1, 260); } catch(e){}
   if(tok !== PZ.evalToken) return;
   if(r) updateEvalBar('pz-evalbar-black', 'pz-evalbar-score', r.score, r.isMate, r.mateIn);
+  // blue arrow for the best move in the explored position
+  if(drawBest && r && r.bestMove && /^[a-h][1-8][a-h][1-8]/.test(r.bestMove)){
+    pzArrow(r.bestMove, 'rgba(0,48,136,.92)');
+  }
 }
 window.pzResetExplore = function(){
   const p = PZ.puzzles[PZ.idx]; if(!p) return;
