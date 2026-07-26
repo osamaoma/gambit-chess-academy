@@ -30978,9 +30978,11 @@ const PZ_TARGET = 50, PZ_TIME_TROUBLE = 20;   // <20s left = time trouble → ex
 async function pzScanGames(games, ctx, setP){
   const uname = ctx.uname;
   const book = ctx.book, cache = ctx.cache;
+  // Fast sweep: 120ms/position finds the big swings; each CANDIDATE then gets one
+  // deeper confirmation eval below, so solution quality doesn't ride on this pass.
   async function ev(fen){
     if(cache[fen]) return cache[fen];
-    const r = await evalPosition(fen, 12, 1, 240);
+    const r = await evalPosition(fen, 12, 1, 120);
     cache[fen] = r; ctx.evals++;
     await new Promise(rr => setTimeout(rr, 0));   // keep the UI responsive
     return r;
@@ -31026,11 +31028,18 @@ async function pzScanGames(games, ctx, setP){
         const bestIsPlayed = (prev.bestMove||'').slice(0,4) === ucis[i-1];
         // A real mistake, not already lost/won, a clear engine improvement, unseen position…
         if(!inBook && wDrop >= 12 && pb > -3.0 && pb < 8.0 && !bestIsPlayed && !seen.has(seenKey)){
+          // Candidate! One DEEPER eval of the pre-move position — the fast sweep only
+          // flags swings; the solution move/line/eval come from this confirmation.
+          let deep = null; try { deep = await evalPosition(fenB, 14, 1, 450); ctx.evals++; } catch(e){}
+          const solU = (deep && deep.bestMove) || prev.bestMove;
+          const solPb = deep ? (isWhite ? (deep.score||0) : -(deep.score||0)) : pb;
+          const solPv = (deep && deep.pv) || prev.pv || '';
+          const deepOK = solU && solU.slice(0,4) !== ucis[i-1] && winPct(solPb) - winPct(pa) >= 10;
           // …and TACTICAL: the move the user missed must be a real tactic.
           let sAfterBest = null;
-          try { const bu = prev.bestMove; sAfterBest = applyMove(hist[i-1].state, { from:bu.slice(0,2), to:bu.slice(2,4), promotion: bu.length>4?bu[4].toUpperCase():null }); } catch(e){}
-          const tac = sAfterBest ? tdDetect(hist[i-1].state, prev.bestMove, sAfterBest, { isMate:prev.isMate, mateIn:prev.mateIn, pv:prev.pv }) : { motifs:[], primary:null };
-          const qualifies = tac.motifs.some(m => m.confidence >= 0.6);
+          if(deepOK){ try { sAfterBest = applyMove(hist[i-1].state, { from:solU.slice(0,2), to:solU.slice(2,4), promotion: solU.length>4?solU[4].toUpperCase():null }); } catch(e){} }
+          const tac = sAfterBest ? tdDetect(hist[i-1].state, solU, sAfterBest, { isMate:(deep||prev).isMate, mateIn:(deep||prev).mateIn, pv:solPv }) : { motifs:[], primary:null };
+          const qualifies = deepOK && tac.motifs.some(m => m.confidence >= 0.6);
           if(qualifies){
             seen.add(seenKey);
             // per-move time spent, Game-Review convention: prev same-side clock − this clock + increment
@@ -31039,10 +31048,10 @@ async function pzScanGames(games, ctx, setP){
               ? Math.max(0, prevClk - clkAfter + tcInc) : null;
             puzzles.push({
               fen: fenB, userWhite: isWhite,
-              solUci: prev.bestMove,
-              solSan: uciToSAN(fenB, prev.bestMove) || prev.bestMove,
-              pv: prev.pv || '',
-              bestEval: pb,
+              solUci: solU,
+              solSan: uciToSAN(fenB, solU) || solU,
+              pv: solPv,
+              bestEval: solPb,
               played: hist[i].san, playedUci: ucis[i-1],
               wDrop, cat: wDrop >= 20 ? 'blunder' : 'mistake',
               themes: tac.motifs.map(m => m.label),
