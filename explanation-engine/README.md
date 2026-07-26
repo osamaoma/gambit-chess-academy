@@ -36,8 +36,19 @@ in which case the host falls back to the classifier's stock note).
 | `DetectorRegistry` | `src/registry.ts` | The extensibility point: `register()` one call per new detector. Enforces unique ids, filters by move classification, guarantees deterministic ordering. |
 | `ExplanationSelector` | `src/selector.ts` | The priority system. Ranks all `DetectionResult`s: **tier → priority → confidence → id**. Picks one primary + N supporting. |
 | `ExplanationEngine` | `src/engine.ts` | Pure plumbing: registry → detectors → selector → shaped `UserExplanation`. Contains no chess knowledge and no ranking logic. |
-| board utilities | `src/board.ts` | Dependency-free FEN/UCI structural facts shared by all detectors (home squares, undeveloped minors, capture/castle/develop tests). Not an engine — legality and search stay upstream. |
-| `DevelopmentDetector` | `src/detectors/development.ts` | First concrete detector (tier `heuristic`): opening-phase gate, missed development, wasted tempo, delayed castling — with confidence scoring and coaching tips. Its pure signal function `computeDevelopmentSignals` is exported for reuse. |
+| board utilities | `src/board.ts` | Dependency-free FEN/UCI structural facts shared by all detectors (home squares, undeveloped minors, capture/castle/develop tests) **plus attack geometry** (`attacks`, `attackersOf`, `hangingPieces`). Not an engine — legality, pins and capture order stay upstream. |
+| `DevelopmentDetector` | `src/detectors/development.ts` | Concrete detector (tier `heuristic`): opening-phase gate, missed development, wasted tempo, delayed castling — with confidence scoring and coaching tips. Its pure signal function `computeDevelopmentSignals` is exported for reuse. |
+| `HangingPieceDetector` | `src/detectors/hanging-piece.ts` | Concrete detector (tier `verified`): hangs created by the played move (moved piece or piece left behind), and missed captures of free enemy material. Beginner-friendly wording + a counting habit as the coaching tip. Pure signals via `computeHangingSignals`. |
+
+### Detector roster
+
+| Detector | Tier | Priority | Classifications |
+|---|---|---|---|
+| `hanging-piece` | `verified` | 20 | inaccuracy, mistake, blunder, miss |
+| `development` | `heuristic` | 5 | inaccuracy, mistake, good |
+
+Because tier beats everything, a material fact always leads the explanation and
+a principle note rides along as supporting text — never the other way round.
 
 ### The priority system (why a heuristic can never “win”)
 

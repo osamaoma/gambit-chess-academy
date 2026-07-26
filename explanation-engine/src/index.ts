@@ -51,18 +51,25 @@ export {
 export { ExplanationEngine, type UserExplanation } from './engine';
 
 export {
+  attacks,
+  attackersOf,
   canCastle,
   describePiece,
+  hangingPieces,
   isCaptureUci,
   isCastlingUci,
   isDevelopingUci,
   isHomeSquare,
   kingOnHome,
+  otherColor,
   parseFen,
   parseUciMove,
   pieceName,
+  PIECE_VALUES,
   undevelopedMinors,
   type Board,
+  type HangingInfo,
+  type HangReason,
   type Piece,
   type PieceType,
   type UciMove,
@@ -75,3 +82,9 @@ export {
   type DevelopmentDetectorConfig,
   type DevelopmentSignals,
 } from './detectors/development';
+
+export {
+  computeHangingSignals,
+  HangingPieceDetector,
+  type HangingSignals,
+} from './detectors/hanging-piece';

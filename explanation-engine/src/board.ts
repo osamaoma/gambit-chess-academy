@@ -165,3 +165,134 @@ export function describePiece(board: Board, square: string): string {
   const piece = board.squares.get(square);
   return piece ? `${pieceName(piece.type)} on ${square}` : `piece on ${square}`;
 }
+
+/* ────────────────────────── attack geometry ──────────────────────────
+ * Enough attack/defence arithmetic for principle detectors. Pins, x-rays and
+ * capture ORDER are deliberately out of scope (that level of precision belongs
+ * to the engine upstream) — every consumer must treat these as good first-order
+ * approximations, which is exactly the beginner's counting rule they model.
+ */
+
+/** Conventional material values. The king is priced arbitrarily high. */
+export const PIECE_VALUES: Record<PieceType, number> = {
+  p: 1, n: 3, b: 3, r: 5, q: 9, k: 100,
+};
+
+export function otherColor(color: Color): Color {
+  return color === 'white' ? 'black' : 'white';
+}
+
+const KNIGHT_OFFSETS = [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]] as const;
+const KING_OFFSETS = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]] as const;
+const ROOK_DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+const BISHOP_DIRS = [[1, 1], [1, -1], [-1, 1], [-1, -1]] as const;
+
+function sq(file: number, rank: number): string | null {
+  if (file < 0 || file > 7 || rank < 1 || rank > 8) return null;
+  return FILES.charAt(file) + String(rank);
+}
+
+/**
+ * Every square the piece on `from` attacks (or, equally, defends): pawn
+ * diagonals, knight/king offsets, sliders stopping at the first occupied
+ * square (which is included — that's the attacked/defended piece).
+ */
+export function attacks(board: Board, from: string): string[] {
+  const piece = board.squares.get(from);
+  if (!piece) return [];
+  const file = from.charCodeAt(0) - 97;
+  const rank = Number(from.charAt(1));
+  const out: string[] = [];
+
+  if (piece.type === 'p') {
+    const dir = piece.color === 'white' ? 1 : -1;
+    for (const df of [-1, 1]) {
+      const s = sq(file + df, rank + dir);
+      if (s) out.push(s);
+    }
+    return out;
+  }
+  if (piece.type === 'n' || piece.type === 'k') {
+    const offsets = piece.type === 'n' ? KNIGHT_OFFSETS : KING_OFFSETS;
+    for (const [df, dr] of offsets) {
+      const s = sq(file + df, rank + dr);
+      if (s) out.push(s);
+    }
+    return out;
+  }
+  const dirs =
+    piece.type === 'r' ? ROOK_DIRS
+    : piece.type === 'b' ? BISHOP_DIRS
+    : [...ROOK_DIRS, ...BISHOP_DIRS];
+  for (const [df, dr] of dirs) {
+    for (let step = 1; ; step++) {
+      const s = sq(file + df * step, rank + dr * step);
+      if (!s) break;
+      out.push(s);
+      if (board.squares.has(s)) break; // sliders stop at (and include) the first blocker
+    }
+  }
+  return out;
+}
+
+/** Squares of `byColor` pieces that attack/defend `square`. */
+export function attackersOf(board: Board, square: string, byColor: Color): string[] {
+  const out: string[] = [];
+  for (const [from, piece] of board.squares) {
+    if (piece.color !== byColor || from === square) continue;
+    if (attacks(board, from).includes(square)) out.push(from);
+  }
+  return out.sort();
+}
+
+/** Why a piece counts as hanging. */
+export type HangReason = 'undefended' | 'cheaper-attacker' | 'outnumbered';
+
+export interface HangingInfo {
+  readonly square: string;
+  readonly piece: Piece;
+  readonly value: number;
+  readonly attackers: readonly string[];
+  readonly defenders: readonly string[];
+  readonly reason: HangReason;
+}
+
+/**
+ * The colour's pieces that can currently be won by the enemy, with the
+ * beginner-rule reason:
+ *  - `undefended`      — attacked and nobody guards it: free to take;
+ *  - `cheaper-attacker`— a cheaper piece attacks it: recapturing still loses material;
+ *  - `outnumbered`     — more attackers than defenders (first capture not a
+ *                        sacrifice): the exchange sequence wins material.
+ *
+ * Kings are skipped (attacked king = check, a different topic). An enemy KING
+ * is not counted as an attacker of a defended piece (it could never legally
+ * complete that capture). Sorted most-valuable first.
+ */
+export function hangingPieces(board: Board, color: Color): HangingInfo[] {
+  const enemy = otherColor(color);
+  const out: HangingInfo[] = [];
+  for (const [square, piece] of board.squares) {
+    if (piece.color !== color || piece.type === 'k') continue;
+    const rawAttackers = attackersOf(board, square, enemy);
+    if (rawAttackers.length === 0) continue;
+    const defenders = attackersOf(board, square, color);
+    const attackers = defenders.length
+      ? rawAttackers.filter((a) => board.squares.get(a)?.type !== 'k')
+      : rawAttackers;
+    if (attackers.length === 0) continue;
+
+    const value = PIECE_VALUES[piece.type];
+    const cheapest = Math.min(
+      ...attackers.map((a) => PIECE_VALUES[(board.squares.get(a) as Piece).type]),
+    );
+
+    let reason: HangReason | null = null;
+    if (defenders.length === 0) reason = 'undefended';
+    else if (cheapest < value) reason = 'cheaper-attacker';
+    else if (attackers.length > defenders.length && cheapest <= value) reason = 'outnumbered';
+
+    if (reason) out.push({ square, piece, value, attackers, defenders, reason });
+  }
+  return out.sort((a, b) => b.value - a.value);
+}
