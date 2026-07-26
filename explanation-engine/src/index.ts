@@ -53,6 +53,8 @@ export { ExplanationEngine, type UserExplanation } from './engine';
 export {
   attacks,
   attackersOf,
+  attackersOfSquares,
+  attacksFrom,
   canCastle,
   describePiece,
   hangingPieces,
@@ -66,12 +68,14 @@ export {
   parseUciMove,
   pieceName,
   PIECE_VALUES,
+  staticExchangeEval,
   undevelopedMinors,
   type Board,
   type HangingInfo,
   type HangReason,
   type Piece,
   type PieceType,
+  type Squares,
   type UciMove,
 } from './board';
 
@@ -88,3 +92,10 @@ export {
   HangingPieceDetector,
   type HangingSignals,
 } from './detectors/hanging-piece';
+
+export {
+  computeMaterialSignals,
+  MaterialDetector,
+  type MaterialKind,
+  type MaterialSignals,
+} from './detectors/material';

@@ -197,8 +197,17 @@ function sq(file: number, rank: number): string | null {
  * diagonals, knight/king offsets, sliders stopping at the first occupied
  * square (which is included — that's the attacked/defended piece).
  */
-export function attacks(board: Board, from: string): string[] {
-  const piece = board.squares.get(from);
+/** A bare occupancy map — the input SEE mutates as pieces come off the board. */
+export type Squares = ReadonlyMap<string, Piece>;
+
+/**
+ * Every square controlled by the piece on `from`, computed against a raw
+ * occupancy map. Slider rays stop at (and include) the first occupied square,
+ * so removing a blocker from the map naturally reveals x-ray attackers — which
+ * is exactly what SEE needs between captures.
+ */
+export function attacksFrom(squares: Squares, from: string): string[] {
+  const piece = squares.get(from);
   if (!piece) return [];
   const file = from.charCodeAt(0) - 97;
   const rank = Number(from.charAt(1));
@@ -229,20 +238,30 @@ export function attacks(board: Board, from: string): string[] {
       const s = sq(file + df * step, rank + dr * step);
       if (!s) break;
       out.push(s);
-      if (board.squares.has(s)) break; // sliders stop at (and include) the first blocker
+      if (squares.has(s)) break; // sliders stop at (and include) the first blocker
     }
   }
   return out;
 }
 
-/** Squares of `byColor` pieces that attack/defend `square`. */
-export function attackersOf(board: Board, square: string, byColor: Color): string[] {
+/** Squares controlled by the piece on `from`. */
+export function attacks(board: Board, from: string): string[] {
+  return attacksFrom(board.squares, from);
+}
+
+/** Squares of `byColor` pieces that attack/defend `square`, on a raw map. */
+export function attackersOfSquares(squares: Squares, square: string, byColor: Color): string[] {
   const out: string[] = [];
-  for (const [from, piece] of board.squares) {
+  for (const [from, piece] of squares) {
     if (piece.color !== byColor || from === square) continue;
-    if (attacks(board, from).includes(square)) out.push(from);
+    if (attacksFrom(squares, from).includes(square)) out.push(from);
   }
   return out.sort();
+}
+
+/** Squares of `byColor` pieces that attack/defend `square`. */
+export function attackersOf(board: Board, square: string, byColor: Color): string[] {
+  return attackersOfSquares(board.squares, square, byColor);
 }
 
 /** Why a piece counts as hanging. */
@@ -295,4 +314,81 @@ export function hangingPieces(board: Board, color: Color): HangingInfo[] {
     if (reason) out.push({ square, piece, value, attackers, defenders, reason });
   }
   return out.sort((a, b) => b.value - a.value);
+}
+
+/* ────────────────────────── Static Exchange Evaluation ──────────────────────
+ * SEE answers "if this move starts a capture battle on the target square, how
+ * much material does the mover end up ahead or behind?" — assuming both sides
+ * always recapture with their cheapest attacker. It is the correct tool for
+ * grading a single move's trade: winning material, an even trade, a favourable
+ * or unfavourable exchange, or a (material) sacrifice.
+ *
+ * This is a standard swap-list SEE. X-ray reveal is handled for free because
+ * attackers are recomputed from the shrinking occupancy map each step. Pins are
+ * NOT modelled (that precision belongs to the engine upstream); the king may
+ * only recapture when the far side has no answer, so it never "captures into
+ * check".
+ */
+
+/** Cheapest `color` piece that attacks `to` on the given occupancy, or null. */
+function leastValuableAttacker(squares: Squares, to: string, color: Color): string | null {
+  let best: string | null = null;
+  let bestVal = Infinity;
+  for (const [from, piece] of squares) {
+    if (piece.color !== color || from === to) continue;
+    const v = PIECE_VALUES[piece.type];
+    if (v < bestVal && attacksFrom(squares, from).includes(to)) {
+      bestVal = v;
+      best = from;
+    }
+  }
+  return best;
+}
+
+/**
+ * Net material (in pawns, from the mover's point of view) of playing `from`→`to`
+ * and resolving the resulting capture sequence. Positive = the mover comes out
+ * ahead. A non-capturing move that walks onto an attacked square returns a
+ * negative value (the material the opponent can win).
+ */
+export function staticExchangeEval(board: Board, from: string, to: string): number {
+  const mover = board.squares.get(from);
+  if (!mover) return 0;
+  const target = board.squares.get(to);
+  if (target && target.color === mover.color) return 0; // never captures own piece
+
+  const work = new Map(board.squares);
+  const gain: number[] = [target ? PIECE_VALUES[target.type] : 0];
+  work.delete(from);
+  work.set(to, mover);
+
+  let onSquare = PIECE_VALUES[mover.type]; // value of the piece now standing on `to`
+  let side = otherColor(mover.color);
+  let d = 0;
+
+  for (let guard = 0; guard < 32; guard++) {
+    const attackerSq = leastValuableAttacker(work, to, side);
+    if (!attackerSq) break;
+    const attacker = work.get(attackerSq) as Piece;
+    if (attacker.type === 'k') {
+      // The king can only recapture if the far side can no longer answer.
+      const probe = new Map(work);
+      probe.delete(attackerSq);
+      probe.set(to, attacker);
+      if (leastValuableAttacker(probe, to, otherColor(side))) break;
+    }
+    d++;
+    gain[d] = onSquare - (gain[d - 1] as number);
+    onSquare = PIECE_VALUES[attacker.type];
+    work.delete(attackerSq);
+    work.set(to, attacker);
+    side = otherColor(side);
+  }
+
+  // Minimax the swap list back: each side stops capturing once continuing hurts.
+  while (d > 0) {
+    gain[d - 1] = -Math.max(-(gain[d - 1] as number), gain[d] as number);
+    d--;
+  }
+  return (gain[0] as number) || 0; // normalise -0 → 0
 }
