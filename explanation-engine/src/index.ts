@@ -63,6 +63,8 @@ export {
   isDevelopingUci,
   isHomeSquare,
   kingOnHome,
+  kingSquareOf,
+  kingZone,
   otherColor,
   parseFen,
   parseUciMove,
@@ -99,3 +101,11 @@ export {
   type MaterialKind,
   type MaterialSignals,
 } from './detectors/material';
+
+export {
+  analyzeKingSafety,
+  computeKingSafetySignals,
+  KingSafetyDetector,
+  type KingSafety,
+  type KingSafetySignals,
+} from './detectors/king-safety';

@@ -40,6 +40,7 @@ in which case the host falls back to the classifier's stock note).
 | `DevelopmentDetector` | `src/detectors/development.ts` | Concrete detector (tier `heuristic`): opening-phase gate, missed development, wasted tempo, delayed castling — with confidence scoring and coaching tips. Its pure signal function `computeDevelopmentSignals` is exported for reuse. |
 | `HangingPieceDetector` | `src/detectors/hanging-piece.ts` | Concrete detector (tier `verified`): hangs created by the played move (moved piece or piece left behind), and missed captures of free enemy material. Beginner-friendly wording + a counting habit as the coaching tip. Pure signals via `computeHangingSignals`. |
 | `MaterialDetector` | `src/detectors/material.ts` | Concrete detector (tier `verified`): grades the move's trade with SEE — win-material / favorable / equal / unfavorable / lose-material — and splits an intentional **sacrifice** from a **blunder** using the engine's verdict (a brilliant/great classification, or a negligible win% drop). Pure signals via `computeMaterialSignals`. |
+| `KingSafetyDetector` | `src/detectors/king-safety.ts` | Concrete detector (tier `heuristic`): missed castling, unnecessary king moves, weakened pawn shield, files opened beside the king, and a rising king-"danger" score — explained through their strategic consequences. King-safety model exposed as `analyzeKingSafety`; pure signals via `computeKingSafetySignals`. |
 
 ### Detector roster
 

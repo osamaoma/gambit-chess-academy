@@ -116,6 +116,26 @@ export function kingOnHome(board: Board, color: Color): boolean {
   return !!piece && piece.type === 'k' && piece.color === color;
 }
 
+/** The square of the colour's king, or null (should never be null in a legal game). */
+export function kingSquareOf(board: Board, color: Color): string | null {
+  for (const [square, piece] of board.squares) {
+    if (piece.color === color && piece.type === 'k') return square;
+  }
+  return null;
+}
+
+/** The king's square plus its on-board neighbours (the 3×3 "king zone"). */
+export function kingZone(square: string): string[] {
+  const file = square.charCodeAt(0) - 97;
+  const rank = Number(square.charAt(1));
+  const out = [square];
+  for (const [df, dr] of KING_OFFSETS) {
+    const s = sq(file + df, rank + dr);
+    if (s) out.push(s);
+  }
+  return out;
+}
+
 /** Does the colour still hold at least one castling right? */
 export function canCastle(board: Board, color: Color): boolean {
   return color === 'white'
