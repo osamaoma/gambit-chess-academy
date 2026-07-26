@@ -43,6 +43,8 @@ in which case the host falls back to the classifier's stock note).
 | `KingSafetyDetector` | `src/detectors/king-safety.ts` | Concrete detector (tier `heuristic`): missed castling, unnecessary king moves, weakened pawn shield, files opened beside the king, and a rising king-"danger" score — explained through their strategic consequences. King-safety model exposed as `analyzeKingSafety`; pure signals via `computeKingSafetySignals`. |
 | tactics core | `src/tactics.ts` | `detectTactics` — pure motif geometry over two board snapshots, no move generation (mates come from the engine's score). Finds fork, pin, skewer, discovered attack/check, double attack, x-ray, back-rank, mate/mating-net (`verified`) and overloaded / deflection / decoy (`heuristic`). Each finding carries its own tier. |
 | `TacticalDetector` + `TacticalMotifDetector` | `src/detectors/tactical.ts` | The tactic in the **engine's best move**, so it both praises a tactic you found and coaches one you missed. Split by tier into a `verified` detector and a `heuristic` one (register both with `tacticalDetectors()`) so a soft pattern can never speak over a proven tactic. |
+| positional geometry | `src/positional.ts` | Reusable strategic primitives: `pieceMobility`, `isOpenFile`/`isSemiOpenFile`, `bishopQuality`, `isOutpostSquare`/`outpostSupported`, `rooksConnected`. |
+| `PieceActivityDetector` | `src/detectors/piece-activity.ts` | Concrete detector (tier `heuristic`): rook-to-open-file, knight outpost, strong/bad bishop, connected rooks, activation, passive pieces, and missed activation — praising strong moves and flagging passive ones, always through the positional consequence. Pure signals via `computeActivitySignals`. |
 
 ### Detector roster
 
@@ -53,6 +55,7 @@ in which case the host falls back to the classifier's stock note).
 | `hanging-piece` | `verified` | 20 | inaccuracy, mistake, blunder, miss |
 | `tactics-pattern` | `heuristic` | 9 | brilliant, great, best, good, inaccuracy, mistake, blunder, miss |
 | `king-safety` | `heuristic` | 8 | inaccuracy, mistake |
+| `piece-activity` | `heuristic` | 7 | great, best, good, inaccuracy, mistake |
 | `development` | `heuristic` | 5 | inaccuracy, mistake, good |
 
 Because tier beats everything, a proven tactic or material fact always leads the

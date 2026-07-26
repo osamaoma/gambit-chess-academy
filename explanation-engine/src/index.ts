@@ -58,6 +58,7 @@ export {
   attacksFrom,
   canCastle,
   describePiece,
+  fileIndex,
   hangingPieces,
   isCaptureUci,
   isCastlingUci,
@@ -72,7 +73,11 @@ export {
   parseUciMove,
   pieceName,
   PIECE_VALUES,
+  rankIndex,
+  squareAt,
+  squareColor,
   staticExchangeEval,
+  toFen,
   undevelopedMinors,
   type Board,
   type HangingInfo,
@@ -82,6 +87,20 @@ export {
   type Squares,
   type UciMove,
 } from './board';
+
+export {
+  bishopQuality,
+  isOpenFile,
+  isOutpostSquare,
+  isSemiOpenFile,
+  outpostSupported,
+  ownPawnsOnColor,
+  pawnsOnFile,
+  pieceMobility,
+  rooksConnected,
+  type BishopQuality,
+  type FilePawnCount,
+} from './positional';
 
 export {
   computeDevelopmentSignals,
@@ -124,3 +143,9 @@ export {
   TacticalMotifDetector,
   tacticalDetectors,
 } from './detectors/tactical';
+
+export {
+  computeActivitySignals,
+  PieceActivityDetector,
+  type ActivitySignals,
+} from './detectors/piece-activity';

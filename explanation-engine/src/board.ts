@@ -451,3 +451,47 @@ export function staticExchangeEval(board: Board, from: string, to: string): numb
   }
   return (gain[0] as number) || 0; // normalise -0 → 0
 }
+
+/* ────────────────────────── coordinate helpers ──────────────────────────
+ * Small, exported conversions so positional code (and future detectors) share
+ * one implementation instead of re-deriving file/rank math.
+ */
+
+/** 0-based file index of a square ('a'→0 … 'h'→7). */
+export function fileIndex(square: string): number {
+  return square.charCodeAt(0) - 97;
+}
+
+/** 1-based rank of a square ('e4'→4). */
+export function rankIndex(square: string): number {
+  return Number(square.charAt(1));
+}
+
+/** Square name from a 0-based file and 1-based rank, or null if off-board. */
+export function squareAt(file: number, rank: number): string | null {
+  if (file < 0 || file > 7 || rank < 1 || rank > 8) return null;
+  return 'abcdefgh'.charAt(file) + String(rank);
+}
+
+/** The light/dark colour of a square (a1 is dark). */
+export function squareColor(square: string): 'light' | 'dark' {
+  return (fileIndex(square) + rankIndex(square)) % 2 === 0 ? 'light' : 'dark';
+}
+
+/** Serialise a board back to a FEN (clocks fixed at "- 0 1"). Inverse of parseFen for placement/side/castling. */
+export function toFen(board: Board): string {
+  let placement = '';
+  for (let rank = 8; rank >= 1; rank--) {
+    let empty = 0;
+    let row = '';
+    for (let file = 0; file < 8; file++) {
+      const p = board.squares.get(FILES.charAt(file) + String(rank));
+      if (!p) { empty++; continue; }
+      if (empty) { row += empty; empty = 0; }
+      row += p.color === 'white' ? p.type.toUpperCase() : p.type;
+    }
+    if (empty) row += empty;
+    placement += row + (rank > 1 ? '/' : '');
+  }
+  return `${placement} ${board.sideToMove === 'white' ? 'w' : 'b'} ${board.castling || '-'} - 0 1`;
+}
