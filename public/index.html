@@ -4842,6 +4842,12 @@ document.addEventListener('DOMContentLoaded', function(){
 #sec-puzzles .pz-cat.blunder{ background:rgba(224,82,78,.14); color:#c9302c; }
 #sec-puzzles .pz-cat.mistake{ background:rgba(230,138,60,.16); color:#c56a1a; }
 #sec-puzzles .pz-theme{ display:inline-block; padding:2px 9px; border-radius:20px; font-size:10.5px; font-weight:700; letter-spacing:.03em; margin-right:4px; vertical-align:middle; background:rgba(46,125,91,.14); color:var(--green,#1f8a58); }
+#sec-puzzles .pz-time{ font-size:12px; color:var(--ink-2); background:var(--inset-bg,rgba(0,0,0,.05)); border:1px solid var(--rule); border-radius:9px; padding:7px 10px; }
+#sec-puzzles .pz-time b{ color:var(--ink); font-family:'DM Mono',monospace; }
+#sec-puzzles .pz-tc-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-bottom:12px; }
+#sec-puzzles .pz-tc{ padding:9px 4px; border-radius:9px; border:1px solid var(--rule-2); background:transparent; color:var(--ink-2); font-size:12.5px; font-weight:600; cursor:pointer; transition:border-color .15s,color .15s,background .15s; }
+#sec-puzzles .pz-tc:hover{ border-color:var(--green); color:var(--ink); }
+#sec-puzzles .pz-tc.active{ border-color:var(--green); color:var(--green); background:rgba(46,125,91,.08); }
 #sec-puzzles .pz-fb{ min-height:24px; font-size:14.5px; font-weight:700; }
 #sec-puzzles .pz-fb .ok{ color:#1f8a58; }
 #sec-puzzles .pz-fb .no{ color:#c9302c; }
@@ -11072,8 +11078,10 @@ async function fetchLichessGames(username, count, tc, opts){
     max: count,
     opening: 'true',
     pgnInJson: 'true',
+    clocks: 'true',
     ...(tc !== 'all' ? { perfType: tc } : {}),
-    ...(opts && opts.rated ? { rated: 'true' } : {})
+    ...(opts && opts.rated ? { rated: 'true' } : {}),
+    ...(opts && opts.until ? { until: String(opts.until) } : {})   // paging: only games before this ms timestamp
   });
   // Fetch DIRECTLY from lichess.org (CORS-enabled)
   const url = `https://lichess.org/api/games/user/${encodeURIComponent(u)}?${params}`;
@@ -11114,6 +11122,7 @@ async function fetchLichessGames(username, count, tc, opts){
         timeClass: g.speed,
         pgn: g.pgn || '',
         date: g.createdAt ? new Date(g.createdAt).toISOString().slice(0,10) : '',
+        createdAt: g.createdAt || null,
         url: `https://lichess.org/${g.id}`
       };
     } catch { return null; }
@@ -30679,7 +30688,7 @@ window.pcoachReset = function(){ pcoach = { step:'connect', platform: pcoach.pla
 // finds their blunders/mistakes, and turns each into a "find the move
 // you missed" puzzle. Reuses the coach's fetchers + engine + board helpers.
 // ════════════════════════════════════════════════════════
-let PZ = { platform:'chesscom', username:'', busy:false, puzzles:[], idx:0,
+let PZ = { platform:'chesscom', username:'', tc:'all', busy:false, stopScan:false, puzzles:[], idx:0,
   solved:0, failed:0, attempts:0, view:'connect',
   curState:null, curSolved:false, curFailed:false, curTries:0, checking:false, revealed:false,
   explore:false, exploreState:null, evalToken:0 };
@@ -30711,7 +30720,7 @@ function pzRenderConnect(msg){
     <div class="pc-wrap">
       <div class="pc-hero">
         <h1>Puzzles from <em>your own games</em></h1>
-        <p>Connect your Chess.com or Lichess account. Stockfish replays your last 200 games, finds the <strong>tactical</strong> blunders and mistakes you made (skipping anything you played in time trouble), and turns each one into a “find the better move” puzzle — so you drill the exact tactics you actually miss.</p>
+        <p>Connect your Chess.com or Lichess account. Stockfish replays your recent games — going as far back as it needs — and turns <strong>50 tactical</strong> blunders and mistakes (none played in time trouble) into “find the better move” puzzles. Every scan gives you 50 you haven't seen before.</p>
       </div>
       <div class="pz-feats">
         <div class="pz-feat"><div class="ic">🔍</div><h4>Scanned by Stockfish&nbsp;18</h4><p>Every move you played, checked for blunders and mistakes.</p></div>
@@ -30724,7 +30733,10 @@ function pzRenderConnect(msg){
           <button class="${PZ.platform==='lichess'?'active':''}" onclick="pzSetPlatform('lichess')">♞ Lichess</button>
         </div>
         <input id="pz-user" class="pc-user" placeholder="Your ${PZ.platform==='chesscom'?'Chess.com':'Lichess'} username" autocomplete="off" onkeydown="if(event.key==='Enter')pzStart()">
-        <button class="btn btn-gold" style="width:100%" onclick="pzStart()">Make puzzles from my games</button>
+        <div class="pz-tc-row">
+          ${['bullet','blitz','rapid','all'].map(tc => `<button type="button" class="pz-tc ${((PZ.tc||'all')===tc)?'active':''}" data-tc="${tc}" onclick="pzSetTC('${tc}')">${tc==='all'?'All formats':tc[0].toUpperCase()+tc.slice(1)}</button>`).join('')}
+        </div>
+        <button class="btn btn-gold" style="width:100%" onclick="pzStart()">Make 50 puzzles from my games</button>
         ${msg ? `<div class="error-box" style="margin-top:12px">${pzEsc(msg)}</div>` : ''}
         <div class="pc-fine">Rated games only · analysis runs in your browser with Stockfish 18 · nothing is uploaded.</div>
       </div>
@@ -30732,6 +30744,7 @@ function pzRenderConnect(msg){
   const u = document.getElementById('pz-user'); if(u && PZ.username) u.value = PZ.username;
 }
 window.pzSetPlatform = function(p){ PZ.platform = p; pzRenderConnect(); };
+window.pzSetTC = function(tc){ PZ.tc = tc; document.querySelectorAll('.pz-tc').forEach(b => b.classList.toggle('active', b.dataset.tc === tc)); };
 
 // ── Loading screen ──
 function pzRenderLoading(){
@@ -30743,7 +30756,8 @@ function pzRenderLoading(){
       <div class="pz-prog-track"><div class="pz-prog-fill" id="pz-pf"></div></div>
       <div class="pz-prog-text" id="pz-pt">Fetching your recent games…</div>
       <div class="pz-found-live" id="pz-found"></div>
-      <div class="pc-fine">Stockfish is replaying up to your last 200 games move by move, keeping only tactical mistakes you made outside time trouble. This takes a few minutes — keep this tab open.</div>
+      <button class="pz-btn" id="pz-stop" style="width:100%;margin-top:10px;display:none" onclick="pzStopScan()">■ Stop &amp; use what's found</button>
+      <div class="pc-fine">Stockfish is replaying your ${PZ.tc && PZ.tc!=='all' ? PZ.tc+' ' : ''}games move by move — newest first, as far back as it needs — keeping only tactical mistakes made outside time trouble, until it has 50 fresh puzzles. This can take a while — keep this tab open, or stop early.</div>
     </div></div>`;
 }
 
@@ -30894,32 +30908,97 @@ function tdDetect(sB, uci, sA, engine){
 }
 window.tdDetect = tdDetect;
 
-// ── Generate: scan games, collect the user's mistakes as puzzles ──
-async function pzGenerate(games, username, setP){
-  const uname = username.toLowerCase();
-  let book = {};
-  try { book = await (await fetch('/book_moves.json',{cache:'force-cache'})).json(); } catch(e){}
-  const cache = Object.create(null);
-  let evals = 0;
-  const TARGET = 25, MAX_EVALS = 1000, TIME_TROUBLE = 20;   // <20s left = time trouble → excluded
+// ── Paged game fetcher: keeps pulling OLDER games until the scan has enough ──
+// next(n) resolves to up to n games (newest-first, rated, matching the chosen
+// time control) and [] once the account's history is exhausted.
+function pzMakeFetcher(platform, username, tc){
+  if(platform === 'chesscom'){
+    const u = username.toLowerCase().trim();
+    let archives = null, ai = -1, buf = [];
+    return async function next(n){
+      if(!archives){
+        const r = await fetch(`https://api.chess.com/pub/player/${encodeURIComponent(u)}/games/archives`);
+        if(r.status === 404) throw new Error(`Chess.com has no user named "${username}".`);
+        if(!r.ok) throw new Error(`Chess.com API returned status ${r.status} — try again in a minute.`);
+        archives = (await r.json()).archives || [];
+        ai = archives.length - 1;
+        if(!archives.length) throw new Error(`"${username}" exists on Chess.com but has no public games yet.`);
+      }
+      while(buf.length < n && ai >= 0){
+        try {
+          const r = await fetch(archives[ai]);
+          if(r.ok){
+            let batch = ((await r.json()).games || []);
+            if(tc !== 'all') batch = batch.filter(g => g.time_class === tc);
+            batch = batch.filter(g => g.rated !== false && g.pgn);
+            batch.reverse();   // newest of the month first
+            buf = buf.concat(batch.map(g => {
+              const headers = {}; const hr = /\[(\w+)\s+"([^"]*)"\]/g; let m;
+              while((m = hr.exec(g.pgn)) !== null) headers[m[1]] = m[2];
+              return { white: g.white?.username || '?', black: g.black?.username || '?',
+                rated: g.rated !== false,
+                result: g.white?.result === 'win' ? '1-0' : g.black?.result === 'win' ? '0-1' : '1/2-1/2',
+                opening: headers.Opening || headers.ECOUrl?.split('/').pop()?.replace(/-/g,' ') || 'Unknown',
+                timeClass: g.time_class, pgn: g.pgn, date: headers.Date || '', url: g.url };
+            }));
+          }
+        } catch(e){ /* skip a bad month, keep walking */ }
+        ai--;
+      }
+      return buf.splice(0, n);
+    };
+  }
+  // lichess: page with `until` (ms timestamp of the oldest game seen so far)
+  let until = null, done = false;
+  return async function next(n){
+    if(done) return [];
+    let batch = [];
+    try { batch = await fetchLichessGames(username, n, tc, { rated:true, ...(until ? { until } : {}) }); }
+    catch(e){
+      if(until) { done = true; return []; }   // pages exhausted — the "no games" throw means end-of-history
+      throw e;                                 // first page failing is a real error (bad user, rate limit…)
+    }
+    if(!batch.length){ done = true; return []; }
+    const oldest = batch.reduce((a,g) => (g.createdAt && (!a || g.createdAt < a)) ? g.createdAt : a, null);
+    if(oldest) until = oldest - 1; else done = true;   // no timestamps → can't page further
+    return batch;
+  };
+}
+
+// ── Persistent "already used" set so every scan yields NEW puzzles ──
+function pzSeenLoad(){ try { return new Set(JSON.parse(localStorage.getItem('gambit_puzzles_seen')||'[]')); } catch(e){ return new Set(); } }
+function pzSeenSave(set){ try { localStorage.setItem('gambit_puzzles_seen', JSON.stringify([...set].slice(-3000))); } catch(e){} }
+function pzFmtT(s){ s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+window.pzStopScan = function(){ PZ.stopScan = true; const b = document.getElementById('pz-stop'); if(b){ b.disabled = true; b.textContent = 'Stopping…'; } };
+
+// ── Scan ONE batch of games, appending tactical puzzles into ctx. The caller
+// (pzStart) keeps feeding batches from the paged fetcher until TARGET is hit,
+// the history runs out, or the user presses Stop. ──
+const PZ_TARGET = 50, PZ_TIME_TROUBLE = 20;   // <20s left = time trouble → excluded
+async function pzScanGames(games, ctx, setP){
+  const uname = ctx.uname;
+  const book = ctx.book, cache = ctx.cache;
   async function ev(fen){
     if(cache[fen]) return cache[fen];
     const r = await evalPosition(fen, 12, 1, 240);
-    cache[fen] = r; evals++;
+    cache[fen] = r; ctx.evals++;
     await new Promise(rr => setTimeout(rr, 0));   // keep the UI responsive
     return r;
   }
-  const puzzles = [], seen = new Set();
-  let scanned = 0, skippedNoClock = 0;
+  const puzzles = ctx.puzzles, seen = ctx.seen;
   for(let gi = 0; gi < games.length; gi++){
-    if(puzzles.length >= TARGET || evals >= MAX_EVALS) break;
+    if(puzzles.length >= PZ_TARGET || PZ.stopScan) break;
     const game = games[gi];
+    ctx.gamesSeen++;
     // Only games with clock data — the <20s time-trouble filter needs it.
     let clocks = [];
     try { clocks = extractMoveTimes(game.pgn) || []; } catch(e){ clocks = []; }
-    if(!clocks.length){ skippedNoClock++; continue; }
-    scanned++;
-    setP(6 + (gi / games.length) * 90, `Game ${gi + 1} / ${games.length} · ${evals} positions checked`, puzzles.length);
+    if(!clocks.length){ ctx.skippedNoClock++; continue; }
+    ctx.scanned++;
+    // time-control (initial+increment) for Game-Review-style per-move time spent
+    let tcInitial = 0, tcInc = 0;
+    try { const tm = String((game.pgn.match(/\[TimeControl "([^"]+)"\]/)||[])[1]||'').match(/^(\d+)(?:\+(\d+))?/); if(tm){ tcInitial = +tm[1]; tcInc = tm[2] ? +tm[2] : 0; } } catch(e){}
+    setP(6 + Math.min(1, puzzles.length / PZ_TARGET) * 90, `Game ${ctx.gamesSeen} · ${ctx.evals} positions checked`, puzzles.length);
     let moveSANs;
     try { ({ moveSANs } = parsePGN(game.pgn)); } catch(e){ continue; }
     if(!moveSANs || moveSANs.length < 8) continue;
@@ -30930,29 +31009,34 @@ async function pzGenerate(games, username, setP){
     const ucis = hist.slice(1).map(h => (h.from||'')+(h.to||''));
     let prev = await ev(stateToFEN(hist[0].state));
     for(let i = 1; i <= plies; i++){
-      if(puzzles.length >= TARGET || evals >= MAX_EVALS) break;
+      if(puzzles.length >= PZ_TARGET || PZ.stopScan) break;
       const cur = await ev(stateToFEN(hist[i].state));
       const userMove = ((i % 2 === 1) === isWhite);
       // skip moves the user played in time trouble (clock remaining after the move < 20s)
       const clkAfter = clocks[i-1];
-      const inTimeTrouble = (typeof clkAfter === 'number' && clkAfter < TIME_TROUBLE);
+      const inTimeTrouble = (typeof clkAfter === 'number' && clkAfter < PZ_TIME_TROUBLE);
       if(userMove && !inTimeTrouble && prev.bestMove){
         const pb = isWhite ? (prev.score||0) : -(prev.score||0);   // user-perspective eval before the move
         const pa = isWhite ? (cur.score||0)  : -(cur.score||0);    // …and after
         const wDrop = winPct(pb) - winPct(pa);
         const fenB = stateToFEN(hist[i-1].state);
+        const seenKey = fenB.split(' ').slice(0,4).join(' ');   // persistent across scans → always NEW puzzles
         const prefix = ucis.slice(0, i-1).join(',');
         const inBook = !!(book[prefix] && book[prefix][ucis[i-1]]);
         const bestIsPlayed = (prev.bestMove||'').slice(0,4) === ucis[i-1];
         // A real mistake, not already lost/won, a clear engine improvement, unseen position…
-        if(!inBook && wDrop >= 12 && pb > -3.0 && pb < 8.0 && !bestIsPlayed && !seen.has(fenB)){
+        if(!inBook && wDrop >= 12 && pb > -3.0 && pb < 8.0 && !bestIsPlayed && !seen.has(seenKey)){
           // …and TACTICAL: the move the user missed must be a real tactic.
           let sAfterBest = null;
           try { const bu = prev.bestMove; sAfterBest = applyMove(hist[i-1].state, { from:bu.slice(0,2), to:bu.slice(2,4), promotion: bu.length>4?bu[4].toUpperCase():null }); } catch(e){}
           const tac = sAfterBest ? tdDetect(hist[i-1].state, prev.bestMove, sAfterBest, { isMate:prev.isMate, mateIn:prev.mateIn, pv:prev.pv }) : { motifs:[], primary:null };
           const qualifies = tac.motifs.some(m => m.confidence >= 0.6);
           if(qualifies){
-            seen.add(fenB);
+            seen.add(seenKey);
+            // per-move time spent, Game-Review convention: prev same-side clock − this clock + increment
+            const prevClk = (i <= 2) ? (tcInitial || null) : clocks[i-3];
+            const timeSpent = (typeof clkAfter === 'number' && typeof prevClk === 'number')
+              ? Math.max(0, prevClk - clkAfter + tcInc) : null;
             puzzles.push({
               fen: fenB, userWhite: isWhite,
               solUci: prev.bestMove,
@@ -30963,20 +31047,21 @@ async function pzGenerate(games, username, setP){
               wDrop, cat: wDrop >= 20 ? 'blunder' : 'mistake',
               themes: tac.motifs.map(m => m.label),
               primaryTheme: tac.primary ? tac.primary.label : null,
+              clockLeft: (typeof clkAfter === 'number') ? clkAfter : null,
+              timeSpent,
+              timeClass: game.timeClass || null,
               moveNo: Math.ceil(i/2),
               opp: isWhite ? (game.black||'?') : (game.white||'?'),
               result: game.result, url: game.url,
               opening: (typeof normalizeOpeningName === 'function' ? normalizeOpeningName(game.opening||'Unknown') : (game.opening||'Unknown'))
             });
+            setP(6 + Math.min(1, puzzles.length / PZ_TARGET) * 90, `Game ${ctx.gamesSeen} · ${ctx.evals} positions checked`, puzzles.length);
           }
         }
       }
       prev = cur;
     }
   }
-  puzzles.sort((a,b) => (b.wDrop - a.wDrop));
-  puzzles._scanned = scanned; puzzles._skippedNoClock = skippedNoClock;
-  return puzzles;
 }
 
 window.pzStart = async function(){
@@ -30985,45 +31070,57 @@ window.pzStart = async function(){
   if(!username){ if(input) input.focus(); return; }
   if(!window.gambitGate('Create a free account to turn your games into puzzles.', function(){ window.pzStart(); })) return;
   if(PZ.busy) return;
-  PZ.busy = true; PZ.username = username;
+  PZ.busy = true; PZ.stopScan = false; PZ.username = username;
+  try { const sel = document.querySelector('.pz-tc.active'); if(sel) PZ.tc = sel.dataset.tc || 'all'; } catch(e){}
   pzRenderLoading();
   const setP = (pct, txt, found) => {
     const f = document.getElementById('pz-pf'), t = document.getElementById('pz-pt'), fo = document.getElementById('pz-found');
     if(f) f.style.width = Math.round(pct) + '%';
     if(t) t.textContent = txt;
-    if(fo && typeof found === 'number') fo.textContent = found ? `${found} puzzle${found===1?'':'s'} found so far` : '';
+    if(fo && typeof found === 'number') fo.textContent = found ? `${found} / ${PZ_TARGET} puzzles found` : '';
+    const stop = document.getElementById('pz-stop');
+    if(stop && typeof found === 'number' && found >= 1 && !PZ.stopScan) stop.style.display = '';
   };
   try {
-    const maxGames = 200;
-    let games;
-    if(PZ.platform === 'chesscom'){
-      games = await fetchChessComGames(username, maxGames * 2, 'all');
-      games = games.filter(g => g.rated !== false).slice(0, maxGames);
-    } else {
-      games = await fetchLichessGames(username, maxGames, 'all', { rated: true });
-    }
-    const uname = username.toLowerCase();
-    games = games.filter(g => g.pgn && ((g.white||'').toLowerCase() === uname || (g.black||'').toLowerCase() === uname));
-    if(games.length < 3) throw new Error(`Only found ${games.length} rated games for "${username}" — need at least 3.`);
-    setP(4, 'Waking up Stockfish 18…', 0);
+    setP(2, 'Waking up Stockfish 18…', 0);
     try { if(!sfWorker) await initStockfish(); } catch(e){}
     if(!sfWorker || !sfReady) throw new Error('The Stockfish engine failed to load in this browser. Try reloading the page.');
-    const puzzles = await pzGenerate(games, username, setP);
-    PZ.busy = false;
+    const uname = username.toLowerCase();
+    let book = {};
+    try { book = await (await fetch('/book_moves.json',{cache:'force-cache'})).json(); } catch(e){}
+    const ctx = { uname, book, cache: Object.create(null), puzzles: [], seen: pzSeenLoad(),
+                  evals: 0, gamesSeen: 0, scanned: 0, skippedNoClock: 0 };
+    const fetcher = pzMakeFetcher(PZ.platform, username, PZ.tc || 'all');
+    const GAMES_CAP = 1000;   // soft safety so a huge archive can't scan forever
+    let exhausted = false;
+    while(ctx.puzzles.length < PZ_TARGET && !PZ.stopScan && ctx.gamesSeen < GAMES_CAP){
+      let batch = [];
+      try { batch = await fetcher(25); }
+      catch(e){ if(ctx.gamesSeen === 0) throw e; break; }   // first-page errors are real; later ones end the scan
+      if(!batch.length){ exhausted = true; break; }
+      const own = batch.filter(g => g.pgn && ((g.white||'').toLowerCase() === uname || (g.black||'').toLowerCase() === uname));
+      await pzScanGames(own, ctx, setP);
+    }
+    pzSeenSave(ctx.seen);
+    PZ.busy = false; PZ.stopScan = false;
+    const puzzles = ctx.puzzles;
+    puzzles.sort((a,b) => (b.wDrop - a.wDrop));
     if(!puzzles.length){
-      const noClock = puzzles._skippedNoClock || 0;
-      const msg = (puzzles._scanned || 0) === 0 && noClock > 0
-        ? `None of your ${games.length} games have move-clock data, so the time-trouble filter can't run. Games from Lichess (or Chess.com with clocks) work best.`
-        : `We scanned your games but didn't find tactical blunders played outside time trouble — you may have been playing cleanly! Try a different account.`;
+      const tcLab = PZ.tc && PZ.tc !== 'all' ? ` ${PZ.tc}` : '';
+      const msg = ctx.scanned === 0 && ctx.skippedNoClock > 0
+        ? `None of the ${ctx.skippedNoClock}${tcLab} games we checked have move-clock data, so the time-trouble filter can't run. Lichess games (or Chess.com games with clocks) work best.`
+        : ctx.gamesSeen === 0
+          ? `No${tcLab} rated games found for "${username}". Try another time control.`
+          : `We scanned ${ctx.gamesSeen}${tcLab} games but found no NEW tactical mistakes outside time trouble${exhausted ? ' — your whole history is either already covered or clean' : ''}. Try another time control.`;
       pzRenderConnect(msg);
       return;
     }
     PZ.puzzles = puzzles;
-    const rec = { username, platform: PZ.platform, generatedAt: Date.now(), puzzles };
+    const rec = { username, platform: PZ.platform, tc: PZ.tc || 'all', generatedAt: Date.now(), gamesScanned: ctx.gamesSeen, puzzles };
     pzStore(rec);
     pzRenderReady(rec, true);
   } catch(e){
-    PZ.busy = false;
+    PZ.busy = false; PZ.stopScan = false;
     pzRenderConnect(e && e.message || 'Something went wrong. Try again.');
   }
 };
@@ -31042,9 +31139,9 @@ function pzRenderReady(saved, fresh){
       <div style="font-size:34px;margin-bottom:6px">${fresh?'🎉':'🎮'}</div>
       <div style="font-family:var(--font-display,'Helvetica Neue',Arial);font-size:22px;margin-bottom:8px">${fresh?'Your puzzles are ready':'Puzzles from your games'}</div>
       <p style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px">
-        ${total} puzzle${total===1?'':'s'} built from <b style="color:var(--text)">${pzEsc(saved&&saved.username||PZ.username)}</b>'s games —
+        ${total} tactical puzzle${total===1?'':'s'} built from <b style="color:var(--text)">${pzEsc(saved&&saved.username||PZ.username)}</b>'s games —
         <b style="color:#e0524e">${bl} blunder${bl===1?'':'s'}</b> and <b style="color:#e08a3c">${mi} mistake${mi===1?'':'s'}</b> to fix.
-        ${when?`<br><span style="font-size:12px;color:var(--text3,var(--text2))">Generated ${when}</span>`:''}
+        ${when?`<br><span style="font-size:12px;color:var(--text3,var(--text2))">Generated ${when}${saved&&saved.gamesScanned?` · ${saved.gamesScanned} games scanned`:''}${saved&&saved.tc&&saved.tc!=='all'?` · ${pzEsc(saved.tc)}`:''}</span>`:''}
       </p>
       <button class="btn btn-gold" style="width:100%;margin-bottom:8px" onclick="pzBeginSolving()">${fresh?'Start solving →':'Solve again →'}</button>
       <button class="pz-btn" style="width:100%" onclick="pzRegenerate()">↻ Scan new games</button>
@@ -31090,6 +31187,7 @@ function pzRenderSolve(){
       <div class="pz-side">
         <div class="pz-tomove"><span class="chip" style="background:${chipCol}"></span> ${sideName} to move — find the best move</div>
         <div class="pz-ctx"><span class="pz-cat ${p.cat}">${p.cat}</span>${(p.themes&&p.themes.length)?p.themes.slice(0,3).map(t=>`<span class="pz-theme">${pzEsc(t)}</span>`).join(''):''} From your game vs <b>${pzEsc(p.opp)}</b> · move ${p.moveNo}. You played <b>${pzEsc(p.played)}</b>, missing a tactic. What should you have played instead?</div>
+        ${(typeof p.clockLeft==='number') ? `<div class="pz-time">⏱ You had <b>${pzFmtT(p.clockLeft)}</b> on the clock${(typeof p.timeSpent==='number')?` and spent <b>${Math.round(p.timeSpent)}s</b> on this move`:''} — no time pressure.</div>` : ''}
         <div class="pz-fb" id="pz-fb"></div>
         <div class="pz-actions" id="pz-actions">
           <button class="pz-btn" onclick="pzReveal()">Reveal</button>
