@@ -138,3 +138,140 @@ export function rooksConnected(board: Board, color: Color): boolean {
   }
   return false;
 }
+
+/* ────────────────────────── pawn structure ──────────────────────────
+ * Atomic structural predicates shared by the pawn-structure detector.
+ * Standard textbook definitions; each is pure geometry over the pawns.
+ */
+
+/** Squares of `color`'s pawns, sorted. */
+export function pawnSquares(board: Board, color: Color): string[] {
+  const out: string[] = [];
+  for (const [sq, p] of board.squares) {
+    if (p.color === color && p.type === 'p') out.push(sq);
+  }
+  return out.sort();
+}
+
+/** The two squares a pawn on `square` attacks (forward diagonals). */
+function pawnAttackSquares(square: string, color: Color): string[] {
+  const f = fileIndex(square);
+  const r = rankIndex(square);
+  const dir = color === 'white' ? 1 : -1;
+  const out: string[] = [];
+  for (const df of [-1, 1]) {
+    const s = squareAt(f + df, r + dir);
+    if (s) out.push(s);
+  }
+  return out;
+}
+
+/** Is `square` attacked by one of the enemy's pawns? */
+export function pawnAttackedByEnemyPawn(board: Board, square: string, color: Color): boolean {
+  const enemy = otherColor(color);
+  for (const [sq, p] of board.squares) {
+    if (p.color === enemy && p.type === 'p' && pawnAttackSquares(sq, enemy).includes(square)) return true;
+  }
+  return false;
+}
+
+/** No friendly pawn on either adjacent file — the isolani. */
+export function isIsolatedPawn(board: Board, square: string, color: Color): boolean {
+  const f = fileIndex(square);
+  for (const [sq, p] of board.squares) {
+    if (p.color === color && p.type === 'p' && sq !== square && Math.abs(fileIndex(sq) - f) === 1) return false;
+  }
+  return true;
+}
+
+/** Files carrying two or more of `color`'s pawns. */
+export function doubledPawnFiles(board: Board, color: Color): number[] {
+  const counts = new Array(8).fill(0);
+  for (const [sq, p] of board.squares) {
+    if (p.color === color && p.type === 'p') counts[fileIndex(sq)]++;
+  }
+  const out: number[] = [];
+  for (let f = 0; f < 8; f++) if (counts[f] >= 2) out.push(f);
+  return out;
+}
+
+/** No enemy pawn on the same or adjacent files can stop this pawn from queening. */
+export function isPassedPawn(board: Board, square: string, color: Color): boolean {
+  const f = fileIndex(square);
+  const r = rankIndex(square);
+  const enemy = otherColor(color);
+  for (const [sq, p] of board.squares) {
+    if (p.color !== enemy || p.type !== 'p' || Math.abs(fileIndex(sq) - f) > 1) continue;
+    const er = rankIndex(sq);
+    if (color === 'white' ? er > r : er < r) return false; // an enemy pawn ahead can blockade/capture
+  }
+  return true;
+}
+
+/**
+ * Backward pawn: it has a neighbour on an adjacent file but every such neighbour
+ * has advanced PAST it (so no pawn can drop back to defend it), and the square
+ * in front is covered by an enemy pawn (so it can't advance to catch up).
+ */
+export function isBackwardPawn(board: Board, square: string, color: Color): boolean {
+  const f = fileIndex(square);
+  const r = rankIndex(square);
+  let hasNeighbour = false;
+  for (const [sq, p] of board.squares) {
+    if (p.color !== color || p.type !== 'p' || Math.abs(fileIndex(sq) - f) !== 1) continue;
+    hasNeighbour = true;
+    const nr = rankIndex(sq);
+    if (color === 'white' ? nr <= r : nr >= r) return false; // a neighbour can support it → not backward
+  }
+  if (!hasNeighbour) return false; // no neighbours at all = isolated, not backward
+  const stopRank = color === 'white' ? r + 1 : r - 1;
+  const stop = squareAt(f, stopRank);
+  return !!stop && pawnAttackedByEnemyPawn(board, stop, color);
+}
+
+/** Pawn chains (diagonally-linked groups of >=2 pawns) for `color`. */
+export function pawnChains(board: Board, color: Color): string[][] {
+  const pawns = pawnSquares(board, color);
+  const set = new Set(pawns);
+  const adj = new Map<string, string[]>(pawns.map((p) => [p, [] as string[]]));
+  for (const a of pawns) {
+    for (const t of pawnAttackSquares(a, color)) {
+      if (set.has(t)) { adj.get(a)!.push(t); adj.get(t)!.push(a); }
+    }
+  }
+  const seen = new Set<string>();
+  const chains: string[][] = [];
+  for (const start of pawns) {
+    if (seen.has(start)) continue;
+    const comp: string[] = [];
+    const stack = [start];
+    seen.add(start);
+    while (stack.length) {
+      const x = stack.pop()!;
+      comp.push(x);
+      for (const y of adj.get(x)!) if (!seen.has(y)) { seen.add(y); stack.push(y); }
+    }
+    chains.push(comp);
+  }
+  return chains.filter((c) => c.length >= 2);
+}
+
+/** The base (rearmost pawn) of a chain for `color`. */
+export function chainBase(chain: readonly string[], color: Color): string {
+  return [...chain].sort((a, b) =>
+    color === 'white' ? rankIndex(a) - rankIndex(b) : rankIndex(b) - rankIndex(a),
+  )[0]!;
+}
+
+/** Pawn counts on the queenside (files a-c) and kingside (f-h). */
+export function wingPawnCounts(board: Board, color: Color): { queenside: number; kingside: number } {
+  let queenside = 0;
+  let kingside = 0;
+  for (const [sq, p] of board.squares) {
+    if (p.color !== color || p.type !== 'p') continue;
+    const f = fileIndex(sq);
+    if (f <= 2) queenside++;
+    else if (f >= 5) kingside++;
+  }
+  return { queenside, kingside };
+}

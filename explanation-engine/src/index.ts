@@ -90,14 +90,23 @@ export {
 
 export {
   bishopQuality,
+  chainBase,
+  doubledPawnFiles,
+  isBackwardPawn,
+  isIsolatedPawn,
   isOpenFile,
   isOutpostSquare,
+  isPassedPawn,
   isSemiOpenFile,
   outpostSupported,
   ownPawnsOnColor,
+  pawnAttackedByEnemyPawn,
+  pawnChains,
   pawnsOnFile,
+  pawnSquares,
   pieceMobility,
   rooksConnected,
+  wingPawnCounts,
   type BishopQuality,
   type FilePawnCount,
 } from './positional';
@@ -149,3 +158,9 @@ export {
   PieceActivityDetector,
   type ActivitySignals,
 } from './detectors/piece-activity';
+
+export {
+  computeStructureSignals,
+  PawnStructureDetector,
+  type StructureSignals,
+} from './detectors/pawn-structure';

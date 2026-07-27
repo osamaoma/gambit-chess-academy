@@ -45,6 +45,7 @@ in which case the host falls back to the classifier's stock note).
 | `TacticalDetector` + `TacticalMotifDetector` | `src/detectors/tactical.ts` | The tactic in the **engine's best move**, so it both praises a tactic you found and coaches one you missed. Split by tier into a `verified` detector and a `heuristic` one (register both with `tacticalDetectors()`) so a soft pattern can never speak over a proven tactic. |
 | positional geometry | `src/positional.ts` | Reusable strategic primitives: `pieceMobility`, `isOpenFile`/`isSemiOpenFile`, `bishopQuality`, `isOutpostSquare`/`outpostSupported`, `rooksConnected`. |
 | `PieceActivityDetector` | `src/detectors/piece-activity.ts` | Concrete detector (tier `heuristic`): rook-to-open-file, knight outpost, strong/bad bishop, connected rooks, activation, passive pieces, and missed activation — praising strong moves and flagging passive ones, always through the positional consequence. Pure signals via `computeActivitySignals`. |
+| `PawnStructureDetector` | `src/detectors/pawn-structure.ts` | Concrete detector (tier `heuristic`): works on the structural CHANGE a move makes — praising a new passed pawn, connected passers, a wing majority, damage to the enemy skeleton, or a strong chain; flagging a self-inflicted isolated/doubled/backward pawn or a weak chain. Structural primitives (`isPassedPawn`, `isBackwardPawn`, `pawnChains`, `wingPawnCounts`, …) live in `positional.ts`. |
 
 ### Detector roster
 
@@ -56,6 +57,7 @@ in which case the host falls back to the classifier's stock note).
 | `tactics-pattern` | `heuristic` | 9 | brilliant, great, best, good, inaccuracy, mistake, blunder, miss |
 | `king-safety` | `heuristic` | 8 | inaccuracy, mistake |
 | `piece-activity` | `heuristic` | 7 | great, best, good, inaccuracy, mistake |
+| `pawn-structure` | `heuristic` | 6 | great, best, good, inaccuracy, mistake |
 | `development` | `heuristic` | 5 | inaccuracy, mistake, good |
 
 Because tier beats everything, a proven tactic or material fact always leads the
