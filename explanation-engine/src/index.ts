@@ -90,6 +90,9 @@ export {
 
 export {
   bishopQuality,
+  CENTER_SQUARES,
+  centralControlCount,
+  centralPawnCount,
   chainBase,
   doubledPawnFiles,
   isBackwardPawn,
@@ -101,6 +104,7 @@ export {
   outpostSupported,
   ownPawnsOnColor,
   pawnAttackedByEnemyPawn,
+  pawnAttackSquares,
   pawnChains,
   pawnsOnFile,
   pawnSquares,
@@ -164,3 +168,10 @@ export {
   PawnStructureDetector,
   type StructureSignals,
 } from './detectors/pawn-structure';
+
+export {
+  computeCenterSignals,
+  CenterControlDetector,
+  isCentralLever,
+  type CenterSignals,
+} from './detectors/center-control';

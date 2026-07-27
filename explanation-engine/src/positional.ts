@@ -9,6 +9,7 @@
  */
 
 import {
+  attackersOfSquares,
   attacksFrom,
   Board,
   fileIndex,
@@ -154,7 +155,7 @@ export function pawnSquares(board: Board, color: Color): string[] {
 }
 
 /** The two squares a pawn on `square` attacks (forward diagonals). */
-function pawnAttackSquares(square: string, color: Color): string[] {
+export function pawnAttackSquares(square: string, color: Color): string[] {
   const f = fileIndex(square);
   const r = rankIndex(square);
   const dir = color === 'white' ? 1 : -1;
@@ -274,4 +275,33 @@ export function wingPawnCounts(board: Board, color: Color): { queenside: number;
     else if (f >= 5) kingside++;
   }
   return { queenside, kingside };
+}
+
+/* ────────────────────────── centre control ──────────────────────────
+ * The classical small centre — the four squares d4/e4/d5/e5 — and how much
+ * of it a colour controls (occupies or attacks). Shared so the centre-control
+ * detector (and any future space detector) agree on one definition.
+ */
+
+/** The four central squares. */
+export const CENTER_SQUARES = ['d4', 'e4', 'd5', 'e5'] as const;
+
+/** How many central squares `color` controls (occupies with a piece OR attacks). 0–4. */
+export function centralControlCount(board: Board, color: Color): number {
+  let n = 0;
+  for (const sq of CENTER_SQUARES) {
+    const occ = board.squares.get(sq);
+    if ((occ && occ.color === color) || attackersOfSquares(board.squares, sq, color).length > 0) n++;
+  }
+  return n;
+}
+
+/** How many central squares `color` occupies with a PAWN. 0–4. */
+export function centralPawnCount(board: Board, color: Color): number {
+  let n = 0;
+  for (const sq of CENTER_SQUARES) {
+    const p = board.squares.get(sq);
+    if (p && p.color === color && p.type === 'p') n++;
+  }
+  return n;
 }

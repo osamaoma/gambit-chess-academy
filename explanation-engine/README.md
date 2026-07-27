@@ -46,6 +46,7 @@ in which case the host falls back to the classifier's stock note).
 | positional geometry | `src/positional.ts` | Reusable strategic primitives: `pieceMobility`, `isOpenFile`/`isSemiOpenFile`, `bishopQuality`, `isOutpostSquare`/`outpostSupported`, `rooksConnected`. |
 | `PieceActivityDetector` | `src/detectors/piece-activity.ts` | Concrete detector (tier `heuristic`): rook-to-open-file, knight outpost, strong/bad bishop, connected rooks, activation, passive pieces, and missed activation — praising strong moves and flagging passive ones, always through the positional consequence. Pure signals via `computeActivitySignals`. |
 | `PawnStructureDetector` | `src/detectors/pawn-structure.ts` | Concrete detector (tier `heuristic`): works on the structural CHANGE a move makes — praising a new passed pawn, connected passers, a wing majority, damage to the enemy skeleton, or a strong chain; flagging a self-inflicted isolated/doubled/backward pawn or a weak chain. Structural primitives (`isPassedPawn`, `isBackwardPawn`, `pawnChains`, `wingPawnCounts`, …) live in `positional.ts`. |
+| `CenterControlDetector` | `src/detectors/center-control.ts` | Concrete detector (tier `heuristic`): measures the change in a mover's grip on d4/e4/d5/e5 — praising occupying the centre, a central pawn lever (`contest`), or a firm grip (`strong`); flagging surrendered control (`loss`) or a missed central break. Centre primitives (`CENTER_SQUARES`, `centralControlCount`, `isCentralLever`) in `positional.ts` / the detector. |
 
 ### Detector roster
 
@@ -58,6 +59,7 @@ in which case the host falls back to the classifier's stock note).
 | `king-safety` | `heuristic` | 8 | inaccuracy, mistake |
 | `piece-activity` | `heuristic` | 7 | great, best, good, inaccuracy, mistake |
 | `pawn-structure` | `heuristic` | 6 | great, best, good, inaccuracy, mistake |
+| `center-control` | `heuristic` | 6 | great, best, good, inaccuracy, mistake |
 | `development` | `heuristic` | 5 | inaccuracy, mistake, good |
 
 Because tier beats everything, a proven tactic or material fact always leads the
