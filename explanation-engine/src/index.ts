@@ -175,3 +175,11 @@ export {
   isCentralLever,
   type CenterSignals,
 } from './detectors/center-control';
+
+export {
+  computeEndgameSignals,
+  EndgameDetector,
+  haveDirectOpposition,
+  isEndgame,
+  type EndgameSignals,
+} from './detectors/endgame';
