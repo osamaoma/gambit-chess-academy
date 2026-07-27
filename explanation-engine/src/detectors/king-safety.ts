@@ -31,11 +31,11 @@ import {
   kingSquareOf,
   kingZone,
   otherColor,
-  parseFen,
   parseUciMove,
 } from '../board';
+import { boardsOf } from '../context';
 import { Color } from '../types';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { MoveClassification, MoveContext } from '../types';
 
 /** A transparent snapshot of one side's king safety in a position. */
@@ -69,10 +69,14 @@ const squareAt = (file: number, rank: number): string | null =>
  *    for enemy rooks/queen;
  *  - attackers: enemy pieces already hitting the 3×3 zone around the king.
  */
+const EMPTY_SAFETY: KingSafety = {
+  square: '', shieldFiles: [], shieldPresent: 0, openFiles: [], fullyOpenFiles: [], attackers: 0, danger: 0,
+};
+
 export function analyzeKingSafety(board: Board, color: Color): KingSafety {
   const square = kingSquareOf(board, color);
   if (!square) {
-    return { square: '', shieldFiles: [], shieldPresent: 0, openFiles: [], fullyOpenFiles: [], attackers: 0, danger: 0 };
+    return EMPTY_SAFETY;
   }
   const kf = fileIdx(square);
   const dir = color === 'white' ? 1 : -1;
@@ -142,10 +146,19 @@ function castlesSafely(board: Board, uci: string): boolean {
   }
 }
 
+/** Benign "king is fine" signals — used when the position can't be parsed. */
+const NO_KS_SIGNAL = (bestUci: string): KingSafetySignals => ({
+  before: EMPTY_SAFETY, after: EMPTY_SAFETY, missedCastling: false,
+  unnecessaryKingMove: false, shieldWeakened: false, fileOpened: false,
+  moreAttackers: false, weakened: false, newOpenFile: null, bestUci, castleUci: null,
+});
+
 /** Pure signal computation — exported for reuse and direct testing. */
 export function computeKingSafetySignals(ctx: MoveContext): KingSafetySignals {
-  const b = parseFen(ctx.fenBefore);
-  const a = parseFen(ctx.fenAfter);
+  const boards = boardsOf(ctx);
+  if (!boards) return NO_KS_SIGNAL(ctx.evalBefore.uci);
+  const b = boards.before;
+  const a = boards.after;
   const color = ctx.mover;
   const before = analyzeKingSafety(b, color);
   const after = analyzeKingSafety(a, color);
@@ -184,7 +197,7 @@ export function computeKingSafetySignals(ctx: MoveContext): KingSafetySignals {
   };
 }
 
-export class KingSafetyDetector extends BaseDetector {
+export class KingSafetyDetector extends SignalDetector<KingSafetySignals> {
   readonly id = 'king-safety';
   readonly tier = 'heuristic' as const;
   /** Above generic development: king safety is the more consequential principle. */
@@ -192,7 +205,9 @@ export class KingSafetyDetector extends BaseDetector {
   /** King-safety slips read as slow/positional errors, not tactical blunders. */
   override readonly classifications: readonly MoveClassification[] = ['inaccuracy', 'mistake'];
 
-  private readonly memo = new WeakMap<MoveContext, KingSafetySignals>();
+  protected computeSignals(ctx: MoveContext): KingSafetySignals {
+    return computeKingSafetySignals(ctx);
+  }
 
   protected appliesTo(ctx: MoveContext): boolean {
     return this.signals(ctx).weakened;
@@ -265,14 +280,6 @@ export class KingSafetyDetector extends BaseDetector {
         'King-safety habits: castle by move 10, leave the three pawns in front of your king unmoved, and never open a file next to your own king unless you are the one attacking.',
     });
     return tips;
-  }
-
-  private signals(ctx: MoveContext): KingSafetySignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeKingSafetySignals(ctx);
-    this.memo.set(ctx, s);
-    return s;
   }
 }
 

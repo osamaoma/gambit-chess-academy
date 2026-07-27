@@ -1,33 +1,10 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
-import { applyUciMove, parseFen, toFen } from '../src/board';
 import { ExplanationEngine } from '../src/engine';
 import { DetectorRegistry } from '../src/registry';
 import { computeStructureSignals, PawnStructureDetector } from '../src/detectors/pawn-structure';
-import { EngineEval, MoveClassification, MoveContext } from '../src/types';
-import { makeCtx } from './helpers';
-
-function ev(uci: string): EngineEval {
-  return { uci, scoreCp: 15, mateIn: null, pv: [uci], depth: 14, alternatives: [] };
-}
-
-/** Build a context from a real before-position and a played move (after is derived). */
-function ctx(
-  fenBefore: string,
-  played: string,
-  opts: { best?: string; classification?: MoveClassification; san?: string } = {},
-): MoveContext {
-  const before = parseFen(fenBefore);
-  return makeCtx({
-    fenBefore,
-    fenAfter: toFen(applyUciMove(before, played)),
-    uci: played,
-    san: opts.san ?? played,
-    mover: before.sideToMove,
-    classification: opts.classification ?? 'good',
-    evalBefore: ev(opts.best ?? played),
-  });
-}
+import { MoveContext } from '../src/types';
+import { positionalCtx as ctx } from './helpers';
 
 const detect = (c: MoveContext) => new PawnStructureDetector().detect(c);
 

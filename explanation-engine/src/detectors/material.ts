@@ -23,14 +23,13 @@
  */
 
 import {
-  Board,
-  parseFen,
   parseUciMove,
   pieceName,
   PIECE_VALUES,
   staticExchangeEval,
 } from '../board';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { boardsOf } from '../context';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { MoveClassification, MoveContext } from '../types';
 
 export type MaterialKind =
@@ -63,7 +62,9 @@ const EMPTY: MaterialSignals = {
 
 /** Pure signal computation — exported for reuse and direct testing. */
 export function computeMaterialSignals(ctx: MoveContext): MaterialSignals {
-  const before: Board = parseFen(ctx.fenBefore);
+  const boards = boardsOf(ctx);
+  if (!boards) return { ...EMPTY, bestUci: ctx.evalBefore.uci };
+  const before = boards.before;
   const { from, to } = parseUciMove(ctx.uci);
   const moved = before.squares.get(from);
   if (!moved) return EMPTY;
@@ -100,7 +101,7 @@ export function computeMaterialSignals(ctx: MoveContext): MaterialSignals {
   };
 }
 
-export class MaterialDetector extends BaseDetector {
+export class MaterialDetector extends SignalDetector<MaterialSignals> {
   readonly id = 'material';
   readonly tier = 'verified' as const;
   /** Slightly above hanging-piece: on a capture, the SEE trade grade leads. */
@@ -110,7 +111,9 @@ export class MaterialDetector extends BaseDetector {
     'brilliant', 'great', 'best', 'good', 'inaccuracy', 'mistake', 'blunder',
   ];
 
-  private readonly memo = new WeakMap<MoveContext, MaterialSignals>();
+  protected computeSignals(ctx: MoveContext): MaterialSignals {
+    return computeMaterialSignals(ctx);
+  }
 
   protected appliesTo(ctx: MoveContext): boolean {
     const s = this.signals(ctx);
@@ -205,14 +208,6 @@ export class MaterialDetector extends BaseDetector {
       });
     }
     return tips;
-  }
-
-  private signals(ctx: MoveContext): MaterialSignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeMaterialSignals(ctx);
-    this.memo.set(ctx, s);
-    return s;
   }
 }
 

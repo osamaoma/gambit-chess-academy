@@ -22,14 +22,15 @@ import {
   fileIndex,
   kingSquareOf,
   otherColor,
-  parseFen,
   parseUciMove,
   PIECE_VALUES,
   rankIndex,
   squareAt,
 } from '../board';
 import { isPassedPawn, pawnSquares } from '../positional';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { CRITIQUE_CLASSES, PRAISE_CLASSES } from '../classifications';
+import { boardsOf } from '../context';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { Color, MoveClassification, MoveContext } from '../types';
 
 type EndgameKind =
@@ -46,9 +47,6 @@ type EndgameKind =
 const PRAISE_KINDS: ReadonlySet<EndgameKind> = new Set<EndgameKind>([
   'promotion', 'promotion-threat', 'outside-passer', 'opposition', 'rook-activity', 'king-activity', 'pawn-race', 'fortress',
 ]);
-const PRAISE_CLASSES: ReadonlySet<MoveClassification> = new Set(['great', 'best', 'good'] as const);
-const CRITIQUE_CLASSES: ReadonlySet<MoveClassification> = new Set(['inaccuracy', 'mistake'] as const);
-
 /** Total value of a colour's pieces excluding the king. */
 function material(board: Board, color: Color): number {
   let m = 0;
@@ -116,14 +114,13 @@ const NO_SIGNAL = (bestUci: string): EndgameSignals => ({ kind: null, subject: '
 /** Pure signal computation — exported for reuse and direct testing. */
 export function computeEndgameSignals(ctx: MoveContext): EndgameSignals {
   const bestUci = ctx.evalBefore.uci;
-  let before: Board;
-  let after: Board;
+  const boards = boardsOf(ctx);
+  if (!boards) return NO_SIGNAL(bestUci);
+  const { before, after } = boards;
   let from: string;
   let to: string;
   let promotion: string | undefined;
   try {
-    before = parseFen(ctx.fenBefore);
-    after = parseFen(ctx.fenAfter);
     ({ from, to, promotion } = parseUciMove(ctx.uci));
   } catch {
     return NO_SIGNAL(bestUci);
@@ -195,13 +192,15 @@ export function computeEndgameSignals(ctx: MoveContext): EndgameSignals {
   return NO_SIGNAL(bestUci);
 }
 
-export class EndgameDetector extends BaseDetector {
+export class EndgameDetector extends SignalDetector<EndgameSignals> {
   readonly id = 'endgame';
   readonly tier = 'heuristic' as const;
   override readonly priority = 6;
   override readonly classifications: readonly MoveClassification[] = ['great', 'best', 'good', 'inaccuracy', 'mistake'];
 
-  private readonly memo = new WeakMap<MoveContext, EndgameSignals>();
+  protected computeSignals(ctx: MoveContext): EndgameSignals {
+    return computeEndgameSignals(ctx);
+  }
 
   protected appliesTo(ctx: MoveContext): boolean {
     return this.signals(ctx).kind !== null;
@@ -275,13 +274,5 @@ export class EndgameDetector extends BaseDetector {
         : 'In the endgame, centralise the king and get your rook active before anything else — passive pieces lose won and drawn endings alike.',
     });
     return tips;
-  }
-
-  private signals(ctx: MoveContext): EndgameSignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeEndgameSignals(ctx);
-    this.memo.set(ctx, s);
-    return s;
   }
 }

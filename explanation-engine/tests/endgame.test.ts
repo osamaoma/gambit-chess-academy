@@ -1,40 +1,16 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
-import { applyUciMove, parseFen, toFen } from '../src/board';
+import { parseFen } from '../src/board';
 import {
   computeEndgameSignals,
   EndgameDetector,
   haveDirectOpposition,
   isEndgame,
 } from '../src/detectors/endgame';
-import { EngineEval, MoveClassification, MoveContext, MoveDeltas } from '../src/types';
+import { MoveContext } from '../src/types';
 import { ExplanationEngine } from '../src/engine';
 import { DetectorRegistry } from '../src/registry';
-import { makeCtx } from './helpers';
-
-function ev(uci: string): EngineEval {
-  return { uci, scoreCp: 30, mateIn: null, pv: [uci], depth: 16, alternatives: [] };
-}
-
-function ctx(
-  fenBefore: string,
-  played: string,
-  opts: { best?: string; classification?: MoveClassification; san?: string; evalAfter?: number } = {},
-): MoveContext {
-  const before = parseFen(fenBefore);
-  const c = makeCtx({
-    fenBefore,
-    fenAfter: toFen(applyUciMove(before, played)),
-    uci: played,
-    san: opts.san ?? played,
-    mover: before.sideToMove,
-    classification: opts.classification ?? 'good',
-    evalBefore: ev(opts.best ?? played),
-  });
-  if (opts.evalAfter === undefined) return c;
-  const deltas: MoveDeltas = { ...c.deltas, evalAfter: opts.evalAfter };
-  return { ...c, deltas };
-}
+import { positionalCtx as ctx } from './helpers';
 
 const detect = (c: MoveContext) => new EndgameDetector().detect(c);
 

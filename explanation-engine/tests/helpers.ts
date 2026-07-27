@@ -4,6 +4,7 @@
  * each test express "a detector that behaves like X" in one line.
  */
 
+import { applyUciMove, parseFen, toFen } from '../src/board';
 import {
   BaseDetector,
   ConfidenceTier,
@@ -43,6 +44,38 @@ export function makeCtx(overrides: Partial<MoveContext> = {}): MoveContext {
     },
     ...overrides,
   };
+}
+
+/** A minimal EngineEval whose recommended (best) line is `uci`. */
+export function bestLine(uci: string): EngineEval {
+  return { uci, scoreCp: 20, mateIn: null, pv: [uci], depth: 14, alternatives: [] };
+}
+
+/**
+ * Build a MoveContext the way the positional suites need it: `fenAfter` is
+ * derived by actually playing `played` from `fenBefore`, `mover` is read from
+ * the FEN, and the engine's best line defaults to the played move (override via
+ * `opts.best`). `opts.evalAfter` overrides `deltas.evalAfter` — the endgame
+ * drawn-band tests rely on it. Shared by the piece-activity, pawn-structure,
+ * centre-control and endgame suites so the fixture builder lives in one place.
+ */
+export function positionalCtx(
+  fenBefore: string,
+  played: string,
+  opts: { best?: string; classification?: MoveClassification; san?: string; evalAfter?: number } = {},
+): MoveContext {
+  const before = parseFen(fenBefore);
+  const c = makeCtx({
+    fenBefore,
+    fenAfter: toFen(applyUciMove(before, played)),
+    uci: played,
+    san: opts.san ?? played,
+    mover: before.sideToMove,
+    classification: opts.classification ?? 'good',
+    evalBefore: bestLine(opts.best ?? played),
+  });
+  if (opts.evalAfter === undefined) return c;
+  return { ...c, deltas: { ...c.deltas, evalAfter: opts.evalAfter } };
 }
 
 export interface FakeSpec {

@@ -25,7 +25,6 @@ import {
   applyUciMove,
   Board,
   fileIndex,
-  parseFen,
   parseUciMove,
   pieceName,
   squareColor,
@@ -39,7 +38,9 @@ import {
   pieceMobility,
   rooksConnected,
 } from '../positional';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { CRITIQUE_CLASSES, PRAISE_CLASSES } from '../classifications';
+import { boardsOf } from '../context';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { MoveClassification, MoveContext } from '../types';
 
 type ActivityKind =
@@ -59,9 +60,6 @@ const PRAISE_KINDS: ReadonlySet<ActivityKind> = new Set<ActivityKind>([
   'connected-rooks',
   'activated',
 ]);
-
-const PRAISE_CLASSES: ReadonlySet<MoveClassification> = new Set<MoveClassification>(['great', 'best', 'good']);
-const CRITIQUE_CLASSES: ReadonlySet<MoveClassification> = new Set<MoveClassification>(['inaccuracy', 'mistake']);
 
 export interface ActivitySignals {
   readonly kind: ActivityKind | null;
@@ -114,13 +112,12 @@ function activationOf(before: Board, uci: string): string | null {
 /** Pure signal computation — exported for reuse and direct testing. */
 export function computeActivitySignals(ctx: MoveContext): ActivitySignals {
   const bestUci = ctx.evalBefore.uci;
-  let before: Board;
-  let after: Board;
+  const boards = boardsOf(ctx);
+  if (!boards) return NO_SIGNAL(bestUci);
+  const { before, after } = boards;
   let from: string;
   let to: string;
   try {
-    before = parseFen(ctx.fenBefore);
-    after = parseFen(ctx.fenAfter);
     ({ from, to } = parseUciMove(ctx.uci));
   } catch {
     return NO_SIGNAL(bestUci);
@@ -180,13 +177,15 @@ export function computeActivitySignals(ctx: MoveContext): ActivitySignals {
   return NO_SIGNAL(bestUci);
 }
 
-export class PieceActivityDetector extends BaseDetector {
+export class PieceActivityDetector extends SignalDetector<ActivitySignals> {
   readonly id = 'piece-activity';
   readonly tier = 'heuristic' as const;
   override readonly priority = 7;
   override readonly classifications: readonly MoveClassification[] = ['great', 'best', 'good', 'inaccuracy', 'mistake'];
 
-  private readonly memo = new WeakMap<MoveContext, ActivitySignals>();
+  protected computeSignals(ctx: MoveContext): ActivitySignals {
+    return computeActivitySignals(ctx);
+  }
 
   protected appliesTo(ctx: MoveContext): boolean {
     return this.signals(ctx).kind !== null;
@@ -257,13 +256,5 @@ export class PieceActivityDetector extends BaseDetector {
         : 'Before a quiet move, ask which of your pieces is worst-placed and find a move that improves it.',
     });
     return tips;
-  }
-
-  private signals(ctx: MoveContext): ActivitySignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeActivitySignals(ctx);
-    this.memo.set(ctx, s);
-    return s;
   }
 }

@@ -17,14 +17,16 @@
  * the classifier so it never fights the verdict.
  */
 
-import { Board, fileIndex, otherColor, parseFen, parseUciMove, rankIndex } from '../board';
+import { Board, fileIndex, otherColor, parseUciMove, rankIndex } from '../board';
 import {
   CENTER_SQUARES,
   centralControlCount,
   centralPawnCount,
   pawnAttackSquares,
 } from '../positional';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { CRITIQUE_CLASSES, PRAISE_CLASSES } from '../classifications';
+import { boardsOf } from '../context';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { Color, MoveClassification, MoveContext } from '../types';
 
 type CenterKind =
@@ -35,9 +37,6 @@ type CenterKind =
   | 'missed-break';
 
 const PRAISE_KINDS: ReadonlySet<CenterKind> = new Set<CenterKind>(['occupy-center', 'contest-center', 'strong-center']);
-const PRAISE_CLASSES: ReadonlySet<MoveClassification> = new Set(['great', 'best', 'good'] as const);
-const CRITIQUE_CLASSES: ReadonlySet<MoveClassification> = new Set(['inaccuracy', 'mistake'] as const);
-
 /** Is `square` inside the extended centre (files c–f, ranks 3–6)? */
 function inExtendedCenter(square: string): boolean {
   const f = fileIndex(square);
@@ -80,12 +79,11 @@ const NO_SIGNAL = (bestUci: string): CenterSignals => ({
 /** Pure signal computation — exported for reuse and direct testing. */
 export function computeCenterSignals(ctx: MoveContext): CenterSignals {
   const bestUci = ctx.evalBefore.uci;
-  let before: Board;
-  let after: Board;
+  const boards = boardsOf(ctx);
+  if (!boards) return NO_SIGNAL(bestUci);
+  const { before, after } = boards;
   let to: string;
   try {
-    before = parseFen(ctx.fenBefore);
-    after = parseFen(ctx.fenAfter);
     ({ to } = parseUciMove(ctx.uci));
   } catch {
     return NO_SIGNAL(bestUci);
@@ -127,13 +125,15 @@ export function computeCenterSignals(ctx: MoveContext): CenterSignals {
   return NO_SIGNAL(bestUci);
 }
 
-export class CenterControlDetector extends BaseDetector {
+export class CenterControlDetector extends SignalDetector<CenterSignals> {
   readonly id = 'center-control';
   readonly tier = 'heuristic' as const;
   override readonly priority = 6;
   override readonly classifications: readonly MoveClassification[] = ['great', 'best', 'good', 'inaccuracy', 'mistake'];
 
-  private readonly memo = new WeakMap<MoveContext, CenterSignals>();
+  protected computeSignals(ctx: MoveContext): CenterSignals {
+    return computeCenterSignals(ctx);
+  }
 
   protected appliesTo(ctx: MoveContext): boolean {
     return this.signals(ctx).kind !== null;
@@ -188,13 +188,5 @@ export class CenterControlDetector extends BaseDetector {
         : 'Treat the centre as the main battleground: occupy it with pawns, or strike it with a pawn break before the opponent settles in.',
     });
     return tips;
-  }
-
-  private signals(ctx: MoveContext): CenterSignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeCenterSignals(ctx);
-    this.memo.set(ctx, s);
-    return s;
   }
 }

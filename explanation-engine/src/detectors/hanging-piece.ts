@@ -28,11 +28,11 @@ import {
   PIECE_VALUES,
   hangingPieces,
   otherColor,
-  parseFen,
   parseUciMove,
   pieceName,
 } from '../board';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { boardsOf } from '../context';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { MoveClassification, MoveContext } from '../types';
 
 /** Everything the detector observed about one move — computed once. */
@@ -46,10 +46,16 @@ export interface HangingSignals {
   readonly bestUci: string;
 }
 
+/** Benign "nothing hanging" signals — used when the position can't be parsed. */
+const NO_HANG_SIGNAL = (bestUci: string): HangingSignals => ({
+  newHangs: [], movedPieceHangs: false, missedCaptures: [], bestUci,
+});
+
 /** Pure signal computation — exported for reuse and direct testing. */
 export function computeHangingSignals(ctx: MoveContext): HangingSignals {
-  const before: Board = parseFen(ctx.fenBefore);
-  const after: Board = parseFen(ctx.fenAfter);
+  const boards = boardsOf(ctx);
+  if (!boards) return NO_HANG_SIGNAL(ctx.evalBefore.uci);
+  const { before, after } = boards;
   const mover = ctx.mover;
   const played = parseUciMove(ctx.uci);
 
@@ -93,7 +99,7 @@ export function computeHangingSignals(ctx: MoveContext): HangingSignals {
   return { newHangs, movedPieceHangs, missedCaptures, bestUci };
 }
 
-export class HangingPieceDetector extends BaseDetector {
+export class HangingPieceDetector extends SignalDetector<HangingSignals> {
   readonly id = 'hanging-piece';
   readonly tier = 'verified' as const;
   /** Concrete material facts outrank principle talk of the same tier. */
@@ -106,7 +112,9 @@ export class HangingPieceDetector extends BaseDetector {
     'miss',
   ];
 
-  private readonly memo = new WeakMap<MoveContext, HangingSignals>();
+  protected computeSignals(ctx: MoveContext): HangingSignals {
+    return computeHangingSignals(ctx);
+  }
 
   protected appliesTo(ctx: MoveContext): boolean {
     const s = this.signals(ctx);
@@ -132,7 +140,7 @@ export class HangingPieceDetector extends BaseDetector {
 
   protected explain(ctx: MoveContext): Omit<Explanation, 'improvements'> {
     const s = this.signals(ctx);
-    const after = parseFen(ctx.fenAfter);
+    const { before, after } = boardsOf(ctx)!; // appliesTo already proved the position parses
     const worst = s.newHangs[0];
     const missed = s.missedCaptures[0];
 
@@ -156,7 +164,6 @@ export class HangingPieceDetector extends BaseDetector {
       // Missed capture is the story.
       const name = pieceName((missed as HangingInfo).piece.type);
       headline = `You could have won the ${name} on ${(missed as HangingInfo).square}.`;
-      const before = parseFen(ctx.fenBefore);
       parts.push(
         `The ${name} on ${(missed as HangingInfo).square} ${hangPhrase(before, missed as HangingInfo, 'theirs')}. The engine's move simply takes it.`,
       );
@@ -191,14 +198,6 @@ export class HangingPieceDetector extends BaseDetector {
         'Safety check: on the square your piece lands, count enemy attackers vs your defenders. If attackers win the count — or the piece has no defender at all — find a safer square.',
     });
     return tips;
-  }
-
-  private signals(ctx: MoveContext): HangingSignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeHangingSignals(ctx);
-    this.memo.set(ctx, s);
-    return s;
   }
 }
 

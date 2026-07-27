@@ -1,33 +1,12 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
-import { applyUciMove, parseFen, toFen } from '../src/board';
+import { parseFen } from '../src/board';
 import { centralControlCount, centralPawnCount } from '../src/positional';
 import { ExplanationEngine } from '../src/engine';
 import { DetectorRegistry } from '../src/registry';
 import { CenterControlDetector, computeCenterSignals, isCentralLever } from '../src/detectors/center-control';
-import { EngineEval, MoveClassification, MoveContext } from '../src/types';
-import { makeCtx } from './helpers';
-
-function ev(uci: string): EngineEval {
-  return { uci, scoreCp: 20, mateIn: null, pv: [uci], depth: 14, alternatives: [] };
-}
-
-function ctx(
-  fenBefore: string,
-  played: string,
-  opts: { best?: string; classification?: MoveClassification; san?: string } = {},
-): MoveContext {
-  const before = parseFen(fenBefore);
-  return makeCtx({
-    fenBefore,
-    fenAfter: toFen(applyUciMove(before, played)),
-    uci: played,
-    san: opts.san ?? played,
-    mover: before.sideToMove,
-    classification: opts.classification ?? 'good',
-    evalBefore: ev(opts.best ?? played),
-  });
-}
+import { MoveContext } from '../src/types';
+import { positionalCtx as ctx } from './helpers';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const OPEN_E = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'; // after 1.e4 e5

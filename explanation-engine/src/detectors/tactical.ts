@@ -19,7 +19,8 @@
  * required. Register both with {@link tacticalDetectors}.
  */
 
-import { applyUciMove, parseFen } from '../board';
+import { applyUciMove } from '../board';
+import { boardsOf } from '../context';
 import { BaseDetector, ConfidenceTier, Explanation, Improvement } from '../detector';
 import { MoveClassification, MoveContext } from '../types';
 import { detectTactics, MotifId, TacticFinding } from '../tactics';
@@ -72,9 +73,9 @@ function tacticsFor(ctx: MoveContext): readonly TacticFinding[] {
   if (hit) return hit;
   let findings: readonly TacticFinding[] = [];
   const bestUci = ctx.evalBefore.uci;
-  if (/^[a-h][1-8][a-h][1-8][nbrq]?$/.test(bestUci)) {
+  const before = boardsOf(ctx)?.before; // shared parse of fenBefore (after is the engine's move, not the played one)
+  if (before && /^[a-h][1-8][a-h][1-8][nbrq]?$/.test(bestUci)) {
     try {
-      const before = parseFen(ctx.fenBefore);
       const after = applyUciMove(before, bestUci);
       findings = detectTactics(before, after, bestUci, {
         mateIn: ctx.evalBefore.mateIn,

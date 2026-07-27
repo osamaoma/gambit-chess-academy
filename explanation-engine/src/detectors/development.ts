@@ -26,11 +26,11 @@ import {
   isDevelopingUci,
   isHomeSquare,
   kingOnHome,
-  parseFen,
   parseUciMove,
   undevelopedMinors,
 } from '../board';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { boardsOf } from '../context';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { MoveClassification, MoveContext } from '../types';
 
 /** Tunable thresholds — override via the constructor for different play pools. */
@@ -61,6 +61,13 @@ export interface DevelopmentSignals {
   readonly undeveloped: readonly string[];
 }
 
+/** Benign "nothing to say" signals — used when the position can't be parsed. */
+const NO_DEV_SIGNAL = (bestUci: string): DevelopmentSignals => ({
+  inOpening: false, playedFailsToDevelop: false, wastesTempo: false,
+  delaysCastling: false, bestDevelops: false, bestIsCastle: false,
+  bestDescription: null, bestUci, undeveloped: [],
+});
+
 /**
  * Pure signal computation — exported so future detectors (or tests) can reuse
  * the same opening/development reasoning without instantiating the detector.
@@ -69,7 +76,9 @@ export function computeDevelopmentSignals(
   ctx: MoveContext,
   cfg: DevelopmentDetectorConfig = DEFAULT_DEVELOPMENT_CONFIG,
 ): DevelopmentSignals {
-  const board: Board = parseFen(ctx.fenBefore);
+  const boards = boardsOf(ctx);
+  if (!boards) return NO_DEV_SIGNAL(ctx.evalBefore.uci);
+  const board = boards.before;
   const color = ctx.mover;
 
   const undeveloped = undevelopedMinors(board, color);
@@ -122,7 +131,7 @@ export function computeDevelopmentSignals(
   };
 }
 
-export class DevelopmentDetector extends BaseDetector {
+export class DevelopmentDetector extends SignalDetector<DevelopmentSignals> {
   readonly id = 'development';
   readonly tier = 'heuristic' as const;
   /** Modest: principle talk should defer to concrete same-tier pattern detectors. */
@@ -135,12 +144,14 @@ export class DevelopmentDetector extends BaseDetector {
   ];
 
   private readonly cfg: DevelopmentDetectorConfig;
-  /** One signal computation per MoveContext, shared across the hook calls. */
-  private readonly memo = new WeakMap<MoveContext, DevelopmentSignals>();
 
   constructor(cfg: Partial<DevelopmentDetectorConfig> = {}) {
     super();
     this.cfg = { ...DEFAULT_DEVELOPMENT_CONFIG, ...cfg };
+  }
+
+  protected computeSignals(ctx: MoveContext): DevelopmentSignals {
+    return computeDevelopmentSignals(ctx, this.cfg);
   }
 
   protected appliesTo(ctx: MoveContext): boolean {
@@ -164,7 +175,7 @@ export class DevelopmentDetector extends BaseDetector {
 
   protected explain(ctx: MoveContext): Omit<Explanation, 'improvements'> {
     const s = this.signals(ctx);
-    const board = parseFen(ctx.fenBefore);
+    const board = boardsOf(ctx)!.before; // appliesTo already proved the position parses
 
     const headline = s.wastesTempo
       ? `${ctx.san} loses a tempo in the opening.`
@@ -222,14 +233,6 @@ export class DevelopmentDetector extends BaseDetector {
         'Opening habit: develop each knight and bishop once, castle by move 10, and avoid moving the same piece twice before development is finished.',
     });
     return tips;
-  }
-
-  private signals(ctx: MoveContext): DevelopmentSignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeDevelopmentSignals(ctx, this.cfg);
-    this.memo.set(ctx, s);
-    return s;
   }
 }
 

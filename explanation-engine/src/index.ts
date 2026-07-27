@@ -30,6 +30,7 @@ export {
 export {
   BaseDetector,
   detectorHandles,
+  SignalDetector,
   TIER_RANK,
   type ConfidenceTier,
   type DetectionResult,
@@ -37,6 +38,15 @@ export {
   type Explanation,
   type Improvement,
 } from './detector';
+
+export { boardsOf, type MoveBoards } from './context';
+
+export {
+  CRITIQUE_CLASSES,
+  isCritiqueClass,
+  isPraiseClass,
+  PRAISE_CLASSES,
+} from './classifications';
 
 export { DetectorRegistry } from './registry';
 

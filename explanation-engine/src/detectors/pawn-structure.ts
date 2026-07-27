@@ -21,7 +21,7 @@
  * criticism is gated by the classifier so it never contradicts the verdict.
  */
 
-import { Board, fileIndex, parseFen, rankIndex } from '../board';
+import { Board, fileIndex, rankIndex } from '../board';
 import {
   chainBase,
   doubledPawnFiles,
@@ -33,7 +33,9 @@ import {
   pawnSquares,
   wingPawnCounts,
 } from '../positional';
-import { BaseDetector, Explanation, Improvement } from '../detector';
+import { CRITIQUE_CLASSES, PRAISE_CLASSES } from '../classifications';
+import { boardsOf } from '../context';
+import { Explanation, Improvement, SignalDetector } from '../detector';
 import { Color, MoveClassification, MoveContext } from '../types';
 
 type StructureKind =
@@ -50,9 +52,6 @@ type StructureKind =
 const PRAISE_KINDS: ReadonlySet<StructureKind> = new Set<StructureKind>([
   'passed-pawn', 'connected-passers', 'pawn-majority', 'damaged-enemy-structure', 'strong-chain',
 ]);
-const PRAISE_CLASSES: ReadonlySet<MoveClassification> = new Set(['great', 'best', 'good'] as const);
-const CRITIQUE_CLASSES: ReadonlySet<MoveClassification> = new Set(['inaccuracy', 'mistake'] as const);
-
 /** Aggregated pawn-skeleton facts for one colour. */
 interface Skeleton {
   readonly isolated: ReadonlySet<string>;
@@ -112,14 +111,9 @@ function firstNew(after: ReadonlySet<string>, before: ReadonlySet<string>): stri
 /** Pure signal computation — exported for reuse and direct testing. */
 export function computeStructureSignals(ctx: MoveContext): StructureSignals {
   const bestUci = ctx.evalBefore.uci;
-  let before: Board;
-  let after: Board;
-  try {
-    before = parseFen(ctx.fenBefore);
-    after = parseFen(ctx.fenAfter);
-  } catch {
-    return NO_SIGNAL(bestUci);
-  }
+  const boards = boardsOf(ctx);
+  if (!boards) return NO_SIGNAL(bestUci);
+  const { before, after } = boards;
   const me = ctx.mover;
   const them: Color = me === 'white' ? 'black' : 'white';
   const mBefore = skeleton(before, me);
@@ -178,13 +172,15 @@ export function computeStructureSignals(ctx: MoveContext): StructureSignals {
   return NO_SIGNAL(bestUci);
 }
 
-export class PawnStructureDetector extends BaseDetector {
+export class PawnStructureDetector extends SignalDetector<StructureSignals> {
   readonly id = 'pawn-structure';
   readonly tier = 'heuristic' as const;
   override readonly priority = 6;
   override readonly classifications: readonly MoveClassification[] = ['great', 'best', 'good', 'inaccuracy', 'mistake'];
 
-  private readonly memo = new WeakMap<MoveContext, StructureSignals>();
+  protected computeSignals(ctx: MoveContext): StructureSignals {
+    return computeStructureSignals(ctx);
+  }
 
   protected appliesTo(ctx: MoveContext): boolean {
     return this.signals(ctx).kind !== null;
@@ -256,13 +252,5 @@ export class PawnStructureDetector extends BaseDetector {
         : 'Before a pawn move or a recapture, picture the resulting pawn skeleton: healthy pawns defend each other and leave no fixed targets.',
     });
     return tips;
-  }
-
-  private signals(ctx: MoveContext): StructureSignals {
-    const hit = this.memo.get(ctx);
-    if (hit) return hit;
-    const s = computeStructureSignals(ctx);
-    this.memo.set(ctx, s);
-    return s;
   }
 }

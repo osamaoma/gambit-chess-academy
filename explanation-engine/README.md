@@ -49,6 +49,22 @@ in which case the host falls back to the classifier's stock note).
 | `CenterControlDetector` | `src/detectors/center-control.ts` | Concrete detector (tier `heuristic`): measures the change in a mover's grip on d4/e4/d5/e5 — praising occupying the centre, a central pawn lever (`contest`), or a firm grip (`strong`); flagging surrendered control (`loss`) or a missed central break. Centre primitives (`CENTER_SQUARES`, `centralControlCount`, `isCentralLever`) in `positional.ts` / the detector. |
 | `EndgameDetector` | `src/detectors/endgame.ts` | Concrete detector (tier `heuristic`, gated to `isEndgame`): promotion, promotion-threats, outside passed pawns, opposition (`haveDirectOpposition`), rook activity (seventh rank / behind a passer), king activity, pawn races, and fortress holds — plus a passive-king criticism. Pure signals via `computeEndgameSignals`. |
 
+### Shared detector infrastructure
+
+Every concrete detector follows the same shape — compute one "signals" object
+per move, then read it from each hook. Three small pieces own that shared shape
+so no detector re-implements it (Single Responsibility, DRY):
+
+| Piece | File | Responsibility |
+|---|---|---|
+| `SignalDetector<S>` | `src/detector.ts` | A `BaseDetector` that memoises one `computeSignals(ctx)` per `MoveContext` (in a `WeakMap`, so it's collected with the context) and exposes `this.signals(ctx)` to the hooks. Subclasses implement only the chess: a pure `computeSignals` plus hooks that read `this.signals(ctx)`. Replaces the identical `WeakMap` + private `signals()` boilerplate that each detector used to carry. |
+| `boardsOf(ctx)` | `src/context.ts` | A per-context parse cache. A single move is examined by every registered detector, and each used to re-`parseFen` the same two FENs — up to `2 × detectorCount` parses per move. `boardsOf` parses each pair **once** and shares the `{ before, after }` boards across all detectors; a malformed FEN resolves to `null` once and stays cached. |
+| `PRAISE_CLASSES` / `CRITIQUE_CLASSES` | `src/classifications.ts` | The one convention the four positional detectors share: **praise** a strong idea only when the classifier already liked the move, **criticise** a flaw only when it already disliked it — so a detector never contradicts the engine's verdict. Defined once (with `isPraiseClass` / `isCritiqueClass` helpers) instead of re-declared per detector. |
+
+Together these turn each detector into ~three tiny hooks over a pure signal
+function, and cut the redundant FEN parsing per move from `2 × detectorCount`
+down to two.
+
 ### Detector roster
 
 | Detector | Tier | Priority | Classifications |
@@ -84,18 +100,33 @@ determinism tie-break). This mirrors — and is enforced by — unit tests.
 
 ## Writing a detector (when the time comes)
 
-```ts
-import { BaseDetector, MoveContext } from '@gambit/explanation-engine';
+Extend `SignalDetector<S>`: compute the move's facts **once** in a pure
+`computeSignals`, then read them from each hook via `this.signals(ctx)`. Use
+`boardsOf(ctx)` for the parsed boards so the parse is shared across detectors.
 
-export class HangingPieceDetector extends BaseDetector {
+```ts
+import { boardsOf, MoveContext, SignalDetector } from '@gambit/explanation-engine';
+
+interface HangingSignals { /* the facts this detector reads off the move */ }
+
+/** Pure, exported for direct unit testing without instantiating the detector. */
+export function computeHangingSignals(ctx: MoveContext): HangingSignals {
+  const boards = boardsOf(ctx);               // parsed once, shared by every detector
+  if (!boards) return /* benign "nothing to say" signals */;
+  const { before, after } = boards;
+  ...
+}
+
+export class HangingPieceDetector extends SignalDetector<HangingSignals> {
   readonly id = 'hanging-piece';
   readonly tier = 'verified' as const;      // board geometry, not guesswork
-  override readonly priority = 10;          // outranks generic eval-drop talk
+  override readonly priority = 20;          // outranks generic eval-drop talk
   override readonly classifications = ['mistake', 'blunder'] as const;
 
+  protected computeSignals(ctx: MoveContext) { return computeHangingSignals(ctx); }
+
   protected appliesTo(ctx: MoveContext): boolean {
-    // cheap structural test — is the moved piece en prise for nothing?
-    ...
+    return this.signals(ctx).newHangs.length > 0;   // reads the memoised signals
   }
   protected confidence(ctx: MoveContext): number { ... }        // 0–1
   protected explain(ctx: MoveContext) {
@@ -105,11 +136,14 @@ export class HangingPieceDetector extends BaseDetector {
       tags: ['hanging-piece', 'material'],
     };
   }
-  protected improvements(ctx: MoveContext) {
+  protected override improvements(ctx: MoveContext) {
     return [{ moveSan: 'Be7', advice: 'Retreat and keep the piece defended.' }];
   }
 }
 ```
+
+A detector that doesn't need the signal-caching shape can still extend
+`BaseDetector` directly.
 
 Wire-up is one line — nothing else in the system changes:
 
@@ -122,7 +156,9 @@ Guarantees the base class gives you:
 - you never build a `DetectionResult` by hand (no duplicated assembly logic);
 - confidence is clamped into `[0, 1]`; `0`/`NaN` degrade to “does not apply”;
 - an exception thrown anywhere in your hooks becomes a clean non-application —
-  one buggy detector can never break a game review.
+  one buggy detector can never break a game review;
+- with `SignalDetector`, `computeSignals` runs **at most once per move** no
+  matter how many hooks read it (and never again if the move is re-analysed).
 
 ## Using the engine
 
@@ -144,7 +180,7 @@ if (explanation) {
 
 ```bash
 npm install
-npm test        # tsc (strict) + node:test — 27 tests, no test-framework deps
+npm test        # tsc (strict) + node:test — 205 tests, no test-framework deps
 npm run build   # emits dist/ (CommonJS + .d.ts)
 ```
 
@@ -153,8 +189,10 @@ npm run build   # emits dist/ (CommonJS + .d.ts)
 1. **Detectors are pure and synchronous.** All engine I/O happens upstream;
    detection must be deterministic and unit-testable with a plain object.
 2. **No duplicated logic.** Sign conversions and win% math live in `MoveDeltas`
-   (upstream, computed once); result assembly lives in `BaseDetector`; ranking
-   lives in `compareResults`. If you're re-implementing one of those, stop.
+   (upstream, computed once); result assembly lives in `BaseDetector`; signal
+   memoisation lives in `SignalDetector`; FEN parsing is shared through
+   `boardsOf`; the praise/critique gate is `classifications.ts`; ranking lives
+   in `compareResults`. If you're re-implementing one of those, stop.
 3. **Never throw across the boundary.** `BaseDetector` and the engine both
    contain errors; keep it that way.
 4. **Tiers are about the method, not the moment.** If your technique can be

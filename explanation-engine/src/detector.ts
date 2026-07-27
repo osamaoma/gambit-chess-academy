@@ -179,3 +179,39 @@ export abstract class BaseDetector implements Detector {
     };
   }
 }
+
+/**
+ * A {@link BaseDetector} whose `appliesTo` / `confidence` / `explain` /
+ * `improvements` hooks are all derived from a single, per-move "signals" object.
+ *
+ * Every concrete detector was independently caching that object in a `WeakMap`
+ * and exposing a private `signals()` accessor — identical boilerplate repeated
+ * once per detector. This class owns that one concern (compute-once memoisation
+ * keyed by the immutable {@link MoveContext}), so subclasses implement only the
+ * chess: a pure {@link computeSignals} plus hooks that read `this.signals(ctx)`.
+ *
+ * ```ts
+ * class MyDetector extends SignalDetector<MySignals> {
+ *   readonly id = 'my-detector';
+ *   readonly tier = 'heuristic' as const;
+ *   protected computeSignals(ctx) { return computeMySignals(ctx); } // pure, exported
+ *   protected appliesTo(ctx)  { return this.signals(ctx).kind !== null; }
+ *   protected confidence(ctx) { ... this.signals(ctx) ... }
+ *   protected explain(ctx)    { ... this.signals(ctx) ... }
+ * }
+ * ```
+ */
+export abstract class SignalDetector<S> extends BaseDetector {
+  private readonly memo = new WeakMap<MoveContext, S>();
+
+  /** Compute this detector's signals for one move. Pure; called at most once per context. */
+  protected abstract computeSignals(ctx: MoveContext): S;
+
+  /** Memoised signals — safe (and cheap) to call from every hook. */
+  protected signals(ctx: MoveContext): S {
+    if (this.memo.has(ctx)) return this.memo.get(ctx) as S;
+    const s = this.computeSignals(ctx);
+    this.memo.set(ctx, s);
+    return s;
+  }
+}
