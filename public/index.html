@@ -789,8 +789,8 @@ input::placeholder{color:var(--text3)}
   #board-r .sq.hl-ex-best::before{
     content:'';position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:2px;
   }
-  #board-r .sq.hl-ex-idea::before{   box-shadow:inset 0 0 0 3px rgba(240,158,45,.9);  background:rgba(240,158,45,.16) }
-  #board-r .sq.hl-ex-target::before{ box-shadow:inset 0 0 0 2px rgba(240,158,45,.55); background:rgba(240,158,45,.09) }
+  #board-r .sq.hl-ex-idea::before{   box-shadow:inset 0 0 0 3px rgba(21,120,27,.92);  background:rgba(21,120,27,.20) }
+  #board-r .sq.hl-ex-target::before{ box-shadow:inset 0 0 0 2px rgba(21,120,27,.55);  background:rgba(21,120,27,.10) }
   #board-r .sq.hl-ex-danger::before{ box-shadow:inset 0 0 0 3px rgba(220,80,80,.9);   background:rgba(220,80,80,.20) }
   #board-r .sq.hl-ex-best::before{   box-shadow:inset 0 0 0 3px rgba(0,48,136,.85);   background:rgba(0,48,136,.14) }
   .ai-error{padding:10px 14px;background:rgba(224,112,112,.08);border-left:3px solid #e07070;border-radius:0 5px 5px 0;font-size:12px;color:#e07070;margin-bottom:10px}
@@ -13396,11 +13396,14 @@ function rvWhyHTML(ex){
   return `<div class="mdb-why">${esc(ex.summary)}</div>`;
 }
 
-// Semantic hint colours → pixels. Amber = the idea, red = the danger/threat,
-// blue = the engine's recommendation, soft amber = what the idea acts upon.
+// Semantic hint colours → pixels. GREEN = the good idea (what the move guards,
+// the square it takes away, the road it opens), RED = danger (what it threatens
+// or left hanging), BLUE = reserved for the engine's own recommendation.
+// There is deliberately no from→to arrow: the last-move highlight already
+// shows which move was played, so arrows are saved for the POINT of it.
 const RV_HINT_COLOR = {
-  idea:   'rgba(240,158,45,.92)',
-  target: 'rgba(240,158,45,.55)',
+  idea:   'rgba(21,120,27,.92)',
+  target: 'rgba(21,120,27,.55)',
   danger: 'rgba(220,80,80,.88)',
   best:   'rgba(0,48,136,.9)',
 };
