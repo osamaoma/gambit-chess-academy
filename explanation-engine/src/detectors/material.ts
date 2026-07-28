@@ -29,7 +29,8 @@ import {
   staticExchangeEval,
 } from '../board';
 import { boardsOf } from '../context';
-import { Explanation, Improvement, SignalDetector } from '../detector';
+import { ArrowHint, Explanation, Improvement, SignalDetector, SquareHint, Visuals } from '../detector';
+import { moverSubject, movers, opponents } from '../perspective';
 import { MoveClassification, MoveContext } from '../types';
 
 export type MaterialKind =
@@ -52,12 +53,14 @@ export interface MaterialSignals {
   readonly sound: boolean;
   readonly capturedName: string | null;
   readonly movedName: string;
+  readonly from: string;
+  readonly to: string;
   readonly bestUci: string;
 }
 
 const EMPTY: MaterialSignals = {
   kind: null, net: 0, captured: 0, isCapture: false, sound: false,
-  capturedName: null, movedName: 'piece', bestUci: '',
+  capturedName: null, movedName: 'piece', from: '', to: '', bestUci: '',
 };
 
 /** Pure signal computation — exported for reuse and direct testing. */
@@ -97,6 +100,7 @@ export function computeMaterialSignals(ctx: MoveContext): MaterialSignals {
     kind, net, captured, isCapture, sound,
     capturedName: isCapture ? pieceName(targetPiece!.type) : null,
     movedName: pieceName(moved.type),
+    from, to,
     bestUci: ctx.evalBefore.uci,
   };
 }
@@ -141,46 +145,70 @@ export class MaterialDetector extends SignalDetector<MaterialSignals> {
 
   protected explain(ctx: MoveContext): Omit<Explanation, 'improvements'> {
     const s = this.signals(ctx);
-    const to = parseUciMove(ctx.uci).to;
+    const to = s.to || parseUciMove(ctx.uci).to;
     const up = pts(Math.abs(s.net));
     const cap = s.capturedName ? `the ${s.capturedName}` : 'material';
+    const My = movers(ctx);
+    const Their = opponents(ctx);
+    const Sub = moverSubject(ctx);
 
     let headline: string;
+    let summary: string;
     let detail: string;
     const tags = ['material', s.kind as string];
 
     switch (s.kind) {
       case 'win-material':
         headline = `${ctx.san} wins ${cap} for free.`;
+        summary = `${ctx.san} takes ${Their.toLowerCase()} ${s.capturedName ?? 'piece'} on ${to} and nothing can recapture — ${up} up for nothing.`;
         detail = `${ctx.san} takes ${cap} and nothing can recapture — you are simply up ${up}. When an enemy piece is undefended, taking it is usually the best move on the board.`;
         break;
       case 'favorable-exchange':
         headline = `${ctx.san} wins the exchange.`;
+        summary = `After the captures on ${to} settle, ${Sub.toLowerCase()} come out ${up} ahead.`;
         detail = `Once the captures on ${to} are done you come out ahead by ${up}. Small favourable trades pile up — win a few and the extra material decides the game.`;
         tags.push('trade');
         break;
       case 'equal-trade':
         headline = `${ctx.san} is an even trade.`;
+        summary = `${My} ${s.movedName} trades for ${Their.toLowerCase()} ${s.capturedName ?? 'piece'} on ${to} — material stays level.`;
         detail = `You swap the ${s.movedName}${s.capturedName ? ` for the ${s.capturedName}` : ''} and material stays level. Trade when it helps you — simplify when you are ahead, or swap off your opponent's most dangerous piece — but keep pieces on when you are the one attacking.`;
         tags.push('trade');
         break;
       case 'unfavorable-exchange':
         headline = `${ctx.san} loses the exchange.`;
+        summary = `Taking on ${to} wins ${cap}, but the recapture wins more back — ${up} down on the whole sequence.`;
         detail = `${ctx.san} grabs ${cap}, but the recapture wins more back and you finish ${up} down. Always count the WHOLE sequence of captures on a square — not just the first one — before you take.`;
         tags.push('trade');
         break;
       case 'lose-material':
         headline = `${ctx.san} loses material.`;
+        summary = `The captures on ${to} end with ${Sub.toLowerCase()} ${up} down for nothing lasting.`;
         detail = `Taking ${cap} costs you more than it wins: after the recaptures you are ${up} down for nothing lasting. Before a capture, add up what you win and subtract what the opponent wins back — if that is negative, look for another move.`;
         break;
       case 'sacrifice':
       default:
         headline = `${ctx.san} is a sound sacrifice.`;
+        summary = `${ctx.san} gives up ${up} on ${to} — and the engine agrees the attack is worth more than the material.`;
         detail = `You give up ${up}${s.capturedName ? ` (taking ${cap} on the way)` : ''}, and the engine agrees the compensation is worth it. A real sacrifice is judged by what you GET — a winning attack, a mating net, or the material back with interest — not by what you give up.${ctx.classification === 'brilliant' ? ' This one is brilliant: hard to spot and completely correct.' : ''}`;
         tags.push('sacrifice');
         break;
     }
-    return { headline, detail, tags };
+    return { headline, summary, detail, tags, visuals: this.visualsFor(s) };
+  }
+
+  /** The capture square, coloured by whether the trade won or lost material. */
+  private visualsFor(s: MaterialSignals): Visuals {
+    const arrows: ArrowHint[] = [];
+    const squares: SquareHint[] = [];
+    const good = s.kind === 'win-material' || s.kind === 'favorable-exchange' || s.kind === 'sacrifice';
+    const color = good ? 'idea' : s.kind === 'equal-trade' ? 'target' : 'danger';
+    if (s.from && s.to) arrows.push({ from: s.from, to: s.to, color });
+    if (s.to) squares.push({ square: s.to, color });
+    if (!good && s.kind !== 'equal-trade' && s.bestUci.length >= 4) {
+      arrows.push({ from: s.bestUci.slice(0, 2), to: s.bestUci.slice(2, 4), color: 'best' });
+    }
+    return { arrows, squares };
   }
 
   protected override improvements(ctx: MoveContext): readonly Improvement[] {

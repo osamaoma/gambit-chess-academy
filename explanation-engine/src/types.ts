@@ -85,6 +85,12 @@ export interface MoveMeta {
   readonly clockRemaining?: number;
   /** Seconds the mover spent on the move. */
   readonly timeSpent?: number;
+  /**
+   * The side the person reading the review played. When set, explanations
+   * address them directly ("Your knight…" vs "Their knight…"); when omitted
+   * they fall back to naming the colour ("White's knight…").
+   */
+  readonly viewerColor?: Color;
 }
 
 /**

@@ -13,7 +13,7 @@
  * detectors, never by editing this file.
  */
 
-import { Detector, DetectionResult, Explanation, Improvement } from './detector';
+import { Detector, DetectionResult, Explanation, Improvement, Visuals } from './detector';
 import { DetectorRegistry } from './registry';
 import { ExplanationSelector, Selection } from './selector';
 import { MoveClassification, MoveContext } from './types';
@@ -25,7 +25,11 @@ export interface UserExplanation {
   readonly classification: MoveClassification;
   /** The winning explanation. */
   readonly headline: string;
+  /** ONE short, position-specific sentence for a compact card (falls back to the headline). */
+  readonly summary: string;
   readonly detail: string;
+  /** Board arrows/highlights illustrating the primary explanation. */
+  readonly visuals: Visuals;
   /** Improvements merged from primary + supporting (primary's first, de-duplicated). */
   readonly improvements: readonly Improvement[];
   /** Union of tags from every surfaced explanation (de-duplicated, order-preserving). */
@@ -95,6 +99,8 @@ export class ExplanationEngine {
       ply: ctx.ply,
       classification: ctx.classification,
       headline: primary.explanation.headline,
+      summary: primary.explanation.summary || primary.explanation.headline,
+      visuals: primary.explanation.visuals ?? { arrows: [], squares: [] },
       detail: primary.explanation.detail,
       improvements: dedupeImprovements(explanations.flatMap((e) => e.improvements)),
       tags: dedupe(explanations.flatMap((e) => e.tags)),

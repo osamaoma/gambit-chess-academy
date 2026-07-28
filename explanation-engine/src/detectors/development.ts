@@ -30,7 +30,8 @@ import {
   undevelopedMinors,
 } from '../board';
 import { boardsOf } from '../context';
-import { Explanation, Improvement, SignalDetector } from '../detector';
+import { ArrowHint, Explanation, Improvement, SignalDetector, SquareHint, Visuals } from '../detector';
+import { movers } from '../perspective';
 import { MoveClassification, MoveContext } from '../types';
 
 /** Tunable thresholds — override via the constructor for different play pools. */
@@ -213,7 +214,27 @@ export class DevelopmentDetector extends SignalDetector<DevelopmentSignals> {
     if (s.wastesTempo) tags.push('tempo');
     if (s.delaysCastling || s.bestIsCastle) tags.push('castling');
 
-    return { headline, detail: parts.join(' '), tags };
+    const My = movers(ctx);
+    const summary = s.wastesTempo
+      ? `${ctx.san} moves an already-developed piece again while ${listPieces(board, s.undeveloped)} still sit at home.`
+      : s.bestIsCastle
+        ? `Castling was the move — ${My.toLowerCase()} king stays in the centre and the rooks stay disconnected.`
+        : s.bestDevelops
+          ? `${ctx.san} develops nothing; the engine wanted the ${s.bestDescription} brought into play.`
+          : `${My} king is still in the centre with castling available.`;
+
+    return { headline, summary, detail: parts.join(' '), tags, visuals: this.visualsFor(s) };
+  }
+
+  /** Show the engine's developing move, and mark the pieces still at home. */
+  private visualsFor(s: DevelopmentSignals): Visuals {
+    const arrows: ArrowHint[] = [];
+    const squares: SquareHint[] = [];
+    if (s.bestDevelops && s.bestUci.length >= 4) {
+      arrows.push({ from: s.bestUci.slice(0, 2), to: s.bestUci.slice(2, 4), color: 'best' });
+    }
+    for (const sq of s.undeveloped) squares.push({ square: sq, color: 'danger' });
+    return { arrows, squares };
   }
 
   /** The coaching tips. */

@@ -40,6 +40,39 @@ export const TIER_RANK: Readonly<Record<ConfidenceTier, number>> = {
   heuristic: 1,
 };
 
+/**
+ * Semantic colour for a visual hint. The HOST maps these to actual pixels, so
+ * the engine never hard-codes a theme:
+ *  - `idea`   — the point of the move (what it achieves);
+ *  - `danger` — a threat, a weakness, or a piece that can be taken;
+ *  - `best`   — the engine's recommended move;
+ *  - `target` — a square/piece the idea acts upon.
+ */
+export type HintColor = 'idea' | 'danger' | 'best' | 'target';
+
+/** An arrow to draw on the board, illustrating one claim in the explanation. */
+export interface ArrowHint {
+  readonly from: string;
+  readonly to: string;
+  readonly color: HintColor;
+}
+
+/** A square to highlight, illustrating one claim in the explanation. */
+export interface SquareHint {
+  readonly square: string;
+  readonly color: HintColor;
+}
+
+/**
+ * Board annotations that make an explanation concrete. A detector knows exactly
+ * WHICH squares its claim is about, so it emits them here rather than leaving
+ * the UI to guess — this is what turns "gains space" into a visible idea.
+ */
+export interface Visuals {
+  readonly arrows: readonly ArrowHint[];
+  readonly squares: readonly SquareHint[];
+}
+
 /** A concrete "play this instead / remember this" suggestion. */
 export interface Improvement {
   /** The recommended move, when the advice is about a specific move. */
@@ -53,12 +86,21 @@ export interface Improvement {
 export interface Explanation {
   /** One short line, suitable for a badge/tooltip ("This drops the bishop on c5."). */
   readonly headline: string;
+  /**
+   * ONE short, position-specific sentence naming real pieces and squares —
+   * the single line a compact review card shows ("Your knight lands on e5,
+   * where no pawn can chase it away."). Falls back to {@link headline} when a
+   * detector doesn't provide one.
+   */
+  readonly summary?: string;
   /** 1–3 sentences of WHY, grounded in chess principles. */
   readonly detail: string;
   /** Zero or more concrete improvements. */
   readonly improvements: readonly Improvement[];
   /** Topic tags for grouping/statistics (kebab-case: "hanging-piece"). */
   readonly tags: readonly string[];
+  /** Board arrows/highlights that make the claim visible. */
+  readonly visuals?: Visuals;
 }
 
 /** What every detector returns for every move — even when it doesn't apply. */

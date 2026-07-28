@@ -71,6 +71,8 @@ export interface RawMove {
   openingName?: string;
   clockRemaining?: number;
   timeSpent?: number;
+  /** 'white' | 'black' — the side the person reading the review played. */
+  viewerColor?: string;
 }
 
 const VALID_CLASS: ReadonlySet<string> = new Set<MoveClassification>([
@@ -160,6 +162,7 @@ export function buildContext(raw: RawMove): MoveContext | null {
       ...(raw.openingName ? { openingName: raw.openingName } : {}),
       ...(Number.isFinite(raw.clockRemaining as number) ? { clockRemaining: raw.clockRemaining } : {}),
       ...(Number.isFinite(raw.timeSpent as number) ? { timeSpent: raw.timeSpent } : {}),
+      ...(raw.viewerColor === 'white' || raw.viewerColor === 'black' ? { viewerColor: raw.viewerColor } : {}),
     },
   };
 }

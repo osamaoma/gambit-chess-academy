@@ -35,7 +35,8 @@ import {
 } from '../board';
 import { boardsOf } from '../context';
 import { Color } from '../types';
-import { Explanation, Improvement, SignalDetector } from '../detector';
+import { ArrowHint, Explanation, Improvement, SignalDetector, SquareHint, Visuals } from '../detector';
+import { movers } from '../perspective';
 import { MoveClassification, MoveContext } from '../types';
 
 /** A transparent snapshot of one side's king safety in a position. */
@@ -227,35 +228,42 @@ export class KingSafetyDetector extends SignalDetector<KingSafetySignals> {
   protected explain(ctx: MoveContext): Omit<Explanation, 'improvements'> {
     const s = this.signals(ctx);
     const tags = ['king-safety'];
+    const My = movers(ctx);
     let headline: string;
+    let summary: string;
     const parts: string[] = [];
 
     if (s.missedCastling) {
       tags.push('castling');
       headline = `${ctx.san} leaves the king in the centre.`;
+      summary = `${My} king stays in the centre on ${s.after.square} when castling was available — the open lines there are where tactics land.`;
       parts.push(
         'Castling was available and best. A king in the centre is exposed to checks and tactics down the open lines, and your rooks stay disconnected — so your attack is a piece short while your defence is a king short.',
       );
     } else if (s.unnecessaryKingMove) {
       tags.push('castling');
       headline = `${ctx.san} gives up castling for nothing.`;
+      summary = `Moving the king to ${s.after.square} throws away castling for the rest of the game, with nothing forcing it.`;
       parts.push(
         'Moving the king throws away the right to castle for the rest of the game. Now the king can only crawl to safety by hand, every future check costs you a tempo, and the rooks may never connect.',
       );
     } else if (s.fileOpened && s.newOpenFile) {
       tags.push('open-file');
       headline = `${ctx.san} opens the ${s.newOpenFile}-file next to your king.`;
+      summary = `The ${s.newOpenFile}-file beside ${My.toLowerCase()} king on ${s.after.square} is now open — a highway for their rooks and queen.`;
       parts.push(
         `An open file beside the king is a highway for enemy rooks and the queen — the classic way an attack crashes through. The pawn that guarded the ${s.newOpenFile}-file is gone and can't come back, so that lane is a permanent worry.`,
       );
     } else if (s.shieldWeakened) {
       tags.push('pawn-shield');
       headline = `${ctx.san} weakens the pawns in front of your king.`;
+      summary = `${My} king on ${s.after.square} loses pawn cover — ${s.before.shieldPresent} sheltering pawns down to ${s.after.shieldPresent}, and pawns never come back.`;
       parts.push(
         'The pawns sheltering the king have advanced, and pawns never move backwards. The squares they vacate become permanent holes for enemy pieces to occupy, and the king has less cover when the attack comes.',
       );
     } else {
       headline = `${ctx.san} leaves your king more exposed.`;
+      summary = `${My} king on ${s.after.square} now has ${s.after.attackers} enemy piece${s.after.attackers === 1 ? '' : 's'} bearing on it and less cover than before.`;
       parts.push(
         'After this move the king has fewer defenders and more open lines around it. King safety is not something you fix later — bring pieces back now, or the opponent will arrive first.',
       );
@@ -264,7 +272,22 @@ export class KingSafetyDetector extends SignalDetector<KingSafetySignals> {
     if (s.after.openFiles.length > 0 && !s.fileOpened) {
       parts.push(`The ${listFiles(s.after.openFiles)} beside your king ${s.after.openFiles.length === 1 ? 'is' : 'are'} already without a pawn — keep enemy heavy pieces off ${s.after.openFiles.length === 1 ? 'it' : 'them'}.`);
     }
-    return { headline, detail: parts.join(' '), tags };
+    return { headline, summary, detail: parts.join(' '), tags, visuals: this.visualsFor(s) };
+  }
+
+  /** Mark the king, the open file beside it, and the engine's castling move. */
+  private visualsFor(s: KingSafetySignals): Visuals {
+    const arrows: ArrowHint[] = [];
+    const squares: SquareHint[] = [];
+    if (s.after.square) squares.push({ square: s.after.square, color: 'danger' });
+    // The whole newly-opened file beside the king — the invasion lane.
+    if (s.newOpenFile) {
+      for (let r = 1; r <= 8; r++) squares.push({ square: `${s.newOpenFile}${r}`, color: 'danger' });
+    }
+    if (s.castleUci && s.castleUci.length >= 4) {
+      arrows.push({ from: s.castleUci.slice(0, 2), to: s.castleUci.slice(2, 4), color: 'best' });
+    }
+    return { arrows, squares };
   }
 
   protected override improvements(ctx: MoveContext): readonly Improvement[] {

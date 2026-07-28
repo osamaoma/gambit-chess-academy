@@ -53,6 +53,10 @@ export interface TacticFinding {
   readonly tier: ConfidenceTier;
   /** A concrete clause describing THIS instance ("the knight on e5 attacks the king and the rook on a1"). */
   readonly note: string;
+  /** Square the motif acts FROM (the attacking piece), when the geometry names one. */
+  readonly from?: string;
+  /** Squares the motif acts UPON (the forked pieces, the pinned piece and what it shields). */
+  readonly targets?: readonly string[];
 }
 
 /** Minimal engine facts the heuristics and mate detection use. */
@@ -150,10 +154,16 @@ export function detectTactics(
   engine: TacticEngineInfo,
 ): TacticFinding[] {
   const found = new Map<MotifId, TacticFinding>();
-  const push = (id: MotifId, confidence: number, tier: ConfidenceTier, note: string) => {
+  const push = (
+    id: MotifId,
+    confidence: number,
+    tier: ConfidenceTier,
+    note: string,
+    geometry?: { from?: string; targets?: readonly string[] },
+  ) => {
     const ex = found.get(id);
-    if (!ex) found.set(id, { id, label: LABEL[id], confidence, tier, note });
-    else if (confidence > ex.confidence) found.set(id, { id, label: LABEL[id], confidence, tier, note });
+    if (ex && confidence <= ex.confidence) return;
+    found.set(id, { id, label: LABEL[id], confidence, tier, note, ...geometry });
   };
 
   try {
@@ -185,7 +195,8 @@ export function detectTactics(
     const targets = attacksFrom(after.squares, to).filter((sq) => winnable(sq, movedVal));
     if (targets.length >= 2) {
       const royal = targets.some((sq) => after.squares.get(sq)?.type === 'k');
-      push('fork', royal ? 0.95 : 0.9, 'verified', `the ${movedName} on ${to} attacks ${listTargets(after, targets)}`);
+      push('fork', royal ? 0.95 : 0.9, 'verified', `the ${movedName} on ${to} attacks ${listTargets(after, targets)}`,
+        { from: to, targets });
     }
 
     // ── PIN / SKEWER / X-RAY ── a mover slider sees two enemy pieces in a row
@@ -200,13 +211,16 @@ export function detectTactics(
         const v1 = PIECE_VALUES[f1.type], v2 = PIECE_VALUES[f2.type];
         if (f2.type === 'k' || v2 > v1) {
           push('pin', f2.type === 'k' ? 0.92 : 0.82, 'verified',
-            `the ${pieceName(p.type)} pins the ${pieceName(f1.type)} on ${h1} to the ${f2.type === 'k' ? 'king' : `${pieceName(f2.type)} on ${h2}`}`);
+            `the ${pieceName(p.type)} pins the ${pieceName(f1.type)} on ${h1} to the ${f2.type === 'k' ? 'king' : `${pieceName(f2.type)} on ${h2}`}`,
+            { from: s, targets: [h1, h2] });
         } else if (f1.type === 'k' || v1 > v2) {
           push('skewer', 0.9, 'verified',
-            `the ${pieceName(p.type)} skewers the ${f1.type === 'k' ? 'king' : `${pieceName(f1.type)} on ${h1}`}; when it steps aside the ${pieceName(f2.type)} on ${h2} falls`);
+            `the ${pieceName(p.type)} skewers the ${f1.type === 'k' ? 'king' : `${pieceName(f1.type)} on ${h1}`}; when it steps aside the ${pieceName(f2.type)} on ${h2} falls`,
+            { from: s, targets: [h1, h2] });
         }
         push('xray', 0.68, 'verified',
-          `the ${pieceName(p.type)} on ${s} x-rays the ${pieceName(f1.type)} on ${h1} through to the ${pieceName(f2.type)} on ${h2}`);
+          `the ${pieceName(p.type)} on ${s} x-rays the ${pieceName(f1.type)} on ${h1} through to the ${pieceName(f2.type)} on ${h2}`,
+          { from: s, targets: [h1, h2] });
       }
     }
 

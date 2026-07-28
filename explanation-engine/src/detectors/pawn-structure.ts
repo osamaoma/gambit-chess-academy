@@ -33,9 +33,10 @@ import {
   pawnSquares,
   wingPawnCounts,
 } from '../positional';
-import { CRITIQUE_CLASSES, PRAISE_CLASSES } from '../classifications';
+import { CRITIQUE_CLASSES, POSITIONAL_CLASSES, PRAISE_CLASSES } from '../classifications';
 import { boardsOf } from '../context';
-import { Explanation, Improvement, SignalDetector } from '../detector';
+import { ArrowHint, Explanation, Improvement, SignalDetector, SquareHint, Visuals } from '../detector';
+import { movers, opponents } from '../perspective';
 import { Color, MoveClassification, MoveContext } from '../types';
 
 type StructureKind =
@@ -176,10 +177,27 @@ export class PawnStructureDetector extends SignalDetector<StructureSignals> {
   readonly id = 'pawn-structure';
   readonly tier = 'heuristic' as const;
   override readonly priority = 6;
-  override readonly classifications: readonly MoveClassification[] = ['great', 'best', 'good', 'inaccuracy', 'mistake'];
+  override readonly classifications: readonly MoveClassification[] = POSITIONAL_CLASSES;
 
   protected computeSignals(ctx: MoveContext): StructureSignals {
     return computeStructureSignals(ctx);
+  }
+
+  /**
+   * Mark the pawn the claim is about. `subject` is a square for the pawn-level
+   * features and a file letter / wing name for the rest — only the former can
+   * be pointed at, so the others simply draw nothing.
+   */
+  private visualsFor(s: StructureSignals): Visuals {
+    const arrows: ArrowHint[] = [];
+    const squares: SquareHint[] = [];
+    const good = PRAISE_KINDS.has(s.kind as StructureKind);
+    if (/^[a-h][1-8]$/.test(s.subject)) {
+      squares.push({ square: s.subject, color: good ? 'idea' : 'danger' });
+    } else if (/^[a-h]$/.test(s.subject)) {
+      for (let r = 1; r <= 8; r++) squares.push({ square: `${s.subject}${r}`, color: good ? 'idea' : 'danger' });
+    }
+    return { arrows, squares };
   }
 
   protected appliesTo(ctx: MoveContext): boolean {
@@ -206,34 +224,47 @@ export class PawnStructureDetector extends SignalDetector<StructureSignals> {
     const san = ctx.san;
     const on = s.subject ? ` on ${s.subject}` : '';
     const tags = ['positional', 'pawn-structure', s.kind as string];
+    const My = movers(ctx);
+    const Their = opponents(ctx);
+    const visuals = this.visualsFor(s);
+    const sum = (summary: string) => summary;
 
     switch (s.kind) {
       case 'passed-pawn':
-        return { headline: `${san} creates a passed pawn.`, tags,
+        return { headline: `${san} creates a passed pawn.`, tags, visuals,
+          summary: sum(`${My} pawn${on} is passed — no enemy pawn can stop it from running.`),
           detail: `The pawn${on} has no enemy pawn left to stop it on its file or the files beside it. Passed pawns are pure energy in the endgame — "passed pawns must be pushed"; every step forward ties down more of the opponent's forces.` };
       case 'connected-passers':
-        return { headline: `${san} makes connected passed pawns.`, tags,
+        return { headline: `${san} makes connected passed pawns.`, tags, visuals,
+          summary: sum(`${My} passed pawns${on} sit side by side, defending each other as they advance.`),
           detail: `Two passed pawns side by side defend each other's advance, so pieces can't blockade them for free. Connected passers on the 6th or 7th rank are often decisive — they cost the opponent a whole piece to stop.` };
       case 'pawn-majority':
-        return { headline: `${san} secures a ${s.subject} majority.`, tags,
+        return { headline: `${san} secures a ${s.subject} majority.`, tags, visuals,
+          summary: sum(`${My} extra pawn on the ${s.subject} is a passed pawn waiting to happen.`),
           detail: `You have more pawns than your opponent on the ${s.subject}. A majority is a passed pawn in waiting: advance it as a group — the unopposed pawn first — to manufacture a runner where the enemy can't answer.` };
       case 'damaged-enemy-structure':
-        return { headline: `${san} damages the enemy pawns.`, tags,
+        return { headline: `${san} damages the enemy pawns.`, tags, visuals,
+          summary: sum(`${san} leaves ${Their.toLowerCase()} pawns ${s.subject} — a weakness they cannot repair.`),
           detail: `Your move leaves the opponent with ${s.subject} pawns — a permanent weakness they can't repair. Play against it: fix the weak pawn in place, trade pieces (not pawns), and pile up on the target in the endgame.` };
       case 'strong-chain':
-        return { headline: `${san} builds a strong pawn chain.`, tags,
+        return { headline: `${san} builds a strong pawn chain.`, tags, visuals,
+          summary: sum(`${My} pawns${on} form a solid defending diagonal, grabbing space and sheltering the pieces behind it.`),
           detail: `Your pawns now form a solid, mutually defending diagonal. A firm chain grabs space and shelters your pieces behind it — play on the flank the chain points toward, where your extra space gives you room to attack.` };
       case 'isolated-pawn':
-        return { headline: `${san} leaves an isolated pawn.`, tags,
+        return { headline: `${san} leaves an isolated pawn.`, tags, visuals,
+          summary: sum(`${My} pawn${on} has no pawn on either neighbouring file — no pawn can ever defend it.`),
           detail: `The pawn${on} has no friendly pawn on either neighbouring file, so no pawn can ever defend it — pieces must babysit it, and the square in front becomes a permanent home for an enemy knight. Isolated pawns give active piece play but are a long-term liability, especially as pieces come off.` };
       case 'doubled-pawns':
-        return { headline: `${san} doubles the pawns${s.subject ? ` on the ${s.subject}-file` : ''}.`, tags,
+        return { headline: `${san} doubles the pawns${s.subject ? ` on the ${s.subject}-file` : ''}.`, tags, visuals,
+          summary: sum(`${My} pawns are doubled${s.subject ? ` on the ${s.subject}-file` : ''} — they cannot defend each other and cover fewer squares.`),
           detail: `Two pawns on one file can't defend each other and the front one blocks the back one, so they cover fewer squares and are hard to advance. Sometimes the half-open file you gain is worth it — but as a rule, avoid taking doubled pawns without compensation.` };
       case 'backward-pawn':
-        return { headline: `${san} creates a backward pawn.`, tags,
+        return { headline: `${san} creates a backward pawn.`, tags, visuals,
+          summary: sum(`${My} pawn${on} is stuck behind its neighbours with no pawn able to support it forward.`),
           detail: `The pawn${on} has fallen behind its neighbours and can't advance — the square ahead is covered by an enemy pawn and no friendly pawn can support it. On a half-open file it becomes a chronic target for enemy rooks; keep your pawns abreast so none gets left behind.` };
       case 'weak-chain':
-        return { headline: `${san} weakens your pawn chain.`, tags,
+        return { headline: `${san} weakens your pawn chain.`, tags, visuals,
+          summary: sum(`The base of ${My.toLowerCase()} pawn chain${on} is now a target — take the base and the rest hangs.`),
           detail: `The base of your pawn chain — the rearmost pawn holding it up — is now a target. Attack a chain at its base: once the base falls, the pawns in front of it are left hanging. Reinforce the base or you will spend the game defending it.` };
       default:
         return { headline: san, detail: '', tags };

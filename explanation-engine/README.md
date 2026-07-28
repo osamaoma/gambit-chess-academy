@@ -49,6 +49,29 @@ in which case the host falls back to the classifier's stock note).
 | `CenterControlDetector` | `src/detectors/center-control.ts` | Concrete detector (tier `heuristic`): measures the change in a mover's grip on d4/e4/d5/e5 — praising occupying the centre, a central pawn lever (`contest`), or a firm grip (`strong`); flagging surrendered control (`loss`) or a missed central break. Centre primitives (`CENTER_SQUARES`, `centralControlCount`, `isCentralLever`) in `positional.ts` / the detector. |
 | `EndgameDetector` | `src/detectors/endgame.ts` | Concrete detector (tier `heuristic`, gated to `isEndgame`): promotion, promotion-threats, outside passed pawns, opposition (`haveDirectOpposition`), rook activity (seventh rank / behind a passer), king activity, pawn races, and fortress holds — plus a passive-king criticism. Pure signals via `computeEndgameSignals`. |
 
+### What an explanation contains
+
+Every explanation carries three layers, so a host can render a one-line card or
+a full lesson from the same object:
+
+| Field | Purpose |
+|---|---|
+| `summary` | ONE short, position-specific sentence naming real pieces and squares — *"Your knight comes into play on c6, supporting d4 and e5 in the centre."* This is what a compact review card prints. Falls back to `headline`. |
+| `detail` | 1–3 sentences of the underlying principle, for a "learn more" panel. |
+| `visuals` | `{ arrows, squares }` — the board annotations that make the claim visible. A detector knows exactly which squares its claim is about, so it emits them rather than leaving the UI to guess. |
+
+Visual hints carry a SEMANTIC colour, never a pixel value — the host maps them
+to its own theme: `idea` (what the move achieves), `danger` (a threat or
+weakness), `best` (the engine's recommendation), `target` (what the idea acts
+upon). Voice is handled by `perspective.ts`: set `meta.viewerColor` and
+explanations address the reader directly ("Your knight…" / "Their knight…"),
+otherwise they name the colour ("White's knight…").
+
+Positional detectors register for **every** classification via
+`POSITIONAL_CLASSES` — including `book`, `excellent` and `forced`. A review
+should still say what a book move ACHIEVES; falling silent on the opening is
+exactly where a beginner most needs the explanation.
+
 ### Shared detector infrastructure
 
 Every concrete detector follows the same shape — compute one "signals" object
@@ -180,7 +203,7 @@ if (explanation) {
 
 ```bash
 npm install
-npm test        # tsc (strict) + node:test — 205 tests, no test-framework deps
+npm test        # tsc (strict) + node:test — 218 tests, no test-framework deps
 npm run build   # emits dist/ (CommonJS + .d.ts)
 ```
 

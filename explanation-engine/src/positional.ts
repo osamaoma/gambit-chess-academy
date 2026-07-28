@@ -286,14 +286,22 @@ export function wingPawnCounts(board: Board, color: Color): { queenside: number;
 /** The four central squares. */
 export const CENTER_SQUARES = ['d4', 'e4', 'd5', 'e5'] as const;
 
-/** How many central squares `color` controls (occupies with a piece OR attacks). 0–4. */
-export function centralControlCount(board: Board, color: Color): number {
-  let n = 0;
+/**
+ * WHICH central squares `color` controls (occupies with a piece OR attacks).
+ * The squares-level primitive — explanations need the names, not just a count.
+ */
+export function centralControlSquares(board: Board, color: Color): string[] {
+  const out: string[] = [];
   for (const sq of CENTER_SQUARES) {
     const occ = board.squares.get(sq);
-    if ((occ && occ.color === color) || attackersOfSquares(board.squares, sq, color).length > 0) n++;
+    if ((occ && occ.color === color) || attackersOfSquares(board.squares, sq, color).length > 0) out.push(sq);
   }
-  return n;
+  return out;
+}
+
+/** How many central squares `color` controls (occupies with a piece OR attacks). 0–4. */
+export function centralControlCount(board: Board, color: Color): number {
+  return centralControlSquares(board, color).length;
 }
 
 /** How many central squares `color` occupies with a PAWN. 0–4. */

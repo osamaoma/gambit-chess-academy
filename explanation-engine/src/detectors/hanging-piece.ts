@@ -32,7 +32,8 @@ import {
   pieceName,
 } from '../board';
 import { boardsOf } from '../context';
-import { Explanation, Improvement, SignalDetector } from '../detector';
+import { ArrowHint, Explanation, Improvement, SignalDetector, SquareHint, Visuals } from '../detector';
+import { movers, opponents } from '../perspective';
 import { MoveClassification, MoveContext } from '../types';
 
 /** Everything the detector observed about one move — computed once. */
@@ -143,15 +144,25 @@ export class HangingPieceDetector extends SignalDetector<HangingSignals> {
     const { before, after } = boardsOf(ctx)!; // appliesTo already proved the position parses
     const worst = s.newHangs[0];
     const missed = s.missedCaptures[0];
+    const My = movers(ctx);
+    const Their = opponents(ctx);
 
     let headline: string;
+    let summary: string;
     const parts: string[] = [];
 
     if (worst) {
       const name = pieceName(worst.piece.type);
+      const board = after;
+      const cheapest = cheapestAttacker(board, worst);
       headline = s.movedPieceHangs && worst.square === parseUciMove(ctx.uci).to
         ? `${ctx.san} hangs your ${name}.`
         : `${ctx.san} leaves your ${name} on ${worst.square} unprotected.`;
+      summary = worst.reason === 'undefended'
+        ? `${My} ${name} on ${worst.square} is attacked by ${cheapest} and nothing is defending it — it can be taken for free.`
+        : worst.reason === 'cheaper-attacker'
+          ? `${My} ${name} on ${worst.square} is attacked by ${cheapest}, which is worth less — the trade loses material even after you recapture.`
+          : `${My} ${name} on ${worst.square} has ${worst.attackers.length} attackers against ${worst.defenders.length} defenders — the captures end up winning material for them.`;
       parts.push(
         `After ${ctx.san}, your ${name} on ${worst.square} ${hangPhrase(after, worst, 'yours')}.`,
       );
@@ -162,10 +173,12 @@ export class HangingPieceDetector extends SignalDetector<HangingSignals> {
       }
     } else {
       // Missed capture is the story.
-      const name = pieceName((missed as HangingInfo).piece.type);
-      headline = `You could have won the ${name} on ${(missed as HangingInfo).square}.`;
+      const m = missed as HangingInfo;
+      const name = pieceName(m.piece.type);
+      headline = `You could have won the ${name} on ${m.square}.`;
+      summary = `${Their} ${name} on ${m.square} was hanging — ${s.bestUci ? 'the engine just takes it' : 'it was free to take'}.`;
       parts.push(
-        `The ${name} on ${(missed as HangingInfo).square} ${hangPhrase(before, missed as HangingInfo, 'theirs')}. The engine's move simply takes it.`,
+        `The ${name} on ${m.square} ${hangPhrase(before, m, 'theirs')}. The engine's move simply takes it.`,
       );
     }
     parts.push(
@@ -175,7 +188,26 @@ export class HangingPieceDetector extends SignalDetector<HangingSignals> {
     const tags = ['material', 'hanging-piece'];
     if (s.missedCaptures.length > 0) tags.push('missed-capture');
 
-    return { headline, detail: parts.join(' '), tags };
+    return { headline, summary, detail: parts.join(' '), tags, visuals: this.visualsFor(s) };
+  }
+
+  /** Red square on the loose piece, red arrows from everything attacking it. */
+  private visualsFor(s: HangingSignals): Visuals {
+    const arrows: ArrowHint[] = [];
+    const squares: SquareHint[] = [];
+    const worst = s.newHangs[0];
+    if (worst) {
+      squares.push({ square: worst.square, color: 'danger' });
+      for (const a of worst.attackers) arrows.push({ from: a, to: worst.square, color: 'danger' });
+    }
+    const missed = s.missedCaptures[0];
+    if (missed) {
+      squares.push({ square: missed.square, color: 'target' });
+      if (s.bestUci.length >= 4) {
+        arrows.push({ from: s.bestUci.slice(0, 2), to: s.bestUci.slice(2, 4), color: 'best' });
+      }
+    }
+    return { arrows, squares };
   }
 
   protected override improvements(ctx: MoveContext): readonly Improvement[] {
@@ -203,13 +235,25 @@ export class HangingPieceDetector extends SignalDetector<HangingSignals> {
 
 /* ────────────────────────── beginner wording ────────────────────────── */
 
-/** "…is attacked and has no defenders — it can be taken for free" etc. */
-function hangPhrase(board: Board, h: HangingInfo, whose: 'yours' | 'theirs'): string {
-  const cheapestSq = [...h.attackers].sort(
+/** Square of the least valuable piece attacking the hanging one (it captures first). */
+function cheapestAttackerSquare(board: Board, h: HangingInfo): string | undefined {
+  return [...h.attackers].sort(
     (a, b) =>
       PIECE_VALUES[(board.squares.get(a)?.type ?? 'p')] -
       PIECE_VALUES[(board.squares.get(b)?.type ?? 'p')],
   )[0];
+}
+
+/** "the pawn on e5" — names the piece that would take it, for a concrete sentence. */
+function cheapestAttacker(board: Board, h: HangingInfo): string {
+  const sq = cheapestAttackerSquare(board, h);
+  if (!sq) return 'an enemy piece';
+  return `the ${pieceName(board.squares.get(sq)?.type ?? 'p')} on ${sq}`;
+}
+
+/** "…is attacked and has no defenders — it can be taken for free" etc. */
+function hangPhrase(board: Board, h: HangingInfo, whose: 'yours' | 'theirs'): string {
+  const cheapestSq = cheapestAttackerSquare(board, h);
   const attackerName = cheapestSq ? pieceName(board.squares.get(cheapestSq)?.type ?? 'p') : 'piece';
 
   switch (h.reason) {

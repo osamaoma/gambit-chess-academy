@@ -21,7 +21,7 @@
 
 import { applyUciMove } from '../board';
 import { boardsOf } from '../context';
-import { BaseDetector, ConfidenceTier, Explanation, Improvement } from '../detector';
+import { ArrowHint, BaseDetector, ConfidenceTier, Explanation, Improvement, SquareHint, Visuals } from '../detector';
 import { MoveClassification, MoveContext } from '../types';
 import { detectTactics, MotifId, TacticFinding } from '../tactics';
 
@@ -119,27 +119,52 @@ abstract class AbstractTacticalDetector extends BaseDetector {
     const coach = MOTIF_COACH[f.id];
     const motif = f.label.toLowerCase();
     const tags = ['tactics', f.id, ...(f.id === 'mate' || f.id === 'mating-net' || f.id === 'back-rank' ? ['mate'] : [])];
+    const played = playedBest(ctx);
+    const visuals = this.visualsFor(f, ctx, played);
 
-    if (playedBest(ctx)) {
+    if (played) {
       return {
         headline: `${ctx.san} — a ${motif}!`,
+        summary: `${ctx.san} lands a ${motif}: ${f.note}.`,
         detail: `Well spotted: ${f.note}. ${coach}`,
-        tags,
+        tags, visuals,
       };
     }
     if (ERROR_CLASSIFICATIONS.has(ctx.classification)) {
       return {
         headline: `You missed a ${motif}.`,
+        summary: `There was a ${motif} here — ${f.note}.`,
         detail: `${capitalise(f.note)}. ${coach}`,
-        tags,
+        tags, visuals,
       };
     }
     // Played a different but still-fine move — describe without scolding.
     return {
       headline: `The position held a ${motif}.`,
+      summary: `The position held a ${motif}: ${f.note}.`,
       detail: `${capitalise(f.note)}. ${coach}`,
-      tags,
+      tags, visuals,
     };
+  }
+
+  /**
+   * The motif drawn: an arrow from the attacking piece to every piece it hits,
+   * plus the engine's move when the tactic was missed. This is what makes a
+   * fork legible at a glance instead of a sentence to decode.
+   */
+  private visualsFor(f: TacticFinding, ctx: MoveContext, played: boolean): Visuals {
+    const arrows: ArrowHint[] = [];
+    const squares: SquareHint[] = [];
+    if (f.from) squares.push({ square: f.from, color: 'idea' });
+    for (const t of f.targets ?? []) {
+      if (f.from) arrows.push({ from: f.from, to: t, color: 'danger' });
+      squares.push({ square: t, color: 'danger' });
+    }
+    if (!played) {
+      const best = ctx.evalBefore.uci;
+      if (best.length >= 4) arrows.push({ from: best.slice(0, 2), to: best.slice(2, 4), color: 'best' });
+    }
+    return { arrows, squares };
   }
 
   protected override improvements(ctx: MoveContext): readonly Improvement[] {

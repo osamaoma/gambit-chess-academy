@@ -32,12 +32,27 @@ export {
   detectorHandles,
   SignalDetector,
   TIER_RANK,
+  type ArrowHint,
   type ConfidenceTier,
   type DetectionResult,
   type Detector,
   type Explanation,
+  type HintColor,
   type Improvement,
+  type SquareHint,
+  type Visuals,
 } from './detector';
+
+export {
+  isViewerMove,
+  moverSubject,
+  movers,
+  moversLower,
+  opponents,
+  opponentsLower,
+} from './perspective';
+
+export { joinFiles, joinList, points } from './text';
 
 export { boardsOf, type MoveBoards } from './context';
 
@@ -45,6 +60,7 @@ export {
   CRITIQUE_CLASSES,
   isCritiqueClass,
   isPraiseClass,
+  POSITIONAL_CLASSES,
   PRAISE_CLASSES,
 } from './classifications';
 
@@ -102,6 +118,7 @@ export {
   bishopQuality,
   CENTER_SQUARES,
   centralControlCount,
+  centralControlSquares,
   centralPawnCount,
   chainBase,
   doubledPawnFiles,
@@ -182,6 +199,7 @@ export {
 export {
   computeCenterSignals,
   CenterControlDetector,
+  centralLeverTargets,
   isCentralLever,
   type CenterSignals,
 } from './detectors/center-control';
