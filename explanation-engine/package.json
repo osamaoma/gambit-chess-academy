@@ -6,7 +6,7 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "build:browser": "esbuild src/browser.ts --bundle --format=iife --global-name=GambitExplain --minify --outfile=../gambit_lite/public/explanation-engine.js",
+    "build:browser": "esbuild src/browser.ts --bundle --format=iife --global-name=GambitExplain --minify --outfile=../public/explanation-engine.js",
     "test": "tsc && node --test \"dist/tests/*.test.js\"",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },

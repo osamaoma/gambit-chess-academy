@@ -773,6 +773,26 @@ input::placeholder{color:var(--text3)}
   .ai-explanation-body p:last-child{margin-bottom:0}
   .ai-explanation-body strong{color:var(--gold);font-weight:600}
   .ai-explanation-body em{color:var(--text2);font-style:italic}
+  /* The one specific "why" sentence, directly under the move header (chess.com card) */
+  .mdb-why{margin:9px 0 0;padding:11px 13px;background:rgba(240,158,45,.07);border-left:2px solid rgba(240,158,45,.75);
+           border-radius:0 6px 6px 0;font-size:13px;line-height:1.55;color:var(--text)}
+  .mdb-why b{color:var(--gold);font-weight:600}
+  .mdb-why .why-tip{display:block;margin-top:7px;padding-top:7px;border-top:1px solid rgba(240,158,45,.16);
+                    font-size:12px;line-height:1.5;color:var(--text2)}
+  .mdb-why .why-tip .wt-mv{font-family:'DM Mono',monospace;color:var(--gold);font-weight:600;margin-right:5px}
+
+  /* Explanation highlights on the review board — amber = the idea, red = the danger,
+     blue = the engine's move. Rings rather than fills so the piece stays readable. */
+  #board-r .sq.hl-ex-idea::before,
+  #board-r .sq.hl-ex-target::before,
+  #board-r .sq.hl-ex-danger::before,
+  #board-r .sq.hl-ex-best::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:2px;
+  }
+  #board-r .sq.hl-ex-idea::before{   box-shadow:inset 0 0 0 3px rgba(240,158,45,.9);  background:rgba(240,158,45,.16) }
+  #board-r .sq.hl-ex-target::before{ box-shadow:inset 0 0 0 2px rgba(240,158,45,.55); background:rgba(240,158,45,.09) }
+  #board-r .sq.hl-ex-danger::before{ box-shadow:inset 0 0 0 3px rgba(220,80,80,.9);   background:rgba(220,80,80,.20) }
+  #board-r .sq.hl-ex-best::before{   box-shadow:inset 0 0 0 3px rgba(0,48,136,.85);   background:rgba(0,48,136,.14) }
   .ai-error{padding:10px 14px;background:rgba(224,112,112,.08);border-left:3px solid #e07070;border-radius:0 5px 5px 0;font-size:12px;color:#e07070;margin-bottom:10px}
 
 
@@ -4236,6 +4256,8 @@ body{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; tex
 }
 
 </style>
+<!-- Principle-based move explanation engine (bundled from /explanation-engine). Defines window.GambitExplain. -->
+<script src="explanation-engine.js?v=1"></script>
 <script>
 /* theme: set data-theme on <html> ASAP (no flash), before body renders */
 (function(){
@@ -12413,6 +12435,9 @@ async function loadReview(gameIdx){
     black: game.black || headers.Black || 'Black',
     whiteElo: headers.WhiteElo || game.whiteElo || '',
     blackElo: headers.BlackElo || game.blackElo || '',
+    // 'W' / 'B' when the game came from the user's archive — lets explanations
+    // address them directly ("Your knight…" vs "Their knight…").
+    myColor: game.myColor || '',
     whiteAvatar: '', blackAvatar: ''
   };
   try { rvFetchAvatars(); } catch(e){}   // async profile pictures (chess.com)
@@ -12848,8 +12873,11 @@ async function analyseGame(white, black, username){
       evalAfter: after,             // White's perspective
       lossInPawns: Math.max(0, loss),  // What the moving player lost (0 if good move)
       winLoss: Math.max(0, wDrop),     // win-% the mover gave up (drives accuracy %)
+      winPctBefore: wpBefore,       // mover-perspective win% before (for the explanation engine)
+      winPctAfter: wpAfter,         // mover-perspective win% after (for the explanation engine)
       bestMoveUCI,                  // Engine's recommended move in UCI form (e.g. "g1f3")
       fenBefore,                    // FEN before this move was played (for SAN conversion + board display)
+      fenAfter: positions[i]?.fen || null,  // FEN after this move (fed to the explanation engine)
     });
   }
 
@@ -13325,7 +13353,102 @@ window.selectGameMove = function(idx){
   selectReviewMove(idx);
 };
 
-window.selectReviewMove = function(idx){
+// ─── Principle-based explanation engine bridge (window.GambitExplain) ───
+// Turns one analysed move into a SPECIFIC sentence ("Your knight comes into
+// play on c6, supporting d4 in the centre.") plus the arrows/highlights that
+// show it on the board. Returns the engine's UserExplanation, or null.
+function rvEngineExplain(idx){
+  try {
+    if(!window.GambitExplain || typeof window.GambitExplain.explain !== 'function') return null;
+    const ann = moveAnnotations[idx - 1];
+    const mv  = reviewHistory[idx];
+    if(!ann || !mv || !ann.fenBefore || !ann.fenAfter) return null;
+    const promo = mv.promotion ? String(mv.promotion).toLowerCase() : '';
+    const uci = (mv.from || '') + (mv.to || '') + promo;
+    if(uci.length < 4) return null;
+    return window.GambitExplain.explain({
+      fenBefore: ann.fenBefore,
+      fenAfter: ann.fenAfter,
+      san: ann.san || mv.san,
+      uci,
+      ply: idx,
+      classification: ann.ann,
+      bestUci: ann.bestMoveUCI || undefined,
+      bestPv: ann.bestLine || '',
+      evalBeforeCp: Math.round((Number(ann.evalBefore) || 0) * 100),
+      evalAfterCp: Math.round((Number(ann.evalAfter) || 0) * 100),
+      evalLossPawns: Number(ann.lossInPawns) || 0,
+      winPctBefore: Number(ann.winPctBefore),
+      winPctAfter: Number(ann.winPctAfter),
+      viewerColor: rvViewerColor(),
+    });
+  } catch(e){ console.warn('engine explanation failed:', e); return null; }
+}
+
+// Which side is the person reading the review? Drives "Your…" vs "Their…".
+// Falls back to null (engine then says "White's"/"Black's").
+function rvViewerColor(){
+  const c = reviewMeta && reviewMeta.myColor;
+  return c === 'W' ? 'white' : c === 'B' ? 'black' : null;
+}
+
+// The one-sentence "why", rendered under the move header.
+function rvWhyHTML(ex){
+  if(!ex || !ex.summary) return '';
+  const esc = (typeof olEsc === 'function') ? olEsc : (s => String(s == null ? '' : s));
+  // A single concrete follow-up (the engine ranks them; the first is the best).
+  const tip = (ex.improvements || [])[0];
+  const tipMv = tip && (tip.moveSan || tip.moveUci);
+  const tipHTML = tip
+    ? `<span class="why-tip">${tipMv ? `<span class="wt-mv">${esc(tipMv)}</span>` : ''}${esc(tip.advice || '')}</span>`
+    : '';
+  return `<div class="mdb-why">${esc(ex.summary)}${tipHTML}</div>`;
+}
+
+// Semantic hint colours → pixels. Amber = the idea, red = the danger/threat,
+// blue = the engine's recommendation, soft amber = what the idea acts upon.
+const RV_HINT_COLOR = {
+  idea:   'rgba(240,158,45,.92)',
+  target: 'rgba(240,158,45,.55)',
+  danger: 'rgba(220,80,80,.88)',
+  best:   'rgba(0,48,136,.9)',
+};
+
+// Draw an explanation's arrows + square highlights on the review board.
+// Additive: keeps whatever drawReviewArrows already put in the overlay.
+function rvDrawExplainVisuals(visuals){
+  document.querySelectorAll('#board-r .sq').forEach(sq => {
+    sq.classList.remove('hl-ex-idea', 'hl-ex-target', 'hl-ex-danger', 'hl-ex-best');
+  });
+  if(!visuals) return;
+  (visuals.squares || []).forEach(h => {
+    if(!RV_HINT_COLOR[h.color]) return;
+    const el = document.querySelector(`#board-r .sq[data-sq="${h.square}"]`);
+    if(el) el.classList.add('hl-ex-' + h.color);
+  });
+
+  const overlay = document.getElementById('arrow-overlay-r');
+  const arrows = (visuals.arrows || []).filter(a => RV_HINT_COLOR[a.color]);
+  if(!overlay || !arrows.length) return;
+  const flip = boardFlippedState.get('board-r') === true;
+  let defs = '', lines = '';
+  const seen = new Set();
+  arrows.forEach(a => {
+    const col = RV_HINT_COLOR[a.color];
+    const mid = 'ah-ex-' + a.color;
+    if(!seen.has(mid)){
+      seen.add(mid);
+      defs += `<marker id="${mid}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${col}"/></marker>`;
+    }
+    lines += arrowSVG(a.from, a.to, col, a.color === 'target' ? 5 : 7, mid, flip);
+  });
+  overlay.innerHTML += `<defs>${defs}</defs>${lines}`;
+}
+
+window.selectReviewMove = function(idx, opts){
+  // `heavy` (default true) runs the async Stockfish candidate analysis + AI upgrade.
+  // Step-through navigation passes {heavy:false} so arrow-keying stays instant.
+  const heavy = !opts || opts.heavy !== false;
   // Clicking a main-game move exits branch view (branch is preserved for return)
   viewingBranch = false;
   branchPly = 0;
@@ -13371,6 +13494,11 @@ window.selectReviewMove = function(idx){
   const moveStr = `${moveNum}${isWhiteMove ? '.' : '...'} ${mv?.san || ''}`;
   const evalDisplay = ann.isMate ? `${(ann.mateIn||0) >= 0 ? '+' : '−'}M${Math.abs(ann.mateIn||0)}` : `${ann.eval}`;
 
+  // Principle-based explanation for THIS move — one specific sentence plus the
+  // arrows/highlights that show it. Computed before the header so the sentence
+  // can sit inside the card (chess.com structure).
+  const engineEx = rvEngineExplain(idx);
+
   // Build the chess.com-style coaching header
   let html = `
     <div class="mdb-head">
@@ -13384,6 +13512,7 @@ window.selectReviewMove = function(idx){
         <div class="mdb-eval-l">Engine eval</div>
       </div>
     </div>
+    ${rvWhyHTML(engineEx)}
   `;
 
   // Time spent on this move + clock remaining (when the game carries clocks)
@@ -13475,8 +13604,13 @@ window.selectReviewMove = function(idx){
 
     if(detail) detail.innerHTML = html;
 
+    // Show the explanation ON the board: amber = the idea, red = the danger,
+    // blue = the engine's move. Drawn after drawReviewArrows so it adds to
+    // (rather than replaces) the played/best-move arrows.
+    rvDrawExplainVisuals(engineEx && engineEx.visuals);
+
     // Asynchronously run Stockfish multi-PV to surface candidate moves
-    if(ann && ann.fenBefore && typeof lessonId !== 'undefined'){
+    if(heavy && ann && ann.fenBefore && typeof lessonId !== 'undefined'){
       (async () => {
         try {
           const candEl = document.getElementById(`${lessonId}-cand`);
@@ -13498,7 +13632,7 @@ window.selectReviewMove = function(idx){
     }
 
     // If AI key is set, asynchronously upgrade the lesson with a real LLM explanation
-    if(typeof getAIKey === 'function' && getAIKey() && ann && ann.fenBefore && ann.bestMoveUCI && typeof lessonId !== 'undefined'){
+    if(heavy && typeof getAIKey === 'function' && getAIKey() && ann && ann.fenBefore && ann.bestMoveUCI && typeof lessonId !== 'undefined'){
       (async () => {
         try {
           const lessonEl = document.getElementById(lessonId);
@@ -14361,37 +14495,44 @@ function rvScrollMove(el){
   if(er.top < cr.top) cont.scrollTop -= (cr.top - er.top) + 6;
   else if(er.bottom > cr.bottom) cont.scrollTop += (er.bottom - cr.bottom) + 6;
 }
+// Reset the move-detail panel to its neutral prompt (used at the start position).
+function rvClearDetail(){
+  const d = document.getElementById('rv-detail');
+  if(d) d.innerHTML = `<div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>`;
+  try { rvDrawExplainVisuals(null); } catch(e){}   // drop any explanation highlights
+}
 window.rvNext = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; }
   if(viewingBranch && branchState){
     if(branchPly < branchState.moves.length){ branchPly++; renderReviewBoard(); }
   } else if(reviewIdx < reviewHistory.length - 1){
-    reviewIdx++; renderReviewBoard();
-    rvScrollMove(document.getElementById(`mc-${reviewIdx}`));
+    // Advance AND surface the move's explanation (light: no heavy Stockfish/AI).
+    selectReviewMove(reviewIdx + 1, {heavy:false});
   }
 };
 window.rvPrev = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; }
   if(viewingBranch && branchState){
     if(branchPly > 0){ branchPly--; renderReviewBoard(); }
     else { /* at branch start — could exit branch here, but keep branch view to allow re-entry */ }
   } else if(reviewIdx > 0){
-    reviewIdx--; renderReviewBoard();
+    const target = reviewIdx - 1;
+    if(target >= 1){ selectReviewMove(target, {heavy:false}); }
+    else { reviewIdx = 0; renderReviewBoard(); rvClearDetail(); }   // back at the start position
   }
 };
 window.rvStart = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; }
   if(viewingBranch && branchState){ branchPly = 0; renderReviewBoard(); }
-  else { reviewIdx = 0; renderReviewBoard(); }
+  else { reviewIdx = 0; renderReviewBoard(); rvClearDetail(); }
 };
 window.rvEnd = function(){
-  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; } 
+  if(window._rvFastTimer){ clearInterval(window._rvFastTimer); window._rvFastTimer = null; window._rvFast = false; }
   if(viewingBranch && branchState){
     branchPly = branchState.moves.length;
     renderReviewBoard();
   } else if(reviewHistory.length > 1){
-    reviewIdx = reviewHistory.length - 1; renderReviewBoard();
-    rvScrollMove(document.getElementById(`mc-${reviewIdx}`));
+    selectReviewMove(reviewHistory.length - 1, {heavy:false});
   }
 };
 // "See key moments" — skip the quiet moves and jump straight to the next
