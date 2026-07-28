@@ -204,6 +204,8 @@ export interface ReviewedMove {
   readonly comparison: MoveComparison | null;
   readonly themes: readonly Theme[];
   readonly motifs: readonly Motif[];
+  /** What the position was asking for, decided by this engine. */
+  readonly priorities: readonly StrategicPriority[];
   readonly explanation: Explanation;
   readonly arrows: readonly Arrow[];
   readonly highlights: readonly Highlight[];
