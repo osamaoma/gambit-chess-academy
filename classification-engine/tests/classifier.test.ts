@@ -193,8 +193,10 @@ describe('configurability', () => {
 describe('extensibility and safety', () => {
   it('accepts a custom rule that outranks the built-ins', () => {
     const always: ClassificationRule = {
-      id: 'always-brilliant', priority: 999,
-      evaluate: () => ({ classification: 'Brilliant', confidence: 1, reasons: ['custom'] }),
+      id: 'always-brilliant',
+      applies: () => true,
+      priority: () => 999,
+      classify: () => ({ classification: 'Brilliant', confidence: 1, reasons: ['custom'] }),
     };
     const c = new MoveClassifier({}, [always, ...defaultRules()]);
     assert.equal(c.classify(analysis()).classification, 'Brilliant');
@@ -202,8 +204,10 @@ describe('extensibility and safety', () => {
 
   it('survives a rule that throws', () => {
     const broken: ClassificationRule = {
-      id: 'broken', priority: 999,
-      evaluate: () => { throw new Error('boom'); },
+      id: 'broken',
+      applies: () => { throw new Error('boom'); },
+      priority: () => 999,
+      classify: () => ({ classification: 'Brilliant', confidence: 1, reasons: [] }),
     };
     const c = new MoveClassifier({}, [broken, ...defaultRules()]);
     assert.equal(c.classify(analysis()).classification, 'Best');

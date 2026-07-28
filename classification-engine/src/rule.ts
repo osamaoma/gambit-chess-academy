@@ -1,24 +1,31 @@
 /**
  * The rule contract.
  *
- * One rule = one reason a move might earn a label. Rules are pure functions of
- * (context, config): they never read globals, never mutate, and never know
- * about each other. Adding a new verdict means writing a new rule and
- * registering it — no existing file changes (open/closed).
+ * One rule owns exactly one classification. A rule answers three questions,
+ * and keeping them separate is what makes the engine configurable:
  *
- * The classifier asks rules in priority order and takes the first verdict, so a
- * rule that returns non-null is saying "I am certain this label wins", not "I
- * have an opinion". Rules that merely have an opinion return null.
+ *   applies()   — does this rule recognise the move at all?
+ *   priority()  — if several rules recognise it, how strongly does this one
+ *                 claim it?
+ *   classify()  — the verdict, only ever called on the winner.
+ *
+ * `priority()` is a METHOD, not a constant, so a rule may rank itself
+ * differently depending on the position — an endgame rule can outrank an
+ * opening one without either knowing the other exists.
+ *
+ * Rules are pure functions of (context, config): no globals, no mutation, no
+ * knowledge of each other. That independence is what makes them testable in
+ * isolation and what lets a host add, drop or reorder them freely.
  */
 
 import { ClassifierConfig } from './config';
 import { ClassificationContext } from './context';
 import { Classification } from './types';
 
-/** What a rule returns when it claims a move. */
+/** What a rule returns once it has won. */
 export interface RuleVerdict {
   readonly classification: Classification;
-  /** 0–1 before any global adjustment (e.g. the shallow-search penalty). */
+  /** 0–1, before engine-wide adjustments such as the shallow-search penalty. */
   readonly confidence: number;
   /** Why, in plain language. Surfaced to the user and to telemetry. */
   readonly reasons: readonly string[];
@@ -27,13 +34,43 @@ export interface RuleVerdict {
 }
 
 export interface ClassificationRule {
-  /** Stable identifier, used in metadata so a verdict can be traced to its rule. */
+  /** Stable identifier. Appears in metadata so a verdict traces to its rule. */
   readonly id: string;
+
   /**
-   * Higher runs first. Precedence is a product decision, so it lives on the
-   * rule rather than being implied by array order at the registration site.
+   * Does this rule recognise the move? Must be cheap, pure and side-effect
+   * free — the engine calls it on every rule for every move.
    */
-  readonly priority: number;
-  /** Claim the move, or return null to pass. */
-  evaluate(ctx: ClassificationContext, config: ClassifierConfig): RuleVerdict | null;
+  applies(ctx: ClassificationContext, config: ClassifierConfig): boolean;
+
+  /**
+   * How strongly this rule claims the move. Higher wins. Only consulted for
+   * rules that already applied, and may vary with the position.
+   */
+  priority(ctx: ClassificationContext, config: ClassifierConfig): number;
+
+  /**
+   * The verdict. The engine calls this ONLY on the highest-priority match, so
+   * it may assume `applies()` returned true and do the expensive work here.
+   */
+  classify(ctx: ClassificationContext, config: ClassifierConfig): RuleVerdict;
+}
+
+/**
+ * Convenience base for the common case of a fixed priority.
+ *
+ * Subclasses that need a context-dependent ranking simply override
+ * {@link priority} instead.
+ */
+export abstract class BaseRule implements ClassificationRule {
+  abstract readonly id: string;
+  /** Fixed rank used by the default {@link priority} implementation. */
+  protected abstract readonly rank: number;
+
+  abstract applies(ctx: ClassificationContext, config: ClassifierConfig): boolean;
+  abstract classify(ctx: ClassificationContext, config: ClassifierConfig): RuleVerdict;
+
+  priority(_ctx: ClassificationContext, _config: ClassifierConfig): number {
+    return this.rank;
+  }
 }

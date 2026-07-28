@@ -41,11 +41,23 @@ export {
 
 export { winProbability } from './win-probability';
 
-export type { ClassificationRule, RuleVerdict } from './rule';
+export { BaseRule, type ClassificationRule, type RuleVerdict } from './rule';
 
-export { BookRule, ForcedRule } from './rules/opening-rules';
-export { BestRule, BrilliantRule, GreatRule } from './rules/excellence-rules';
-export { MissRule, QualityBandRule } from './rules/error-rules';
+export {
+  bandConfidence,
+  BestRule,
+  BlunderRule,
+  BookRule,
+  BrilliantRule,
+  ExcellentRule,
+  ForcedRule,
+  GoodRule,
+  GreatRule,
+  InaccuracyRule,
+  MissRule,
+  MistakeRule,
+  QualityBandRule,
+} from './rules';
 
 export {
   clamp01,
