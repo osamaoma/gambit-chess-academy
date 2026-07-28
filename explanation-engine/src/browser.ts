@@ -24,6 +24,7 @@ import { PieceActivityDetector } from './detectors/piece-activity';
 import { PawnStructureDetector } from './detectors/pawn-structure';
 import { CenterControlDetector } from './detectors/center-control';
 import { EndgameDetector } from './detectors/endgame';
+import { narrate, Narration } from './narrate';
 import { EngineEval, EngineLine, MoveClassification, MoveContext } from './types';
 
 /** The full production detector roster, registered once. */
@@ -167,15 +168,49 @@ export function buildContext(raw: RawMove): MoveContext | null {
   };
 }
 
-/** Explain one move described by the host's loose data. Null when nothing applies. */
+/**
+ * Explain one move described by the host's loose data.
+ *
+ * The card's sentence ALWAYS comes from {@link narrate}, never from a detector.
+ * Two reasons, both learned the hard way:
+ *  - a detector may be describing the ENGINE's move rather than the one played,
+ *    which reads as a flat lie ("you played c5" + "there was a bishop pin");
+ *  - detector prose is club-player language, and this card has to be readable
+ *    by a small child.
+ *
+ * Detectors still do the expert work behind the scenes (tips, tags, the deeper
+ * detail), but what the reader SEES is a plain, true sentence about the move
+ * they actually made. Every move gets one — quiet moves included.
+ */
 export function explain(raw: RawMove): UserExplanation | null {
   const ctx = buildContext(raw);
   if (!ctx) return null;
-  try {
-    return engine.explainMove(ctx);
-  } catch {
-    return null;
+
+  let story: Narration | null = null;
+  try { story = narrate(ctx); } catch { story = null; }
+
+  let expert: UserExplanation | null = null;
+  try { expert = engine.explainMove(ctx); } catch { expert = null; }
+
+  if (!story) return expert;                      // unreadable position — expert or nothing
+  if (!expert) {
+    // No detector spoke, but the move still deserves its story.
+    return {
+      san: ctx.san,
+      ply: ctx.ply,
+      classification: ctx.classification,
+      headline: story.summary,
+      summary: story.summary,
+      detail: '',
+      improvements: [],
+      tags: ['story'],
+      supporting: [],
+      sources: ['narrator'],
+      confidence: 0.5,
+      visuals: story.visuals,
+    };
   }
+  return { ...expert, summary: story.summary, visuals: story.visuals };
 }
 
 /** Explain a ready-made MoveContext (for callers that build their own). */

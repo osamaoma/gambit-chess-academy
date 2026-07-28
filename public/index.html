@@ -4776,10 +4776,6 @@ document.addEventListener('DOMContentLoaded', function(){
           <div class="move-detail-box" id="rv-detail" style="margin-bottom:8px">
             <div style="font-size:13px;color:var(--text3)">Click a move for Stockfish analysis</div>
           </div>
-          <div class="play-mode-bar">
-            <span class="pm-label">Play mode</span>
-            <span class="pm-text">Click any piece to explore alternative moves. Branch off the game to test ideas with live engine analysis.</span>
-          </div>
         </div>
         <!-- Game Review sidebar (chess.com structure, no coach): eval graph on top,
              players + accuracy, then ONE page at a time — report or move list —
@@ -13392,17 +13388,12 @@ function rvViewerColor(){
   return c === 'W' ? 'white' : c === 'B' ? 'black' : null;
 }
 
-// The one-sentence "why", rendered under the move header.
+// The one plain sentence saying what this move did. Nothing else — no coaching
+// tips and no "the engine prefers…", which is exactly the noise we removed.
 function rvWhyHTML(ex){
   if(!ex || !ex.summary) return '';
   const esc = (typeof olEsc === 'function') ? olEsc : (s => String(s == null ? '' : s));
-  // A single concrete follow-up (the engine ranks them; the first is the best).
-  const tip = (ex.improvements || [])[0];
-  const tipMv = tip && (tip.moveSan || tip.moveUci);
-  const tipHTML = tip
-    ? `<span class="why-tip">${tipMv ? `<span class="wt-mv">${esc(tipMv)}</span>` : ''}${esc(tip.advice || '')}</span>`
-    : '';
-  return `<div class="mdb-why">${esc(ex.summary)}${tipHTML}</div>`;
+  return `<div class="mdb-why">${esc(ex.summary)}</div>`;
 }
 
 // Semantic hint colours → pixels. Amber = the idea, red = the danger/threat,
@@ -13515,92 +13506,23 @@ window.selectReviewMove = function(idx, opts){
     ${rvWhyHTML(engineEx)}
   `;
 
-  // Time spent on this move + clock remaining (when the game carries clocks)
-  if(reviewHasClocks && reviewMoveTimes[idx] != null){
-    html += `<div class="mdb-time">
-      <span class="mdb-time-k">Time</span>
-      <span class="mdb-time-spent">${rvFmtSpent(reviewMoveTimes[idx])} spent</span>
-      ${reviewClocks[idx] != null ? `<span class="mdb-time-left">· ${rvFmtClock(reviewClocks[idx])} left</span>` : ''}
-    </div>`;
-  }
+  // Time spent, difficulty, the engine's line and the opening-theory note used
+  // to live here. They are gone on purpose: the card is now just the move and
+  // ONE plain sentence saying what it did.
 
-  // Difficulty: how hard the best move in THIS position was to find (0–100)
-  if(typeof ann.difficulty === 'number' && ann.difficulty >= 12){
-    const dLab = ann.difficulty >= 70 ? 'Very hard' : ann.difficulty >= 45 ? 'Hard' : ann.difficulty >= 20 ? 'Tricky' : 'Easy';
-    const dCol = ann.difficulty >= 45 ? '#d06b7a' : ann.difficulty >= 20 ? '#e6b450' : 'var(--text3)';
-    html += `<div class="mdb-time">
-      <span class="mdb-time-k">Position</span>
-      <span class="mdb-time-spent" style="color:${dCol}">${dLab} to get right</span>
-      <span class="mdb-time-left">· difficulty ${ann.difficulty}/100</span>
-    </div>`;
-  }
-
-  // For sub-best moves, show the LEARNING PANEL
+  // For sub-best moves, keep ONLY the two buttons (rewind / try the better move)
   const isSubBest = ['inaccuracy', 'mistake', 'blunder'].includes(ann.ann);
   if(isSubBest && ann.bestMoveUCI && ann.fenBefore){
-    // Convert engine's best UCI move to readable SAN
-    const bestSAN = uciToSAN(ann.fenBefore, ann.bestMoveUCI) || ann.bestMoveUCI;
-    // What would the eval have been if Black/White played the best move?
-    // We approximate: "evalBefore" is the engine's expected score with best play.
-    // After the user's wrong move, eval became "evalAfter". Loss = evalBefore - evalAfter
-    // (from White's perspective; sign-flipped per mover above).
-    const evalBeforeStr = formatEvalNum(ann.evalBefore);
-    const evalAfterStr  = formatEvalNum(ann.evalAfter);
-    const lossStr = ann.lossInPawns.toFixed(2);
-
-    // The PV after best move (e.g. "g1f3 e7e5 f1b5...")
-    const pvForBest = ann.bestLine || ann.bestMoveUCI;
-    const pvSAN = uciSequenceToSAN(ann.fenBefore, pvForBest, 6);
-
-    const lesson = buildLessonText(ann);
-    // Generate a unique ID so we can async-update with AI explanation
-    const lessonId = `lesson-${idx}-${Date.now().toString(36)}`;
-
+    // Just the two actions — no comparison cards, no eval-loss maths, no prose.
     html += `
-      <div class="learn-panel">
-        <div class="learn-header">Engine recommendation — learn from this move</div>
-        <div class="learn-compare">
-          <div class="learn-card user">
-            <div class="learn-card-label">You played</div>
-            <div class="learn-card-move">${mv.san}</div>
-            <div class="learn-card-eval">Result: ${evalAfterStr}</div>
-          </div>
-          <div class="learn-card best">
-            <div class="learn-card-label">Better was</div>
-            <div class="learn-card-move">${bestSAN}</div>
-            <div class="learn-card-eval">Would give: ${evalBeforeStr}</div>
-          </div>
-        </div>
-        <div class="learn-loss">Lost <strong>${lossStr} pawns</strong> of advantage by missing this</div>
-        <div style="display:flex;gap:14px;justify-content:center;font-size:11px;color:var(--text3);margin:4px 0 8px;font-family:'DM Mono',monospace">
-          <span><span style="color:rgba(220,80,80,1)">→</span> Your move</span>
-          <span><span style="color:rgb(21,120,27)">→</span> Engine's recommendation</span>
-        </div>
-        ${pvSAN ? `<div class="learn-line"><span class="ll-label">Best line:</span>${pvSAN}</div>` : ''}
-        <div class="learn-lesson" id="${lessonId}">${lesson}</div>
-            <div class="learn-candidates" id="${lessonId}-cand"></div>
-        <div class="learn-show-board">
-          <button class="btn btn-outline btn-sm" onclick="showSuggestedMove(${idx})">↶ Rewind & show</button>
-          <button class="btn btn-outline btn-sm" onclick="playSuggestedMove(${idx})" style="margin-left:6px">▶ Try the better move</button>
-        </div>
+      <div class="learn-show-board" style="margin-top:10px">
+        <button class="btn btn-outline btn-sm" onclick="showSuggestedMove(${idx})">↶ Rewind & show</button>
+        <button class="btn btn-outline btn-sm" onclick="playSuggestedMove(${idx})" style="margin-left:6px">▶ Try the better move</button>
       </div>`;
-  } else if(ann.bestLine && ['best', 'good'].includes(ann.ann) === false){
-    // Convert the raw UCI line to readable SAN if we have a FEN to start from
-    let displayLine = ann.bestLine;
-    if(ann.fenBefore){
-      const san = uciSequenceToSAN(ann.fenBefore, ann.bestLine, 6);
-      if(san) displayLine = san;
-    }
-    html += `<div class="mdb-best"><div class="mdb-best-h">Engine recommendation</div><div class="mdb-best-moves">${displayLine}</div></div>`;
   }
 
-  if(ann.ann === 'brilliant'){
-    html += `<div class="mdb-brilliant-glow" style="margin-top:8px;font-size:12px;color:var(--brilliant)">Found by fewer than 3% of players at this level. This move creates a tactical threat that is very difficult to spot over the board.</div>`;
-  } else if(ann.ann === 'best' || ann.ann === 'good'){
-    if(ann.note) html += `<div class="mdb-desc" style="margin-top:8px">${ann.note}</div>`;
-  } else if(ann.note){
-    html += `<div class="mdb-desc" style="margin-top:8px;color:var(--text3);font-size:12px">${ann.note}</div>`;
-  }
+  // (The stock classifier note — "Opening theory — Nimzo-Larsen Attack…" — is
+  // deliberately not shown. The storyteller sentence above replaces it.)
 
     if(detail) detail.innerHTML = html;
 
@@ -13609,54 +13531,8 @@ window.selectReviewMove = function(idx, opts){
     // (rather than replaces) the played/best-move arrows.
     rvDrawExplainVisuals(engineEx && engineEx.visuals);
 
-    // Asynchronously run Stockfish multi-PV to surface candidate moves
-    if(heavy && ann && ann.fenBefore && typeof lessonId !== 'undefined'){
-      (async () => {
-        try {
-          const candEl = document.getElementById(`${lessonId}-cand`);
-          if(!candEl) return;
-          const userHistEntry = reviewHistory[idx];
-          const synthExForCand = {
-            fenBefore: ann.fenBefore,
-            played: ann.san || mv.san,
-            playedFrom: userHistEntry?.from,
-            playedTo: userHistEntry?.to,
-            loss: ann.lossInPawns,
-            userIsWhite: parseFEN(ann.fenBefore).turn === 'w',
-          };
-          // Hand-build the container element analyzeMistakeCandidates expects
-          candEl.id = `we-candidates-cand-${idx}`;
-          await analyzeMistakeCandidates(`cand-${idx}`, synthExForCand);
-        } catch(e){ console.warn('Candidate analysis failed:', e); }
-      })();
-    }
-
-    // If AI key is set, asynchronously upgrade the lesson with a real LLM explanation
-    if(heavy && typeof getAIKey === 'function' && getAIKey() && ann && ann.fenBefore && ann.bestMoveUCI && typeof lessonId !== 'undefined'){
-      (async () => {
-        try {
-          const lessonEl = document.getElementById(lessonId);
-          if(!lessonEl) return;
-          const heuristicHTML = lessonEl.innerHTML;
-          lessonEl.insertAdjacentHTML('afterbegin', '<div style="font-size:12px;color:#7bb4e0;font-style:italic;margin-bottom:8px"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> Asking Claude to analyse this position…</div>');
-          const ctx = {
-            fen: ann.fenBefore,
-            played: ann.san || mv.san,
-            best: uciToSAN(ann.fenBefore, ann.bestMoveUCI) || ann.bestMoveUCI,
-            loss: ann.lossInPawns,
-            phase: idx < 16 ? 'opening' : (idx > 50 ? 'endgame' : 'middlegame'),
-            category: ann.ann,
-            userIsWhite: parseFEN(ann.fenBefore).turn === 'w',
-            opening: null,
-            planLine: ann.bestLine ? uciSequenceToSAN(ann.fenBefore, ann.bestLine, 6) : null,
-            punishLine: null
-          };
-          const newHTML = await generateAIOrHeuristic(ctx, heuristicHTML);
-          const stillThere = document.getElementById(lessonId);
-          if(stillThere) stillThere.innerHTML = newHTML;
-        } catch(e){ console.warn('AI lesson failed:', e); }
-      })();
-    }
+    // (The Stockfish candidate list and the LLM lesson upgrade used to run here.
+    // Both filled elements inside the old lesson panel, which no longer exists.)
   } catch(err){
     console.error('selectReviewMove error:', err);
     if(detail) detail.innerHTML = `<div style="font-size:13px;color:var(--inaccuracy);padding:10px">⚠ Error displaying this move: ${String(err.message || err)}<br><br>Try clicking another move, or check the browser console.</div>`;
