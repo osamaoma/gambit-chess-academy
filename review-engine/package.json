@@ -1,0 +1,21 @@
+{
+  "name": "@gambit/review-engine",
+  "version": "0.1.0",
+  "description": "Modular game review engine — composes classification, themes, motifs and explanations into one reviewed move",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && node --test \"dist/tests/*.test.js\"",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@gambit/classification-engine": "file:../classification-engine",
+    "@gambit/explanation-engine": "file:../explanation-engine"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^5.5.0"
+  }
+}
