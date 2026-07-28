@@ -190,10 +190,124 @@ export interface Narration {
 }
 
 /**
+ * The detectors' chess IDEAS, said the way you'd say them to a child.
+ *
+ * This is the important half of the module. A detector already worked out the
+ * real point of the move ("occupy-center", "knight-outpost", "back-rank") and
+ * which squares show it; all that is missing is the voice. Mapping kind → kid
+ * sentence keeps the chess knowledge in the detectors, where it belongs, and
+ * keeps the vocabulary here, where it belongs.
+ */
+const KID_IDEA: Readonly<Record<string, (n: string) => string>> = {
+  // ── the middle of the board ──
+  'occupy-center': () => `Right into the middle! Standing in the centre means more room for everyone.`,
+  'contest-center': () => `A cheeky poke at the big pawns in the middle, to break them up.`,
+  'strong-center': () => `The middle of the board belongs to this side now — loads of space to move around.`,
+  'loss-of-center': () => `That hands over the middle. The other side gets all the space now.`,
+  'missed-break': () => `The middle needed a poke here, and it never came.`,
+  // ── pieces getting busy ──
+  'developed': (n) => `The ${n} comes out to play. Get everyone off the back row!`,
+  'rook-open-file': () => `The rook finds an open road and can zoom all the way up it.`,
+  'knight-outpost': () => `The horse lands on a super square where no pawn can ever shoo it away!`,
+  'strong-bishop': () => `The bishop gets a long clear path to zoom along.`,
+  'connected-rooks': () => `The two rooks can see each other now. They work as a team!`,
+  'activated': (n) => `The ${n} hops somewhere much busier and finally has things to do.`,
+  'passive-piece': (n) => `The ${n} is stuck in a corner with almost nowhere to go. Poor thing.`,
+  'bad-bishop': () => `The bishop is stuck behind its own pawns and can't see out.`,
+  'missed-activity': () => `A sleepy piece could have woken up here, but it stayed in bed.`,
+  // ── pawns ──
+  'passed-pawn': () => `This pawn has a clear run to the end. Nobody can stop it!`,
+  'connected-passers': () => `Two pawns run side by side, helping each other to the finish line.`,
+  'pawn-majority': () => `More pawns on this side means a good chance to make a brand new queen.`,
+  'damaged-enemy-structure': () => `That leaves the other side with wobbly, broken pawns.`,
+  'strong-chain': () => `The pawns line up in a chain, each one guarding the next. Very sturdy!`,
+  'isolated-pawn': () => `This pawn is all alone with no pawn friends to look after it.`,
+  'doubled-pawns': () => `Two pawns stacked on the same line — they get in each other's way.`,
+  'backward-pawn': () => `This pawn got left behind and can't catch up with its friends.`,
+  'weak-chain': () => `There's a hole in the pawn wall now.`,
+  // ── the king ──
+  'castling': () => `The king is still out in the open. Time to tuck him away somewhere safe!`,
+  'open-file': () => `A door just opened right next to the king. That's scary!`,
+  'pawn-shield': () => `The pawns in front of the king wandered off — his blanket is gone.`,
+  'king-safety': () => `The king is feeling a bit chilly out there.`,
+  // ── endgame ──
+  'promotion-threat': () => `This pawn is nearly at the end. A new queen is coming!`,
+  'outside-passer': () => `A runner way out on the edge — the enemy king can't catch it.`,
+  'opposition': () => `The kings stare each other down. Whoever moves first has to give way!`,
+  'rook-activity': () => `The rook gets busy behind the running pawn, right where it belongs.`,
+  'king-activity': () => `In the endgame the king turns into a fighter and marches up the board.`,
+  'pawn-race': () => `Both sides are racing their pawns to the end. Fastest one wins!`,
+  'fortress': () => `A wall the other side simply cannot break through.`,
+  'passive-king': () => `The king is hiding when he should be marching up to help.`,
+  // ── tactics ──
+  'fork': () => `One piece attacks two things at once. Only one of them can run away!`,
+  'pin': () => `That piece is stuck! If it moves, something bigger behind it gets taken.`,
+  'skewer': () => `The big piece has to move out of the way, and the one behind it gets grabbed.`,
+  'discovered-check': () => `Sneaky! Moving one piece uncovered another one shouting at the king.`,
+  'discovered-attack': () => `Moving one piece uncovered a second one aiming at something juicy.`,
+  'double-attack': () => `Two things are attacked at the same time. You can't save both!`,
+  'back-rank': () => `The king is trapped behind his own pawns on the back row. No escape!`,
+  'mating-net': () => `The net is closing around the king — mate is coming.`,
+  'overloaded': () => `That defender is doing two jobs at once, and it can't manage both.`,
+  'deflection': () => `The guard gets dragged away from the thing it was protecting.`,
+  'decoy': () => `A tasty offer lures a piece onto exactly the wrong square.`,
+  'x-ray': () => `One piece sees straight through another, all the way to the prize.`,
+  // ── material ──
+  'sacrifice': () => `A piece given away on purpose! There's a bigger prize coming.`,
+  'lose-material': () => `That gives away pieces for nothing in return.`,
+  'unfavorable-exchange': () => `That swap comes out badly — the other side gets the better deal.`,
+  'win-material': () => `Free stuff! That wins material for nothing.`,
+};
+
+/**
+ * Which idea to lead with when several apply.
+ *
+ * The engine ranks by how RELIABLE a claim is; a child needs ranking by how
+ * much the idea explains the move. A developing move that happens to line a
+ * bishop up with a knight is a developing move — announcing "that piece is
+ * stuck in a pin!" is technically defensible and completely misleading. So:
+ * loud, decisive tactics first, then plain positional ideas, and only then the
+ * subtle tactics that are usually a side effect rather than the point.
+ */
+const IDEA_ORDER: readonly string[] = [
+  // things that decide the game right now
+  'back-rank', 'mating-net', 'fork', 'skewer', 'double-attack', 'discovered-check',
+  'sacrifice', 'win-material', 'lose-material', 'unfavorable-exchange',
+  // the actual point of most moves
+  'developed', 'occupy-center', 'knight-outpost', 'rook-open-file', 'strong-bishop',
+  'connected-rooks', 'activated', 'contest-center', 'strong-center',
+  'promotion-threat', 'outside-passer', 'passed-pawn', 'connected-passers',
+  'pawn-majority', 'strong-chain', 'king-activity', 'rook-activity', 'opposition',
+  'pawn-race', 'fortress', 'damaged-enemy-structure',
+  // problems worth naming
+  'passive-piece', 'bad-bishop', 'loss-of-center', 'missed-break', 'missed-activity',
+  'isolated-pawn', 'doubled-pawns', 'backward-pawn', 'weak-chain', 'passive-king',
+  // real, but usually a side effect rather than the reason for the move
+  'pin', 'x-ray', 'overloaded', 'deflection', 'decoy', 'discovered-attack',
+  // Last: these describe the KING's situation, not the move. Otherwise every
+  // quiet pawn push gets "your king is still in the open!", which is true of
+  // the position but says nothing about the move that was actually played.
+  'open-file', 'pawn-shield', 'castling', 'king-safety',
+];
+
+/** Find the detector's idea among the explanation's tags, best-explaining first. */
+function ideaFromTags(tags: readonly string[] | undefined, name: string): string | null {
+  if (!tags || tags.length === 0) return null;
+  const present = new Set(tags);
+  for (const kind of IDEA_ORDER) {
+    if (present.has(kind)) return (KID_IDEA[kind] as (n: string) => string)(name);
+  }
+  return null;
+}
+
+/**
  * Tell the story of one move in a single silly sentence, plus the arrows and
  * squares that show it. Returns null only when the position cannot be read.
  */
-export function narrate(ctx: MoveContext): Narration | null {
+export function narrate(
+  ctx: MoveContext,
+  expert?: { readonly tags?: readonly string[]; readonly visuals?: Visuals },
+): Narration | null {
   const f = readMove(ctx);
   if (!f) return null;
 
@@ -271,7 +385,25 @@ export function narrate(ctx: MoveContext): Narration | null {
     ], seed));
   }
 
-  // ── 7. Now pointing at something big — a threat, in red ──
+  // ── 7. THE DETECTOR'S IDEA — the real point of the move ──
+  // Everything above is a concrete event a beginner must be told about first
+  // (mate, a piece hanging, check, a capture). Past that, the detectors know
+  // far more about WHY a move is good than any rule of thumb here does, so we
+  // say their idea in kid words and reuse the squares they already worked out.
+  const idea = ideaFromTags(expert?.tags, name);
+  if (idea) {
+    const v = expert?.visuals;
+    if (v && (v.arrows.length > 0 || v.squares.length > 0)) {
+      // Detectors still draw an arrow along the move itself; the board already
+      // highlights that, so strip it and keep only the arrows that add meaning.
+      const kept = v.arrows.filter((a) => !(a.from === f.from && a.to === f.to));
+      return { summary: idea, visuals: { arrows: kept, squares: v.squares } };
+    }
+    squares.push({ square: f.to, color: 'idea' });
+    return say(idea);
+  }
+
+  // ── 8. Now pointing at something big — a threat, in red ──
   const juicy = f.nowAttacks[0];
   if (juicy && PIECE_VALUES[juicy.type] >= 3) {
     arrows.push({ from: f.to, to: juicy.square, color: 'danger' });
@@ -294,23 +426,10 @@ export function narrate(ctx: MoveContext): Narration | null {
     ], seed));
   }
 
-  // ── 9. Taking a square away — green ring on the square nobody may use ──
-  if (f.denies.length > 0) {
-    const spot = f.denies[0] as string;
-    for (const s of f.denies.slice(0, 2)) squares.push({ square: s, color: 'idea' });
-    return say(pick([
-      `The ${name} on ${f.to} says "no entry!" to ${spot}. Nothing can land there now.`,
-      `Sneaky little move — ${spot} is fenced off, so no enemy piece can sit there.`,
-    ], seed));
-  }
+  // (There used to be an "opens a long road for the bishop — it can see all the
+  // way to h6!" line here. It described geometry, not an idea, so it is gone.)
 
-  // ── 10. Opening a road for a big piece ──
-  if (f.opened) {
-    arrows.push({ from: f.opened.from, to: f.opened.to, color: 'idea' });
-    return say(`Moving out of the way opens a long road for the ${KID_NAME[f.opened.piece]} on ${f.opened.from}. Now it can see all the way to ${f.opened.to}!`);
-  }
-
-  // ── 11. A pawn plants itself in the middle ──
+  // ── 10. A pawn plants itself in the middle ──
   if (f.landedInMiddle) {
     squares.push({ square: f.to, color: 'idea' });
     return say(pick([
@@ -330,6 +449,14 @@ export function narrate(ctx: MoveContext): Narration | null {
       k: [`The king shuffles over to ${f.to}.`],
     };
     return say(pick(flavour[f.piece] ?? [`The ${name} comes out to ${f.to} to join the fun.`], seed));
+  }
+
+  // ── Taking a square away. Ranked LAST of the real ideas: it is true but it
+  //    is rarely the POINT of a move, and it used to shout over better ones. ──
+  if (f.denies.length > 0) {
+    const spot = f.denies[0] as string;
+    for (const s of f.denies.slice(0, 2)) squares.push({ square: s, color: 'idea' });
+    return say(`The ${name} puts up a "no entry" sign on ${spot}. No enemy piece can sit there now.`);
   }
 
   // ── 13. A slip with nothing concrete to point at. Say so honestly and

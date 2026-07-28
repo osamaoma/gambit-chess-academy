@@ -186,11 +186,17 @@ export function explain(raw: RawMove): UserExplanation | null {
   const ctx = buildContext(raw);
   if (!ctx) return null;
 
-  let story: Narration | null = null;
-  try { story = narrate(ctx); } catch { story = null; }
-
+  // The detectors run FIRST: they work out the real chess idea behind the move
+  // and which squares show it. The storyteller then says that idea in words a
+  // child can follow, only overriding when something concrete happened that a
+  // beginner must hear about first (mate, a hanging piece, a capture).
   let expert: UserExplanation | null = null;
   try { expert = engine.explainMove(ctx); } catch { expert = null; }
+
+  let story: Narration | null = null;
+  try {
+    story = narrate(ctx, expert ? { tags: expert.tags, visuals: expert.visuals } : undefined);
+  } catch { story = null; }
 
   if (!story) return expert;                      // unreadable position — expert or nothing
   if (!expert) {
