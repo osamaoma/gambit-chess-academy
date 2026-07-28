@@ -24,7 +24,9 @@ import { PieceActivityDetector } from './detectors/piece-activity';
 import { PawnStructureDetector } from './detectors/pawn-structure';
 import { CenterControlDetector } from './detectors/center-control';
 import { EndgameDetector } from './detectors/endgame';
-import { narrate, Narration } from './narrate';
+import { applyUciMove, parseFen, parseUciMove, toFen } from './board';
+import { readMove } from './facts';
+import { Subject, writeExplanation } from './coach';
 import { EngineEval, EngineLine, MoveClassification, MoveContext } from './types';
 
 /** The full production detector roster, registered once. */
@@ -186,38 +188,90 @@ export function explain(raw: RawMove): UserExplanation | null {
   const ctx = buildContext(raw);
   if (!ctx) return null;
 
-  // The detectors run FIRST: they work out the real chess idea behind the move
-  // and which squares show it. The storyteller then says that idea in words a
-  // child can follow, only overriding when something concrete happened that a
-  // beginner must hear about first (mate, a hanging piece, a capture).
+  // The detectors run FIRST — they work out the real chess ideas. The writing
+  // engine then turns those into coach-speak.
   let expert: UserExplanation | null = null;
   try { expert = engine.explainMove(ctx); } catch { expert = null; }
 
-  let story: Narration | null = null;
-  try {
-    story = narrate(ctx, expert ? { tags: expert.tags, visuals: expert.visuals } : undefined);
-  } catch { story = null; }
+  const facts = readMove(ctx);
+  if (!facts) return expert;                      // unreadable position
 
-  if (!story) return expert;                      // unreadable position — expert or nothing
+  // To say what a slip MISSED we have to know what the better move was FOR, so
+  // the detectors are run a second time on the recommended move. This is the
+  // only honest way to answer "what was the best idea?" without quoting a score.
+  let best: { subject: Subject; tags?: readonly string[] } | undefined;
+  const bestUci = ctx.evalBefore.uci;
+  const isSlip = SLIPS.has(ctx.classification);
+  if (isSlip && bestUci && bestUci.slice(0, 4) !== ctx.uci.slice(0, 4)) {
+    try {
+      const board = parseFen(ctx.fenBefore);
+      const mv = parseUciMove(bestUci);
+      const moved = board.squares.get(mv.from);
+      const taken = board.squares.get(mv.to);
+      if (moved) {
+        const bestCtx: MoveContext = {
+          ...ctx,
+          uci: bestUci,
+          san: bestUci,
+          fenAfter: toFen(applyUciMove(board, bestUci)),
+          classification: 'best',
+          // The played move's deltas describe ITS loss. Carrying them over would
+          // tell the detectors this recommended move also threw the game away,
+          // and they would refuse to praise it. The best move loses nothing.
+          deltas: {
+            ...ctx.deltas,
+            evalAfter: ctx.deltas.evalBefore,
+            evalLoss: 0,
+            winPctAfter: ctx.deltas.winPctBefore,
+            winPctDrop: 0,
+          },
+        };
+        let bestTags: readonly string[] | undefined;
+        try { bestTags = engine.explainMove(bestCtx)?.tags; } catch { bestTags = undefined; }
+        best = {
+          subject: {
+            piece: moved.type,
+            from: mv.from,
+            to: mv.to,
+            captured: taken && taken.color !== moved.color ? taken.type : null,
+          },
+          tags: bestTags,
+        };
+      }
+    } catch { best = undefined; }
+  }
+
+  const written = writeExplanation({
+    ctx,
+    facts,
+    playedTags: expert?.tags,
+    playedSquares: expert?.visuals?.squares,
+    best,
+  });
+
   if (!expert) {
-    // No detector spoke, but the move still deserves its story.
     return {
       san: ctx.san,
       ply: ctx.ply,
       classification: ctx.classification,
-      headline: story.summary,
-      summary: story.summary,
+      headline: written.summary,
+      summary: written.summary,
       detail: '',
       improvements: [],
-      tags: ['story'],
+      tags: ['coach'],
       supporting: [],
-      sources: ['narrator'],
+      sources: ['coach'],
       confidence: 0.5,
-      visuals: story.visuals,
+      visuals: written.visuals,
     };
   }
-  return { ...expert, summary: story.summary, visuals: story.visuals };
+  return { ...expert, summary: written.summary, visuals: written.visuals };
 }
+
+/** Classifications where the player had a better option worth teaching. */
+const SLIPS: ReadonlySet<MoveClassification> = new Set<MoveClassification>([
+  'inaccuracy', 'mistake', 'blunder', 'miss',
+]);
 
 /** Explain a ready-made MoveContext (for callers that build their own). */
 export function explainContext(ctx: MoveContext): UserExplanation | null {

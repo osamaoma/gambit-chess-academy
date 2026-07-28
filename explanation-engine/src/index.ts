@@ -56,7 +56,8 @@ export { joinFiles, joinList, points } from './text';
 
 export { boardsOf, type MoveBoards } from './context';
 
-export { narrate, type Narration } from './narrate';
+export { readMove, type MoveFacts } from './facts';
+export { writeExplanation, ideaOf, type Subject, type Written } from './coach';
 
 export {
   CRITIQUE_CLASSES,
