@@ -3,9 +3,10 @@ import { describe, it } from 'node:test';
 import { MoveClassifier, defaultRules } from '../src/classifier';
 import { DEFAULT_CONFIG } from '../src/config';
 import { buildContext, materialOf } from '../src/context';
+import { offeredMaterial, parseBoard } from '../src/board';
 import { winProbability } from '../src/win-probability';
 import { ClassificationRule } from '../src/rule';
-import { analysis, QUEEN_SAC } from './helpers';
+import { analysis, NO_SAC, QUEEN_SAC } from './helpers';
 
 const classifier = new MoveClassifier();
 const label = (a = analysis()) => classifier.classify(a).classification;
@@ -28,7 +29,17 @@ describe('material counting', () => {
   it('reads both sides off a FEN', () => {
     const start = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     assert.equal(materialOf(start, 'white'), materialOf(start, 'black'));
-    assert.equal(materialOf(QUEEN_SAC.before, 'white') - materialOf(QUEEN_SAC.after, 'white'), 900);
+  });
+
+  it('a real sacrifice costs NOTHING until it is accepted', () => {
+    // This is why material-diffing cannot detect one, and why offeredMaterial exists.
+    assert.equal(materialOf(QUEEN_SAC.before, 'white'), materialOf(QUEEN_SAC.after, 'white'));
+  });
+
+  it('sees the material a sacrifice puts on offer', () => {
+    // 16.Qb8+ lets a 300cp knight take a 900cp queen.
+    assert.equal(offeredMaterial(parseBoard(QUEEN_SAC.after), 'white'), 600);
+    assert.equal(offeredMaterial(parseBoard(NO_SAC.after), 'white'), 0);
   });
 });
 
@@ -96,14 +107,15 @@ describe('Miss', () => {
 describe('Brilliant', () => {
   const sac = (over = {}) => analysis({
     fenBefore: QUEEN_SAC.before, fenAfter: QUEEN_SAC.after,
-    playedMove: 'f3f7', bestMove: 'f3f7', evalBefore: 300, bestEval: 300, evalAfter: 300,
+    playedMove: QUEEN_SAC.uci, bestMove: QUEEN_SAC.uci,
+    evalBefore: 300, bestEval: 300, evalAfter: 300,
     depth: 20, ...over,
   });
 
   it('rewards a sound sacrifice past the opening', () => {
     const r = classifier.classify(sac());
     assert.equal(r.classification, 'Brilliant');
-    assert.equal(r.metadata.sacrificedCp, 900);
+    assert.equal(r.metadata.offeredCp, 600);
     assert.ok(r.confidence > 0.7);
   });
 
@@ -115,8 +127,10 @@ describe('Brilliant', () => {
     assert.notEqual(classifier.classify(sac({ depth: 6 })).classification, 'Brilliant');
   });
 
-  it('refuses when no material was actually given up', () => {
-    assert.notEqual(classifier.classify(sac({ fenAfter: QUEEN_SAC.before })).classification, 'Brilliant');
+  it('refuses a quiet move, where nothing is on offer', () => {
+    assert.notEqual(classifier.classify(sac({
+      fenBefore: NO_SAC.before, fenAfter: NO_SAC.after, playedMove: NO_SAC.uci, bestMove: NO_SAC.uci,
+    })).classification, 'Brilliant');
   });
 });
 

@@ -34,21 +34,23 @@ export class BrilliantRule implements ClassificationRule {
     const c = config.brilliant;
     if (ctx.analysis.depth < c.minDepth) return null;
     if (ctx.ply < c.minPly) return null;
-    if (ctx.sacrificedCp < c.minSacrificeCp) return null;
+    // A sacrifice is material left ON OFFER. Diffing material across the move
+    // detects nothing: a queen sacrifice looks even until it is accepted.
+    if (ctx.offeredCp < c.minSacrificeCp) return null;
     if (ctx.winPctDrop > c.maxWinPctLoss) return null;
     if (ctx.winPctAfter < c.minWinPctAfter) return null;
 
     // The bigger the investment and the smaller the cost, the surer we are.
-    const investment = clamp01(ctx.sacrificedCp / (c.minSacrificeCp * 3));
+    const investment = clamp01(ctx.offeredCp / (c.minSacrificeCp * 3));
     const cleanliness = clamp01(1 - ctx.winPctDrop / Math.max(1, c.maxWinPctLoss));
     return {
       classification: 'Brilliant',
       confidence: clamp01(0.7 + 0.15 * investment + 0.15 * cleanliness),
       reasons: [
-        `Gives up ${Math.round(ctx.sacrificedCp / 100)} points of material and stays winning.`,
+        `Offers ${Math.round(ctx.offeredCp / 100)} points of material and stays winning.`,
         'The compensation is real, which is what separates a sacrifice from a blunder.',
       ],
-      metadata: { sacrificedCp: ctx.sacrificedCp, winPctAfter: ctx.winPctAfter },
+      metadata: { offeredCp: ctx.offeredCp, sacrificedCp: ctx.sacrificedCp, winPctAfter: ctx.winPctAfter },
     };
   }
 }

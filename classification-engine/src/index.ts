@@ -29,6 +29,16 @@ export {
 
 export { buildContext, materialOf, type ClassificationContext } from './context';
 
+export {
+  attacksFrom,
+  materialFor,
+  offeredMaterial,
+  parseBoard,
+  PIECE_CP,
+  type Piece,
+  type Squares,
+} from './board';
+
 export { winProbability } from './win-probability';
 
 export type { ClassificationRule, RuleVerdict } from './rule';

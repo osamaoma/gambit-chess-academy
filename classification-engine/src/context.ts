@@ -7,6 +7,7 @@
  * happens here, exactly once, and every rule consumes the result.
  */
 
+import { offeredMaterial, parseBoard } from './board';
 import { ClassifierConfig } from './config';
 import { winProbability } from './win-probability';
 import { Color, MoveAnalysis } from './types';
@@ -44,8 +45,17 @@ export interface ClassificationContext {
   readonly onlyMove: boolean;
   /** Win% the best move beats the second-best alternative by; null when unknown. */
   readonly gapToSecondBest: number | null;
-  /** Net material the mover invested with this move (positive = gave material up). */
+  /**
+   * Net material already off the board after this move. Note this is NOT how a
+   * sacrifice is detected — see {@link offeredCp}.
+   */
   readonly sacrificedCp: number;
+  /**
+   * Material the move leaves ON OFFER: the most the opponent can win by taking
+   * something of the mover's with a cheaper piece. This is what identifies a
+   * sacrifice, because the material is not lost until the opponent accepts.
+   */
+  readonly offeredCp: number;
   /** The mover had a forced mate available before the move. */
   readonly hadForcedMate: boolean;
   /** The move delivers a forced mate for the mover. */
@@ -106,6 +116,10 @@ export function buildContext(analysis: MoveAnalysis, config: ClassifierConfig): 
   const netAfter = mineAfter - theirsAfter;
   const sacrificedCp = Math.max(0, netBefore - netAfter);
 
+  // Read from the position the move produced: an offer exists only after it.
+  let offeredCp = 0;
+  try { offeredCp = offeredMaterial(parseBoard(analysis.fenAfter), mover); } catch { offeredCp = 0; }
+
   const mateBeforeMover = analysis.mateBefore == null ? null : toMover(analysis.mateBefore, mover);
   const mateAfterMover = analysis.mateAfter == null ? null : toMover(analysis.mateAfter, mover);
 
@@ -118,6 +132,7 @@ export function buildContext(analysis: MoveAnalysis, config: ClassifierConfig): 
     onlyMove,
     gapToSecondBest,
     sacrificedCp,
+    offeredCp,
     hadForcedMate: mateBeforeMover != null && mateBeforeMover > 0,
     deliversMate: mateAfterMover != null && mateAfterMover > 0,
     ply: plyOf(analysis.fenBefore),
