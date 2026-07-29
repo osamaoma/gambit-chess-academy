@@ -200,7 +200,17 @@ app.post('/api/coach-note', async (req, res) => {
     const body = JSON.stringify({
       systemInstruction: { parts: [{ text: coachLib.buildSystemInstruction() }] },
       contents: [{ role: 'user', parts: [{ text: coachLib.buildUserPromptFromFacts(facts) }] }],
-      generationConfig: { temperature: 0.85, maxOutputTokens: 200, candidateCount: 1 },
+      generationConfig: {
+        temperature: 0.85,
+        // Gemini 3 reasons before answering, and that reasoning is billed and
+        // budgeted alongside the answer. At 200 tokens the thinking consumed
+        // the lot and the "note" came back as truncated fragments of the
+        // instructions. Writing one coaching sentence needs no reasoning, and
+        // the ceiling is generous so the answer is never the thing that gets cut.
+        thinking_level: 'minimal',
+        maxOutputTokens: 800,
+        candidateCount: 1,
+      },
     });
     const headers = {
       'x-goog-api-key': key,
@@ -233,9 +243,17 @@ app.post('/api/coach-note', async (req, res) => {
     const blocked = data && data.promptFeedback && data.promptFeedback.blockReason;
     if(blocked) return res.status(502).json({ error: 'Response blocked: ' + blocked });
 
-    const parts = (((data.candidates || [])[0] || {}).content || {}).parts || [];
+    const candidate = (data.candidates || [])[0] || {};
+    const parts = (candidate.content || {}).parts || [];
     const raw = parts.map(p => p.text || '').join('').trim();
     if(!raw) return res.status(502).json({ error: 'Empty response from Gemini.' });
+
+    // A note cut off at the token ceiling is a fragment, not a sentence. Reject
+    // it so the client keeps its own wording — a half-sentence on screen is
+    // worse than the template it replaced.
+    if(candidate.finishReason && candidate.finishReason !== 'STOP'){
+      return res.status(502).json({ error: 'Incomplete note (' + candidate.finishReason + ').' });
+    }
 
     // The same validation the package uses: strips preambles/markdown, rejects
     // engine talk, trims to the word limit. Enforced here so a stray mention of
