@@ -160,10 +160,18 @@ describe('rules in isolation', () => {
     assert.equal(rule.applies(ctxOf(analysis({ legalMoves: ['e2e4', 'd2d4'] })), cfg), false);
   });
 
-  it('BestRule fires only when the engine move was played', () => {
+  it('BestRule fires on the engine move, and on anything within tolerance', () => {
     const rule: ClassificationRule = new BestRule();
     assert.equal(rule.applies(ctxOf(analysis({ playedMove: 'e2e4', bestMove: 'e2e4' })), cfg), true);
-    assert.equal(rule.applies(ctxOf(analysis({ playedMove: 'a2a3', bestMove: 'e2e4' })), cfg), false);
+    // A different move that actually costs something is not Best by default…
+    assert.equal(rule.applies(ctxOf(analysis({
+      playedMove: 'a2a3', bestMove: 'e2e4', centipawnLoss: 40, bestEval: 0, evalAfter: -40,
+    })), cfg), false);
+    // …but becomes Best once the tolerance is widened, with no code change.
+    const lenient = resolveConfig({ quality: { best: { winPctDrop: 5, centipawnLoss: 50, evalSwing: 50 } } });
+    assert.equal(rule.applies(ctxOf(analysis({
+      playedMove: 'a2a3', bestMove: 'e2e4', centipawnLoss: 40, bestEval: 0, evalAfter: -40,
+    })), lenient), true);
   });
 
   it('BrilliantRule needs material on offer, a sound position, depth and a real middlegame', () => {
@@ -213,24 +221,29 @@ describe('rules in isolation', () => {
   });
 
   it('each band rule owns its own slice and nothing else', () => {
-    // Each eval was checked against the win% curve to sit inside its own band:
-    // drops of 0.9 / 3.5 / 6.9 / 16.2 / 28.3 against bounds 2 / 5 / 10 / 20 / inf.
+    // From a level position the win% signal is the strictest of the three, so
+    // it decides the band; these losses sit mid-band on it (0.9 / 3.7 / 7.3 /
+    // 14.4 / 30 win% lost). Band edges per signal are covered exhaustively in
+    // quality-bands.test.ts.
     const cases: [QualityBandRule, number][] = [
       [new ExcellentRule(), 10],
-      [new GoodRule(), -18],
-      [new InaccuracyRule(), -55],
-      [new MistakeRule(), -160],
-      [new BlunderRule(), -320],
+      [new GoodRule(), 40],
+      [new InaccuracyRule(), 80],
+      [new MistakeRule(), 160],
+      [new BlunderRule(), 400],
     ];
-    for (const [rule, evalAfter] of cases) {
-      const ctx = ctxOf(losing(evalAfter));
-      assert.equal(rule.applies(ctx, cfg), true, `${rule.id} should own evalAfter=${evalAfter}`);
+    for (const [rule, cp] of cases) {
+      const ctx = ctxOf(analysis({
+        phase: 'middlegame', playedMove: 'a2a3', bestMove: 'e2e4',
+        centipawnLoss: cp, evalBefore: 0, bestEval: 0, evalAfter: -cp,
+      }));
+      assert.equal(rule.applies(ctx, cfg), true, `${rule.id} should own ${cp}cp`);
       assert.equal(rule.classify(ctx, cfg).classification, rule.classification);
     }
   });
 
   it('band rules follow reconfigured thresholds without a code change', () => {
-    const strict = resolveConfig({ quality: { excellent: 0.1, good: 0.2, inaccuracy: 0.3, mistake: 0.4 } });
+    const strict = resolveConfig({ quality: { excellent: { winPctDrop: 0.1, centipawnLoss: 1, evalSwing: 1 }, good: { winPctDrop: 0.2, centipawnLoss: 2, evalSwing: 2 }, inaccuracy: { winPctDrop: 0.3, centipawnLoss: 3, evalSwing: 3 }, mistake: { winPctDrop: 0.4, centipawnLoss: 4, evalSwing: 4 } } });
     const ctx = ctxOf(analysis({ playedMove: 'a2a3', bestMove: 'e2e4', bestEval: 20, evalAfter: 0 }));
     assert.equal(new ExcellentRule().applies(ctx, cfg), true);
     assert.equal(new ExcellentRule().applies(ctx, strict), false);
@@ -238,8 +251,11 @@ describe('rules in isolation', () => {
   });
 
   it('confidence drops near a band edge', () => {
-    const edge = new MoveClassifier().classify(losing(-Math.round(DEFAULT_CONFIG.quality.good * 5.5)));
-    const middle = new MoveClassifier().classify(losing(-1200));
-    assert.ok(edge.confidence < middle.confidence);
+    // Both land in Inaccuracy (win% 5–10); 60cp sits on its floor, 85cp mid-band.
+    const at = (cp: number) => new MoveClassifier().classify(analysis({
+      phase: 'middlegame', playedMove: 'a2a3', bestMove: 'e2e4',
+      centipawnLoss: cp, evalBefore: 0, bestEval: 0, evalAfter: -cp,
+    }));
+    assert.ok(at(60).confidence < at(85).confidence);
   });
 });

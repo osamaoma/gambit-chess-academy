@@ -39,6 +39,21 @@ export interface ClassificationContext {
   readonly winPctAfter: number;
   /** Win probability given up versus best play (>= 0). */
   readonly winPctDrop: number;
+  /**
+   * Centipawns given up against best play, mover's point of view (>= 0).
+   * Taken from the host when supplied, otherwise derived, so a caller that
+   * already computed it does not get a second, subtly different number.
+   */
+  readonly centipawnLoss: number;
+  /**
+   * Centipawns the POSITION deteriorated across the move (>= 0).
+   *
+   * Distinct from {@link centipawnLoss}: that measures the move against the
+   * best alternative, this measures it against where the position stood. When
+   * the best move was itself a concession — zugzwang, a forced recapture — the
+   * loss can be near zero while the position collapses.
+   */
+  readonly evalSwing: number;
   /** Did the player pick the engine's first choice? */
   readonly playedBest: boolean;
   /** Only one legal move existed. */
@@ -93,6 +108,14 @@ export function buildContext(analysis: MoveAnalysis, config: ClassifierConfig): 
   const winPctDrop = Math.max(0, winPctBefore - winPctAfter);
 
   const playedBest = normaliseMove(analysis.playedMove) === normaliseMove(analysis.bestMove);
+
+  // Mover-perspective centipawns. Both are clamped at zero: a move that
+  // IMPROVES the evaluation has given up nothing, and negative "loss" would
+  // otherwise slide it into a better band than it earned.
+  const centipawnLoss = Number.isFinite(analysis.centipawnLoss)
+    ? Math.max(0, analysis.centipawnLoss)
+    : Math.max(0, toMover(analysis.bestEval, mover) - toMover(analysis.evalAfter, mover));
+  const evalSwing = Math.max(0, toMover(analysis.evalBefore, mover) - toMover(analysis.evalAfter, mover));
   const onlyMove = analysis.legalMoves.length <= 1;
 
   // How far ahead was the top move? Needs MultiPV; null when the host omits it.
@@ -128,6 +151,8 @@ export function buildContext(analysis: MoveAnalysis, config: ClassifierConfig): 
     winPctBefore,
     winPctAfter,
     winPctDrop,
+    centipawnLoss,
+    evalSwing,
     playedBest,
     onlyMove,
     gapToSecondBest,

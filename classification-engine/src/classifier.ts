@@ -17,7 +17,7 @@
  * means passing a config. Neither requires editing this file.
  */
 
-import { ClassifierConfig, DeepPartial, resolveConfig } from './config';
+import { ClassifierConfig, ClassifierConfigOverrides, resolveConfig } from './config';
 import { buildContext, ClassificationContext } from './context';
 import { ClassificationRule, RuleVerdict } from './rule';
 import { defaultRules } from './rules';
@@ -40,7 +40,7 @@ export class MoveClassifier {
    * @param rules     Rule set to use. Defaults to {@link defaultRules}.
    */
   constructor(
-    overrides: DeepPartial<ClassifierConfig> = {},
+    overrides: ClassifierConfigOverrides = {},
     rules: readonly ClassificationRule[] = defaultRules(),
   ) {
     this.config = resolveConfig(overrides);

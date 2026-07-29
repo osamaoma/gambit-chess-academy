@@ -67,11 +67,16 @@ describe('quality bands', () => {
     playedMove: 'a2a3', bestMove: 'e2e4', evalAfter, bestEval: 20,
   });
 
-  it('grades from Excellent down to Blunder as the loss grows', () => {
-    assert.equal(label(drop(10)), 'Excellent');    // ~1 win% lost
-    assert.equal(label(drop(-55)), 'Inaccuracy');   // ~7
-    assert.equal(label(drop(-160)), 'Mistake');     // ~16
-    assert.equal(label(drop(-900)), 'Blunder');     // ~48
+  it('never grades a bigger loss more kindly', () => {
+    // With three signals combined, exact band edges are covered in
+    // quality-bands.test.ts. What must hold everywhere is monotonicity.
+    const order = ['Best', 'Excellent', 'Good', 'Inaccuracy', 'Mistake', 'Blunder'];
+    const severities = [10, -20, -55, -160, -320, -900].map((e) => order.indexOf(label(drop(e))));
+    for (let i = 1; i < severities.length; i++) {
+      assert.ok(severities[i]! >= severities[i - 1]!,
+        `losing more should never look better: ${severities.join(' -> ')}`);
+    }
+    assert.equal(label(drop(-900)), 'Blunder');
   });
 
   it('always produces a verdict, never undefined', () => {
@@ -165,20 +170,18 @@ describe('confidence', () => {
   });
 
   it('is lower for a move sitting on a band edge', () => {
-    const edge = classifier.classify(analysis({
-      playedMove: 'a2a3', bestMove: 'e2e4', bestEval: 0,
-      evalAfter: -Math.round(DEFAULT_CONFIG.quality.good * 5.5),
+    // Both land in Inaccuracy (win% 5–10); 60cp sits on its floor, 85cp mid-band.
+    const at = (cp: number) => classifier.classify(analysis({
+      phase: 'middlegame', playedMove: 'a2a3', bestMove: 'e2e4',
+      centipawnLoss: cp, evalBefore: 0, bestEval: 0, evalAfter: -cp,
     }));
-    const middle = classifier.classify(analysis({
-      playedMove: 'a2a3', bestMove: 'e2e4', bestEval: 0, evalAfter: -1200,
-    }));
-    assert.ok(edge.confidence < middle.confidence);
+    assert.ok(at(60).confidence < at(85).confidence);
   });
 });
 
 describe('configurability', () => {
   it('honours overridden bands without any code change', () => {
-    const strict = new MoveClassifier({ quality: { excellent: 0.1, good: 0.2, inaccuracy: 0.3, mistake: 0.4 } });
+    const strict = new MoveClassifier({ quality: { excellent: { winPctDrop: 0.1, centipawnLoss: 1, evalSwing: 1 }, good: { winPctDrop: 0.2, centipawnLoss: 2, evalSwing: 2 }, inaccuracy: { winPctDrop: 0.3, centipawnLoss: 3, evalSwing: 3 }, mistake: { winPctDrop: 0.4, centipawnLoss: 4, evalSwing: 4 } } });
     const a = analysis({ playedMove: 'a2a3', bestMove: 'e2e4', bestEval: 20, evalAfter: 0 });
     assert.equal(classifier.classify(a).classification, 'Excellent');
     assert.equal(strict.classify(a).classification, 'Blunder');
@@ -228,10 +231,12 @@ describe('perspective', () => {
   });
 
   it('does not call the same swing a blunder for white', () => {
+    // White's evaluation RISES, so nothing was given up. With the default
+    // zero-tolerance Best band, a move that costs literally nothing is Best.
     assert.equal(label(analysis({
       mover: 'white', playedMove: 'a2a3', bestMove: 'g1f3',
       evalBefore: 0, bestEval: 0, evalAfter: 900,
-    })), 'Excellent');
+    })), 'Best');
   });
 });
 
