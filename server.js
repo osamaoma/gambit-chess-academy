@@ -121,7 +121,7 @@ function nodeFetch(url, opts = {}) {
 // proxies the call so the key is never exposed in JavaScript code.
 // ════════════════════════════════════════════════════════
 // ════════════════════════════════════════════════════════
-// COACH NOTES — Gemini 2.5 Flash turns this app's own analysis into prose.
+// COACH NOTES — Gemini (Flash) turns this app's own analysis into prose.
 //
 // The key lives ONLY here, in GEMINI_API_KEY. It is never sent to the browser.
 //
@@ -134,9 +134,28 @@ function nodeFetch(url, opts = {}) {
 // ════════════════════════════════════════════════════════
 const coachLib = require('./server-lib/gemini-explain.cjs');
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'
-  + GEMINI_MODEL + ':generateContent';
+// Model IDs get retired — gemini-2.5-flash stopped accepting new API keys, and
+// a hardcoded name meant a silent outage. So: try the configured model first,
+// then fall back through known-good Flash models, and remember whichever one
+// answers so later requests go straight to it.
+const GEMINI_MODELS = [
+  process.env.GEMINI_MODEL,     // an explicit override always wins
+  'gemini-3.6-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-2.5-flash',
+].filter(Boolean);
+let geminiModel = null;         // the one that worked, once we know it
+
+const geminiUrl = (model) =>
+  'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
+
+/** Is this failure "wrong model name" rather than a real problem? */
+function isModelUnavailable(status, data){
+  if(status !== 404 && status !== 400) return false;
+  const msg = ((data && data.error && data.error.message) || '').toLowerCase();
+  return msg.includes('not found') || msg.includes('no longer available')
+      || msg.includes('not supported') || msg.includes('unsupported model');
+}
 
 /** Keep the payload small and typed — never trust the client's shapes. */
 function sanitiseFacts(raw){
@@ -183,20 +202,34 @@ app.post('/api/coach-note', async (req, res) => {
       contents: [{ role: 'user', parts: [{ text: coachLib.buildUserPromptFromFacts(facts) }] }],
       generationConfig: { temperature: 0.85, maxOutputTokens: 200, candidateCount: 1 },
     });
-    const r = await nodeFetch(GEMINI_URL, {
-      method: 'POST',
-      headers: {
-        'x-goog-api-key': key,
-        'content-type': 'application/json',
-        'content-length': Buffer.byteLength(body),
-      },
-      body: body,
-    });
-    const data = r.json();
-    if(!r.ok){
+    const headers = {
+      'x-goog-api-key': key,
+      'content-type': 'application/json',
+      'content-length': Buffer.byteLength(body),
+    };
+
+    // Use the model we already know works; otherwise walk the candidates once.
+    const candidates = geminiModel ? [geminiModel] : GEMINI_MODELS;
+    let r = null, data = null, used = null, lastError = null;
+    for(const model of candidates){
+      r = await nodeFetch(geminiUrl(model), { method: 'POST', headers: headers, body: body });
+      data = r.json();
+      if(r.ok){ used = model; break; }
+      if(isModelUnavailable(r.status, data)){
+        lastError = (data && data.error && data.error.message) || ('model ' + model + ' unavailable');
+        continue;                                  // retired name — try the next
+      }
       const msg = (data && data.error && data.error.message) || ('Gemini API error (HTTP ' + r.status + ')');
       return res.status(r.status).json({ error: msg });
     }
+    if(!used){
+      return res.status(502).json({ error: 'No usable Gemini model. ' + (lastError || '') });
+    }
+    if(geminiModel !== used){
+      geminiModel = used;
+      console.log('Coach notes using Gemini model:', used);
+    }
+
     const blocked = data && data.promptFeedback && data.promptFeedback.blockReason;
     if(blocked) return res.status(502).json({ error: 'Response blocked: ' + blocked });
 
@@ -208,7 +241,7 @@ app.post('/api/coach-note', async (req, res) => {
     // engine talk, trims to the word limit. Enforced here so a stray mention of
     // "centipawns" can never reach a student.
     const note = coachLib.parseExplanation(raw);
-    res.json({ text: note.summary, truncated: note.truncated, model: GEMINI_MODEL });
+    res.json({ text: note.summary, truncated: note.truncated, model: used });
   } catch(e){
     // A rule-breaking draft raises here; the client falls back to its own text.
     console.error('Coach note error:', e && e.message);
