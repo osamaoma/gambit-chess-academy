@@ -26,7 +26,7 @@ import { CenterControlDetector } from './detectors/center-control';
 import { EndgameDetector } from './detectors/endgame';
 import { applyUciMove, parseFen, parseUciMove, toFen } from './board';
 import { readMove } from './facts';
-import { ideaOf, PIECE_WORD, Subject, suggest, writeExplanation } from './coach';
+import { Subject, writeExplanation } from './coach';
 import { EngineEval, EngineLine, MoveClassification, MoveContext } from './types';
 
 /** The full production detector roster, registered once. */
@@ -45,11 +45,6 @@ function buildEngine(): ExplanationEngine {
 }
 
 const engine = buildEngine();
-
-/** Family labels that carry no idea of their own — dropped before prompting. */
-const GENERIC_TAGS: ReadonlySet<string> = new Set([
-  'positional', 'tactics', 'opening-principles', 'material', 'story', 'coach',
-]);
 
 /** Loose shape the host passes in — every field optional so a partial move still works. */
 export interface RawMove {
@@ -254,31 +249,6 @@ export function explain(raw: RawMove): UserExplanation | null {
     best,
   });
 
-  // Structured findings for a hosted writer (see server /api/coach-note).
-  // The engine states WHAT is true, including what the better move achieves;
-  // the model only chooses the words.
-  const coachFacts = {
-    played: ctx.san,
-    verdict: ctx.classification.charAt(0).toUpperCase() + ctx.classification.slice(1),
-    phase: ctx.ply <= 20 ? 'opening' : 'middlegame',
-    ...(best ? {
-      best: bestUci,
-      bestPiece: PIECE_WORD[best.subject.piece],
-      bestTo: best.subject.to,
-      bestCaptures: !!best.subject.captured,
-      // The sentence the engine itself would write for the better move: this is
-      // the "why Ne4 is best" that a template alone could not produce.
-      // Both the sentence this engine would write for the better move AND the
-      // named ideas its detectors found in it. The tags are what let the model
-      // say WHY the move is strong rather than merely that it was better.
-      bestIdeas: [
-        suggest(ideaOf(best.tags), best.subject),
-        ...(best.tags ?? []).filter((t) => !GENERIC_TAGS.has(t)),
-      ].slice(0, 5),
-    } : {}),
-    themes: expert ? [...expert.tags] : [],
-  };
-
   if (!expert) {
     return {
       san: ctx.san,
@@ -293,15 +263,9 @@ export function explain(raw: RawMove): UserExplanation | null {
       sources: ['coach'],
       confidence: 0.5,
       visuals: written.visuals,
-      coachFacts,
-    } as UserExplanation & { coachFacts: unknown };
+    };
   }
-  return {
-    ...expert,
-    summary: written.summary,
-    visuals: written.visuals,
-    coachFacts,
-  } as UserExplanation & { coachFacts: unknown };
+  return { ...expert, summary: written.summary, visuals: written.visuals };
 }
 
 /** Classifications where the player had a better option worth teaching. */
