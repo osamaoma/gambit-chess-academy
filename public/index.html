@@ -13396,6 +13396,49 @@ function rvWhyHTML(ex){
   return `<div class="mdb-why">${esc(ex.summary)}</div>`;
 }
 
+// Semantic hint colours → pixels. GREEN = the good idea (what the move guards,
+// the square it takes away, the road it opens), RED = danger (what it threatens
+// or left hanging), BLUE = reserved for the engine's own recommendation.
+// There is deliberately no from→to arrow: the last-move highlight already shows
+// which move was played, so arrows are saved for the POINT of it.
+const RV_HINT_COLOR = {
+  idea:   'rgba(21,120,27,.92)',
+  target: 'rgba(21,120,27,.55)',
+  danger: 'rgba(220,80,80,.88)',
+  best:   'rgba(0,48,136,.9)',
+};
+
+// Draw an explanation's arrows + square highlights on the review board.
+// Additive: keeps whatever drawReviewArrows already put in the overlay.
+function rvDrawExplainVisuals(visuals){
+  document.querySelectorAll('#board-r .sq').forEach(sq => {
+    sq.classList.remove('hl-ex-idea', 'hl-ex-target', 'hl-ex-danger', 'hl-ex-best');
+  });
+  if(!visuals) return;
+  (visuals.squares || []).forEach(h => {
+    if(!RV_HINT_COLOR[h.color]) return;
+    const el = document.querySelector(`#board-r .sq[data-sq="${h.square}"]`);
+    if(el) el.classList.add('hl-ex-' + h.color);
+  });
+
+  const overlay = document.getElementById('arrow-overlay-r');
+  const arrows = (visuals.arrows || []).filter(a => RV_HINT_COLOR[a.color]);
+  if(!overlay || !arrows.length) return;
+  const flip = boardFlippedState.get('board-r') === true;
+  let defs = '', lines = '';
+  const seen = new Set();
+  arrows.forEach(a => {
+    const col = RV_HINT_COLOR[a.color];
+    const mid = 'ah-ex-' + a.color;
+    if(!seen.has(mid)){
+      seen.add(mid);
+      defs += `<marker id="${mid}" markerWidth="4" markerHeight="4" refX="2.05" refY="2" orient="auto" overflow="visible"><path d="M0,0 V4 L3,2 Z" fill="${col}"/></marker>`;
+    }
+    lines += arrowSVG(a.from, a.to, col, a.color === 'target' ? 5 : 7, mid, flip);
+  });
+  overlay.innerHTML += `<defs>${defs}</defs>${lines}`;
+}
+
 window.selectReviewMove = function(idx, opts){
   // `heavy` (default true) runs the async Stockfish candidate analysis + AI upgrade.
   // Step-through navigation passes {heavy:false} so arrow-keying stays instant.
