@@ -20,6 +20,8 @@ export { GeminiExplanationGenerator, type GeminiGeneratorOptions } from './gemin
 export {
   buildSystemInstruction,
   buildUserPrompt,
+  buildUserPromptFromFacts,
+  type PromptFacts,
   promptCacheKeyInput,
   DEFAULT_PROMPT_CONFIG,
   type PromptConfig,

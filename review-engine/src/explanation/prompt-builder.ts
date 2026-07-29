@@ -40,8 +40,10 @@ export function buildSystemInstruction(config: PromptConfig = DEFAULT_PROMPT_CON
     'position, or add chess claims of your own. If a fact is not in the report, do not state it.',
     '',
     'RULES:',
-    `- Stay under ${config.maxWords} words. Two short sentences is ideal, one is often enough.`,
-    '- Explain the IDEA behind the move: what it achieves, or what the better move would have achieved.',
+    `- Stay under ${config.maxWords} words. Two short sentences is ideal.`,
+    '- When a better move is given, say what THAT move would have achieved, naming the piece and',
+    '  square, and what the move played missed or allowed. Never just say "there was a better move".',
+    '- When the student found the best move, say what their move achieves.',
     '- Write to the student as "you", and call the opponent "your opponent".',
     '- Plain English a beginner can follow. No jargon they would have to look up.',
     '- Never mention engines, evaluations, centipawns, scores, numbers of any kind, or that a computer',
@@ -53,51 +55,78 @@ export function buildSystemInstruction(config: PromptConfig = DEFAULT_PROMPT_CON
   ].join('\n');
 }
 
-/** The per-move report. Only fields with content are included, to keep it short. */
-export function buildUserPrompt(input: ExplanationInput, config: PromptConfig = DEFAULT_PROMPT_CONFIG): string {
-  const { analysis } = input.input;
-  const lines: string[] = [];
+/**
+ * A flat, transport-friendly version of the findings.
+ *
+ * The prompt is composed on the SERVER from these named fields rather than
+ * from free text sent by the browser. That is deliberate: an endpoint that
+ * forwards arbitrary prompt text is an open relay on someone else's API quota.
+ * Restricting it to this shape means the endpoint can only ever be used to
+ * write chess coaching notes.
+ */
+export interface PromptFacts {
+  /** The move played, in SAN if available ("Nf6"), else UCI. */
+  readonly played: string;
+  /** The classification this engine decided, e.g. "Inaccuracy". */
+  readonly verdict: string;
+  readonly phase?: string;
+  /** The better move, when one existed and differed from the move played. */
+  readonly best?: string;
+  /** Which piece the better move moves ("knight"), for natural wording. */
+  readonly bestPiece?: string;
+  /** Where the better move lands ("e4"), so the note can name the square. */
+  readonly bestTo?: string;
+  readonly samePieceWrongSquare?: boolean;
+  readonly bestCaptures?: boolean;
+  readonly bestGivesCheck?: boolean;
+  /** What the better move ACHIEVES, in this engine's words. */
+  readonly bestIdeas?: readonly string[];
+  readonly playedMotifs?: readonly string[];
+  readonly missedMotifs?: readonly string[];
+  readonly themes?: readonly string[];
+  readonly priorities?: readonly string[];
+  readonly openFiles?: readonly string[];
+  /** Notes already written earlier in this review, to avoid echoing them. */
+  readonly recentSummaries?: readonly string[];
+}
 
+/** The per-move report. Only fields with content are included, to keep it short. */
+export function buildUserPromptFromFacts(
+  f: PromptFacts,
+  config: PromptConfig = DEFAULT_PROMPT_CONFIG,
+): string {
+  const lines: string[] = [];
   const add = (label: string, value: string | undefined | null): void => {
     if (value) lines.push(`${label}: ${value}`);
   };
+  const list = (v: readonly string[] | undefined): string | null => (v && v.length ? v.join(', ') : null);
 
-  add('Move played', analysis.playedMove);
-  add('Verdict', input.classification.classification);
-  add('Game phase', input.context.phase);
+  add('Move played', f.played);
+  add('Verdict', f.verdict);
+  add('Game phase', f.phase);
 
-  // Only mention a better move when there genuinely was one.
-  const cmp = input.comparison;
-  if (cmp && !cmp.isSameMove) {
-    add('A better move existed', cmp.best);
-    if (cmp.bestPiece) add('The better move moves the', cmp.bestPiece);
-    if (cmp.movesSamePiece) add('Note', 'the student chose the right piece but the wrong square');
-    if (cmp.bestCaptures) add('The better move', 'captures material');
-    if (cmp.bestGivesCheck) add('The better move', 'gives check');
-  } else if (cmp?.isSameMove) {
-    add('Note', 'the student found the best move');
+  if (f.best) {
+    add('A better move existed', f.best);
+    add('The better move moves the', f.bestPiece);
+    add('It lands on', f.bestTo);
+    // The single most useful field: WHY the better move was better.
+    add('What that better move achieves', list(f.bestIdeas));
+    if (f.samePieceWrongSquare) add('Note', 'the student chose the right piece but the wrong square');
+    if (f.bestCaptures) add('The better move', 'wins material');
+    if (f.bestGivesCheck) add('The better move', 'gives check');
+    lines.push('');
+    lines.push('Explain what the better move would have achieved, and what the played move missed.');
+  } else {
+    add('Note', 'the student found the best move; explain what it achieves');
   }
 
-  if (input.motifs.length > 0) {
-    const played = input.motifs.filter((m) => m.source === 'played').map((m) => m.label);
-    const missed = input.motifs.filter((m) => m.source === 'best').map((m) => m.label);
-    add('Tactics in the move played', played.join(', ') || null);
-    add('Tactics that were available but missed', missed.join(', ') || null);
-  }
+  add('Tactics in the move played', list(f.playedMotifs));
+  add('Tactics available but missed', list(f.missedMotifs));
+  add('Strategic themes', list(f.themes));
+  add('What the position calls for', list(f.priorities));
+  add('Open files', list(f.openFiles));
 
-  if (input.themes.length > 0) {
-    add('Strategic themes', input.themes.map((t) => t.label).join(', '));
-  }
-
-  if (input.priorities.length > 0) {
-    add('What the position calls for', input.priorities.map((p) => p.statement).join('; '));
-  }
-
-  if (input.context.openFiles.length > 0) {
-    add('Open files', input.context.openFiles.join(', '));
-  }
-
-  const recent = (input.recentSummaries ?? []).slice(-config.recentSummaryWindow);
+  const recent = (f.recentSummaries ?? []).slice(-config.recentSummaryWindow);
   if (recent.length > 0) {
     lines.push('');
     lines.push('Notes you already wrote earlier in this review — do NOT reuse their wording or openings:');
@@ -107,6 +136,36 @@ export function buildUserPrompt(input: ExplanationInput, config: PromptConfig = 
   lines.push('');
   lines.push(`Write the coaching note now, under ${config.maxWords} words.`);
   return lines.join('\n');
+}
+
+/** Build the prompt from a full pipeline result, via {@link buildUserPromptFromFacts}. */
+export function buildUserPrompt(
+  input: ExplanationInput,
+  config: PromptConfig = DEFAULT_PROMPT_CONFIG,
+): string {
+  const cmp = input.comparison;
+  const better = cmp && !cmp.isSameMove ? cmp : null;
+  return buildUserPromptFromFacts({
+    played: input.input.analysis.playedMove,
+    verdict: input.classification.classification,
+    phase: input.context.phase,
+    ...(better
+      ? {
+          best: better.best,
+          ...(better.bestPiece ? { bestPiece: better.bestPiece } : {}),
+          bestTo: better.best.slice(2, 4),
+          samePieceWrongSquare: better.movesSamePiece,
+          bestCaptures: better.bestCaptures,
+          bestGivesCheck: better.bestGivesCheck,
+        }
+      : {}),
+    playedMotifs: input.motifs.filter((m) => m.source === 'played').map((m) => m.label),
+    missedMotifs: input.motifs.filter((m) => m.source === 'best').map((m) => m.label),
+    themes: input.themes.map((t) => t.label),
+    priorities: input.priorities.map((p) => p.statement),
+    openFiles: [...input.context.openFiles],
+    ...(input.recentSummaries ? { recentSummaries: input.recentSummaries } : {}),
+  }, config);
 }
 
 /**

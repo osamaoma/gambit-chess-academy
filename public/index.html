@@ -13390,10 +13390,58 @@ function rvViewerColor(){
 
 // The one plain sentence saying what this move did. Nothing else — no coaching
 // tips and no "the engine prefers…", which is exactly the noise we removed.
-function rvWhyHTML(ex){
+// The id lets the hosted coach replace this text once its note arrives.
+function rvWhyHTML(ex, whyId){
   if(!ex || !ex.summary) return '';
   const esc = (typeof olEsc === 'function') ? olEsc : (s => String(s == null ? '' : s));
-  return `<div class="mdb-why">${esc(ex.summary)}</div>`;
+  return `<div class="mdb-why" id="${whyId}">${esc(ex.summary)}</div>`;
+}
+
+// ─── Hosted coach notes (Gemini 2.5 Flash, via /api/coach-note) ───
+// This app does ALL the chess thinking — classification, best move, motifs,
+// themes, priorities. The model only turns those findings into a sentence, and
+// it is told what the better move achieves so it can explain WHY, which a
+// fixed template cannot do.
+//
+// Generated on demand, per move: a reader opens a handful of moves, so this
+// costs a few calls rather than one per ply, and sits comfortably inside a
+// free-tier rate limit. The template shows immediately and is swapped out when
+// the note lands, so there is never a blank card.
+const RV_NOTE_CACHE = new Map();   // move key → note text
+let RV_COACH_OFF = false;          // set once the server says it has no key
+const RV_RECENT_NOTES = [];        // so the coach avoids repeating itself
+
+function rvNoteKey(f){
+  return [f.played, f.verdict, f.best || '', (f.bestIdeas || []).join('|')].join('~');
+}
+
+async function rvUpgradeNote(ex, whyId){
+  if(RV_COACH_OFF || !ex || !ex.coachFacts) return;
+  const facts = ex.coachFacts;
+  const key = rvNoteKey(facts);
+  const paint = (text) => {
+    const el = document.getElementById(whyId);
+    // Only paint if the user is still on this move.
+    if(el && text) el.textContent = text;
+  };
+
+  if(RV_NOTE_CACHE.has(key)){ paint(RV_NOTE_CACHE.get(key)); return; }
+
+  try {
+    const r = await fetch('/api/coach-note', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ facts: Object.assign({}, facts, { recentSummaries: RV_RECENT_NOTES.slice(-6) }) }),
+    });
+    if(r.status === 503){ RV_COACH_OFF = true; return; }   // not configured — stop asking
+    if(!r.ok) return;                                       // keep the template
+    const data = await r.json();
+    if(data && data.text){
+      RV_NOTE_CACHE.set(key, data.text);
+      RV_RECENT_NOTES.push(data.text);
+      paint(data.text);
+    }
+  } catch(e){ /* offline or blocked — the template already reads fine */ }
 }
 
 // Semantic hint colours → pixels. GREEN = the good idea (what the move guards,
@@ -13492,6 +13540,7 @@ window.selectReviewMove = function(idx, opts){
   // arrows/highlights that show it. Computed before the header so the sentence
   // can sit inside the card (chess.com structure).
   const engineEx = rvEngineExplain(idx);
+  const whyId = 'why-' + idx;
 
   // Build the chess.com-style coaching header
   let html = `
@@ -13506,7 +13555,7 @@ window.selectReviewMove = function(idx, opts){
         <div class="mdb-eval-l">Engine eval</div>
       </div>
     </div>
-    ${rvWhyHTML(engineEx)}
+    ${rvWhyHTML(engineEx, whyId)}
   `;
 
   // Time spent, difficulty, the engine's line and the opening-theory note used
@@ -13533,6 +13582,10 @@ window.selectReviewMove = function(idx, opts){
     // blue = the engine's move. Drawn after drawReviewArrows so it adds to
     // (rather than replaces) the played/best-move arrows.
     rvDrawExplainVisuals(engineEx && engineEx.visuals);
+
+    // Ask the hosted coach to rewrite the note. Fire-and-forget: the template
+    // is already on screen, and a failure simply leaves it there.
+    rvUpgradeNote(engineEx, whyId);
 
     // (The Stockfish candidate list and the LLM lesson upgrade used to run here.
     // Both filled elements inside the old lesson panel, which no longer exists.)

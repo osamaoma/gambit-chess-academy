@@ -120,6 +120,102 @@ function nodeFetch(url, opts = {}) {
 // The user provides their own Anthropic API key in the browser; the server
 // proxies the call so the key is never exposed in JavaScript code.
 // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+// COACH NOTES — Gemini 2.5 Flash turns this app's own analysis into prose.
+//
+// The key lives ONLY here, in GEMINI_API_KEY. It is never sent to the browser.
+//
+// The browser posts STRUCTURED FINDINGS (verdict, better move, what that move
+// achieves, themes, priorities) and the prompt is composed server-side from
+// those named fields. It deliberately does NOT accept prompt text: an endpoint
+// that forwards arbitrary text is an open relay on our own API quota.
+//
+// All chess conclusions are made before this point. Gemini only chooses words.
+// ════════════════════════════════════════════════════════
+const coachLib = require('./server-lib/gemini-explain.cjs');
+
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/'
+  + GEMINI_MODEL + ':generateContent';
+
+/** Keep the payload small and typed — never trust the client's shapes. */
+function sanitiseFacts(raw){
+  const str = (v, max) => (typeof v === 'string' ? v.slice(0, max) : undefined);
+  const arr = (v, n, max) => Array.isArray(v)
+    ? v.filter(x => typeof x === 'string').slice(0, n).map(x => x.slice(0, max))
+    : undefined;
+  const out = {
+    played: str(raw?.played, 12) || '',
+    verdict: str(raw?.verdict, 20) || '',
+    phase: str(raw?.phase, 20),
+    best: str(raw?.best, 12),
+    bestPiece: str(raw?.bestPiece, 12),
+    bestTo: str(raw?.bestTo, 4),
+    samePieceWrongSquare: !!raw?.samePieceWrongSquare,
+    bestCaptures: !!raw?.bestCaptures,
+    bestGivesCheck: !!raw?.bestGivesCheck,
+    bestIdeas: arr(raw?.bestIdeas, 4, 120),
+    playedMotifs: arr(raw?.playedMotifs, 4, 40),
+    missedMotifs: arr(raw?.missedMotifs, 4, 40),
+    themes: arr(raw?.themes, 6, 40),
+    priorities: arr(raw?.priorities, 4, 80),
+    openFiles: arr(raw?.openFiles, 8, 2),
+    recentSummaries: arr(raw?.recentSummaries, 6, 200),
+  };
+  Object.keys(out).forEach(k => out[k] === undefined && delete out[k]);
+  return out;
+}
+
+app.post('/api/coach-note', async (req, res) => {
+  const key = process.env.GEMINI_API_KEY;
+  // 503, not 500: the service is simply not configured, and the client should
+  // fall back to its own wording rather than retry.
+  if(!key) return res.status(503).json({ error: 'Coach notes are not configured on this server.' });
+
+  const facts = sanitiseFacts(req.body && req.body.facts);
+  if(!facts.played || !facts.verdict){
+    return res.status(400).json({ error: 'A move and a verdict are required.' });
+  }
+
+  try {
+    const body = JSON.stringify({
+      systemInstruction: { parts: [{ text: coachLib.buildSystemInstruction() }] },
+      contents: [{ role: 'user', parts: [{ text: coachLib.buildUserPromptFromFacts(facts) }] }],
+      generationConfig: { temperature: 0.85, maxOutputTokens: 200, candidateCount: 1 },
+    });
+    const r = await nodeFetch(GEMINI_URL, {
+      method: 'POST',
+      headers: {
+        'x-goog-api-key': key,
+        'content-type': 'application/json',
+        'content-length': Buffer.byteLength(body),
+      },
+      body: body,
+    });
+    const data = r.json();
+    if(!r.ok){
+      const msg = (data && data.error && data.error.message) || ('Gemini API error (HTTP ' + r.status + ')');
+      return res.status(r.status).json({ error: msg });
+    }
+    const blocked = data && data.promptFeedback && data.promptFeedback.blockReason;
+    if(blocked) return res.status(502).json({ error: 'Response blocked: ' + blocked });
+
+    const parts = (((data.candidates || [])[0] || {}).content || {}).parts || [];
+    const raw = parts.map(p => p.text || '').join('').trim();
+    if(!raw) return res.status(502).json({ error: 'Empty response from Gemini.' });
+
+    // The same validation the package uses: strips preambles/markdown, rejects
+    // engine talk, trims to the word limit. Enforced here so a stray mention of
+    // "centipawns" can never reach a student.
+    const note = coachLib.parseExplanation(raw);
+    res.json({ text: note.summary, truncated: note.truncated, model: GEMINI_MODEL });
+  } catch(e){
+    // A rule-breaking draft raises here; the client falls back to its own text.
+    console.error('Coach note error:', e && e.message);
+    res.status(502).json({ error: (e && e.message) || 'Coach note failed.' });
+  }
+});
+
 app.post('/api/explain', async (req, res) => {
   const { apiKey, model, prompt } = req.body || {};
   if(!apiKey || typeof apiKey !== 'string' || !apiKey.startsWith('sk-')){
