@@ -30,6 +30,7 @@ import {
   StrategicPriorityDetector,
 } from './strategic-priority-detector';
 import { DefaultArrowGenerator } from './arrow-generator';
+import { TemplateExplanationGenerator } from './explanation/template-explanation-generator';
 import { DefaultHighlightGenerator } from './highlight-generator';
 import type {
   ArrowGenerator,
@@ -54,7 +55,8 @@ export interface ReviewPipelineModules {
   readonly motifs?: TacticalMotifDetector;
   readonly themes?: ThemeDetector;
   readonly priorities?: StrategicPriorityDetector;
-  readonly explanations?: ExplanationGenerator;
+  /** Omit for the built-in writer; pass null to disable explanations. */
+  readonly explanations?: ExplanationGenerator | null;
   readonly arrows?: ArrowGenerator;
   readonly highlights?: HighlightGenerator;
 }
@@ -90,9 +92,12 @@ export class ReviewPipeline {
     this.motifs = modules.motifs ?? new DefaultTacticalMotifDetector();
     this.themes = modules.themes ?? new DefaultThemeDetector();
     this.priorities = modules.priorities ?? new DefaultStrategicPriorityDetector();
-    // No default: explanations need a configured model, and silently inventing
-    // one would hide a wiring mistake.
-    this.explanations = modules.explanations ?? null;
+    // Defaults to the model-free writer, so a pipeline built with no arguments
+    // still produces readable coaching. Pass a hosted generator to upgrade the
+    // prose; pass null explicitly to turn explanations off entirely.
+    this.explanations = modules.explanations === null
+      ? null
+      : (modules.explanations ?? new TemplateExplanationGenerator());
     this.arrows = modules.arrows ?? new DefaultArrowGenerator();
     this.highlights = modules.highlights ?? new DefaultHighlightGenerator();
   }

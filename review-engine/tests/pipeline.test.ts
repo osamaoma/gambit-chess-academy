@@ -195,8 +195,15 @@ describe('ReviewPipeline', () => {
     assert.equal(errors.length, 1);
   });
 
-  it('works with no writer configured at all', async () => {
+  it('explains its moves out of the box, with no writer configured', async () => {
+    // Defaults to the model-free writer, so the package is useful with no key,
+    // no network and no configuration.
     const reviewed = await new ReviewPipeline().reviewMove(move());
+    assert.ok(reviewed.explanation.summary.length > 0);
+  });
+
+  it('can still be told to produce no explanations at all', async () => {
+    const reviewed = await new ReviewPipeline({ explanations: null }).reviewMove(move());
     assert.equal(reviewed.explanation.summary, '');
   });
 

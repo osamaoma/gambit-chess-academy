@@ -15,6 +15,7 @@
  * of at Google, so the key stays on your server.
  */
 
+export { TemplateExplanationGenerator, type TemplateGeneratorOptions } from './template-explanation-generator';
 export { GeminiService, DEFAULT_GEMINI_CONFIG, type GeminiConfig, type GenerateRequest, type Transport } from './gemini-service';
 export { GeminiExplanationGenerator, type GeminiGeneratorOptions } from './gemini-explanation-generator';
 export {
